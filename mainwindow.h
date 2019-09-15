@@ -35,33 +35,23 @@ public:
     ~MainWindow();
     void closeEvent(QCloseEvent *event);
 
+private:
+    bool isValidDevice(PulseAudioRecordingStream* stream);
+    bool loadSources();
+    void playSound(string path);
+    void clearSoundFiles();
+    void saveSoundFiles();
+    void loadSoundFiles();
+    string getCommandOutput(char cmd[]);
+
 private slots:
     void on_refreshAppsButton_clicked();
-
-    bool isValidDevice(PulseAudioRecordingStream* stream);
-
-    void loadSources();
-
-    void playSound(string path);
-
-    void clearSoundFiles();
-
-    void saveSoundFiles();
-
-    void loadSoundFiles();
-
     void on_playCustomButton_clicked();
-
     void on_customFileChoose_clicked();
-
     void on_stopButton_clicked();
-
     void on_addSoundButton_clicked();
-
     void on_removeSoundButton_clicked();
-
     void on_clearSoundsButton_clicked();
-
     void on_playSoundButton_clicked();
 
 private:

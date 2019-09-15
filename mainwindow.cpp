@@ -45,9 +45,20 @@ MainWindow::MainWindow(QWidget *parent)
     // Create loopback for output devices (so that you can hear it)
     //system("pacmd load-module module-loopback source=\"soundboard_sink.monitor\"");
 
-    // TODO: don't hardcore input device (get default input device)
+    // get default input device
+    string defaultInput = "";
+    char cmd[] = "pacmd dump";
+    string result = getCommandOutput(cmd);
+    regex reg(R"rgx(set-default-source (.+))rgx");
+    smatch sm;
+    regex_search(result, sm, reg);
+    defaultInput = sm[1].str();
+
     // Create loopback for input
-    system("pacmd load-module module-loopback source=\"alsa_input.pci-0000_00_1f.3.analog-stereo\" sink=\"soundboard_sink\"");
+    if(defaultInput != "") {
+        auto createLoopBack = "pacmd load-module module-loopback source=\"" + defaultInput + "\" sink=\"soundboard_sink\"";
+        system(createLoopBack.c_str());
+    }
 
     loadSoundFiles();
     loadSources();
@@ -61,14 +72,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-bool MainWindow::isValidDevice(PulseAudioRecordingStream* stream) {
-    return !strstr(stream->source.c_str(), ".monitor") && !strstr(stream->flags.c_str(), "DONT_MOVE");
-}
 
-void MainWindow::loadSources() {
-    streams.clear();
-    ui->outputApplication->clear();
-    char cmd[] = "pacmd list-source-outputs";
+string MainWindow::getCommandOutput(char cmd[]) {
     array<char, 1028> buffer;
     string result;
     unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
@@ -78,6 +83,22 @@ void MainWindow::loadSources() {
     while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
         result += buffer.data();
     }
+    return result;
+}
+
+bool MainWindow::isValidDevice(PulseAudioRecordingStream* stream) {
+    return !strstr(stream->source.c_str(), ".monitor") && !strstr(stream->flags.c_str(), "DONT_MOVE");
+}
+
+bool MainWindow::loadSources() {
+    // Save previously selected applicaton
+    auto previouslySelected = ui->outputApplication->currentText();
+
+    streams.clear();
+    ui->outputApplication->clear();
+
+    char cmd[] = "pacmd list-source-outputs";
+    string result = getCommandOutput(cmd);
     string delimiter = "\n";
     size_t pos = 0;
     string currentLine;
@@ -153,6 +174,12 @@ void MainWindow::loadSources() {
             ui->outputApplication->addItem(QString(stream->processBinary.c_str()));
         }
     }
+
+    // This automatically sets the selected item to the previous one. if it does not exists it does nothing
+    ui->outputApplication->setCurrentText(previouslySelected);
+
+    // Return if the output was not changed
+    return ui->outputApplication->currentText() == previouslySelected;
 }
 
 MainWindow::~MainWindow()
@@ -162,6 +189,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::playSound(string path) {
     //TODO: Stop old playback
+
+    // Don't play the sound if the app changed (previous one no longer available)
+    if(!loadSources()) {
+        QMessageBox::warning(this, "", tr("Output stream no longer available...\nAborting\n"), QMessageBox::Ok);
+        return;
+    }
 
     // Get selected application
     string selectedApp = ui->outputApplication->currentText().toStdString();
@@ -263,9 +296,11 @@ void MainWindow::on_removeSoundButton_clicked()
 
 void MainWindow::on_clearSoundsButton_clicked()
 {
-    //TODO: confirmation
-    clearSoundFiles();
-    saveSoundFiles();
+    QMessageBox::StandardButton resBtn = QMessageBox::question(this, "", tr("Are you sure?\n"), QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
+    if (resBtn == QMessageBox::Yes) {
+        clearSoundFiles();
+        saveSoundFiles();
+    }
 }
 
 void MainWindow::on_playSoundButton_clicked()
