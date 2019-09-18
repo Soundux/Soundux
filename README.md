@@ -12,7 +12,7 @@ Please refer your distro instructions for how to install them
 ```sh
 git clone https://github.com/D3S0X/Soundboard.git
 cd Soundboard
-qmake .
+cmake .
 make
 ./Soundboard
 ```
