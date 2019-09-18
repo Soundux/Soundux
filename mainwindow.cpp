@@ -1,3 +1,4 @@
+
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include <cstdio>
@@ -229,6 +230,7 @@ void MainWindow::playSound(string path) {
         forMe.detach();
 
         auto cmdForOthers = "$(which mpg123) -o pulse -a soundboard_sink \"" + path + "\"";
+        system(cmdForOthers.c_str());
 
         // Switch recording stream device back
         system(moveBack.c_str());
