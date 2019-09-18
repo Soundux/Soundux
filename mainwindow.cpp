@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
@@ -9,7 +10,6 @@
 #include <stdlib.h>
 #include <regex>
 #include <thread>
-#include <iostream>
 #include <fstream>
 #include <QCloseEvent>
 #include <QMessageBox>
@@ -103,6 +103,7 @@ bool MainWindow::loadSources() {
     size_t pos = 0;
     string currentLine;
 
+    // Tell me if there is a better way to parse the pulseaudio source outputs
     regex reg(R"rgx(((index: (\d+)))|(driver: )(.*)|(state: )(.*)|(flags: )(.*)|(source: .*)(<(.*)>)|(muted: )(.{0,3})|([a-zA-Z-.0-9_]*)\ =\ (\"(.*)\"))rgx");
     smatch sm;
 
@@ -227,7 +228,7 @@ void MainWindow::playSound(string path) {
         });
         forMe.detach();
 
-        system(("mpg123 -o pulse -a soundboard_sink \"" + path + "\"").c_str());
+        auto cmdForOthers = "$(which mpg123) -o pulse -a soundboard_sink \"" + path + "\"";
 
         // Switch recording stream device back
         system(moveBack.c_str());
@@ -235,6 +236,7 @@ void MainWindow::playSound(string path) {
 
     }
 }
+
 
 void MainWindow::on_refreshAppsButton_clicked()
 {

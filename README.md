@@ -1,7 +1,5 @@
 # Soundboard
-I didn't find any good soundboard application for linux so I created one.
-It uses pulseaudio modules to achieve a universal interface. You can select every recording stream for the audio output
-The GUI is written in QT.
+I didn't find any good soundboard application for linux so I created one. It uses pulseaudio modules to achieve a universal interface. You can select every recording stream for the audio output. The GUI is written in QT.
 
 It is currently in alpha because I don't know if this works for everyone.
 
@@ -18,3 +16,8 @@ qmake .
 make
 ./Soundboard
 ```
+
+# TODO
+- Play sounds async
+- Implement stop feature
+- Double click items to play
