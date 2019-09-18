@@ -20,8 +20,8 @@ using json = nlohmann::json;
 /*
  * Dependencies: pulseaudio, mpg123
  *
- * TODO: Find a fancy name
  * TODO: Find another way how to play it for myself and others (maybe just loopback the default output to the sink monitor)
+ * TODO: Save configuration in .config folder
  *
 */
 
@@ -229,7 +229,7 @@ void MainWindow::playSound(string path) {
         });
         forMe.detach();
 
-        auto cmdForOthers = "$(which mpg123) -o pulse -a soundboard_sink \"" + path + "\"";
+        auto cmdForOthers = "mpg123 -o pulse -a soundboard_sink \"" + path + "\"";
         system(cmdForOthers.c_str());
 
         // Switch recording stream device back
