@@ -1,37 +1,30 @@
 
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include <cstdio>
-#include <cstdlib>
-#include <iostream>
-#include <memory>
-#include <stdexcept>
-#include <string>
-#include <array>
-#include <stdlib.h>
-#include <regex>
-#include <thread>
-#include <fstream>
-#include <QCloseEvent>
-#include <QMessageBox>
-
-using json = nlohmann::json;
 
 /*
- * Dependencies: pulseaudio, mpg123
  *
  * TODO: Find another way how to play it for myself and others (maybe just loopback the default output to the sink monitor)
- * TODO: Save configuration in .config folder
  *
 */
 
 static vector<PulseAudioRecordingStream *> streams;
+
+static string configFolder;
+static string soundFilesConfig;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    configFolder = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0].toStdString() + "/" + windowTitle().toStdString();
+    if(!filesystem::exists(configFolder)) {
+        filesystem::create_directory(configFolder);
+    }
+    soundFilesConfig = configFolder + "/soundFiles.json";
+    cout << soundFilesConfig << endl;
 
     // Disable resizing
     this->setFixedSize(this->width(), this->height());
@@ -57,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Create loopback for input
     if(defaultInput != "") {
+        cout << "Found default input device " << defaultInput << endl;
         auto createLoopBack = "pacmd load-module module-loopback source=\"" + defaultInput + "\" sink=\"soundboard_sink\"";
         system(createLoopBack.c_str());
     }
@@ -70,6 +64,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     //TODO: Only remove modules created by Soundboard
     system("pacmd unload-module module-null-sink");
     system("pacmd unload-module module-loopback");
+    //TODO: Switch all switched recording streams back to default device
     event->accept();
 }
 
@@ -211,6 +206,8 @@ void MainWindow::playSound(string path) {
         int index = selected->index;
         string source = selected->source;
 
+        cout << "Source before was " << source << endl;
+
         auto moveToSink = "pacmd move-source-output " + to_string(index) + " soundboard_sink.monitor";
         auto moveBack = "pacmd move-source-output " + to_string(index) + " " + source;
 
@@ -221,21 +218,19 @@ void MainWindow::playSound(string path) {
         int value = ui->volumeSlider->value();
         system(("pacmd set-source-volume soundboard_sink.monitor " + to_string(value)).c_str());
 
-        cout << "Start" << endl;
-
-        std::thread forMe([&]
+        forMe = std::thread([=]()
         {
-            system(("mpg123 -o pulse \"" + path + "\"").c_str());
+            auto cmdForMe = "mpg123 -o pulse \"" + path + "\"";
+            system(cmdForMe.c_str());
         });
-        forMe.detach();
 
-        auto cmdForOthers = "mpg123 -o pulse -a soundboard_sink \"" + path + "\"";
-        system(cmdForOthers.c_str());
-
-        // Switch recording stream device back
-        system(moveBack.c_str());
-        cout << "End" << endl;
-
+        forOthers = std::thread([=]()
+        {
+            auto cmdForOthers = "mpg123 -o pulse -a soundboard_sink \"" + path + "\"";
+            system(cmdForOthers.c_str());
+            // Switch recording stream device back
+            system(moveBack.c_str());
+        });
     }
 }
 
@@ -260,8 +255,10 @@ void MainWindow::on_customFileChoose_clicked()
 
 void MainWindow::on_stopButton_clicked()
 {
-    //TODO: stop
-    cout << "Stop" << endl;
+    //TODO: Only kill mpg123 started from Soundboard
+    system("killall mpg123");
+    //pthread_kill(forMe.native_handle(), 9);
+    //pthread_kill(forOthers.native_handle(), 9);
 }
 
 void MainWindow::on_addSoundButton_clicked()
@@ -331,13 +328,13 @@ void MainWindow::saveSoundFiles() {
     }
 
     ofstream myfile;
-    myfile.open("soundFiles.json");
+    myfile.open(soundFilesConfig);
     myfile << jsonArray.dump();
     myfile.close();
 }
 
 void MainWindow::loadSoundFiles() {
-    ifstream fileIn("soundFiles.json");
+  ifstream fileIn(soundFilesConfig);
     if(fileIn.is_open()) {
         string content((istreambuf_iterator<char>(fileIn)), istreambuf_iterator<char>());
 

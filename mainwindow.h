@@ -1,13 +1,34 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <array>
+#include <stdlib.h>
+#include <regex>
+#include <thread>
+#include <filesystem>
+#include <fstream>
+#include <pthread.h>
+#include <signal.h>
+
 #include <QMainWindow>
 #include <QFile>
 #include <QFileDialog>
 #include <QListWidgetItem>
+#include <QCloseEvent>
+#include <QMessageBox>
+#include <QStandardPaths>
+#include <QDir>
+
 #include <json.hpp>
 
 using namespace std;
+using json = nlohmann::json;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -56,5 +77,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    std::thread forMe;
+    std::thread forOthers;
 };
 #endif // MAINWINDOW_H

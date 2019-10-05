@@ -6,7 +6,8 @@ It is currently in alpha because I don't know if this works for everyone.
 ## Dependencies
 Please refer your distro instructions for how to install them
 - [pulseaudio](https://www.archlinux.org/packages/extra/x86_64/pulseaudio/)
-- [mpeg123](https://www.archlinux.org/packages/extra/x86_64/mpg123/) (for playing mp3 files)
+- [ninja](https://www.archlinux.org/packages/community/x86_64/ninja/)
+- [mpg123](https://www.archlinux.org/packages/extra/x86_64/mpg123/) (for playing mp3 files)
 
 # Compile it yourself
 ```sh
@@ -18,8 +19,8 @@ make
 ```
 
 # TODO
-- Find a fancy name
-- Save configuration in .config folder instead of in the same folder as the binary
-- Play sounds async
-- Implement stop feature
-- Double click items to play
+- [ ] Find a fancy name
+- [x] Save configuration in .config folder instead of in the same folder as the binary
+- [ ] Play sounds async
+- [ ] Implement stop feature
+- [ ] Double click items to play
