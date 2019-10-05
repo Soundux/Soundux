@@ -64,7 +64,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     //TODO: Only remove modules created by Soundboard
     system("pacmd unload-module module-null-sink");
     system("pacmd unload-module module-loopback");
-    //TODO: Switch all switched recording streams back to default device
+    //TODO: Switch all recording streams back to default device
     event->accept();
 }
 
