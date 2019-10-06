@@ -77,13 +77,13 @@ The code is licensed under [GPLv3](LICENSE)
 # TODO
 - [ ] Find a fancy name
 - [ ] Create an own logo
-- [ ] Double click items to play
 - [ ] Check if dependencies are installed otherwise show a warning
 - [ ] Play sounds while another sound is playing
 - [ ] Create tabs to better organize your sounds
 - [ ] Add folders and automatically create a tab for it
 - [ ] Only stop mpg123 started from this programm
 - [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
+- [x] Double click items to play
 - [x] Add multiple files at once
 - [x] Save configuration in .config folder instead of in the same folder as the binary
 - [x] Play sounds async

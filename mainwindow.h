@@ -24,6 +24,7 @@
 #include <QMessageBox>
 #include <QStandardPaths>
 #include <QDir>
+#include <QTimer>
 
 #include <json.hpp>
 
@@ -74,6 +75,7 @@ private slots:
     void on_removeSoundButton_clicked();
     void on_clearSoundsButton_clicked();
     void on_playSoundButton_clicked();
+    void on_soundsListWidget_itemDoubleClicked(QListWidgetItem* listWidgetItem);
 
 private:
     Ui::MainWindow *ui;

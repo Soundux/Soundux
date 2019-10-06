@@ -19,12 +19,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Set the config variables
     configFolder = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0].toStdString() + "/" + windowTitle().toStdString();
     if(!filesystem::exists(configFolder)) {
         filesystem::create_directory(configFolder);
     }
     soundFilesConfig = configFolder + "/soundFiles.json";
-    cout << soundFilesConfig << endl;
 
     // Disable resizing
     this->setFixedSize(this->width(), this->height());
@@ -291,6 +291,13 @@ void MainWindow::on_addSoundButton_clicked()
 
             saveSoundFiles();
         }
+    }
+}
+
+
+void MainWindow::on_soundsListWidget_itemDoubleClicked(QListWidgetItem* listWidgetItem) {
+    if(listWidgetItem) {
+        playSound(listWidgetItem->toolTip().toStdString());
     }
 }
 
