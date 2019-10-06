@@ -1,7 +1,9 @@
 <div align="center">
   <p>
     <h1>
-      <img src="icon.jpg" width="50" alt="Soundboard" />
+      <a href="#readme">
+        <img src="icon.jpg" width="50" alt="Soundboard" />
+      </a>
       <br />
       Soundboard
     </h1>
