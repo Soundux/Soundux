@@ -268,25 +268,29 @@ void MainWindow::on_stopButton_clicked()
 
 void MainWindow::on_addSoundButton_clicked()
 {
-    QString selectedFile = QFileDialog::getOpenFileName(this, tr("Select file"), QDir::homePath(), tr("MP3 (*.mp3)"));
-    if (selectedFile != "") {
-        QFile file(selectedFile);
-        QFileInfo fileInfo((QFileInfo(file)));
+    QStringList selectedFiles = QFileDialog::getOpenFileNames(this, tr("Select file"), QDir::homePath(), tr("MP3 (*.mp3)"));
+    for(auto selectedFile : selectedFiles) {
+        if (selectedFile != "") {
+            QFile file(selectedFile);
+            QFileInfo fileInfo((QFileInfo(file)));
 
-        auto path = fileInfo.absoluteFilePath().toStdString();
+            auto path = fileInfo.absoluteFilePath().toStdString();
 
-        for (QListWidgetItem* item : ui->soundsListWidget->findItems("*", Qt::MatchWildcard)) {
-            if (path == item->toolTip().toStdString()) {
-                return;
+            for (QListWidgetItem* item : ui->soundsListWidget->findItems("*", Qt::MatchWildcard)) {
+                // Check if Sound is already added
+                if (path == item->toolTip().toStdString()) {
+                    QMessageBox::warning(this, "", tr("This sound is already in the list"), QMessageBox::Ok);
+                    return;
+                }
             }
+
+            auto item = new QListWidgetItem();
+            item->setText(fileInfo.baseName());
+            item->setToolTip(fileInfo.absoluteFilePath());
+            ui->soundsListWidget->addItem(item);
+
+            saveSoundFiles();
         }
-
-        auto item = new QListWidgetItem();
-        item->setText(fileInfo.baseName());
-        item->setToolTip(fileInfo.absoluteFilePath());
-        ui->soundsListWidget->addItem(item);
-
-        saveSoundFiles();
     }
 }
 
