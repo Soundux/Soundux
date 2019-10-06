@@ -13,7 +13,7 @@
     <a href="https://github.com/D3S0X/Soundboard/releases">
       <img src="https://img.shields.io/github/downloads/D3S0X/Soundboard/total.svg?style=flat-square" alt="Total Downloads" />
     </a>
-    <a href="https://github.com/D3S0X/flameshot/blob/master/LICENSE">
+    <a href="https://github.com/D3S0X/Soundboard/blob/master/LICENSE">
       <img src="https://img.shields.io/github/license/D3S0X/Soundboard.svg?style=flat-square" alt="License" />
     </a>
   </p>
