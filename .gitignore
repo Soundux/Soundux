@@ -47,6 +47,7 @@ Thumbs.db
 
 # Other Stuff
 /.idea
+/.vscode
 /cmake-build-debug
 /CMakeFiles
 CMakeCache.txt
