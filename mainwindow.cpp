@@ -218,6 +218,11 @@ void MainWindow::playSound(string path) {
         int value = ui->volumeSlider->value();
         system(("pacmd set-source-volume soundboard_sink.monitor " + to_string(value)).c_str());
 
+        try {
+            forMe.join();
+            forOthers.join();
+        } catch(...) {}
+
         forMe = std::thread([=]()
         {
             auto cmdForMe = "mpg123 -o pulse \"" + path + "\"";
