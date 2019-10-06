@@ -1,6 +1,10 @@
 <div align="center">
   <p>
-    <h1>Soundboard</h1>
+    <h1>
+      <img src="icon.jpg" width="50" alt="Soundboard" />
+      <br />
+      Soundboard
+    </h1>
     <h4>A universal soundboard in Qt for linux using pulseaudio modules</h4>
   </p>
   <p>
