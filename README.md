@@ -7,7 +7,6 @@ It is currently in alpha because I don't know if this works for everyone.
 Please refer your distro instructions for how to install them
 - [pulseaudio](https://www.archlinux.org/packages/extra/x86_64/pulseaudio/)
 - [mpg123](https://www.archlinux.org/packages/extra/x86_64/mpg123/) (for playing mp3 files)
-
 - [ninja](https://www.archlinux.org/packages/community/x86_64/ninja/) (only for compilation)
 - [cmake](https://www.archlinux.org/packages/extra/x86_64/cmake/) (only for compilation)
 

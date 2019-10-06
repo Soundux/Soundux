@@ -50,6 +50,7 @@ Thumbs.db
 /cmake-build-debug
 /CMakeFiles
 CMakeCache.txt
+cmake_install.cmake
 
 # Visual Studio generated files
 *.ib_pdb_index
