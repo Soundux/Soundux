@@ -1,4 +1,0 @@
-/home/nico/Soundboard/build/CMakeFiles/rebuild_cache.dir
-/home/nico/Soundboard/build/CMakeFiles/Soundboard.dir
-/home/nico/Soundboard/build/CMakeFiles/edit_cache.dir
-/home/nico/Soundboard/build/CMakeFiles/Soundboard_autogen.dir

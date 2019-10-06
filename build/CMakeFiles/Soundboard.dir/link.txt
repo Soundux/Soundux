@@ -1,1 +1,0 @@
-/usr/bin/c++  -O0   CMakeFiles/Soundboard.dir/Soundboard_autogen/mocs_compilation.cpp.o CMakeFiles/Soundboard.dir/main.cpp.o CMakeFiles/Soundboard.dir/mainwindow.cpp.o CMakeFiles/Soundboard.dir/Soundboard_autogen/EWIEGA46WW/qrc_resources.cpp.o  -o Soundboard /usr/lib/libQt5Widgets.so.5.13.1 -lpthread /usr/lib/libQt5Gui.so.5.13.1 /usr/lib/libQt5Core.so.5.13.1 

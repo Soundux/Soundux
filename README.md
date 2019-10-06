@@ -3,34 +3,25 @@ I didn't find any good soundboard application for linux so I created one. It use
 
 It is currently in alpha because I don't know if this works for everyone.
 
-
-# Runtime Dependencies
+## Dependencies
+Please refer your distro instructions for how to install them
 - [pulseaudio](https://www.archlinux.org/packages/extra/x86_64/pulseaudio/)
 - [mpg123](https://www.archlinux.org/packages/extra/x86_64/mpg123/) (for playing mp3 files)
-
-# Compilation Dependencies
-- [ninja](https://www.archlinux.org/packages/community/x86_64/ninja/)
-- [cmake](https://www.archlinux.org/packages/extra/x86_64/cmake/)
-
-Please refer your distro instructions for how to install those dependencies
+- [ninja](https://www.archlinux.org/packages/community/x86_64/ninja/) (only for compilation)
+- [cmake](https://www.archlinux.org/packages/extra/x86_64/cmake/) (only for compilation)
 
 # Compile it yourself
 ```sh
 git clone https://github.com/D3S0X/Soundboard.git
 cd Soundboard
-mkdir build
-cd build
-cmake ..
+cmake .
 make
 ./Soundboard
 ```
 
 # TODO
 - [ ] Find a fancy name
-- [ ] Double click items to play
-- [ ] Check if dependencies are installed otherwise show a warning
-- [ ] Only stop mpg123 started from this programm
-- [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
 - [x] Save configuration in .config folder instead of in the same folder as the binary
 - [x] Play sounds async
 - [x] Implement stop feature
+- [ ] Double click items to play
