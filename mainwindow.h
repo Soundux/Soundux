@@ -24,6 +24,8 @@
 #include <QMessageBox>
 #include <QStandardPaths>
 #include <QDir>
+#include <QInputDialog>
+#include <QLineEdit>
 #include <QTimer>
 
 #include <json.hpp>
@@ -32,20 +34,23 @@ using namespace std;
 using json = nlohmann::json;
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+class MainWindow;
+}
 QT_END_NAMESPACE
 
 struct PulseAudioRecordingStream
 {
-        int index;
-        string driver;
-        string flags;
-        string state;
-        string source;
-        bool muted;
-        string applicationName;
-        int processId;
-        string processBinary;
+    int index;
+    string driver;
+    string flags;
+    string state;
+    string source;
+    bool muted;
+    string applicationName;
+    int processId;
+    string processBinary;
 };
 
 class MainWindow : public QMainWindow
@@ -58,24 +63,28 @@ public:
     void closeEvent(QCloseEvent *event);
 
 private:
-    bool isValidDevice(PulseAudioRecordingStream* stream);
+    bool isValidDevice(PulseAudioRecordingStream *stream);
     bool loadSources();
     void playSound(string path);
     void clearSoundFiles();
     void saveSoundFiles();
     void loadSoundFiles();
     string getCommandOutput(char cmd[]);
+    QListWidget *getActiveView();
+    QListWidget* createTab(QString title);
 
 private slots:
+    void on_addTabButton_clicked();
+    void on_soundsListWidget_itemDoubleClicked(QListWidgetItem *listWidgetItem);
+
     void on_refreshAppsButton_clicked();
-    void on_playCustomButton_clicked();
-    void on_customFileChoose_clicked();
     void on_stopButton_clicked();
     void on_addSoundButton_clicked();
     void on_removeSoundButton_clicked();
     void on_clearSoundsButton_clicked();
     void on_playSoundButton_clicked();
-    void on_soundsListWidget_itemDoubleClicked(QListWidgetItem* listWidgetItem);
+    void on_tabWidget_tabCloseRequested(int index);
+    void on_tabWidget_tabBarDoubleClicked(int index);
 
 private:
     Ui::MainWindow *ui;

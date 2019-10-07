@@ -79,46 +79,6 @@
       <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
-   <widget class="QTextEdit" name="customAudioText">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>402</y>
-      <width>610</width>
-      <height>31</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="playCustomButton">
-    <property name="geometry">
-     <rect>
-      <x>630</x>
-      <y>401</y>
-      <width>140</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Play Custom</string>
-    </property>
-    <property name="icon">
-     <iconset theme="player_play">
-      <normaloff>.</normaloff>.</iconset>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="customFileChoose">
-    <property name="geometry">
-     <rect>
-      <x>630</x>
-      <y>366</y>
-      <width>141</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Choose file...</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="stopButton">
     <property name="geometry">
      <rect>
@@ -209,16 +169,6 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QListWidget" name="soundsListWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>140</y>
-      <width>521</width>
-      <height>221</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPushButton" name="playSoundButton">
     <property name="geometry">
      <rect>
@@ -266,6 +216,36 @@
     </property>
     <property name="text">
      <string>Volume</string>
+    </property>
+   </widget>
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>521</width>
+      <height>281</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>-1</number>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="addTabButton">
+    <property name="geometry">
+     <rect>
+      <x>496</x>
+      <y>140</y>
+      <width>31</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset theme="list-add">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
   </widget>
