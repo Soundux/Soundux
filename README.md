@@ -79,11 +79,12 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Create an own logo
 - [ ] Check if dependencies are installed otherwise show a warning
 - [ ] Play sounds while another sound is playing
-- [ ] Add folders and automatically create a tab for it
+- [ ] Organize code
 - [ ] Only stop mpg123 started from this programm
 - [ ] Repeat button
 - [ ] Save positions when tabs moved
 - [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
+- [x] Add folders and automatically create a tab for it
 - [x] Create tabs to better organize your sounds
 - [x] Double click items to play
 - [x] Add multiple files at once

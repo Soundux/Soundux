@@ -14,7 +14,7 @@
    <string>Soundboard</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="resources.qrc">
     <normaloff>:/icon.jpg</normaloff>:/icon.jpg</iconset>
   </property>
   <property name="dockOptions">
@@ -100,7 +100,7 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>140</y>
+      <y>180</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -117,7 +117,7 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>180</y>
+      <y>220</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -134,7 +134,7 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>220</y>
+      <y>260</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -163,7 +163,7 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>:/icon.jpg</pixmap>
+     <pixmap resource="resources.qrc">:/icon.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -173,7 +173,7 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>260</y>
+      <y>300</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -248,6 +248,22 @@
       <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
+   <widget class="QPushButton" name="addFolderButton">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>140</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add folder</string>
+    </property>
+    <property name="icon">
+     <iconset theme="folder"/>
+    </property>
+   </widget>
   </widget>
   <action name="actionExit">
    <property name="text">
@@ -255,6 +271,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

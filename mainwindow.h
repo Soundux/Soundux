@@ -18,12 +18,13 @@
 
 #include <QMainWindow>
 #include <QFile>
+#include <QDir>
 #include <QFileDialog>
+#include <QTreeView>
 #include <QListWidgetItem>
 #include <QCloseEvent>
 #include <QMessageBox>
 #include <QStandardPaths>
-#include <QDir>
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QTimer>
@@ -71,12 +72,12 @@ private:
     void loadSoundFiles();
     string getCommandOutput(char cmd[]);
     QListWidget *getActiveView();
-    QListWidget* createTab(QString title);
+    QListWidget *createTab(QString title);
+    void addSoundToView(QFile &file, QListWidget *widget);
 
 private slots:
     void on_addTabButton_clicked();
     void on_soundsListWidget_itemDoubleClicked(QListWidgetItem *listWidgetItem);
-
     void on_refreshAppsButton_clicked();
     void on_stopButton_clicked();
     void on_addSoundButton_clicked();
@@ -85,6 +86,7 @@ private slots:
     void on_playSoundButton_clicked();
     void on_tabWidget_tabCloseRequested(int index);
     void on_tabWidget_tabBarDoubleClicked(int index);
+    void on_addFolderButton_clicked();
 
 private:
     Ui::MainWindow *ui;

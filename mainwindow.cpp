@@ -209,7 +209,8 @@ MainWindow::~MainWindow()
 void MainWindow::playSound(string path)
 {
     //TODO: Remove this and stop old playback or enable multiple sounds at once (maybe create a setting for it)
-    if(ui->stopButton->isEnabled()) {
+    if (ui->stopButton->isEnabled())
+    {
         return;
     }
 
@@ -287,6 +288,48 @@ void MainWindow::on_stopButton_clicked()
     ui->stopButton->setDisabled(true);
 }
 
+void MainWindow::on_addFolderButton_clicked()
+{
+    auto selectedFolder = QFileDialog::getExistingDirectory(this, ("Select folder"), QDir::homePath());
+
+    if (selectedFolder != "")
+    {
+        QDir directory(selectedFolder);
+        QFileInfo fileInfo(selectedFolder);
+        auto created = createTab(fileInfo.fileName());
+
+        QStringList files = directory.entryList(QStringList() << "*.mp3", QDir::Files);
+        for (auto fileName : files)
+        {
+            QFile file(directory.absoluteFilePath(fileName));
+            addSoundToView(file, created);
+        }
+        saveSoundFiles();
+    }
+}
+
+void MainWindow::addSoundToView(QFile &file, QListWidget *widget)
+{
+    QFileInfo fileInfo(file);
+
+    auto path = fileInfo.absoluteFilePath().toStdString();
+
+    for (QListWidgetItem *item : widget->findItems("*", Qt::MatchWildcard))
+    {
+        // Check if Sound is already added
+        if (path == item->toolTip().toStdString())
+        {
+            QMessageBox::warning(this, "", tr("This sound is already in the list"), QMessageBox::Ok);
+            return;
+        }
+    }
+
+    auto item = new QListWidgetItem();
+    item->setText(fileInfo.baseName());
+    item->setToolTip(fileInfo.absoluteFilePath());
+    widget->addItem(item);
+}
+
 void MainWindow::on_addSoundButton_clicked()
 {
     if (!getActiveView())
@@ -299,28 +342,10 @@ void MainWindow::on_addSoundButton_clicked()
         if (selectedFile != "")
         {
             QFile file(selectedFile);
-            QFileInfo fileInfo((QFileInfo(file)));
-
-            auto path = fileInfo.absoluteFilePath().toStdString();
-
-            for (QListWidgetItem *item : getActiveView()->findItems("*", Qt::MatchWildcard))
-            {
-                // Check if Sound is already added
-                if (path == item->toolTip().toStdString())
-                {
-                    QMessageBox::warning(this, "", tr("This sound is already in the list"), QMessageBox::Ok);
-                    return;
-                }
-            }
-
-            auto item = new QListWidgetItem();
-            item->setText(fileInfo.baseName());
-            item->setToolTip(fileInfo.absoluteFilePath());
-            getActiveView()->addItem(item);
-
-            saveSoundFiles();
+            addSoundToView(file, getActiveView());
         }
     }
+    saveSoundFiles();
 }
 
 void MainWindow::on_soundsListWidget_itemDoubleClicked(QListWidgetItem *listWidgetItem)
@@ -339,9 +364,8 @@ void MainWindow::on_removeSoundButton_clicked()
         if (it)
         {
             delete it;
+            saveSoundFiles();
         }
-
-        saveSoundFiles();
     }
 }
 
@@ -461,11 +485,10 @@ void MainWindow::loadSoundFiles()
     ifstream fileIn(soundFilesConfig);
     if (fileIn.is_open())
     {
-        string content((istreambuf_iterator<char>(fileIn)), istreambuf_iterator<char>());
-
-        json j = json::parse(content);
-
         clearSoundFiles();
+
+        string content((istreambuf_iterator<char>(fileIn)), istreambuf_iterator<char>());
+        json j = json::parse(content);
 
         for (auto item : j.get<vector<json>>())
         {
