@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>774</width>
-    <height>439</height>
+    <width>973</width>
+    <height>548</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,7 +42,7 @@
    <widget class="QComboBox" name="outputApplication">
     <property name="geometry">
      <rect>
-      <x>566</x>
+      <x>770</x>
       <y>10</y>
       <width>201</width>
       <height>31</height>
@@ -52,7 +52,7 @@
    <widget class="QLabel" name="outputApplicationLabel">
     <property name="geometry">
      <rect>
-      <x>442</x>
+      <x>650</x>
       <y>14</y>
       <width>121</width>
       <height>20</height>
@@ -65,7 +65,7 @@
    <widget class="QPushButton" name="refreshAppsButton">
     <property name="geometry">
      <rect>
-      <x>566</x>
+      <x>770</x>
       <y>50</y>
       <width>201</width>
       <height>31</height>
@@ -83,7 +83,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>80</y>
+      <y>90</y>
       <width>151</width>
       <height>51</height>
      </rect>
@@ -99,8 +99,8 @@
    <widget class="QPushButton" name="addSoundButton">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>180</y>
+      <x>830</x>
+      <y>260</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -116,8 +116,8 @@
    <widget class="QPushButton" name="removeSoundButton">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>220</y>
+      <x>830</x>
+      <y>300</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -133,8 +133,8 @@
    <widget class="QPushButton" name="clearSoundsButton">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>260</y>
+      <x>830</x>
+      <y>340</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -172,8 +172,8 @@
    <widget class="QPushButton" name="playSoundButton">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>300</y>
+      <x>830</x>
+      <y>380</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -190,7 +190,7 @@
     <property name="geometry">
      <rect>
       <x>231</x>
-      <y>90</y>
+      <y>104</y>
       <width>301</width>
       <height>31</height>
      </rect>
@@ -209,7 +209,7 @@
     <property name="geometry">
      <rect>
       <x>175</x>
-      <y>88</y>
+      <y>100</y>
       <width>51</width>
       <height>21</height>
      </rect>
@@ -222,9 +222,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>140</y>
-      <width>521</width>
-      <height>281</height>
+      <y>150</y>
+      <width>811</width>
+      <height>391</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -234,25 +234,25 @@
    <widget class="QPushButton" name="addTabButton">
     <property name="geometry">
      <rect>
-      <x>496</x>
-      <y>140</y>
-      <width>31</width>
-      <height>21</height>
+      <x>830</x>
+      <y>180</y>
+      <width>131</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string/>
+     <string>Add Tab</string>
     </property>
     <property name="icon">
-     <iconset theme="list-add">
+     <iconset theme="tab-new">
       <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QPushButton" name="addFolderButton">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>140</y>
+      <x>830</x>
+      <y>220</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -261,7 +261,8 @@
      <string>Add folder</string>
     </property>
     <property name="icon">
-     <iconset theme="folder"/>
+     <iconset theme="folder">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
   </widget>

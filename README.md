@@ -82,6 +82,8 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Organize code
 - [ ] Only stop mpg123 started from this programm
 - [ ] Repeat button
+- [ ] Make UI responsible
+- [ ] Automatically update files in folders (on startup?)
 - [ ] Save positions when tabs moved
 - [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
 - [x] Add folders and automatically create a tab for it

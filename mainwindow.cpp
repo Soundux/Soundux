@@ -401,6 +401,7 @@ void MainWindow::on_addTabButton_clicked()
     if (ok && !text.isEmpty())
     {
         createTab(text);
+        saveSoundFiles();
     }
 }
 
@@ -431,7 +432,6 @@ QListWidget *MainWindow::createTab(QString title)
     soundsListWidget->setObjectName(title);
     connect(soundsListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(on_soundsListWidget_itemDoubleClicked(QListWidgetItem *)));
     ui->tabWidget->addTab(soundsListWidget, title);
-    saveSoundFiles();
     return soundsListWidget;
 }
 
