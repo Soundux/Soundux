@@ -27,11 +27,13 @@
 
 ## Index
 - [Introduction](#introduction)
-- [Dependencies](#dependencies)
-- [Compilation](#compilation)
-  - [Dependencies](#dependencies-1)
-  - [Build](#build)
-  - [Install](#install)
+- [Runtime Dependencies](#runtime-dependencies)
+- [Compilation & Installation](#compilation--installation)
+  - [Arch Linux and derivatives](#arch-linux-and-derivatives)
+  - [Other distros](#other-distros)
+    - [Dependencies](#dependencies)
+    - [Build](#build)
+    - [Install](#install)
 - [License](#license)
 - [TODO](#todo)
 
@@ -40,36 +42,50 @@ I didn't find any good soundboard application for linux so I created one. It use
 
 It is currently in alpha because I don't know if this works for everyone.
 
-# Dependencies
+# Runtime Dependencies
 Please refer your distro instructions for how to install them
-- [pulseaudio](https://www.archlinux.org/packages/extra/x86_64/pulseaudio/)
-- [mpg123](https://www.archlinux.org/packages/extra/x86_64/mpg123/) (for playing mp3 files)
+- [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio)
+- [mpg123](https://www.mpg123.de/) (optional: for playing mp3 files)
 
-# Compilation
+# Compilation & Installation
 
-## Dependencies
-This list may be not accurate. Contact me if you find missing dependencies that I can update this list
-- [ninja](https://www.archlinux.org/packages/community/x86_64/ninja/)
-- [cmake](https://www.archlinux.org/packages/extra/x86_64/cmake/)
-- [qt5-base](https://www.archlinux.org/packages/extra/x86_64/qt5-base/)
-- [qt5-tools](https://www.archlinux.org/packages/extra/x86_64/qt5-tools/)
-
-## Build
+## Arch Linux and derivatives
+You can use my package which will automatically compile and install the master branch
 ```sh
-# Clone the repository
+git clone https://github.com/D3S0X/soundboard-git.git
+cd soundboard-git
+makepkg -si
+```
+
+## Other distros
+
+### Dependencies
+This list may be not accurate. Contact me if you find missing dependencies that I can update this list
+- [ninja](https://github.com/ninja-build/ninja)
+- [cmake](https://gitlab.kitware.com/cmake/cmake)
+- [qt5-base](https://github.com/qt/qtbase)
+- [qt5-tools](https://github.com/qt/qt5)
+
+### Build
+Clone the repository
+```sh
 git clone https://github.com/D3S0X/Soundboard.git
 cd Soundboard
-# Create a build folder and start compilation
+```
+Create a build folder and start compilation
+```sh
 mkdir build
 cd build
 cmake ..
 make
-# To start the program
+```
+To start the program
+```sh
 ./Soundboard
 ```
 
-## Install
-Installation is currently not possible but will be available in the future
+### Install
+Installation is currently not possible but will be available in the future. (You may look into my [arch package](https://github.com/D3S0X/soundboard-git) and figure it out for your distro)
 
 # License
 The code is licensed under [GPLv3](LICENSE)
