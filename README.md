@@ -81,6 +81,7 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Organize code
 - [ ] Only modify audio players started from this programm (stop, volume)
 - [ ] Seperate volume sliders for me and for others (and a toggle to sync it)
+- [ ] Fix volume slider only working while playback
 - [ ] Make UI responsible
 - [ ] Automatically update files in folders (on startup?)
 - [ ] Save positions when tabs moved

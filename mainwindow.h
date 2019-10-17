@@ -54,6 +54,12 @@ struct PulseAudioRecordingStream
     string processBinary;
 };
 
+struct PulseAudioPlaybackStream
+{
+    int index;
+    string applicationName;
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -77,6 +83,7 @@ private:
     QListWidget *createTab(QString title);
     void addSoundToView(QFile &file, QListWidget *widget);
     void syncVolume();
+    void checkAndChangeVolume(PulseAudioPlaybackStream *stream, int value);
 
 private slots:
     void on_addTabButton_clicked();

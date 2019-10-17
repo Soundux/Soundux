@@ -290,6 +290,16 @@ void MainWindow::playSound(string path)
     }
 }
 
+void MainWindow::checkAndChangeVolume(PulseAudioPlaybackStream *stream, int value)
+{
+    // TODO: Only set it when this was created by Soundboard
+    // Set the volume if the application is paplay or mpg123
+    if (stream->applicationName == "paplay" || stream->applicationName == "mpg123")
+    {
+        system(("pacmd set-sink-input-volume " + to_string(stream->index) + " " + to_string(value)).c_str());
+    }
+}
+
 void MainWindow::syncVolume()
 {
     // Get volume from slider
@@ -305,7 +315,7 @@ void MainWindow::syncVolume()
     regex reg(R"rgx(((index: (\d+)))|(driver: )(.*)|(state: )(.*)|(flags: )(.*)|(source: .*)(<(.*)>)|(muted: )(.{0,3})|([a-zA-Z-.0-9_]*)\ =\ (\"(.*)\"))rgx");
     smatch sm;
 
-    int playBackId;
+    PulseAudioPlaybackStream *current = nullptr;
 
     while ((pos = result.find(delimiter)) != string::npos)
     {
@@ -315,7 +325,13 @@ void MainWindow::syncVolume()
             auto index = sm[3];
             if (index.length() > 0)
             {
-                playBackId = stoi(index);
+                if (current)
+                {
+                    checkAndChangeVolume(current, value);
+                }
+
+                current = new PulseAudioPlaybackStream();
+                current->index = stoi(index);
             }
             else
             {
@@ -325,12 +341,7 @@ void MainWindow::syncVolume()
                 {
                     if (propertyName == "application.name")
                     {
-                        // TODO: Only set it when this was created by Soundboard
-                        // Set the volume if the application is paplay or mpg123
-                        if (propertyValue == "paplay" || propertyValue == "mpg123")
-                        {
-                            system(("pacmd set-sink-input-volume " + to_string(playBackId) + " " + to_string(value)).c_str());
-                        }
+                        current->applicationName = propertyValue.str();
                     }
                 }
             }
@@ -338,6 +349,7 @@ void MainWindow::syncVolume()
 
         result.erase(0, pos + delimiter.length());
     }
+    checkAndChangeVolume(current, value);
 }
 
 // Sync volume when the slider value has changed
