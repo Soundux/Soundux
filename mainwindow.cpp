@@ -226,7 +226,7 @@ void MainWindow::playSound(string path)
     if (isMP3)
     {
         ostringstream mpg123Check;
-        mpg123Check << "which mpg1234 >/dev/null 2>&1";
+        mpg123Check << "which mpg123 >/dev/null 2>&1";
         bool canPlayMP3 = (system(mpg123Check.str().c_str()) == 0);
         if (!canPlayMP3)
         {
