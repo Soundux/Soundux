@@ -80,12 +80,14 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Check if dependencies are installed otherwise show a warning
 - [ ] Play sounds while another sound is playing
 - [ ] Organize code
-- [ ] Only stop mpg123 started from this programm
-- [ ] Repeat button
+- [ ] Only modify audio players started from this programm (stop, volume)
+- [ ] Seperate volume sliders for me and for others (and a toggle to sync it)
 - [ ] Make UI responsible
 - [ ] Automatically update files in folders (on startup?)
 - [ ] Save positions when tabs moved
 - [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
+- [x] Repeat button
+- [x] Add support for other audio formats
 - [x] Add folders and automatically create a tab for it
 - [x] Create tabs to better organize your sounds
 - [x] Double click items to play

@@ -64,6 +64,8 @@ public:
     void closeEvent(QCloseEvent *event);
 
 private:
+    Ui::MainWindow *ui;
+
     bool isValidDevice(PulseAudioRecordingStream *stream);
     bool loadSources();
     void playSound(string path);
@@ -74,6 +76,7 @@ private:
     QListWidget *getActiveView();
     QListWidget *createTab(QString title);
     void addSoundToView(QFile &file, QListWidget *widget);
+    void syncVolume();
 
 private slots:
     void on_addTabButton_clicked();
@@ -87,10 +90,6 @@ private slots:
     void on_tabWidget_tabCloseRequested(int index);
     void on_tabWidget_tabBarDoubleClicked(int index);
     void on_addFolderButton_clicked();
-
-private:
-    Ui::MainWindow *ui;
-    std::thread forMe;
-    std::thread forOthers;
+    void on_volumeSlider_valueChanged(int value);
 };
 #endif // MAINWINDOW_H

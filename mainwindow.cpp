@@ -107,7 +107,7 @@ bool MainWindow::loadSources()
     size_t pos = 0;
     string currentLine;
 
-    // Tell me if there is a better way to parse the pulseaudio source outputs
+    // Tell me if there is a better way to parse the pulseaudio output
     regex reg(R"rgx(((index: (\d+)))|(driver: )(.*)|(state: )(.*)|(flags: )(.*)|(source: .*)(<(.*)>)|(muted: )(.{0,3})|([a-zA-Z-.0-9_]*)\ =\ (\"(.*)\"))rgx");
     smatch sm;
 
@@ -245,33 +245,91 @@ void MainWindow::playSound(string path)
         // Switch recording stream device to game sink
         system(moveToSink.c_str());
 
-        // Set volume for game sink monitor from slider
-        int value = ui->volumeSlider->value();
-        system(("pacmd set-source-volume soundboard_sink.monitor " + to_string(value)).c_str());
-
-        try
-        {
-            forMe.join();
-            forOthers.join();
-        }
-        catch (...)
-        {
-        }
-
-        forMe = std::thread([=]() {
-            auto cmdForMe = "mpg123 -o pulse \"" + path + "\"";
+        auto forMe = std::thread([=]() {
+            auto cmdForMe = "paplay \"" + path + "\"";
+            if (strstr(path.c_str(), ".mp3"))
+            {
+                cmdForMe = "mpg123 -o pulse \"" + path + "\"";
+            }
             system(cmdForMe.c_str());
         });
+        forMe.detach();
 
-        forOthers = std::thread([=]() {
+        auto forOthers = std::thread([=]() {
             ui->stopButton->setDisabled(false);
-            auto cmdForOthers = "mpg123 -o pulse -a soundboard_sink \"" + path + "\"";
+            auto cmdForOthers = "paplay -d soundboard_sink \"" + path + "\"";
+            if (strstr(path.c_str(), ".mp3"))
+            {
+                cmdForOthers = "mpg123 -o pulse -a soundboard_sink \"" + path + "\"";
+            }
             system(cmdForOthers.c_str());
             // Switch recording stream device back
             system(moveBack.c_str());
             ui->stopButton->setDisabled(true);
+            // Repeat when the check box is checked
+            if (ui->repeatCheckBox->isChecked())
+            {
+                playSound(path);
+            }
         });
+        forOthers.detach();
     }
+}
+
+void MainWindow::syncVolume()
+{
+    // Get volume from slider
+    int value = ui->volumeSlider->value();
+
+    char cmd[] = "pacmd list-sink-inputs";
+    string result = getCommandOutput(cmd);
+    string delimiter = "\n";
+    size_t pos = 0;
+    string currentLine;
+
+    // Tell me if there is a better way to parse the pulseaudio output
+    regex reg(R"rgx(((index: (\d+)))|(driver: )(.*)|(state: )(.*)|(flags: )(.*)|(source: .*)(<(.*)>)|(muted: )(.{0,3})|([a-zA-Z-.0-9_]*)\ =\ (\"(.*)\"))rgx");
+    smatch sm;
+
+    int playBackId;
+
+    while ((pos = result.find(delimiter)) != string::npos)
+    {
+        currentLine = result.substr(0, pos);
+        if (regex_search(currentLine, sm, reg))
+        {
+            auto index = sm[3];
+            if (index.length() > 0)
+            {
+                playBackId = stoi(index);
+            }
+            else
+            {
+                auto propertyName = sm[15];
+                auto propertyValue = sm[17];
+                if (propertyName.length() > 0)
+                {
+                    if (propertyName == "application.name")
+                    {
+                        // TODO: Only set it when this was created by Soundboard
+                        // Set the volume if the application is paplay or mpg123
+                        if (propertyValue == "paplay" || propertyValue == "mpg123")
+                        {
+                            system(("pacmd set-sink-input-volume " + to_string(playBackId) + " " + to_string(value)).c_str());
+                        }
+                    }
+                }
+            }
+        }
+
+        result.erase(0, pos + delimiter.length());
+    }
+}
+
+// Sync volume when the slider value has changed
+void MainWindow::on_volumeSlider_valueChanged(int value)
+{
+    syncVolume();
 }
 
 void MainWindow::on_refreshAppsButton_clicked()
@@ -281,10 +339,14 @@ void MainWindow::on_refreshAppsButton_clicked()
 
 void MainWindow::on_stopButton_clicked()
 {
-    //TODO: Only kill mpg123 started from Soundboard
+    // Fix continuous playback
+    if (ui->repeatCheckBox->isChecked())
+    {
+        ui->repeatCheckBox->setChecked(false);
+    }
+    //TODO: Only kill players started from Soundboard
     system("killall mpg123");
-    //pthread_kill(forMe.native_handle(), 9);
-    //pthread_kill(forOthers.native_handle(), 9);
+    system("killall paplay");
     ui->stopButton->setDisabled(true);
 }
 
@@ -298,7 +360,7 @@ void MainWindow::on_addFolderButton_clicked()
         QFileInfo fileInfo(selectedFolder);
         auto created = createTab(fileInfo.fileName());
 
-        QStringList files = directory.entryList(QStringList() << "*.mp3", QDir::Files);
+        QStringList files = directory.entryList({"*.mp3", "*.wav", "*.ogg"}, QDir::Files);
         for (auto fileName : files)
         {
             QFile file(directory.absoluteFilePath(fileName));
@@ -319,7 +381,8 @@ void MainWindow::addSoundToView(QFile &file, QListWidget *widget)
         // Check if Sound is already added
         if (path == item->toolTip().toStdString())
         {
-            QMessageBox::warning(this, "", tr("This sound is already in the list"), QMessageBox::Ok);
+            auto already = "The sound " + item->text().toStdString() + " is already in the list";
+            QMessageBox::warning(this, "", tr(already.c_str()), QMessageBox::Ok);
             return;
         }
     }
@@ -336,7 +399,7 @@ void MainWindow::on_addSoundButton_clicked()
     {
         createTab("Main");
     }
-    QStringList selectedFiles = QFileDialog::getOpenFileNames(this, tr("Select file"), QDir::homePath(), tr("MP3 (*.mp3)"));
+    QStringList selectedFiles = QFileDialog::getOpenFileNames(this, tr("Select file"), QDir::homePath(), tr("Sound files (*.mp3 *.wav *.ogg)"));
     for (auto selectedFile : selectedFiles)
     {
         if (selectedFile != "")

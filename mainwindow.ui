@@ -265,6 +265,19 @@
       <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
+   <widget class="QCheckBox" name="repeatCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>510</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Repeat</string>
+    </property>
+   </widget>
   </widget>
   <action name="actionExit">
    <property name="text">
