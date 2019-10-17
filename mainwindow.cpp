@@ -221,6 +221,20 @@ void MainWindow::playSound(string path)
         return;
     }
 
+    bool isMP3 = strstr(path.c_str(), ".mp3");
+
+    if (isMP3)
+    {
+        ostringstream mpg123Check;
+        mpg123Check << "which mpg1234 >/dev/null 2>&1";
+        bool canPlayMP3 = (system(mpg123Check.str().c_str()) == 0);
+        if (!canPlayMP3)
+        {
+            QMessageBox::critical(this, "", tr("Can't play mp3 file!\nmpg123 is not installed\nPlease install it and restart the program\n"), QMessageBox::Ok);
+            return;
+        }
+    }
+
     // Get selected application
     string selectedApp = ui->outputApplication->currentText().toStdString();
     PulseAudioRecordingStream *selected = nullptr;
@@ -247,7 +261,7 @@ void MainWindow::playSound(string path)
 
         auto forMe = std::thread([=]() {
             auto cmdForMe = "paplay \"" + path + "\"";
-            if (strstr(path.c_str(), ".mp3"))
+            if (isMP3)
             {
                 cmdForMe = "mpg123 -o pulse \"" + path + "\"";
             }
@@ -258,7 +272,7 @@ void MainWindow::playSound(string path)
         auto forOthers = std::thread([=]() {
             ui->stopButton->setDisabled(false);
             auto cmdForOthers = "paplay -d soundboard_sink \"" + path + "\"";
-            if (strstr(path.c_str(), ".mp3"))
+            if (isMP3)
             {
                 cmdForOthers = "mpg123 -o pulse -a soundboard_sink \"" + path + "\"";
             }

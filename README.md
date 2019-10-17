@@ -77,7 +77,6 @@ The code is licensed under [GPLv3](LICENSE)
 # TODO
 - [ ] Find a fancy name
 - [ ] Create an own logo
-- [ ] Check if dependencies are installed otherwise show a warning
 - [ ] Play sounds while another sound is playing
 - [ ] Organize code
 - [ ] Only modify audio players started from this programm (stop, volume)
@@ -85,7 +84,9 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Make UI responsible
 - [ ] Automatically update files in folders (on startup?)
 - [ ] Save positions when tabs moved
+- [ ] Localization
 - [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
+- [x] Check if dependencies are installed otherwise show a warning
 - [x] Repeat button
 - [x] Add support for other audio formats
 - [x] Add folders and automatically create a tab for it
