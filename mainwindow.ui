@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>973</width>
-    <height>548</height>
+    <width>975</width>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>28</pointsize>
+      <pointsize>-1</pointsize>
      </font>
     </property>
     <property name="text">
@@ -52,7 +52,7 @@
    <widget class="QLabel" name="outputApplicationLabel">
     <property name="geometry">
      <rect>
-      <x>650</x>
+      <x>640</x>
       <y>14</y>
       <width>121</width>
       <height>20</height>
@@ -276,6 +276,23 @@
     </property>
     <property name="text">
      <string>Repeat</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="setHotkeyButton">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>420</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set Hotkey</string>
+    </property>
+    <property name="icon">
+     <iconset theme="applet_lockkeys">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
   </widget>

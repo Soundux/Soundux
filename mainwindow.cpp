@@ -1,4 +1,3 @@
-
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
@@ -10,11 +9,12 @@
 
 static vector<PulseAudioRecordingStream *> streams;
 
+static vector<QHotkey *> hotkeys;
+
 static string configFolder;
 static string soundFilesConfig;
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     ui->tabWidget->setTabsClosable(true);
@@ -260,10 +260,10 @@ void MainWindow::playSound(string path)
         system(moveToSink.c_str());
 
         auto forMe = std::thread([=]() {
-            auto cmdForMe = "paplay \"" + path + "\"";
+            auto cmdForMe = "paplay --volume=" + to_string(ui->volumeSlider->value()) + " \"" + path + "\"";
             if (isMP3)
             {
-                cmdForMe = "mpg123 -o pulse \"" + path + "\"";
+                cmdForMe = "mpg123 -o pulse -f " + to_string(ui->volumeSlider->value()) + " \"" + path + "\"";
             }
             system(cmdForMe.c_str());
         });
@@ -271,10 +271,10 @@ void MainWindow::playSound(string path)
 
         auto forOthers = std::thread([=]() {
             ui->stopButton->setDisabled(false);
-            auto cmdForOthers = "paplay -d soundboard_sink \"" + path + "\"";
+            auto cmdForOthers = "paplay -d soundboard_sink --volume=" + to_string(ui->volumeSlider->value()) + " \"" + path + "\"";
             if (isMP3)
             {
-                cmdForOthers = "mpg123 -o pulse -a soundboard_sink \"" + path + "\"";
+                cmdForOthers = "mpg123 -o pulse -a soundboard_sink -f " + to_string(ui->volumeSlider->value()) + " \"" + path + "\"";
             }
             system(cmdForOthers.c_str());
             // Switch recording stream device back
@@ -471,22 +471,28 @@ void MainWindow::on_clearSoundsButton_clicked()
     }
 }
 
-void MainWindow::on_playSoundButton_clicked()
+QListWidgetItem *MainWindow::getSelectedItem()
 {
     if (getActiveView())
     {
-        QListWidgetItem *it = getActiveView()->item(getActiveView()->currentRow());
-        if (it)
-        {
-            playSound(it->toolTip().toStdString());
-        }
+        return getActiveView()->item(getActiveView()->currentRow());
+    }
+    return nullptr;
+}
+
+void MainWindow::on_playSoundButton_clicked()
+{
+    QListWidgetItem *it = getActiveView()->item(getActiveView()->currentRow());
+    if (it)
+    {
+        playSound(it->toolTip().toStdString());
     }
 }
 
 void MainWindow::on_addTabButton_clicked()
 {
     bool ok;
-    QString text = QInputDialog::getText(0, "Add a tab", "Tab Text:", QLineEdit::Normal, "", &ok);
+    QString text = QInputDialog::getText(this, "Add a tab", "Tab Text:", QLineEdit::Normal, "", &ok);
     if (ok && !text.isEmpty())
     {
         createTab(text);
@@ -494,10 +500,95 @@ void MainWindow::on_addTabButton_clicked()
     }
 }
 
+void MainWindow::on_setHotkeyButton_clicked()
+{
+    QListWidgetItem *it = getActiveView()->item(getActiveView()->currentRow());
+    if (it)
+    {
+        // TODO: Replace this with an automated user input
+        bool ok;
+        QString keys = QInputDialog::getText(this, "Bind", "Enter keys:", QLineEdit::Normal, it->data(1).toString(), &ok);
+        if (ok)
+        {
+
+            if (!keys.isEmpty())
+            {
+                registerHotkey(it, keys);
+            }
+            else
+            {
+                unregisterHotkey(it);
+            }
+
+            saveSoundFiles();
+        }
+    }
+}
+
+void MainWindow::registerHotkey(QListWidgetItem *it, QString keys)
+{
+    // Unregister previous hotkey
+    unregisterHotkey(it);
+    it->setData(1, keys);
+    auto neger = QKeySequence(keys);
+
+    auto hotkey = new QHotkey(QKeySequence(keys), true, this);
+
+    if (hotkey->isRegistered())
+    {
+        hotkeys.push_back(hotkey);
+        auto toPlay = it->toolTip().toStdString();
+        connect(hotkey, &QHotkey::activated, this, [=]() {
+            playSound(toPlay);
+        });
+    }
+    else
+    {
+        unregisterHotkey(it);
+        QMessageBox::warning(this, "Could not register " + keys, "Either the key combination is not valid or it's not possible to use this combination (Maybe another program is using it)", QMessageBox::Ok);
+    }
+}
+
+bool compareChar(char &c1, char &c2)
+{
+    if (c1 == c2)
+        return true;
+    else if (toupper(c1) == toupper(c2))
+        return true;
+    return false;
+}
+
+bool caseInSensStringCompare(string &str1, string &str2)
+{
+    return ((str1.size() == str2.size()) &&
+            equal(str1.begin(), str1.end(), str2.begin(), &compareChar));
+}
+
+void MainWindow::unregisterHotkey(QListWidgetItem *it)
+{
+    auto previousHotkey = it->data(1);
+    if (!previousHotkey.isNull())
+    {
+        auto previousHotkeyStr = previousHotkey.toString().toStdString();
+
+        for (QHotkey *hotkey : hotkeys)
+        {
+            auto hotkeyStr = hotkey->shortcut().toString().toStdString();
+            if (caseInSensStringCompare(hotkeyStr, previousHotkeyStr))
+            {
+                delete hotkey;
+            }
+        }
+
+        // Reset Data
+        it->setData(1, QVariant());
+    }
+}
+
 void MainWindow::on_tabWidget_tabBarDoubleClicked(int index)
 {
     bool ok;
-    QString text = QInputDialog::getText(0, "Rename tab", "Tab Text:", QLineEdit::Normal, ui->tabWidget->tabText(index), &ok);
+    QString text = QInputDialog::getText(this, "Rename tab", "Tab Text:", QLineEdit::Normal, ui->tabWidget->tabText(index), &ok);
     if (ok && !text.isEmpty())
     {
         ui->tabWidget->setTabText(index, text);
@@ -555,7 +646,16 @@ void MainWindow::saveSoundFiles()
         for (QListWidgetItem *item : listWidget->findItems("*", Qt::MatchWildcard))
         {
             json j;
-            j[item->text().toStdString()] = item->toolTip().toStdString();
+            j["name"] = item->text().toStdString();
+            j["path"] = item->toolTip().toStdString();
+
+            auto hotkey = item->data(1);
+            if (!hotkey.isNull())
+            {
+                auto hotkeyStr = item->data(1).toString().toStdString();
+                j["hotkey"] = hotkeyStr;
+            }
+
             tabJsonSounds.push_back(j);
         }
 
@@ -590,17 +690,21 @@ void MainWindow::loadSoundFiles()
                 auto childItems = object.value().get<vector<json>>();
                 for (auto _child : childItems)
                 {
-                    for (auto child : _child.items())
-                    {
-                        auto soundName = child.key();
-                        auto soundPath = child.value();
-                        remove(soundPath.begin(), soundPath.end(), '"');
+                    auto soundName = _child["name"];
+                    auto soundPath = _child["path"];
+                    remove(soundPath.begin(), soundPath.end(), '"');
 
-                        auto item = new QListWidgetItem();
-                        item->setText(QString::fromStdString(soundName));
-                        item->setToolTip(QString::fromStdString(soundPath));
-                        soundsListWidget->addItem(item);
+                    auto item = new QListWidgetItem();
+                    item->setText(QString::fromStdString(soundName));
+                    item->setToolTip(QString::fromStdString(soundPath));
+
+                    auto soundHotkey = _child["hotkey"];
+                    if (!soundHotkey.is_null())
+                    {
+                        // Set hotkey back
+                        registerHotkey(item, QString::fromStdString(soundHotkey));
                     }
+                    soundsListWidget->addItem(item);
                 }
             }
         }

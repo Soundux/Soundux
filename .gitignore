@@ -48,11 +48,8 @@ Thumbs.db
 # Other Stuff
 /.idea
 /.vscode
-/cmake-build-debug
-/CMakeFiles
-CMakeCache.txt
-cmake_install.cmake
-/build
+/vendor
+/build*
 
 # Visual Studio generated files
 *.ib_pdb_index

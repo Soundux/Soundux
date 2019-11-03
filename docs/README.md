@@ -4,6 +4,9 @@
 # Features
 
 - Simple UI
+- Tabs to organize your sounds
+- Automatically add a folder as tab
+- Global hotkeys
 - Saves configuration automatically
 - Uses PulseAudio modules so it should work on almost any distribution
 - Output to any recording stream

@@ -61,8 +61,7 @@ makepkg -si
 
 ### Dependencies
 This list may be not accurate. Contact me if you find missing dependencies that I can update this list
-- [ninja](https://github.com/ninja-build/ninja)
-- [cmake](https://gitlab.kitware.com/cmake/cmake)
+- [qpm](https://github.com/Cutehacks/qpm)
 - [qt5-base](https://github.com/qt/qtbase)
 - [qt5-tools](https://github.com/qt/qt5)
 
@@ -74,9 +73,10 @@ cd Soundboard
 ```
 Create a build folder and start compilation
 ```sh
+qpm install
 mkdir build
 cd build
-cmake ..
+qmake ..
 make
 ```
 To start the program
@@ -95,6 +95,8 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Create an own logo
 - [ ] Play sounds while another sound is playing
 - [ ] Organize code
+- [ ] Search sounds
+- [ ] Only trigger hotkeys from current tab
 - [ ] Only modify audio players started from this programm (stop, volume)
 - [ ] Seperate volume sliders for me and for others (and a toggle to sync it)
 - [ ] Fix volume slider only working while playback
@@ -103,6 +105,7 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Save positions when tabs moved
 - [ ] Localization
 - [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
+- [x] Global Hotkeys
 - [x] Check if dependencies are installed otherwise show a warning
 - [x] Repeat button
 - [x] Add support for other audio formats
