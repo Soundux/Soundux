@@ -8,7 +8,7 @@
     "type": "GITHUB",
     "url": "https://github.com/D3S0X/Soundboard.git"
   },
-  "license": "GPL3",
+  "license": "GPL_3_0",
   "dependencies": [
     "de.skycoder42.qhotkey@1.2.2"
   ]
