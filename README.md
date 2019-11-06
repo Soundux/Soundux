@@ -32,6 +32,7 @@
   - [Arch Linux and derivatives](#arch-linux-and-derivatives)
   - [Other distros](#other-distros)
     - [Dependencies](#dependencies)
+    - [Install dependencies for Ubuntu and derivatives (Thanks to @Tibladar)](#install-dependencies-for-ubuntu-and-derivatives-thanks-to-tibladar)
     - [Build](#build)
     - [Install](#install)
 - [License](#license)
@@ -65,15 +66,27 @@ This list may be not accurate. Contact me if you find missing dependencies that 
 - [qt5-base](https://github.com/qt/qtbase)
 - [qt5-tools](https://github.com/qt/qt5)
 
+### Install dependencies for Ubuntu and derivatives (Thanks to @Tibladar)
+```sh
+sudo apt install git go qt5-default libqt5x11extras5-dev mpg123
+go get qpm.io/qpm
+```
+
 ### Build
 Clone the repository
 ```sh
 git clone https://github.com/D3S0X/Soundboard.git
 cd Soundboard
 ```
+Install dependencies
+```sh
+# If you installed qpm via go
+~/go/bin/qpm install
+# Otherwise
+qpm install
+```
 Create a build folder and start compilation
 ```sh
-qpm install
 mkdir build
 cd build
 qmake ..
@@ -85,7 +98,7 @@ To start the program
 ```
 
 ### Install
-Installation is currently not possible but will be available in the future. (You may look into my [arch package](https://github.com/D3S0X/soundboard-git) and figure it out for your distro)
+Automated Installation is currently not available but will be available in the future. (You may look into my [arch package](https://github.com/D3S0X/soundboard-git) and figure it out for your distro)
 
 # License
 The code is licensed under [GPLv3](LICENSE)
