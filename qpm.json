@@ -1,4 +1,14 @@
 {
+  "name": "Soundboard",
+  "description": "A universal soundboard in Qt for linux using pulseaudio modules",
+  "author": {
+    "name": "D3SOX"
+  },
+  "repository": {
+    "type": "GITHUB",
+    "url": "https://github.com/D3S0X/Soundboard.git"
+  },
+  "license": "GPL-3.0",
   "dependencies": [
     "de.skycoder42.qhotkey@1.2.2"
   ]
