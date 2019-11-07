@@ -230,7 +230,7 @@ void MainWindow::playSound(string path)
         bool canPlayMP3 = (system(mpg123Check.str().c_str()) == 0);
         if (!canPlayMP3)
         {
-            QMessageBox::critical(this, "", tr("Can't play mp3 file!\nmpg123 is not installed\nPlease install it and restart the program\n"), QMessageBox::Ok);
+            QMessageBox::critical(this, "", tr("Can't play mp3 file!\nmpg123 is not installed or not in the $PATH\nPlease install it and restart the program\n"), QMessageBox::Ok);
             return;
         }
     }
@@ -263,7 +263,7 @@ void MainWindow::playSound(string path)
             auto cmdForMe = "paplay --volume=" + to_string(ui->volumeSlider->value()) + " \"" + path + "\"";
             if (isMP3)
             {
-                cmdForMe = "mpg123 -o pulse -f " + to_string(ui->volumeSlider->value()) + " \"" + path + "\"";
+                cmdForMe = "mpg123 -o pulse -f " + to_string(ui->volumeSlider->value() / 2) + " \"" + path + "\"";
             }
             system(cmdForMe.c_str());
         });
@@ -271,15 +271,17 @@ void MainWindow::playSound(string path)
 
         auto forOthers = std::thread([=]() {
             ui->stopButton->setDisabled(false);
+            ui->volumeSlider->setDisabled(true);
             auto cmdForOthers = "paplay -d soundboard_sink --volume=" + to_string(ui->volumeSlider->value()) + " \"" + path + "\"";
             if (isMP3)
             {
-                cmdForOthers = "mpg123 -o pulse -a soundboard_sink -f " + to_string(ui->volumeSlider->value()) + " \"" + path + "\"";
+                cmdForOthers = "mpg123 -o pulse -a soundboard_sink -f " + to_string(ui->volumeSlider->value() / 2) + " \"" + path + "\"";
             }
             system(cmdForOthers.c_str());
             // Switch recording stream device back
             system(moveBack.c_str());
             ui->stopButton->setDisabled(true);
+            ui->volumeSlider->setDisabled(false);
             // Repeat when the check box is checked
             if (ui->repeatCheckBox->isChecked())
             {
@@ -374,6 +376,7 @@ void MainWindow::on_stopButton_clicked()
     system("killall mpg123");
     system("killall paplay");
     ui->stopButton->setDisabled(true);
+    ui->volumeSlider->setDisabled(false);
 }
 
 void MainWindow::on_addFolderButton_clicked()
