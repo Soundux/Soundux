@@ -32,6 +32,8 @@
 
 #include <qhotkey.h>
 #include <json.hpp>
+#include <settings.h>
+#include <sethotkeydialog.h>
 
 using namespace std;
 using json = nlohmann::json;
@@ -85,7 +87,7 @@ private:
     QListWidgetItem *getSelectedItem();
     QListWidget *createTab(QString title);
     void addSoundToView(QFile &file, QListWidget *widget);
-    void syncVolume();
+    void syncVolume(bool remote);
     void checkAndChangeVolume(PulseAudioPlaybackStream *stream, int value);
     void registerHotkey(QListWidgetItem* it, QString keys);
     void unregisterHotkey(QListWidgetItem* it);
@@ -103,6 +105,8 @@ private slots:
     void on_tabWidget_tabCloseRequested(int index);
     void on_tabWidget_tabBarDoubleClicked(int index);
     void on_addFolderButton_clicked();
-    void on_volumeSlider_valueChanged(int value);
+    void on_localVolumeSlider_valueChanged(int value);
+    void on_remoteVolumeSlider_valueChanged(int value);
+    void on_settingsButton_clicked();
 };
 #endif // MAINWINDOW_H

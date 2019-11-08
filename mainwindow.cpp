@@ -260,28 +260,30 @@ void MainWindow::playSound(string path)
         system(moveToSink.c_str());
 
         auto forMe = std::thread([=]() {
-            auto cmdForMe = "paplay --volume=" + to_string(ui->volumeSlider->value()) + " \"" + path + "\"";
+            ui->localVolumeSlider->setDisabled(true);
+            auto cmdForMe = "paplay --volume=" + to_string(ui->localVolumeSlider->value()) + " \"" + path + "\"";
             if (isMP3)
             {
-                cmdForMe = "mpg123 -o pulse -f " + to_string(ui->volumeSlider->value() / 2) + " \"" + path + "\"";
+                cmdForMe = "mpg123 -o pulse -f " + to_string(ui->localVolumeSlider->value() / 2) + " \"" + path + "\"";
             }
             system(cmdForMe.c_str());
+            ui->localVolumeSlider->setDisabled(false);
         });
         forMe.detach();
 
         auto forOthers = std::thread([=]() {
             ui->stopButton->setDisabled(false);
-            ui->volumeSlider->setDisabled(true);
-            auto cmdForOthers = "paplay -d soundboard_sink --volume=" + to_string(ui->volumeSlider->value()) + " \"" + path + "\"";
+            ui->remoteVolumeSlider->setDisabled(true);
+            auto cmdForOthers = "paplay -d soundboard_sink --volume=" + to_string(ui->remoteVolumeSlider->value()) + " \"" + path + "\"";
             if (isMP3)
             {
-                cmdForOthers = "mpg123 -o pulse -a soundboard_sink -f " + to_string(ui->volumeSlider->value() / 2) + " \"" + path + "\"";
+                cmdForOthers = "mpg123 -o pulse -a soundboard_sink -f " + to_string(ui->remoteVolumeSlider->value() / 2) + " \"" + path + "\"";
             }
             system(cmdForOthers.c_str());
             // Switch recording stream device back
             system(moveBack.c_str());
             ui->stopButton->setDisabled(true);
-            ui->volumeSlider->setDisabled(false);
+            ui->remoteVolumeSlider->setDisabled(false);
             // Repeat when the check box is checked
             if (ui->repeatCheckBox->isChecked())
             {
@@ -302,10 +304,22 @@ void MainWindow::checkAndChangeVolume(PulseAudioPlaybackStream *stream, int valu
     }
 }
 
-void MainWindow::syncVolume()
+void MainWindow::syncVolume(bool remote)
 {
     // Get volume from slider
-    int value = ui->volumeSlider->value();
+    int localValue = ui->localVolumeSlider->value();
+    int remoteValue = ui->remoteVolumeSlider->value();
+
+    if (ui->syncCheckBox->isChecked()) {
+        if (remote) {
+            ui->localVolumeSlider->setValue(remoteValue);
+        } else {
+            ui->remoteVolumeSlider->setValue(localValue);
+        }
+    }
+
+    // TODO: this is disabled until I find a good solution
+    /*
 
     char cmd[] = "pacmd list-sink-inputs";
     string result = getCommandOutput(cmd);
@@ -329,7 +343,7 @@ void MainWindow::syncVolume()
             {
                 if (current)
                 {
-                    checkAndChangeVolume(current, value);
+                    checkAndChangeVolume(current, localValue);
                 }
 
                 current = new PulseAudioPlaybackStream();
@@ -351,14 +365,20 @@ void MainWindow::syncVolume()
 
         result.erase(0, pos + delimiter.length());
     }
-    checkAndChangeVolume(current, value);
+    checkAndChangeVolume(current, localValue);
+    */
 }
 
 // Sync volume when the slider value has changed
-void MainWindow::on_volumeSlider_valueChanged(int value)
+void MainWindow::on_localVolumeSlider_valueChanged(int value)
 {
-    syncVolume();
+    syncVolume(false);
 }
+void MainWindow::on_remoteVolumeSlider_valueChanged(int value)
+{
+    syncVolume(true);
+}
+
 
 void MainWindow::on_refreshAppsButton_clicked()
 {
@@ -376,7 +396,8 @@ void MainWindow::on_stopButton_clicked()
     system("killall mpg123");
     system("killall paplay");
     ui->stopButton->setDisabled(true);
-    ui->volumeSlider->setDisabled(false);
+    ui->localVolumeSlider->setDisabled(false);
+    ui->remoteVolumeSlider->setDisabled(false);
 }
 
 void MainWindow::on_addFolderButton_clicked()
@@ -508,30 +529,24 @@ void MainWindow::on_setHotkeyButton_clicked()
     QListWidgetItem *it = getActiveView()->item(getActiveView()->currentRow());
     if (it)
     {
-        // TODO: Replace this with an automated user input
-        bool ok;
-        QString keys = QInputDialog::getText(this, "Bind", "Enter keys:", QLineEdit::Normal, it->data(1).toString(), &ok);
-        if (ok)
-        {
+        SetHotkeyDialog shd(this, it);
+        shd.exec();
 
-            if (!keys.isEmpty())
-            {
-                registerHotkey(it, keys);
-            }
-            else
-            {
-                unregisterHotkey(it);
-            }
-
-            saveSoundFiles();
+        if (!it->data(1).isNull()) {
+            registerHotkey(it, it->data(1).toString());
+        } else {
+            unregisterHotkey(it);
         }
+
+        saveSoundFiles();
     }
 }
 
-void MainWindow::registerHotkey(QListWidgetItem *it, QString keys)
+void MainWindow::registerHotkey(QListWidgetItem* it, QString keys)
 {
     // Unregister previous hotkey
     unregisterHotkey(it);
+
     it->setData(1, keys);
     auto neger = QKeySequence(keys);
 
@@ -714,4 +729,10 @@ void MainWindow::loadSoundFiles()
 
         fileIn.close();
     }
+}
+
+void MainWindow::on_settingsButton_clicked()
+{
+    SettingsDialog sd(this);
+    sd.exec();
 }

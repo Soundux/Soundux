@@ -21,7 +21,7 @@
    <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="appNameLabel">
     <property name="geometry">
      <rect>
       <x>88</x>
@@ -32,7 +32,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>-1</pointsize>
+      <pointsize>22</pointsize>
      </font>
     </property>
     <property name="text">
@@ -186,13 +186,13 @@
       <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
-   <widget class="QSlider" name="volumeSlider">
+   <widget class="QSlider" name="localVolumeSlider">
     <property name="geometry">
      <rect>
-      <x>231</x>
-      <y>104</y>
+      <x>290</x>
+      <y>90</y>
       <width>301</width>
-      <height>31</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="maximum">
@@ -205,17 +205,17 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="localVolumeLabel">
     <property name="geometry">
      <rect>
       <x>175</x>
-      <y>100</y>
-      <width>51</width>
+      <y>90</y>
+      <width>91</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>Volume</string>
+     <string>Local Volume</string>
     </property>
    </widget>
    <widget class="QTabWidget" name="tabWidget">
@@ -291,8 +291,71 @@
      <string>Set Hotkey</string>
     </property>
     <property name="icon">
-     <iconset theme="applet_lockkeys">
-      <normaloff>.</normaloff>.</iconset>
+     <iconset theme="input-keyboard-symbolic"/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="settingsButton">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>460</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Settings</string>
+    </property>
+    <property name="icon">
+     <iconset theme="preferences-system-symbolic"/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="remoteVolumeLabel">
+    <property name="geometry">
+     <rect>
+      <x>175</x>
+      <y>120</y>
+      <width>101</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Remote Volume</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="remoteVolumeSlider">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>120</y>
+      <width>301</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>65536</number>
+    </property>
+    <property name="value">
+     <number>65536</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="syncCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>105</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Sync</string>
+    </property>
+    <property name="icon">
+     <iconset theme="insert-link-symbolic"/>
     </property>
    </widget>
   </widget>

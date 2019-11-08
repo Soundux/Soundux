@@ -19,13 +19,19 @@ include(vendor/de/skycoder42/qhotkey/qhotkey.pri)
 
 SOURCES += \
     RunGuard.cpp \
+    customkeysequenceedit.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    sethotkeydialog.cpp \
+    settings.cpp
 
 HEADERS += \
     RunGuard.h \
+    customkeysequenceedit.h \
     mainwindow.h \
-    json.hpp
+    json.hpp \
+    sethotkeydialog.h \
+    settings.h
 
 FORMS += \
     mainwindow.ui
