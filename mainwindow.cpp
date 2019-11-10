@@ -207,7 +207,7 @@ void MainWindow::addSoundToView(QFile &file, QListWidget *widget)
     }
 
     auto item = new SoundListWidgetItem();
-    item->setText(fileInfo.baseName());
+    item->setText(fileInfo.completeBaseName());
     item->setToolTip(fileInfo.absoluteFilePath());
     widget->addItem(item);
 }
