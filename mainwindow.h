@@ -1,6 +1,5 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -32,8 +31,12 @@
 
 #include <qhotkey.h>
 #include <json.hpp>
+#include <soundplayback.h>
 #include <settings.h>
 #include <sethotkeydialog.h>
+
+class SoundPlayback;
+class SettingsDialog;
 
 using namespace std;
 using json = nlohmann::json;
@@ -45,50 +48,28 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-struct PulseAudioRecordingStream
-{
-    int index;
-    string driver;
-    string flags;
-    string state;
-    string source;
-    bool muted;
-    string applicationName;
-    int processId;
-    string processBinary;
-};
-
-struct PulseAudioPlaybackStream
-{
-    int index;
-    string applicationName;
-};
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    SoundPlayback *soundPlayback;
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void closeEvent(QCloseEvent *event);
 
 private:
     Ui::MainWindow *ui;
+    SettingsDialog *settingsDialog;
 
-    bool isValidDevice(PulseAudioRecordingStream *stream);
-    bool loadSources();
-    void playSound(string path);
     void clearSoundFiles();
     void saveSoundFiles();
     void loadSoundFiles();
-    string getCommandOutput(char cmd[]);
     QListWidget *getActiveView();
     QListWidgetItem *getSelectedItem();
     QListWidget *createTab(QString title);
     void addSoundToView(QFile &file, QListWidget *widget);
     void syncVolume(bool remote);
-    void checkAndChangeVolume(PulseAudioPlaybackStream *stream, int value);
     void registerHotkey(QListWidgetItem* it, QString keys);
     void unregisterHotkey(QListWidgetItem* it);
 
