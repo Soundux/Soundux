@@ -13,10 +13,12 @@
 #include <QListWidgetItem>
 #include <QKeySequenceEdit>
 #include <QVBoxLayout>
+#include <QPushButton>
 #include <QDialogButtonBox>
 #include <QLabel>
 
 #include <customkeysequenceedit.h>
+#include <soundlistwidgetitem.h>
 
 using namespace std;
 
@@ -25,14 +27,15 @@ class SetHotkeyDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SetHotkeyDialog(QWidget *parent = nullptr, QListWidgetItem* item = nullptr);
+    explicit SetHotkeyDialog(QWidget *parent = nullptr, SoundListWidgetItem* item = nullptr);
 
 private slots:
     virtual void accept() override;
     virtual void truncateShortcut();
+    void on_clearButton_pressed();
 
 private:
-    QListWidgetItem* item;
+    SoundListWidgetItem* item;
     CustomKeySequenceEdit* edit;
 };
 

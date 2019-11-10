@@ -20,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->tabWidget->setMovable(true);
     ui->stopButton->setDisabled(true);
 
+    ui->remoteVolumeSlider->setStyle(new ClickableSliderStyle(ui->remoteVolumeSlider->style()));
+    ui->localVolumeSlider->setStyle(new ClickableSliderStyle(ui->localVolumeSlider->style()));
+
     // Set the config variables
     configFolder = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0].toStdString() + "/" + windowTitle().toStdString();
     if (!filesystem::exists(configFolder))
@@ -203,7 +206,7 @@ void MainWindow::addSoundToView(QFile &file, QListWidget *widget)
         }
     }
 
-    auto item = new QListWidgetItem();
+    auto item = new SoundListWidgetItem();
     item->setText(fileInfo.baseName());
     item->setToolTip(fileInfo.absoluteFilePath());
     widget->addItem(item);
@@ -244,9 +247,10 @@ void MainWindow::on_removeSoundButton_clicked()
 {
     if (getActiveView())
     {
-        QListWidgetItem *it = getActiveView()->takeItem(getActiveView()->currentRow());
+        SoundListWidgetItem *it = getSelectedItem();
         if (it)
         {
+            unregisterHotkey(it);
             delete it;
             saveSoundFiles();
         }
@@ -266,18 +270,18 @@ void MainWindow::on_clearSoundsButton_clicked()
     }
 }
 
-QListWidgetItem *MainWindow::getSelectedItem()
+SoundListWidgetItem *MainWindow::getSelectedItem()
 {
     if (getActiveView())
     {
-        return getActiveView()->item(getActiveView()->currentRow());
+        return (SoundListWidgetItem*) getActiveView()->item(getActiveView()->currentRow());
     }
     return nullptr;
 }
 
 void MainWindow::on_playSoundButton_clicked()
 {
-    QListWidgetItem *it = getActiveView()->item(getActiveView()->currentRow());
+    SoundListWidgetItem *it = getSelectedItem();
     if (it)
     {
         soundPlayback->playSound(it->toolTip().toStdString());
@@ -297,14 +301,14 @@ void MainWindow::on_addTabButton_clicked()
 
 void MainWindow::on_setHotkeyButton_clicked()
 {
-    QListWidgetItem *it = getActiveView()->item(getActiveView()->currentRow());
+    SoundListWidgetItem *it = getSelectedItem();
     if (it)
     {
         SetHotkeyDialog shd(this, it);
         shd.exec();
 
-        if (!it->data(1).isNull()) {
-            registerHotkey(it, it->data(1).toString());
+        if (!it->hotkey.isNull()) {
+            registerHotkey(it, it->hotkey.toString());
         } else {
             unregisterHotkey(it);
         }
@@ -313,12 +317,12 @@ void MainWindow::on_setHotkeyButton_clicked()
     }
 }
 
-void MainWindow::registerHotkey(QListWidgetItem* it, QString keys)
+void MainWindow::registerHotkey(SoundListWidgetItem* it, QString keys)
 {
     // Unregister previous hotkey
     unregisterHotkey(it);
 
-    it->setData(1, keys);
+    it->setHotkey(keys);
     auto neger = QKeySequence(keys);
 
     auto hotkey = new QHotkey(QKeySequence(keys), true, this);
@@ -353,9 +357,9 @@ bool caseInSensStringCompare(string &str1, string &str2)
             equal(str1.begin(), str1.end(), str2.begin(), &compareChar));
 }
 
-void MainWindow::unregisterHotkey(QListWidgetItem *it)
+void MainWindow::unregisterHotkey(SoundListWidgetItem *it)
 {
-    auto previousHotkey = it->data(1);
+    auto previousHotkey = it->hotkey;
     if (!previousHotkey.isNull())
     {
         auto previousHotkeyStr = previousHotkey.toString().toStdString();
@@ -370,7 +374,7 @@ void MainWindow::unregisterHotkey(QListWidgetItem *it)
         }
 
         // Reset Data
-        it->setData(1, QVariant());
+        it->setHotkey(QVariant());
     }
 }
 
@@ -432,16 +436,17 @@ void MainWindow::saveSoundFiles()
         json tabJson;
         json tabJsonSounds = json::array();
 
-        for (QListWidgetItem *item : listWidget->findItems("*", Qt::MatchWildcard))
+        for (auto *_item : listWidget->findItems("*", Qt::MatchWildcard))
         {
+            auto item = (SoundListWidgetItem*) _item;
             json j;
             j["name"] = item->text().toStdString();
             j["path"] = item->toolTip().toStdString();
 
-            auto hotkey = item->data(1);
+            auto hotkey = item->hotkey;
             if (!hotkey.isNull())
             {
-                auto hotkeyStr = item->data(1).toString().toStdString();
+                auto hotkeyStr = hotkey.toString().toStdString();
                 j["hotkey"] = hotkeyStr;
             }
 
@@ -483,7 +488,7 @@ void MainWindow::loadSoundFiles()
                     auto soundPath = _child["path"];
                     remove(soundPath.begin(), soundPath.end(), '"');
 
-                    auto item = new QListWidgetItem();
+                    auto item = new SoundListWidgetItem();
                     item->setText(QString::fromStdString(soundName));
                     item->setToolTip(QString::fromStdString(soundPath));
 

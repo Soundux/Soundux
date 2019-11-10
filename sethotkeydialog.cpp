@@ -1,6 +1,6 @@
 #include "sethotkeydialog.h"
 
-SetHotkeyDialog::SetHotkeyDialog(QWidget *parent, QListWidgetItem* item) :
+SetHotkeyDialog::SetHotkeyDialog(QWidget *parent, SoundListWidgetItem* item) :
     QDialog(parent)
 {
     this->item = item;
@@ -20,12 +20,16 @@ SetHotkeyDialog::SetHotkeyDialog(QWidget *parent, QListWidgetItem* item) :
     layout->addWidget(infoLabel);
 
     edit = new CustomKeySequenceEdit();
-    auto current = item->data(1).toString();
+    auto current = item->hotkey.toString();
     if (!current.isNull()) {
         edit->setKeySequence(QKeySequence(current));
     }
 
     layout->addWidget(edit);
+
+    QPushButton* clearButton = new QPushButton("Clear", this);
+    layout->addWidget(clearButton);
+    connect(clearButton, SIGNAL(pressed()), this, SLOT(on_clearButton_pressed()));
 
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
@@ -48,12 +52,17 @@ void SetHotkeyDialog::truncateShortcut()
     edit->setKeySequence(shortcut);
 }
 
+void SetHotkeyDialog::on_clearButton_pressed()
+{
+    edit->clear();
+}
+
 void SetHotkeyDialog::accept()
 {
     if (edit->keySequence().isEmpty()) {
-        item->setData(1, QVariant());
+        item->setHotkey(QVariant());
     } else {
-        item->setData(1, edit->keySequence().toString());
+        item->setHotkey(edit->keySequence().toString());
     }
     QDialog::accept();
 }

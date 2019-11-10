@@ -38,6 +38,15 @@ SettingsDialog::SettingsDialog(QWidget *parent, string configFolder, SoundPlayba
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
+void SettingsDialog::reject()
+{
+    foreach (SettingsTab* tab, tabs_) {
+        tab->reset();
+    }
+
+    QDialog::reject();
+}
+
 void SettingsDialog::accept()
 {
     json jsonTabs;

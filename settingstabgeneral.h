@@ -21,14 +21,17 @@ class SettingsTabGeneral : public SettingsTab
 public:
     explicit SettingsTabGeneral(json _data, SoundPlayback* soundPlayback);
     virtual json tabSettings() override;
+    virtual void reset() override;
 
 private:
   QComboBox* languageSelection;
   CustomKeySequenceEdit* stopHotkey;
+  QComboBox* themeSelection;
   SoundPlayback* soundPlayback;
   QHotkey* hotkeyStop = nullptr;
 
   void updateStopHotkey();
+  void updateTheme();
 };
 
 #endif // SETTINGSTABGENERAL_H

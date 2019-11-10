@@ -54,7 +54,7 @@
      <rect>
       <x>640</x>
       <y>14</y>
-      <width>121</width>
+      <width>131</width>
       <height>20</height>
      </rect>
     </property>
@@ -210,7 +210,7 @@
      <rect>
       <x>175</x>
       <y>90</y>
-      <width>91</width>
+      <width>101</width>
       <height>21</height>
      </rect>
     </property>
@@ -291,7 +291,8 @@
      <string>Set Hotkey</string>
     </property>
     <property name="icon">
-     <iconset theme="input-keyboard-symbolic"/>
+     <iconset theme="input-keyboard-symbolic">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QPushButton" name="settingsButton">
@@ -307,7 +308,8 @@
      <string>Settings</string>
     </property>
     <property name="icon">
-     <iconset theme="preferences-system-symbolic"/>
+     <iconset theme="preferences-system-symbolic">
+      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QLabel" name="remoteVolumeLabel">
@@ -315,7 +317,7 @@
      <rect>
       <x>175</x>
       <y>120</y>
-      <width>101</width>
+      <width>111</width>
       <height>21</height>
      </rect>
     </property>
@@ -355,7 +357,11 @@
      <string>Sync</string>
     </property>
     <property name="icon">
-     <iconset theme="insert-link-symbolic"/>
+     <iconset theme="insert-link-symbolic">
+      <normaloff>.</normaloff>.</iconset>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

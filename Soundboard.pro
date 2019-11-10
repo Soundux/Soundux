@@ -19,6 +19,7 @@ include(vendor/de/skycoder42/qhotkey/qhotkey.pri)
 
 SOURCES += \
     RunGuard.cpp \
+    soundlistwidgetitem.cpp \
     soundplayback.cpp \
     customkeysequenceedit.cpp \
     main.cpp \
@@ -30,6 +31,8 @@ SOURCES += \
 
 HEADERS += \
     RunGuard.h \
+    clickablesliderstyle.h \
+    soundlistwidgetitem.h \
     soundplayback.h \
     customkeysequenceedit.h \
     mainwindow.h \
@@ -43,7 +46,8 @@ FORMS += \
     mainwindow.ui
 
 RESOURCES += \
-    resources.qrc
+    resources.qrc \
+    qdarkstyle/style.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

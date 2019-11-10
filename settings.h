@@ -39,6 +39,7 @@ public:
 
 private slots:
     virtual void accept() override;
+    virtual void reject() override;
 
 private:
     void AddTab(SettingsTab* tab, const QString& title);

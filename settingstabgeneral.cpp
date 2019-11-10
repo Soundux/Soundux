@@ -25,6 +25,19 @@ SettingsTabGeneral::SettingsTabGeneral(json _data, SoundPlayback* soundPlayback)
     stopHotkey = new CustomKeySequenceEdit(this);
     general_layout->addWidget(stopHotkey, row, 1);
 
+    row++;
+
+    general_layout->addWidget(new QLabel(tr("Theme:")), row, 0);
+    themeSelection = new QComboBox();
+    themeSelection->addItem("System");
+    themeSelection->addItem("Dark");
+    general_layout->addWidget(themeSelection, row, 1);
+
+    reset();
+}
+
+void SettingsTabGeneral::reset()
+{
     if (this->data != nullptr) {
        if (this->data.contains("language")) {
            languageSelection->setCurrentText(QString::fromStdString(this->data["language"].get<std::string>()));
@@ -33,8 +46,11 @@ SettingsTabGeneral::SettingsTabGeneral(json _data, SoundPlayback* soundPlayback)
            stopHotkey->setKeySequence(QKeySequence(QString::fromStdString(this->data["stopHotkey"].get<std::string>())));
            updateStopHotkey();
        }
+       if (this->data.contains("theme")) {
+           themeSelection->setCurrentText(QString::fromStdString(this->data["theme"].get<std::string>()));
+           updateTheme();
+       }
     }
-
 }
 
 void SettingsTabGeneral::updateStopHotkey()
@@ -60,13 +76,37 @@ void SettingsTabGeneral::updateStopHotkey()
     }
 }
 
+void SettingsTabGeneral::updateTheme()
+{
+    if(themeSelection->currentIndex() == 0) {
+        qApp->setPalette(qApp->style()->standardPalette());
+        qApp->setStyleSheet(QString());
+    } else if (themeSelection->currentIndex() == 1) {
+
+        QFile f(":qdarkstyle/style.qss");
+        if (!f.exists())
+        {
+            printf("Unable to set stylesheet, file not found\n");
+        }
+        else
+        {
+            f.open(QFile::ReadOnly | QFile::Text);
+            QTextStream ts(&f);
+            qApp->setStyleSheet(ts.readAll());
+        }
+
+    }
+}
+
 json SettingsTabGeneral::tabSettings()
 {
     json j;
     j["language"] = languageSelection->currentText().toStdString();
     j["stopHotkey"] = stopHotkey->keySequence().toString().toStdString();
+    j["theme"] = themeSelection->currentText().toStdString();
 
     updateStopHotkey();
+    updateTheme();
 
     this->data = j;
     return j;

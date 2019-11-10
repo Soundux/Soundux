@@ -208,7 +208,7 @@ void SoundPlayback::playSound(string path)
         }
     }
 
-    if (selected)
+    if (selected != nullptr)
     {
         int index = selected->index;
         string source = selected->source;

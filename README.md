@@ -68,7 +68,7 @@ This list may be not accurate. Contact me if you find missing dependencies that 
 
 ### Install dependencies for Ubuntu and derivatives (Thanks to @Tibladar)
 ```sh
-sudo apt install git go qt5-default libqt5x11extras5-dev mpg123
+sudo apt install git golang-go qt5-default libqt5x11extras5-dev mpg123
 go get qpm.io/qpm
 ```
 

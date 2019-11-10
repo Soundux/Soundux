@@ -13,6 +13,7 @@ public:
   std::string name;
   json data = nullptr;
   virtual json tabSettings() = 0;
+  virtual void reset() = 0;
 };
 
 #endif // SETTINGSTAB_H
