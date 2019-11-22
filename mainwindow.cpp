@@ -305,15 +305,18 @@ void MainWindow::on_setHotkeyButton_clicked()
     if (it)
     {
         SetHotkeyDialog shd(this, it);
-        shd.exec();
-        auto given = shd.getSequence();
-        if (!given.isNull()) {
-            registerHotkey(it, given.toString());
-        } else {
-            unregisterHotkey(it);
-        }
+        auto clicked = shd.exec();
+        if (clicked == 1)
+        {
+            auto given = shd.getSequence();
+            if (!given.isNull()) {
+                registerHotkey(it, given.toString());
+            } else {
+                unregisterHotkey(it);
+            }
 
-        saveSoundFiles();
+            saveSoundFiles();
+        }
     }
 }
 
