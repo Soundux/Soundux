@@ -6,6 +6,7 @@ CustomKeySequenceEdit::CustomKeySequenceEdit(QWidget *parent) : QKeySequenceEdit
 
 CustomKeySequenceEdit::~CustomKeySequenceEdit() { }
 
+// Thanks to https://stackoverflow.com/a/38424451
 void CustomKeySequenceEdit::keyPressEvent(QKeyEvent *pEvent)
 {
     QKeySequenceEdit::keyPressEvent(pEvent);

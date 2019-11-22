@@ -28,10 +28,9 @@ class SetHotkeyDialog : public QDialog
 
 public:
     explicit SetHotkeyDialog(QWidget *parent = nullptr, SoundListWidgetItem* item = nullptr);
+    QVariant getSequence();
 
 private slots:
-    virtual void accept() override;
-    virtual void truncateShortcut();
     void on_clearButton_pressed();
 
 private:

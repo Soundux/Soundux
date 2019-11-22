@@ -306,9 +306,9 @@ void MainWindow::on_setHotkeyButton_clicked()
     {
         SetHotkeyDialog shd(this, it);
         shd.exec();
-
-        if (!it->hotkey.isNull()) {
-            registerHotkey(it, it->hotkey.toString());
+        auto given = shd.getSequence();
+        if (!given.isNull()) {
+            registerHotkey(it, given.toString());
         } else {
             unregisterHotkey(it);
         }
@@ -323,6 +323,7 @@ void MainWindow::registerHotkey(SoundListWidgetItem* it, QString keys)
     unregisterHotkey(it);
 
     it->setHotkey(keys);
+    cout << "register " << keys.toStdString() << endl;
     auto neger = QKeySequence(keys);
 
     auto hotkey = new QHotkey(QKeySequence(keys), true, this);
@@ -363,6 +364,7 @@ void MainWindow::unregisterHotkey(SoundListWidgetItem *it)
     if (!previousHotkey.isNull())
     {
         auto previousHotkeyStr = previousHotkey.toString().toStdString();
+        cout << "unregister " << previousHotkeyStr << endl;
 
         for (QHotkey *hotkey : hotkeys)
         {

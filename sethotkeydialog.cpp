@@ -40,16 +40,6 @@ SetHotkeyDialog::SetHotkeyDialog(QWidget *parent, SoundListWidgetItem* item) :
 
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-
-    //connect(edit, SIGNAL(editingFinished()), this, SLOT(truncateShortcut()));
-}
-
-// Thanks to https://stackoverflow.com/a/38424451
-void SetHotkeyDialog::truncateShortcut()
-{
-    int value = edit->keySequence()[0];
-    QKeySequence shortcut(value);
-    edit->setKeySequence(shortcut);
 }
 
 void SetHotkeyDialog::on_clearButton_pressed()
@@ -57,12 +47,12 @@ void SetHotkeyDialog::on_clearButton_pressed()
     edit->clear();
 }
 
-void SetHotkeyDialog::accept()
+QVariant SetHotkeyDialog::getSequence()
 {
     if (edit->keySequence().isEmpty()) {
-        item->setHotkey(QVariant());
+        return QVariant();
     } else {
-        item->setHotkey(edit->keySequence().toString());
+        return edit->keySequence().toString();
     }
-    QDialog::accept();
 }
+
