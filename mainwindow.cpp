@@ -1,12 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-/*
- *
- * TODO: Find another way how to play it for myself and others (maybe just loopback the default output to the sink monitor)
- *
-*/
-
 static vector<QHotkey *> hotkeys;
 
 static string configFolder;
@@ -38,15 +32,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Disable resizing
     this->setFixedSize(this->width(), this->height());
 
+    // We unload the modules first to remove any possible leftovers
     //TODO: Only remove modules created by Soundboard
     system("pacmd unload-module module-null-sink");
     system("pacmd unload-module module-loopback");
 
     // Create null sink
     system("pacmd load-module module-null-sink sink_name=soundboard_sink sink_properties=device.description=Soundboard-Sink");
-
-    // Create loopback for output devices (so that you can hear it)
-    //system("pacmd load-module module-loopback source=\"soundboard_sink.monitor\"");
 
     // get default input device
     string defaultInput = "";
@@ -67,6 +59,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     loadSoundFiles();
     soundPlayback->loadSources();
+
+    // we need to update the buttons if the program starts because the first tab may be a directory tab
+    this->on_tabWidget_currentChanged(0);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -178,6 +173,8 @@ void MainWindow::on_addFolderButton_clicked()
         QDir directory(selectedFolder);
         QFileInfo fileInfo(selectedFolder);
         auto created = createTab(fileInfo.fileName());
+
+        created->directory = directory.absolutePath().toStdString();
 
         QStringList files = directory.entryList({"*.mp3", "*.wav", "*.ogg"}, QDir::Files);
         for (auto fileName : files)
@@ -404,9 +401,9 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
     }
 }
 
-QListWidget *MainWindow::createTab(QString title)
+QSoundsList *MainWindow::createTab(QString title)
 {
-    auto soundsListWidget = new QListWidget();
+    auto soundsListWidget = new QSoundsList();
     soundsListWidget->setObjectName(title);
     connect(soundsListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(on_soundsListWidget_itemDoubleClicked(QListWidgetItem *)));
     ui->tabWidget->addTab(soundsListWidget, title);
@@ -424,9 +421,9 @@ void MainWindow::clearSoundFiles()
     }
 }
 
-QListWidget *MainWindow::getActiveView()
+QSoundsList *MainWindow::getActiveView()
 {
-    return (QListWidget *)ui->tabWidget->widget(ui->tabWidget->currentIndex());
+    return (QSoundsList *)ui->tabWidget->widget(ui->tabWidget->currentIndex());
 }
 
 void MainWindow::saveSoundFiles()
@@ -436,29 +433,35 @@ void MainWindow::saveSoundFiles()
     for (auto i = 0; i < ui->tabWidget->count(); i++)
     {
         auto title = ui->tabWidget->tabText(i).toStdString();
-        QListWidget *listWidget = (QListWidget *)ui->tabWidget->widget(i);
+        QSoundsList *listWidget = (QSoundsList *)ui->tabWidget->widget(i);
 
         json tabJson;
-        json tabJsonSounds = json::array();
 
-        for (auto *_item : listWidget->findItems("*", Qt::MatchWildcard))
-        {
-            auto item = (SoundListWidgetItem*) _item;
-            json j;
-            j["name"] = item->text().toStdString();
-            j["path"] = item->toolTip().toStdString();
+        // if it is a directory we just save the path and update the sounds from there later
+        if (listWidget->directory.length() > 0) {
+            tabJson[title] = listWidget->directory;
+        } else {
+            json tabJsonSounds = json::array();
 
-            auto hotkey = item->hotkey;
-            if (!hotkey.isNull())
+            for (auto *_item : listWidget->findItems("*", Qt::MatchWildcard))
             {
-                auto hotkeyStr = hotkey.toString().toStdString();
-                j["hotkey"] = hotkeyStr;
+                auto item = (SoundListWidgetItem*) _item;
+                json j;
+                j["name"] = item->text().toStdString();
+                j["path"] = item->toolTip().toStdString();
+
+                auto hotkey = item->hotkey;
+                if (!hotkey.isNull())
+                {
+                    auto hotkeyStr = hotkey.toString().toStdString();
+                    j["hotkey"] = hotkeyStr;
+                }
+
+                tabJsonSounds.push_back(j);
             }
 
-            tabJsonSounds.push_back(j);
+            tabJson[title] = tabJsonSounds;
         }
-
-        tabJson[title] = tabJsonSounds;
         jsonTabs.push_back(tabJson);
     }
 
@@ -486,28 +489,55 @@ void MainWindow::loadSoundFiles()
 
                 auto soundsListWidget = createTab(tabName);
 
-                auto childItems = object.value().get<vector<json>>();
-                for (auto _child : childItems)
-                {
-                    auto soundName = _child["name"];
-                    auto soundPath = _child["path"];
-                    remove(soundPath.begin(), soundPath.end(), '"');
+                if (strcmp(object.value().type_name(), "array") == 0) {
 
-                    auto item = new SoundListWidgetItem();
-                    item->setText(QString::fromStdString(soundName));
-                    item->setToolTip(QString::fromStdString(soundPath));
-
-                    auto soundHotkey = _child["hotkey"];
-                    if (!soundHotkey.is_null())
+                    auto childItems = object.value().get<vector<json>>();
+                    for (auto _child : childItems)
                     {
-                        // Set hotkey back
-                        registerHotkey(item, QString::fromStdString(soundHotkey));
+                        auto soundName = _child["name"];
+                        auto soundPath = _child["path"];
+                        remove(soundPath.begin(), soundPath.end(), '"');
+
+                        auto item = new SoundListWidgetItem();
+                        item->setText(QString::fromStdString(soundName));
+                        item->setToolTip(QString::fromStdString(soundPath));
+
+                        auto soundHotkey = _child["hotkey"];
+                        if (!soundHotkey.is_null())
+                        {
+                            // Set hotkey back
+                            registerHotkey(item, QString::fromStdString(soundHotkey));
+                        }
+                        soundsListWidget->addItem(item);
                     }
-                    soundsListWidget->addItem(item);
+
+                } else if (strcmp(object.value().type_name(), "string") == 0) {
+                    // it is a directory category so we update add the files from the directory
+                    string directoryPath = object.value();
+                    soundsListWidget->directory = directoryPath;
+
+                    QDir directory(QString::fromStdString(directoryPath));
+
+                    QStringList files = directory.entryList({"*.mp3", "*.wav", "*.ogg"}, QDir::Files);
+                    for (auto fileName : files)
+                    {
+                        QFile file(directory.absoluteFilePath(fileName));
+                        addSoundToView(file, soundsListWidget);
+                    }
+
                 }
             }
         }
 
         fileIn.close();
     }
+}
+
+// we need this to update the remove/add/clear/refresh button if the tab switched to is a directory tab or not
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    QSoundsList* switchedTo = (QSoundsList *)ui->tabWidget->widget(index);
+    this->ui->addSoundButton->setEnabled(switchedTo->directory.length() <= 0);
+    this->ui->removeSoundButton->setEnabled(switchedTo->directory.length() <= 0);
+    this->ui->clearSoundsButton->setEnabled(switchedTo->directory.length() <= 0);
 }

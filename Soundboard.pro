@@ -19,6 +19,7 @@ include(vendor/de/skycoder42/qhotkey/qhotkey.pri)
 
 SOURCES += \
     RunGuard.cpp \
+    qsoundslist.cpp \
     soundlistwidgetitem.cpp \
     soundplayback.cpp \
     customkeysequenceedit.cpp \
@@ -32,6 +33,7 @@ SOURCES += \
 HEADERS += \
     RunGuard.h \
     clickablesliderstyle.h \
+    qsoundslist.h \
     soundlistwidgetitem.h \
     soundplayback.h \
     customkeysequenceedit.h \

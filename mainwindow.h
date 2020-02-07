@@ -36,6 +36,7 @@
 #include <sethotkeydialog.h>
 #include <clickablesliderstyle.h>
 #include <soundlistwidgetitem.h>
+#include <qsoundslist.h>
 
 class SoundPlayback;
 class SettingsDialog;
@@ -67,9 +68,9 @@ private:
     void clearSoundFiles();
     void saveSoundFiles();
     void loadSoundFiles();
-    QListWidget *getActiveView();
+    QSoundsList *getActiveView();
     SoundListWidgetItem *getSelectedItem();
-    QListWidget *createTab(QString title);
+    QSoundsList *createTab(QString title);
     void addSoundToView(QFile &file, QListWidget *widget);
     void syncVolume(bool remote);
     void registerHotkey(SoundListWidgetItem* it, QString keys);
@@ -91,5 +92,6 @@ private slots:
     void on_localVolumeSlider_valueChanged(int value);
     void on_remoteVolumeSlider_valueChanged(int value);
     void on_settingsButton_clicked();
+    void on_tabWidget_currentChanged(int index);
 };
 #endif // MAINWINDOW_H
