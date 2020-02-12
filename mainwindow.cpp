@@ -537,7 +537,9 @@ void MainWindow::loadSoundFiles()
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
     QSoundsList* switchedTo = (QSoundsList *)ui->tabWidget->widget(index);
-    this->ui->addSoundButton->setEnabled(switchedTo->directory.length() <= 0);
-    this->ui->removeSoundButton->setEnabled(switchedTo->directory.length() <= 0);
-    this->ui->clearSoundsButton->setEnabled(switchedTo->directory.length() <= 0);
+    if (switchedTo) {
+        this->ui->addSoundButton->setEnabled(switchedTo->directory.length() <= 0);
+        this->ui->removeSoundButton->setEnabled(switchedTo->directory.length() <= 0);
+        this->ui->clearSoundsButton->setEnabled(switchedTo->directory.length() <= 0);
+    }
 }
