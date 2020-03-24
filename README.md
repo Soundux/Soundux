@@ -65,19 +65,6 @@ This list may be not accurate. Contact me if you find missing dependencies that 
 sudo apt install git golang-go qt5-default libqt5x11extras5-dev mpg123
 go get qpm.io/qpm
 ```
-Please check your gcc version before compiling
-```sh
-gcc --version
-```
-It needs to be >= 8. if not update it
-```sh
-sudo apt install gcc-8
-sudo ln -sf /usr/bin/gcc-8 /usr/bin/gcc
-```
-You can revert back to gcc 7 afterwards
-```sh
-sudo ln -sf /usr/bin/gcc-7 /usr/bin/gcc
-```
 
 ### Build
 Clone the repository
