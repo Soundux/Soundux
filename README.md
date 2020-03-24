@@ -65,6 +65,19 @@ This list may be not accurate. Contact me if you find missing dependencies that 
 sudo apt install git golang-go qt5-default libqt5x11extras5-dev mpg123
 go get qpm.io/qpm
 ```
+Please check your gcc version before compiling
+```sh
+gcc --version
+```
+It needs to be >= 8. if not update it
+```sh
+sudo apt install gcc-8
+sudo ln -sf /usr/bin/gcc-8 /usr/bin/gcc
+```
+You can revert back to gcc 7 afterwards
+```sh
+sudo ln -sf /usr/bin/gcc-7 /usr/bin/gcc
+```
 
 ### Build
 Clone the repository
@@ -99,6 +112,9 @@ The code is licensed under [GPLv3](LICENSE)
 
 # TODO
 - [ ] Find a fancy name
+- [ ] Refresh button for folder tabs
+- [ ] Playlist mode (play sounds one after another)
+- [ ] CTRL+Q to quit
 - [ ] Create an own logo
 - [ ] Play sounds while another sound is playing
 - [ ] Organize code
