@@ -19,10 +19,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     // Set the config variables
     configFolder = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)[0].toStdString() + "/" + windowTitle().toStdString();
-    if (!filesystem::exists(configFolder))
-    {
-        filesystem::create_directory(configFolder);
+
+    // Create config folder
+    QString configFolderQ = QString::fromStdString(configFolder);
+    QDir dir;
+    QFile configFolderFile(configFolderQ);
+    if (!configFolderFile.exists()) {
+        dir.mkdir(configFolderQ);
     }
+    
     soundFilesConfig = configFolder + "/sounds.json";
 
     soundPlayback = new SoundPlayback(this, ui);
