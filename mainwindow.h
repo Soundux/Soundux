@@ -27,6 +27,7 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QTimer>
+#include <QShortcut>
 
 #include <qhotkey.h>
 #include <json.hpp>
@@ -70,12 +71,14 @@ private:
     QSoundsList *getActiveView();
     SoundListWidgetItem *getSelectedItem();
     QSoundsList *createTab(QString title);
+    void addSoundsToView(QSoundsList *soundsListWidget);
     void addSoundToView(QFile &file, QListWidget *widget);
     void syncVolume(bool remote);
     void registerHotkey(SoundListWidgetItem* it, QString keys);
     void unregisterHotkey(SoundListWidgetItem* it);
 
 private slots:
+    void slotShortcutCtrlQ();
     void on_addTabButton_clicked();
     void on_soundsListWidget_itemDoubleClicked(QListWidgetItem *listWidgetItem);
     void on_refreshAppsButton_clicked();
@@ -88,6 +91,7 @@ private slots:
     void on_tabWidget_tabCloseRequested(int index);
     void on_tabWidget_tabBarDoubleClicked(int index);
     void on_addFolderButton_clicked();
+    void on_refreshFolderButton_clicked();
     void on_localVolumeSlider_valueChanged(int value);
     void on_remoteVolumeSlider_valueChanged(int value);
     void on_settingsButton_clicked();

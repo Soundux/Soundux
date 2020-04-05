@@ -5,7 +5,7 @@
         <img src="icon.jpg" width="50" alt="Soundboard" />
       </a>
       <br />
-      Soundboard
+      Soundux
     </h1>
     <h4>A universal soundboard in Qt for linux using pulseaudio modules</h4>
   </p>
@@ -47,8 +47,8 @@ Please refer your distro instructions for how to install them
 ## Arch Linux and derivatives
 You can use my package which will automatically compile and install the master branch
 ```sh
-git clone https://github.com/D3S0X/soundboard-git.git
-cd soundboard-git
+git clone https://github.com/D3S0X/soundux-git.git
+cd soundux-git
 makepkg -si
 ```
 
@@ -69,8 +69,8 @@ go get qpm.io/qpm
 ### Build
 Clone the repository
 ```sh
-git clone https://github.com/D3S0X/Soundboard.git
-cd Soundboard
+git clone https://github.com/D3S0X/Soundux.git
+cd Soundux
 ```
 Install dependencies
 ```sh
@@ -88,21 +88,19 @@ make
 ```
 To start the program
 ```sh
-./Soundboard
+./Soundux
 ```
 
 ### Install
-Automated Installation is currently not available but will be available in the future. (You may look into my [arch package](https://github.com/D3S0X/soundboard-git) and figure it out for your distro)
+Automated Installation is currently not available but will be available in the future. (You may look into my [arch package](https://github.com/D3S0X/soundux-git) and figure it out for your distro)
 
 # License
 The code is licensed under [GPLv3](LICENSE)
 
 # TODO
-- [ ] Find a fancy name
-- [ ] Refresh button for folder tabs
 - [ ] Playlist mode (play sounds one after another)
-- [ ] CTRL+Q to quit
-- [ ] Create an own logo
+- [ ] Improve the logo
+- [ ] Hotkeys for folder tabs
 - [ ] Play sounds while another sound is playing
 - [ ] Organize code
 - [ ] Search sounds
@@ -114,6 +112,9 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Save positions when tabs moved
 - [ ] Localization
 - [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
+- [x] Refresh button for folder tabs
+- [x] Find a fancy name
+- [x] CTRL+Q to quit
 - [x] Automatically update files in folders (on startup?)
 - [x] Seperate volume sliders for me and for others (and a toggle to sync it)
 - [x] Global Hotkeys

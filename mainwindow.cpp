@@ -67,6 +67,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     // we need to update the buttons if the program starts because the first tab may be a directory tab
     this->on_tabWidget_currentChanged(0);
+
+    // add CTRL + Q shortcut
+    auto shortcut = new QShortcut(this);
+    shortcut->setKey(Qt::CTRL + Qt::Key_Q);
+    connect(shortcut, SIGNAL(activated()), this, SLOT(slotShortcutCtrlQ()));
+}
+
+void MainWindow::slotShortcutCtrlQ()
+{
+    close();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -188,6 +198,25 @@ void MainWindow::on_addFolderButton_clicked()
             addSoundToView(file, created);
         }
         saveSoundFiles();
+    }
+}
+
+void MainWindow::on_refreshFolderButton_clicked()
+{
+    auto view = getActiveView();
+    view->clear();
+    addSoundsToView(view);
+}
+
+void MainWindow::addSoundsToView(QSoundsList *soundsListWidget)
+{
+    QDir directory(QString::fromStdString(soundsListWidget->directory));
+
+    QStringList files = directory.entryList({"*.mp3", "*.wav", "*.ogg"}, QDir::Files);
+    for (auto fileName : files)
+    {
+        QFile file(directory.absoluteFilePath(fileName));
+        addSoundToView(file, soundsListWidget);
     }
 }
 
@@ -520,15 +549,7 @@ void MainWindow::loadSoundFiles()
                     // it is a directory category so we update add the files from the directory
                     string directoryPath = object.value();
                     soundsListWidget->directory = directoryPath;
-
-                    QDir directory(QString::fromStdString(directoryPath));
-
-                    QStringList files = directory.entryList({"*.mp3", "*.wav", "*.ogg"}, QDir::Files);
-                    for (auto fileName : files)
-                    {
-                        QFile file(directory.absoluteFilePath(fileName));
-                        addSoundToView(file, soundsListWidget);
-                    }
+                    addSoundsToView(soundsListWidget);
 
                 }
             }
@@ -538,13 +559,17 @@ void MainWindow::loadSoundFiles()
     }
 }
 
-// we need this to update the remove/add/clear/refresh button if the tab switched to is a directory tab or not
+// we need this to update the buttons if the tab switched to is a directory tab or not
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
     QSoundsList* switchedTo = (QSoundsList *)ui->tabWidget->widget(index);
     if (switchedTo) {
-        this->ui->addSoundButton->setEnabled(switchedTo->directory.length() <= 0);
-        this->ui->removeSoundButton->setEnabled(switchedTo->directory.length() <= 0);
-        this->ui->clearSoundsButton->setEnabled(switchedTo->directory.length() <= 0);
+        bool isNormalTab = switchedTo->directory.length() <= 0;
+        this->ui->addSoundButton->setVisible(isNormalTab);
+        this->ui->removeSoundButton->setVisible(isNormalTab);
+        this->ui->clearSoundsButton->setVisible(isNormalTab);
+        this->ui->refreshFolderButton->setVisible(!isNormalTab);
+        // TODO: until hotkeys are not working in folder tabs we disable it
+        this->ui->setHotkeyButton->setVisible(isNormalTab);
     }
 }

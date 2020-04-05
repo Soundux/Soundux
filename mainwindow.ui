@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>975</width>
+    <width>993</width>
     <height>550</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Soundboard</string>
+   <string>Soundux</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">
@@ -36,13 +36,13 @@
      </font>
     </property>
     <property name="text">
-     <string>Soundboard</string>
+     <string>Soundux</string>
     </property>
    </widget>
    <widget class="QComboBox" name="outputApplication">
     <property name="geometry">
      <rect>
-      <x>770</x>
+      <x>780</x>
       <y>10</y>
       <width>201</width>
       <height>31</height>
@@ -52,7 +52,7 @@
    <widget class="QLabel" name="outputApplicationLabel">
     <property name="geometry">
      <rect>
-      <x>640</x>
+      <x>650</x>
       <y>14</y>
       <width>131</width>
       <height>20</height>
@@ -65,7 +65,7 @@
    <widget class="QPushButton" name="refreshAppsButton">
     <property name="geometry">
      <rect>
-      <x>770</x>
+      <x>780</x>
       <y>50</y>
       <width>201</width>
       <height>31</height>
@@ -96,57 +96,6 @@
       <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
-   <widget class="QPushButton" name="addSoundButton">
-    <property name="geometry">
-     <rect>
-      <x>830</x>
-      <y>260</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Add</string>
-    </property>
-    <property name="icon">
-     <iconset theme="list-add">
-      <normaloff>.</normaloff>.</iconset>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="removeSoundButton">
-    <property name="geometry">
-     <rect>
-      <x>830</x>
-      <y>300</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Remove</string>
-    </property>
-    <property name="icon">
-     <iconset theme="list-remove">
-      <normaloff>.</normaloff>.</iconset>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="clearSoundsButton">
-    <property name="geometry">
-     <rect>
-      <x>830</x>
-      <y>340</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Clear</string>
-    </property>
-    <property name="icon">
-     <iconset theme="remove">
-      <normaloff>.</normaloff>.</iconset>
-    </property>
-   </widget>
    <widget class="QLabel" name="icon">
     <property name="geometry">
      <rect>
@@ -167,23 +116,6 @@
     </property>
     <property name="scaledContents">
      <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="playSoundButton">
-    <property name="geometry">
-     <rect>
-      <x>830</x>
-      <y>380</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Play</string>
-    </property>
-    <property name="icon">
-     <iconset theme="player_play">
-      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QSlider" name="localVolumeSlider">
@@ -224,92 +156,11 @@
       <x>10</x>
       <y>150</y>
       <width>811</width>
-      <height>391</height>
+      <height>390</height>
      </rect>
     </property>
     <property name="currentIndex">
      <number>-1</number>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="addTabButton">
-    <property name="geometry">
-     <rect>
-      <x>830</x>
-      <y>180</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Add Tab</string>
-    </property>
-    <property name="icon">
-     <iconset theme="tab-new">
-      <normaloff>.</normaloff>.</iconset>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="addFolderButton">
-    <property name="geometry">
-     <rect>
-      <x>830</x>
-      <y>220</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Add folder</string>
-    </property>
-    <property name="icon">
-     <iconset theme="folder">
-      <normaloff>.</normaloff>.</iconset>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="repeatCheckBox">
-    <property name="geometry">
-     <rect>
-      <x>830</x>
-      <y>510</y>
-      <width>81</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Repeat</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="setHotkeyButton">
-    <property name="geometry">
-     <rect>
-      <x>830</x>
-      <y>420</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Set Hotkey</string>
-    </property>
-    <property name="icon">
-     <iconset theme="input-keyboard-symbolic">
-      <normaloff>.</normaloff>.</iconset>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="settingsButton">
-    <property name="geometry">
-     <rect>
-      <x>830</x>
-      <y>460</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Settings</string>
-    </property>
-    <property name="icon">
-     <iconset theme="preferences-system-symbolic">
-      <normaloff>.</normaloff>.</iconset>
     </property>
    </widget>
    <widget class="QLabel" name="remoteVolumeLabel">
@@ -363,6 +214,146 @@
     <property name="checked">
      <bool>true</bool>
     </property>
+   </widget>
+   <widget class="QGroupBox" name="buttonBox">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>150</y>
+      <width>151</width>
+      <height>390</height>
+     </rect>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <widget class="QPushButton" name="addTabButton">
+       <property name="text">
+        <string>Add Tab</string>
+       </property>
+       <property name="icon">
+        <iconset theme="tab-new">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="addFolderButton">
+       <property name="text">
+        <string>Add folder</string>
+       </property>
+       <property name="icon">
+        <iconset theme="folder">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="refreshFolderButton">
+       <property name="text">
+        <string>Refresh folder</string>
+       </property>
+       <property name="icon">
+        <iconset theme="view-refresh"/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="addSoundButton">
+       <property name="text">
+        <string>Add</string>
+       </property>
+       <property name="icon">
+        <iconset theme="list-add">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="removeSoundButton">
+       <property name="text">
+        <string>Remove</string>
+       </property>
+       <property name="icon">
+        <iconset theme="list-remove">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="clearSoundsButton">
+       <property name="text">
+        <string>Clear</string>
+       </property>
+       <property name="icon">
+        <iconset theme="remove">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="setHotkeyButton">
+       <property name="text">
+        <string>Set Hotkey</string>
+       </property>
+       <property name="icon">
+        <iconset theme="input-keyboard-symbolic">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="playSoundButton">
+       <property name="text">
+        <string>Play</string>
+       </property>
+       <property name="icon">
+        <iconset theme="player_play">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="settingsButton">
+       <property name="text">
+        <string>Settings</string>
+       </property>
+       <property name="icon">
+        <iconset theme="preferences-system-symbolic">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="repeatCheckBox">
+       <property name="text">
+        <string>Repeat</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <action name="actionExit">

@@ -1,5 +1,5 @@
-# Soundboard
-### Soundboard is a universal soundboard in Qt for linux using pulseaudio modules
+# Soundux
+### Soundux is a universal soundboard in Qt for linux using pulseaudio modules
 
 # Features
 

@@ -2,7 +2,7 @@
 
 #include <QCryptographicHash>
 
-
+// Thanks to https://stackoverflow.com/a/28172162
 namespace
 {
 
