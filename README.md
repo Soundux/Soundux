@@ -103,10 +103,10 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Organize code
 - [ ] Search sounds
 - [ ] Save volume states
-- [ ] Only trigger hotkeys from current tab
+- [ ] Option to only trigger hotkeys from current tab
 - [ ] Only modify audio players started from this programm (stop, volume)
 - [ ] Fix volume slider not working while playback
-- [ ] Make UI responsible
+- [ ] Make UI responsive
 - [ ] Save positions when tabs moved
 - [ ] Localization
 - [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
@@ -114,7 +114,7 @@ The code is licensed under [GPLv3](LICENSE)
 - [x] Find a fancy name
 - [x] CTRL+Q to quit
 - [x] Automatically update files in folders (on startup?)
-- [x] Seperate volume sliders for me and for others (and a toggle to sync it)
+- [x] Separate volume sliders for me and for others (and a toggle to sync it)
 - [x] Global Hotkeys
 - [x] Check if dependencies are installed otherwise show a warning
 - [x] Repeat button
