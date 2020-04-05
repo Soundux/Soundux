@@ -10,11 +10,11 @@
     <h4>A universal soundboard in Qt for linux using pulseaudio modules</h4>
   </p>
   <p>
-    <a href="https://github.com/D3S0X/Soundboard/releases">
-      <img src="https://img.shields.io/github/last-commit/D3S0X/Soundboard.svg?style=for-the-badge" alt="Last Commit" />
+    <a href="https://github.com/D3S0X/Soundux/releases">
+      <img src="https://img.shields.io/github/last-commit/D3S0X/Soundux.svg?style=for-the-badge" alt="Last Commit" />
     </a>
-    <a href="https://github.com/D3S0X/Soundboard/blob/master/LICENSE">
-      <img src="https://img.shields.io/github/license/D3S0X/Soundboard.svg?style=for-the-badge" alt="License" />
+    <a href="https://github.com/D3S0X/Soundux/blob/master/LICENSE">
+      <img src="https://img.shields.io/github/license/D3S0X/Soundux.svg?style=for-the-badge" alt="License" />
     </a>
   </p>
 </div>
