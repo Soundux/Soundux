@@ -29,6 +29,7 @@
     - [Install dependencies for Ubuntu and derivatives (Thanks to @Tibladar)](#install-dependencies-for-ubuntu-and-derivatives-thanks-to-tibladar)
     - [Build](#build)
     - [Install](#install)
+- [Why _Soundux_?](#why-soundux)
 - [License](#license)
 - [TODO](#todo)
 
@@ -91,6 +92,10 @@ To start the program
 
 ### Install
 Automated Installation is currently not available but will be available in the future. (You may look into my [arch package](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=soundux-git) and figure it out for your distro)
+
+# Why _Soundux_?
+
+**Sound**board for Lin**ux**
 
 # License
 The code is licensed under [GPLv3](LICENSE)
