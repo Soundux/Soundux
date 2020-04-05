@@ -45,11 +45,9 @@ Please refer your distro instructions for how to install them
 # Compilation & Installation
 
 ## Arch Linux and derivatives
-You can use my package which will automatically compile and install the master branch
+You can install my package with your AUR helper of choice which will automatically compile and install the master branch
 ```sh
-git clone https://github.com/D3S0X/soundux-git.git
-cd soundux-git
-makepkg -si
+yay -S soundux-git
 ```
 
 ## Other distros
@@ -92,7 +90,7 @@ To start the program
 ```
 
 ### Install
-Automated Installation is currently not available but will be available in the future. (You may look into my [arch package](https://github.com/D3S0X/soundux-git) and figure it out for your distro)
+Automated Installation is currently not available but will be available in the future. (You may look into my [arch package](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=soundux-git) and figure it out for your distro)
 
 # License
 The code is licensed under [GPLv3](LICENSE)
