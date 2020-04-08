@@ -1,0 +1,26 @@
+language: cpp
+compiler: gcc
+sudo: required
+dist: bionic
+addons:
+  apt:
+    packages:
+      - git
+      - curl
+      - golang-go
+      - qt5-default
+      - libqt5x11extras5-dev
+
+git:
+  depth: false
+
+install:
+  - mkdir -p ~/bin
+  - curl -O https://www.qpm.io/download/v0.11.0/linux_386/qpm && install -m 755 ./qpm ~/bin/
+
+script:
+  - ~/bin/qpm install
+  - mkdir build
+  - cd build
+  - qmake ..
+  - make
