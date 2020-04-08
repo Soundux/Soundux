@@ -15,10 +15,11 @@ git:
   depth: false
 
 install:
-  - curl -O https://www.qpm.io/download/v0.11.0/linux_386/qpm && install -m 755 ./qpm /usr/local/bin/
+  - mkdir -p ~/bin
+  - curl -O https://www.qpm.io/download/v0.11.0/linux_386/qpm && install -m 755 ./qpm ~/bin/
 
 script:
-  - qpm install
+  - ~/bin/qpm install
   - mkdir build
   - cd build
   - qmake ..
