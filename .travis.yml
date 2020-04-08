@@ -1,0 +1,18 @@
+language: cpp
+compiler: gcc
+sudo: required
+dist: trusty
+
+git:
+  depth: false
+
+install:
+  - sudo apt install git golang-go qt5-default libqt5x11extras5-dev
+  - go get qpm.io/qpm
+
+script:
+  - ~/go/bin/qpm install
+  - mkdir build
+  - cd build
+  - qmake ..
+  - make
