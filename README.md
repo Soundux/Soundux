@@ -16,6 +16,9 @@
     <a href="https://github.com/D3S0X/Soundux/blob/master/LICENSE">
       <img src="https://img.shields.io/github/license/D3S0X/Soundux.svg?style=for-the-badge" alt="License" />
     </a>
+    <a href="https://travis-ci.com/D3S0X/Soundux">
+      <img src="https://img.shields.io/travis/com/D3S0X/Soundux?style=for-the-badge" alt="License" />
+    </a>
   </p>
 </div>
 
