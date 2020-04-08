@@ -1,13 +1,19 @@
 language: cpp
 compiler: gcc
 sudo: required
-dist: trusty
+dist: bionic
+addons:
+  apt:
+    packages:
+      - git
+      - golang-go
+      - qt5-default
+      - libqt5x11extras5-dev
 
 git:
   depth: false
 
 install:
-  - sudo apt install git golang-go qt5-default libqt5x11extras5-dev
   - go get qpm.io/qpm
 
 script:
