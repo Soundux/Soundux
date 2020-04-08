@@ -118,6 +118,7 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Save positions when tabs moved
 - [ ] Localization
 - [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
+- [ ] Make it cross-platform (help on how to pass the sound to an application in Windows/macOS is greatly appreciated)
 - [x] Refresh button for folder tabs
 - [x] Find a fancy name
 - [x] CTRL+Q to quit
