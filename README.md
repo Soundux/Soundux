@@ -2,7 +2,7 @@
   <p>
     <h1>
       <a href="#readme">
-        <img src="icon.jpg" width="50" alt="Soundboard" />
+        <img src="icon.png" width="50" alt="Soundboard" />
       </a>
       <br />
       Soundux
@@ -42,7 +42,7 @@ I didn't find any good soundboard application for linux so I created one. It use
 It is currently in alpha because I don't know if this works for everyone.
 
 # Runtime Dependencies
-Please refer your distro instructions for how to install them
+Please refer to your distro instructions on how to install
 - [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio)
 - [mpg123](https://www.mpg123.de/) (optional: for playing mp3 files)
 
