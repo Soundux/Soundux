@@ -1,4 +1,5 @@
-QT       += core gui
+QT       += core gui \
+    quick
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,6 +21,7 @@ include(vendor/de/skycoder42/qhotkey/qhotkey.pri)
 SOURCES += \
     RunGuard.cpp \
     qsoundslist.cpp \
+    searchview.cpp \
     soundlistwidgetitem.cpp \
     soundplayback.cpp \
     customkeysequenceedit.cpp \
@@ -34,6 +36,7 @@ HEADERS += \
     RunGuard.h \
     clickablesliderstyle.h \
     qsoundslist.h \
+    searchview.h \
     soundlistwidgetitem.h \
     soundplayback.h \
     customkeysequenceedit.h \

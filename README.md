@@ -109,16 +109,18 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Hotkeys for folder tabs
 - [ ] Play sounds while another sound is playing
 - [ ] Organize code
-- [ ] Search sounds
+- [ ] Grid View
 - [ ] Save volume states
 - [ ] Option to only trigger hotkeys from current tab
 - [ ] Only modify audio players started from this programm (stop, volume)
 - [ ] Fix volume slider not working while playback
-- [ ] Make UI responsive
 - [ ] Save positions when tabs moved
 - [ ] Localization
+- [ ] Package it as deb and flatpak and create a repology
 - [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
 - [ ] Make it cross-platform (help on how to pass the sound to an application in Windows/macOS is greatly appreciated)
+- [x] Make UI responsive
+- [x] Search sounds
 - [x] Refresh button for folder tabs
 - [x] Find a fancy name
 - [x] CTRL+Q to quit

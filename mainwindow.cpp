@@ -34,9 +34,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     settingsDialog = new SettingsDialog(this, configFolder, soundPlayback);
 
-    // Disable resizing
-    this->setFixedSize(this->width(), this->height());
-
     // We unload the modules first to remove any possible leftovers
     //TODO: Only remove modules created by Soundboard
     system("pacmd unload-module module-null-sink");
@@ -72,6 +69,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     auto shortcut = new QShortcut(this);
     shortcut->setKey(Qt::CTRL + Qt::Key_Q);
     connect(shortcut, SIGNAL(activated()), this, SLOT(slotShortcutCtrlQ()));
+
+    searchView = new SearchView(this, ui->tabWidget, soundPlayback);
+    searchView->hide();
+    searchView->setAllowedAreas(Qt::RightDockWidgetArea);
+
+    this->addDockWidget(Qt::RightDockWidgetArea, searchView);
+
+    connect(ui->searchButton, &QPushButton::clicked, [&]() {
+        if (searchView->isHidden()) {
+            searchView->show();
+        } else {
+            searchView->hide();
+        }
+    });
+
 }
 
 void MainWindow::slotShortcutCtrlQ()
@@ -204,8 +216,10 @@ void MainWindow::on_addFolderButton_clicked()
 void MainWindow::on_refreshFolderButton_clicked()
 {
     auto view = getActiveView();
-    view->clear();
-    addSoundsToView(view);
+    if (view) {
+        view->clear();
+        addSoundsToView(view);
+    }
 }
 
 void MainWindow::addSoundsToView(QSoundsList *soundsListWidget)
@@ -438,6 +452,7 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
 QSoundsList *MainWindow::createTab(QString title)
 {
     auto soundsListWidget = new QSoundsList();
+    // why do we set the object name?
     soundsListWidget->setObjectName(title);
     connect(soundsListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(on_soundsListWidget_itemDoubleClicked(QListWidgetItem *)));
     ui->tabWidget->addTab(soundsListWidget, title);
@@ -559,17 +574,25 @@ void MainWindow::loadSoundFiles()
     }
 }
 
-// we need this to update the buttons if the tab switched to is a directory tab or not
+// we need this to update the buttons if the tab switched
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
     QSoundsList* switchedTo = (QSoundsList *)ui->tabWidget->widget(index);
     if (switchedTo) {
-        bool isNormalTab = switchedTo->directory.length() <= 0;
-        this->ui->addSoundButton->setVisible(isNormalTab);
-        this->ui->removeSoundButton->setVisible(isNormalTab);
-        this->ui->clearSoundsButton->setVisible(isNormalTab);
-        this->ui->refreshFolderButton->setVisible(!isNormalTab);
+        bool isFolderTab = switchedTo->directory.length() > 0;
+
+        this->ui->addSoundButton->setVisible(!isFolderTab);
+        this->ui->removeSoundButton->setVisible(!isFolderTab);
+        this->ui->clearSoundsButton->setVisible(!isFolderTab);
+        this->ui->refreshFolderButton->setVisible(isFolderTab);
         // TODO: until hotkeys are not working in folder tabs we disable it
-        this->ui->setHotkeyButton->setVisible(isNormalTab);
+        this->ui->setHotkeyButton->setVisible(!isFolderTab);
+
+    } else {
+        this->ui->addSoundButton->setVisible(true);
+        this->ui->removeSoundButton->setVisible(false);
+        this->ui->clearSoundsButton->setVisible(false);
+        this->ui->refreshFolderButton->setVisible(false);
+        this->ui->setHotkeyButton->setVisible(false);
     }
 }

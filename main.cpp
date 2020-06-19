@@ -7,7 +7,11 @@ int main(int argc, char *argv[])
 {
     RunGuard guard("x_soundboard");
 
+    QCoreApplication::setOrganizationName("D3SOX");
+    QCoreApplication::setApplicationName("Soundux");
+
     QApplication a(argc, argv);
+
 
     if (!guard.tryToRun())
     {

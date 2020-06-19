@@ -28,6 +28,7 @@
 #include <QLineEdit>
 #include <QTimer>
 #include <QShortcut>
+#include <QAction>
 
 #include <qhotkey.h>
 #include <json.hpp>
@@ -37,6 +38,7 @@
 #include <clickablesliderstyle.h>
 #include <soundlistwidgetitem.h>
 #include <qsoundslist.h>
+#include <searchview.h>
 
 class SoundPlayback;
 class SettingsDialog;
@@ -64,6 +66,7 @@ public:
 private:
     Ui::MainWindow *ui;
     SettingsDialog *settingsDialog;
+    SearchView *searchView;
 
     void clearSoundFiles();
     void saveSoundFiles();
