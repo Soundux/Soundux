@@ -219,6 +219,7 @@ void MainWindow::on_refreshFolderButton_clicked()
     if (view) {
         view->clear();
         addSoundsToView(view);
+        saveSoundFiles();
     }
 }
 
