@@ -485,32 +485,33 @@ void MainWindow::saveSoundFiles()
         QSoundsList *listWidget = (QSoundsList *)ui->tabWidget->widget(i);
 
         json tabJson;
+        json tabJsonSounds = json::array();
 
         // if it is a directory we just save the path and update the sounds from there later
         if (listWidget->directory.length() > 0) {
-            tabJson[title] = listWidget->directory;
-        } else {
-            json tabJsonSounds = json::array();
+            tabJson["directory"] = listWidget->directory;
+        }
 
-            for (auto *_item : listWidget->findItems("*", Qt::MatchWildcard))
+        for (auto *_item : listWidget->findItems("*", Qt::MatchWildcard))
+        {
+            auto item = (SoundListWidgetItem*) _item;
+            json j;
+            j["name"] = item->text().toStdString();
+            j["path"] = item->toolTip().toStdString();
+
+            auto hotkey = item->hotkey;
+            if (!hotkey.isNull())
             {
-                auto item = (SoundListWidgetItem*) _item;
-                json j;
-                j["name"] = item->text().toStdString();
-                j["path"] = item->toolTip().toStdString();
-
-                auto hotkey = item->hotkey;
-                if (!hotkey.isNull())
-                {
-                    auto hotkeyStr = hotkey.toString().toStdString();
-                    j["hotkey"] = hotkeyStr;
-                }
-
-                tabJsonSounds.push_back(j);
+                auto hotkeyStr = hotkey.toString().toStdString();
+                j["hotkey"] = hotkeyStr;
             }
 
-            tabJson[title] = tabJsonSounds;
+            tabJsonSounds.push_back(j);
         }
+
+        tabJson["title"] = title;
+        tabJson["sounds"] = tabJsonSounds;
+
         jsonTabs.push_back(tabJson);
     }
 
@@ -527,47 +528,58 @@ void MainWindow::loadSoundFiles()
     {
         clearSoundFiles();
 
-        string content((istreambuf_iterator<char>(fileIn)), istreambuf_iterator<char>());
-        json j = json::parse(content);
+        json j = json::parse(fileIn);
 
-        for (auto item : j.get<vector<json>>())
+
+        for (auto& tabItem : j.items())
         {
-            for (auto object : item.items())
-            {
-                auto tabName = object.key().c_str();
+            const auto item = tabItem.value();
 
-                auto soundsListWidget = createTab(tabName);
+            cout << item.dump() << " test tab" << endl;
 
-                if (strcmp(object.value().type_name(), "array") == 0) {
 
-                    auto childItems = object.value().get<vector<json>>();
-                    for (auto _child : childItems)
-                    {
-                        auto soundName = _child["name"];
-                        auto soundPath = _child["path"];
-                        remove(soundPath.begin(), soundPath.end(), '"');
+            const auto titleItem = item.at("title");
+            const auto directoryItem = item.at("directory");
+            const auto soundsItem = item.at("sounds");
 
-                        auto item = new SoundListWidgetItem();
-                        item->setText(QString::fromStdString(soundName));
-                        item->setToolTip(QString::fromStdString(soundPath));
-
-                        auto soundHotkey = _child["hotkey"];
-                        if (!soundHotkey.is_null())
-                        {
-                            // Set hotkey back
-                            registerHotkey(item, QString::fromStdString(soundHotkey));
-                        }
-                        soundsListWidget->addItem(item);
-                    }
-
-                } else if (strcmp(object.value().type_name(), "string") == 0) {
-                    // it is a directory category so we update add the files from the directory
-                    string directoryPath = object.value();
-                    soundsListWidget->directory = directoryPath;
-                    addSoundsToView(soundsListWidget);
-
-                }
+            if (titleItem.is_null() || soundsItem.is_null()) {
+                cout << item.dump() << " is not a valid tab" << endl;
+                continue;
             }
+
+            /*const auto name = item["name"].get<string>();
+            const auto directory = item["directory"].is_null() ? "" : item["directory"].get<string>();
+            const auto sounds = item["sounds"].get<vector<json>>();*/
+
+            const auto title = titleItem.get<string>();
+            const auto sounds = soundsItem.get<vector<json>>();
+
+            const auto soundsListWidget = createTab(title.c_str());
+            if (!directoryItem.is_null()) {
+                const auto directory = directoryItem.get<string>();
+                // it is a directory category so we set the property
+                soundsListWidget->directory = directory;
+            }
+
+            for (auto _child : sounds)
+            {
+                auto soundName = _child["name"];
+                auto soundPath = _child["path"];
+                remove(soundPath.begin(), soundPath.end(), '"');
+
+                auto item = new SoundListWidgetItem();
+                item->setText(QString::fromStdString(soundName));
+                item->setToolTip(QString::fromStdString(soundPath));
+
+                auto soundHotkey = _child["hotkey"];
+                if (!soundHotkey.is_null())
+                {
+                    // Set hotkey back
+                    registerHotkey(item, QString::fromStdString(soundHotkey));
+                }
+                soundsListWidget->addItem(item);
+            }
+
         }
 
         fileIn.close();
@@ -585,8 +597,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         this->ui->removeSoundButton->setVisible(!isFolderTab);
         this->ui->clearSoundsButton->setVisible(!isFolderTab);
         this->ui->refreshFolderButton->setVisible(isFolderTab);
-        // TODO: until hotkeys are not working in folder tabs we disable it
-        this->ui->setHotkeyButton->setVisible(!isFolderTab);
+        this->ui->setHotkeyButton->setVisible(true);
 
     } else {
         this->ui->addSoundButton->setVisible(true);

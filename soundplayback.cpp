@@ -227,6 +227,7 @@ void SoundPlayback::playSound(string path)
             {
                 cmdForMe = "mpg123 -o pulse -f " + to_string(ui->localVolumeSlider->value() / 2) + " \"" + path + "\"";
             }
+            //cout << "cmdForMe " << cmdForMe << endl;
             system(cmdForMe.c_str());
         });
         forMe.detach();
@@ -235,12 +236,16 @@ void SoundPlayback::playSound(string path)
             ui->stopButton->setDisabled(false);
             ui->remoteVolumeSlider->setDisabled(true);
             ui->localVolumeSlider->setDisabled(true);
+            ui->syncCheckBox->setDisabled(true);
+            ui->outputApplication->setDisabled(true);
+            ui->refreshAppsButton->setDisabled(true);
 
             auto cmdForOthers = "paplay -d soundboard_sink --volume=" + to_string(ui->remoteVolumeSlider->value()) + " \"" + path + "\"";
             if (isMP3)
             {
                 cmdForOthers = "mpg123 -o pulse -a soundboard_sink -f " + to_string(ui->remoteVolumeSlider->value() / 2) + " \"" + path + "\"";
             }
+            //cout << "cmdForOthers " << cmdForOthers << endl;
             system(cmdForOthers.c_str());
             // Switch recording stream device back
             system(moveBack.c_str());
@@ -248,6 +253,10 @@ void SoundPlayback::playSound(string path)
             ui->stopButton->setDisabled(true);
             ui->remoteVolumeSlider->setDisabled(false);
             ui->localVolumeSlider->setDisabled(false);
+            ui->syncCheckBox->setDisabled(false);
+            ui->outputApplication->setDisabled(false);
+            ui->refreshAppsButton->setDisabled(false);
+
 
             // Repeat when the check box is checked
             if (ui->repeatCheckBox->isChecked())

@@ -106,11 +106,11 @@ The code is licensed under [GPLv3](LICENSE)
 # TODO
 - [ ] Playlist mode (play sounds one after another)
 - [ ] Improve the logo
-- [ ] Hotkeys for folder tabs
+- [ ] Volume normalization
 - [ ] Play sounds while another sound is playing
 - [ ] Organize code
 - [ ] Grid View
-- [ ] Save volume states
+- [ ] Save volume states (+ Sync state)
 - [ ] Option to only trigger hotkeys from current tab
 - [ ] Only modify audio players started from this programm (stop, volume)
 - [ ] Fix volume slider not working while playback
@@ -119,6 +119,7 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Package it as deb and flatpak and create a repology
 - [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
 - [ ] Make it cross-platform (help on how to pass the sound to an application in Windows/macOS is greatly appreciated)
+- [x] Hotkeys for folder tabs
 - [x] Make UI responsive
 - [x] Search sounds
 - [x] Refresh button for folder tabs
