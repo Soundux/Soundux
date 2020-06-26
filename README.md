@@ -104,12 +104,14 @@ Automated Installation is currently not available but will be available in the f
 The code is licensed under [GPLv3](LICENSE)
 
 # TODO
+- [ ] Don't assume that the QListWidgetItem is a SoundListWidgetItem. Can we make SoundListView host SoundListWidgetItems
 - [ ] Playlist mode (play sounds one after another)
 - [ ] Improve the logo
 - [ ] Volume normalization
 - [ ] Play sounds while another sound is playing
 - [ ] Organize code
 - [ ] Grid View
+- [ ] Save window size
 - [ ] Save volume states (+ Sync state)
 - [ ] Option to only trigger hotkeys from current tab
 - [ ] Only modify audio players started from this programm (stop, volume)

@@ -77,8 +77,18 @@ private:
     void addSoundsToView(QSoundsList *soundsListWidget);
     void addSoundToView(QFile &file, QListWidget *widget);
     void syncVolume(bool remote);
+    void refreshFolder(QSoundsList *view);
+    void removeSound(SoundListWidgetItem* it);
     void registerHotkey(SoundListWidgetItem* it, QString keys);
     void unregisterHotkey(SoundListWidgetItem* it);
+
+    bool LContains(QStringList l, QString what) {
+        auto pIt = std::find_if(l.begin(), l.end(), [&](QString other)
+        {
+            return other == what;
+        });
+        return pIt != l.end();
+    }
 
 private slots:
     void slotShortcutCtrlQ();

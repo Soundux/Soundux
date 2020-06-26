@@ -217,22 +217,46 @@ void MainWindow::on_refreshFolderButton_clicked()
 {
     auto view = getActiveView();
     if (view) {
-        view->clear();
-        addSoundsToView(view);
-        saveSoundFiles();
+        this->refreshFolder(view);
     }
 }
 
-void MainWindow::addSoundsToView(QSoundsList *soundsListWidget)
-{
-    QDir directory(QString::fromStdString(soundsListWidget->directory));
+void MainWindow::refreshFolder(QSoundsList *view) {
+    QStringList items;
+    for (auto viewItem : view->findItems("*", Qt::MatchWildcard))
+    {
+        items.push_back(viewItem->toolTip());
+    }
 
-    QStringList files = directory.entryList({"*.mp3", "*.wav", "*.ogg"}, QDir::Files);
+    const QDir directory(QString::fromStdString(view->directory));
+    const QStringList files = directory.entryList({"*.mp3", "*.wav", "*.ogg"}, QDir::Files);
+    QStringList filesAbsolute;
+
     for (auto fileName : files)
     {
-        QFile file(directory.absoluteFilePath(fileName));
-        addSoundToView(file, soundsListWidget);
+        const auto absolutePath = directory.absoluteFilePath(fileName);
+        filesAbsolute.push_back(absolutePath);
+
+
+        // add new ones
+        if (!LContains(items, absolutePath)) {
+            cout << "adding " << absolutePath.toStdString() << endl;
+            QFile file(absolutePath);
+            addSoundToView(file, view);
+        }
     }
+
+    auto list = view->findItems("*", Qt::MatchWildcard);
+
+    // remove old ones
+    for (const auto item : list) {
+        if (!LContains(filesAbsolute, item->toolTip())) {
+           cout << "removing " << item->toolTip().toStdString() << endl;
+           this->removeSound((SoundListWidgetItem*) item);
+        }
+    }
+
+    saveSoundFiles();
 }
 
 void MainWindow::addSoundToView(QFile &file, QListWidget *widget)
@@ -294,12 +318,16 @@ void MainWindow::on_removeSoundButton_clicked()
     if (getActiveView())
     {
         SoundListWidgetItem *it = getSelectedItem();
-        if (it)
-        {
-            unregisterHotkey(it);
-            delete it;
-            saveSoundFiles();
-        }
+        this->removeSound(it);
+    }
+}
+
+void MainWindow::removeSound(SoundListWidgetItem *it) {
+    if (it)
+    {
+        unregisterHotkey(it);
+        delete it;
+        saveSoundFiles();
     }
 }
 
@@ -498,6 +526,7 @@ void MainWindow::saveSoundFiles()
             auto item = (SoundListWidgetItem*) _item;
             json j;
             j["name"] = item->text().toStdString();
+            // TODO: make the path relative when it's a folder tab
             j["path"] = item->toolTip().toStdString();
 
             auto hotkey = item->hotkey;
@@ -536,9 +565,6 @@ void MainWindow::loadSoundFiles()
         {
             const auto item = tabItem.value();
 
-            cout << item.dump() << " test tab" << endl;
-
-
             const auto titleItem = item.at("title");
             const auto directoryItem = item.at("directory");
             const auto soundsItem = item.at("sounds");
@@ -548,19 +574,10 @@ void MainWindow::loadSoundFiles()
                 continue;
             }
 
-            /*const auto name = item["name"].get<string>();
-            const auto directory = item["directory"].is_null() ? "" : item["directory"].get<string>();
-            const auto sounds = item["sounds"].get<vector<json>>();*/
-
             const auto title = titleItem.get<string>();
             const auto sounds = soundsItem.get<vector<json>>();
 
             const auto soundsListWidget = createTab(title.c_str());
-            if (!directoryItem.is_null()) {
-                const auto directory = directoryItem.get<string>();
-                // it is a directory category so we set the property
-                soundsListWidget->directory = directory;
-            }
 
             for (auto _child : sounds)
             {
@@ -579,6 +596,13 @@ void MainWindow::loadSoundFiles()
                     registerHotkey(item, QString::fromStdString(soundHotkey));
                 }
                 soundsListWidget->addItem(item);
+            }
+
+            if (!directoryItem.is_null()) {
+                const auto directory = directoryItem.get<string>();
+                // it is a directory category so we set the property
+                soundsListWidget->directory = directory;
+                this->refreshFolder(soundsListWidget);
             }
 
         }
