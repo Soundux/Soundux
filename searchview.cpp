@@ -11,7 +11,7 @@ SearchView::SearchView(QWidget *parent, QTabWidget *tabWidget, SoundPlayback* so
     layout->setSpacing(0);
     layout->setMargin(0);
 
-    auto searchBox = new QLineEdit(this);
+    this->searchBox = new QLineEdit(this);
     layout->addWidget(searchBox);
     layout->setAlignment(searchBox, Qt::AlignTop);
 
@@ -33,6 +33,9 @@ SearchView::SearchView(QWidget *parent, QTabWidget *tabWidget, SoundPlayback* so
     setWindowTitle("Search");
     setFeatures(DockWidgetClosable);
     setMinimumWidth(250);
+
+    connect(this, SIGNAL(visibilityChanged(bool)), SLOT(on_visibilityChanged(bool)));
+
 }
 
 // TODO: right click scrollToItem()
@@ -55,6 +58,7 @@ void SearchView::on_searchBox_textChanged(const QString &text) {
         {
             auto item = (SoundListWidgetItem*) _item;
             auto name = item->text().toStdString();
+            // case insensitive search
             transform(name.begin(), name.end(), name.begin(), [](char c) { return tolower(c); });
             auto path = item->toolTip().toStdString();
 
@@ -70,6 +74,12 @@ void SearchView::on_searchBox_textChanged(const QString &text) {
 
         }
 
+    }
+}
+
+void SearchView::on_visibilityChanged(bool visible) {
+    if (visible) {
+        this->searchBox->setFocus(Qt::ShortcutFocusReason);
     }
 }
 

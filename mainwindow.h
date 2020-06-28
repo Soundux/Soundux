@@ -92,6 +92,7 @@ private:
 
 private slots:
     void slotShortcutCtrlQ();
+    void slotShortcutCtrlF();
     void on_addTabButton_clicked();
     void on_soundsListWidget_itemDoubleClicked(QListWidgetItem *listWidgetItem);
     void on_refreshAppsButton_clicked();

@@ -65,10 +65,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // we need to update the buttons if the program starts because the first tab may be a directory tab
     this->on_tabWidget_currentChanged(0);
 
-    // add CTRL + Q shortcut
+    // add CTRL + Q shortcut: quit
     auto shortcut = new QShortcut(this);
     shortcut->setKey(Qt::CTRL + Qt::Key_Q);
     connect(shortcut, SIGNAL(activated()), this, SLOT(slotShortcutCtrlQ()));
+
+    // add CTRL + F shortcut: search
+    auto searchShortcut = new QShortcut(this);
+    searchShortcut->setKey(Qt::CTRL + Qt::Key_F);
+    connect(searchShortcut, SIGNAL(activated()), SLOT(slotShortcutCtrlF()));
 
     searchView = new SearchView(this, ui->tabWidget, soundPlayback);
     searchView->hide();
@@ -89,6 +94,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 void MainWindow::slotShortcutCtrlQ()
 {
     close();
+}
+
+void MainWindow::slotShortcutCtrlF()
+{
+    if (searchView->isHidden()) {
+        searchView->show();
+    } else {
+        searchView->hide();
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

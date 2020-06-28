@@ -32,9 +32,11 @@ private:
     QSoundsList* soundsList;
     QTabWidget* tabWidget;
     SoundPlayback* soundPlayback;
+    QLineEdit* searchBox;
 private slots:
     void on_searchBox_textChanged(const QString &text);
     void on_soundsList_itemDoubleClicked(QListWidgetItem *listWidgetItem);
+    void on_visibilityChanged(bool visible);
 };
 
 #endif // SEARCHVIEW_H

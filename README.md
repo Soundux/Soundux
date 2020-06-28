@@ -121,6 +121,7 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Package it as deb and flatpak and create a repology
 - [ ] Change back recording streams when the program is closed (to fix a bug when the program is closed while playing a sound)
 - [ ] Make it cross-platform (help on how to pass the sound to an application in Windows/macOS is greatly appreciated)
+- [x] CTRL + F and focus search box
 - [x] Hotkeys for folder tabs
 - [x] Make UI responsive
 - [x] Search sounds
