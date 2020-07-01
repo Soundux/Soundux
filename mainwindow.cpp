@@ -579,17 +579,17 @@ void MainWindow::loadSoundFiles()
         {
             const auto item = tabItem.value();
 
-            const auto titleItem = item.at("title");
-            const auto directoryItem = item.at("directory");
-            const auto soundsItem = item.at("sounds");
+            const auto titleItem = item.find("title");
+            const auto directoryItem = item.find("directory");
+            const auto soundsItem = item.find("sounds");
 
-            if (titleItem.is_null() || soundsItem.is_null()) {
+            if (titleItem == item.end() || soundsItem == item.end()) {
                 cout << item.dump() << " is not a valid tab" << endl;
                 continue;
             }
 
-            const auto title = titleItem.get<string>();
-            const auto sounds = soundsItem.get<vector<json>>();
+            const auto title = titleItem->get<string>();
+            const auto sounds = soundsItem->get<vector<json>>();
 
             const auto soundsListWidget = createTab(title.c_str());
 
@@ -612,8 +612,8 @@ void MainWindow::loadSoundFiles()
                 soundsListWidget->addItem(item);
             }
 
-            if (!directoryItem.is_null()) {
-                const auto directory = directoryItem.get<string>();
+            if (directoryItem != item.end()) {
+                const auto directory = directoryItem->get<string>();
                 // it is a directory category so we set the property
                 soundsListWidget->directory = directory;
                 this->refreshFolder(soundsListWidget);
