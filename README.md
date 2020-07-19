@@ -10,14 +10,14 @@
     <h4>A universal soundboard in Qt for linux using pulseaudio modules</h4>
   </p>
   <p>
-    <a href="https://github.com/D3S0X/Soundux/releases">
-      <img src="https://img.shields.io/github/last-commit/D3S0X/Soundux.svg?style=for-the-badge" alt="Last Commit" />
+    <a href="https://github.com/D3SOX/Soundux/releases">
+      <img src="https://img.shields.io/github/last-commit/D3SOX/Soundux.svg?style=for-the-badge" alt="Last Commit" />
     </a>
-    <a href="https://github.com/D3S0X/Soundux/blob/master/LICENSE">
-      <img src="https://img.shields.io/github/license/D3S0X/Soundux.svg?style=for-the-badge" alt="License" />
+    <a href="https://github.com/D3SOX/Soundux/blob/master/LICENSE">
+      <img src="https://img.shields.io/github/license/D3SOX/Soundux.svg?style=for-the-badge" alt="License" />
     </a>
-    <a href="https://travis-ci.com/D3S0X/Soundux">
-      <img src="https://img.shields.io/travis/com/D3S0X/Soundux?style=for-the-badge" alt="Travis" />
+    <a href="https://travis-ci.com/D3SOX/Soundux">
+      <img src="https://img.shields.io/travis/com/D3SOX/Soundux?style=for-the-badge" alt="Travis" />
     </a>
   </p>
 </div>
@@ -71,7 +71,7 @@ go get qpm.io/qpm
 ### Build
 Clone the repository
 ```sh
-git clone https://github.com/D3S0X/Soundux.git
+git clone https://github.com/D3SOX/Soundux.git
 cd Soundux
 ```
 Install dependencies
