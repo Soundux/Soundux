@@ -16,11 +16,15 @@
     <a href="https://github.com/D3SOX/Soundux/blob/master/LICENSE">
       <img src="https://img.shields.io/github/license/D3SOX/Soundux.svg?style=for-the-badge" alt="License" />
     </a>
+<a href="https://app.fossa.com/projects/git%2Bgithub.com%2FD3SOX%2FSoundux?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FD3SOX%2FSoundux.svg?type=shield"/></a>
     <a href="https://travis-ci.com/D3SOX/Soundux">
       <img src="https://img.shields.io/travis/com/D3SOX/Soundux?style=for-the-badge" alt="Travis" />
     </a>
   </p>
 </div>
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FD3SOX%2FSoundux.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FD3SOX%2FSoundux?ref=badge_large)
 
 ## Index
 - [Introduction](#introduction)
