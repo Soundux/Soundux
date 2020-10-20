@@ -76,7 +76,7 @@ namespace Soundux
             }
             if (!std::filesystem::is_regular_file(configPath))
             {
-                std::cerr << "Cofnig file is not a file" << std::endl;
+                std::cerr << "Config should be a file" << std::endl;
                 return;
             }
             if (std::filesystem::is_empty(configPath))
