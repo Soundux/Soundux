@@ -67,21 +67,25 @@ namespace Soundux
                 {
                     XEvent event;
                     XGenericEventCookie *cookie = reinterpret_cast<XGenericEventCookie *>(&event.xcookie);
-                    XNextEvent(display, &event);
-
-                    if (XGetEventData(display, cookie) && cookie->type == GenericEvent && cookie->extension == xiOpCode)
+                    while (!killThread.load() && XPending(display))
                     {
-                        XIRawEvent *ev = reinterpret_cast<XIRawEvent *>(cookie->data);
-                        auto key = ev->detail;
+                        XNextEvent(display, &event);
 
-                        KeySym s = XkbKeycodeToKeysym(display, key, 0, 0);
-                        if (NoSymbol == s)
-                            continue;
-                        char *str = XKeysymToString(s);
-                        if (NULL == str)
-                            continue;
+                        if (XGetEventData(display, cookie) && cookie->type == GenericEvent &&
+                            cookie->extension == xiOpCode)
+                        {
+                            XIRawEvent *ev = reinterpret_cast<XIRawEvent *>(cookie->data);
+                            auto key = ev->detail;
 
-                        std::cout << str << std::endl;
+                            KeySym s = XkbKeycodeToKeysym(display, key, 0, 0);
+                            if (NoSymbol == s)
+                                continue;
+                            char *str = XKeysymToString(s);
+                            if (NULL == str)
+                                continue;
+
+                            std::cout << str << std::endl;
+                        }
                     }
                 }
             }
