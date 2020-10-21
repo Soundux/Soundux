@@ -12,7 +12,15 @@ namespace Soundux
         namespace internal
         {
             inline std::vector<std::pair<ma_device *, ma_decoder *>> currentlyPlayingDevices;
-            inline void data_callback(ma_device *device, void *output, const void *input, ma_uint32 frameCount) {}
+            inline void data_callback(ma_device *device, void *output, [[maybe_unused]] const void *input,
+                                      ma_uint32 frameCount)
+            {
+                ma_decoder *decoder = reinterpret_cast<ma_decoder *>(device->pUserData);
+                if (decoder == 0)
+                    return;
+
+                ma_decoder_read_pcm_frames(decoder, output, frameCount);
+            }
         } // namespace internal
 
         inline std::vector<ma_device_info> getPlaybackDevices()
@@ -48,6 +56,7 @@ namespace Soundux
         inline void playAudio(const std::string &file, const ma_device_info &deviceInfo)
         {
             ma_decoder *decoder = new ma_decoder;
+            // ma_decoder *decoder = new ma_decoder;
             ma_result result = ma_decoder_init_file(file.c_str(), 0, decoder);
 
             if (result != MA_SUCCESS)
@@ -58,11 +67,12 @@ namespace Soundux
 
             ma_device *device = new ma_device;
             ma_device_config config = ma_device_config_init(ma_device_type_playback);
+            config.playback.format = decoder->outputFormat;
             config.playback.channels = decoder->outputChannels;
             config.sampleRate = decoder->outputSampleRate;
             config.dataCallback = internal::data_callback;
             config.playback.pDeviceID = &deviceInfo.id;
-            config.pUserData = &decoder;
+            config.pUserData = decoder;
 
             if (ma_device_init(0, &config, device) != MA_SUCCESS)
             {
@@ -74,6 +84,7 @@ namespace Soundux
                 ma_device_uninit(device);
                 ma_decoder_uninit(decoder);
                 std::cerr << "Failed to start playback device" << std::endl;
+                return;
             }
 
             internal::currentlyPlayingDevices.push_back(std::make_pair(device, decoder));
@@ -84,6 +95,9 @@ namespace Soundux
             {
                 ma_device_uninit(player.first);
                 ma_decoder_uninit(player.second);
+
+                delete player.first;
+                delete player.second;
             }
             internal::currentlyPlayingDevices.clear();
         }
