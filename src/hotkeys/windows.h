@@ -10,6 +10,7 @@
 */
 #pragma once
 #include <Windows.h>
+#include <iostream>
 #include <thread>
 #include <atomic>
 
@@ -74,12 +75,15 @@ namespace Soundux
         {
             internal::keyListener = std::thread([&] {
                 internal::oKeyBoardProc = SetWindowsHookEx(WH_KEYBOARD_LL, internal::LLkeyBoardProc, NULL, NULL);
+
                 MSG message;
-                while (GetMessage(&message, NULL, 0, 0) && !internal::killThread.load())
+                while (!internal::killThread.load())
                 {
+                    PeekMessage(&message, 0, 0, 0, PM_REMOVE);
                     TranslateMessage(&message);
                     DispatchMessage(&message);
                 }
+
                 UnhookWindowsHookEx(internal::oKeyBoardProc);
             });
         }
