@@ -14,15 +14,27 @@ include_directories(${Qt5Widgets_INCLUDE_DIRS} ${QtQml_INCLUDE_DIRS})
 add_definitions(${Qt5Widgets_DEFINITIONS} ${QtQml_DEFINITIONS} ${${Qt5Quick_DEFINITIONS}})
 qt5_add_resources(QT_RESOURCES src/qml.qrc)
 
-add_executable(main ${src} ${QT_RESOURCES})
+if (UNIX)
+find_package(X11 REQUIRED)
+include_directories(${X11_INCLUDE_DIR})
+endif(UNIX)
+
+include_directories("lib/json/single_include/nlohmann")
+include_directories("lib/miniaudio")
 
 if(MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+add_executable(main ${src} ${QT_RESOURCES})
 else()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+add_executable(main ${src} ${QT_RESOURCES})
 endif(MSVC)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+
+if (UNIX)
+target_link_libraries(main ${X11_LIBRARIES})
+endif(UNIX)
 
 target_link_libraries(main
     Qt5::Widgets
