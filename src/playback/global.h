@@ -2,6 +2,7 @@
 
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
+
 #include <iostream>
 #include <vector>
 #include <map>
