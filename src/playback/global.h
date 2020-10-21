@@ -23,7 +23,8 @@ namespace Soundux
                 if (decoder == 0)
                     return;
 
-                device->masterVolumeFactor = usedDevices.at(device->playback.name);
+                if (usedDevices.find(device->playback.name) != usedDevices.end())
+                    device->masterVolumeFactor = usedDevices.at(device->playback.name);
 
                 ma_decoder_read_pcm_frames(decoder, output, frameCount);
             }
