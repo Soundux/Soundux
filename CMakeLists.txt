@@ -35,7 +35,7 @@ endif(MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 if (UNIX)
-target_link_libraries(main ${X11_LIBRARIES} ${X11_Xinput_LIB})
+target_link_libraries(main ${X11_LIBRARIES} ${X11_Xinput_LIB} ${CMAKE_DL_LIBS})
 target_link_libraries(main pthread)
 endif(UNIX)
 
