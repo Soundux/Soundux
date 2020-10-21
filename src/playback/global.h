@@ -4,6 +4,7 @@
 #include <miniaudio.h>
 #include <iostream>
 #include <vector>
+#include <map>
 
 namespace Soundux
 {
@@ -11,13 +12,17 @@ namespace Soundux
     {
         namespace internal
         {
+            inline std::map<std::string, float> usedDevices; // Can't use id as key because its not map compliant
             inline std::vector<std::pair<ma_device *, ma_decoder *>> currentlyPlayingDevices;
+
             inline void data_callback(ma_device *device, void *output, [[maybe_unused]] const void *input,
                                       ma_uint32 frameCount)
             {
                 ma_decoder *decoder = reinterpret_cast<ma_decoder *>(device->pUserData);
                 if (decoder == 0)
                     return;
+
+                device->masterVolumeFactor = usedDevices.at(device->playback.name);
 
                 ma_decoder_read_pcm_frames(decoder, output, frameCount);
             }
@@ -53,10 +58,21 @@ namespace Soundux
 
             return playBackDevices;
         }
+        inline void setVolume(const ma_device_info &deviceInfo, float volume)
+        {
+            if (internal::usedDevices.find(deviceInfo.name) == internal::usedDevices.end())
+            {
+                std::cerr << "Device was not found" << std::endl;
+                return;
+            }
+            internal::usedDevices.at(deviceInfo.name) = volume;
+        }
         inline void playAudio(const std::string &file, const ma_device_info &deviceInfo)
         {
+            if (internal::usedDevices.find(deviceInfo.name) == internal::usedDevices.end())
+                internal::usedDevices.insert(std::make_pair(deviceInfo.name, 1.f));
+
             ma_decoder *decoder = new ma_decoder;
-            // ma_decoder *decoder = new ma_decoder;
             ma_result result = ma_decoder_init_file(file.c_str(), 0, decoder);
 
             if (result != MA_SUCCESS)
