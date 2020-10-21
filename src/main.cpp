@@ -15,10 +15,10 @@
 
 int main(int argc, char **argv)
 {
-    // QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    // QGuiApplication app(argc, argv);
-    // QQmlApplicationEngine engine;
-    // QQuickStyle::setStyle("Material");
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication app(argc, argv);
+    QQmlApplicationEngine engine;
+    QQuickStyle::setStyle("Material");
 
     Core core;
     core.setEngine(&engine);
