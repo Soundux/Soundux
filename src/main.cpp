@@ -41,5 +41,4 @@ int main(int argc, char **argv)
 
     engine.load("qrc:/main.qml");
     return QGuiApplication::exec();
-    return 0;
 }
