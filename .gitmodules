@@ -1,9 +1,9 @@
 [submodule "lib/json"]
 	path = lib/json
-	url = https://github.com/nlohmann/json/
-[submodule "lib/materialdesignicons"]
-	path = lib/materialdesignicons
-	url = https://github.com/Templarian/MaterialDesign-Webfont.git
+	url = https://github.com/nlohmann/json
 [submodule "lib/miniaudio"]
 	path = lib/miniaudio
 	url = https://github.com/mackron/miniaudio
+[submodule "lib/materialdesignicons"]
+	path = lib/materialdesignicons
+	url = https://github.com/Templarian/MaterialDesign-Webfont
