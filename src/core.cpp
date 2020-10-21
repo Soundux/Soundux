@@ -1,5 +1,4 @@
 #include "core.h"
-#include "hotkeys/linux.h"
 
 Core::Core(QObject *parent) : QObject(parent) {}
 

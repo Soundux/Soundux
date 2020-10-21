@@ -1,7 +1,16 @@
 #pragma once
 #include <QObject>
 #include <QQmlApplicationEngine>
-#include <string>
+
+#ifdef _WIN32
+#include "hotkeys/windows.h"
+#else
+#ifdef __linux__
+#include "hotkeys/linux.h"
+// #else
+// #include "hotkeys/mac.h"
+#endif
+#endif
 
 class Core : public QObject
 {
