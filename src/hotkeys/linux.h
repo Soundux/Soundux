@@ -8,8 +8,8 @@
 #include <atomic>
 #include <thread>
 #include <iostream>
-// #include <X11/XKBlib.h>
-// #include <X11/extensions/XInput2.h>
+#include <X11/XKBlib.h>
+#include <X11/extensions/XInput2.h>
 
 namespace Soundux
 {
@@ -20,7 +20,6 @@ namespace Soundux
             inline std::thread keyListener;
             inline std::atomic<bool> killThread = false;
 
-            class Display;
             inline void hook()
             {
                 Display *display = XOpenDisplay(":0");
@@ -38,7 +37,7 @@ namespace Soundux
                 }
 
                 {
-                    int major, minor = 0;
+                    int major = 2, minor = 0;
                     int queryResult = XIQueryVersion(display, &major, &minor);
                     if (queryResult == BadRequest)
                     {
@@ -57,7 +56,7 @@ namespace Soundux
                 XIEventMask mask;
                 mask.deviceid = XIAllMasterDevices;
                 mask.mask_len = XIMaskLen(XI_LASTEVENT);
-                mask.mask = calloc(m.mask_len, sizeof(char));
+                mask.mask = (unsigned char *)calloc(mask.mask_len, sizeof(char));
 
                 XISetMask(mask.mask, XI_RawKeyPress);
                 XISelectEvents(display, root, &mask, 1);
@@ -67,12 +66,12 @@ namespace Soundux
                 while (!killThread.load())
                 {
                     XEvent event;
-                    XGenericEventCookie *cookie = (XGenericEventCookie *)&event.xcookie;
+                    XGenericEventCookie *cookie = reinterpret_cast<XGenericEventCookie *>(&event.xcookie);
                     XNextEvent(display, &event);
 
                     if (XGetEventData(display, cookie) && cookie->type == GenericEvent && cookie->extension == xiOpCode)
                     {
-                        XIRawEvent *ev = cookie->data;
+                        XIRawEvent *ev = reinterpret_cast<XIRawEvent *>(cookie->data);
                         auto key = ev->detail;
 
                         KeySym s = XkbKeycodeToKeysym(display, key, 0, 0);

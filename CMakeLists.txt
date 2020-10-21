@@ -15,8 +15,10 @@ add_definitions(${Qt5Widgets_DEFINITIONS} ${QtQml_DEFINITIONS} ${${Qt5Quick_DEFI
 qt5_add_resources(QT_RESOURCES src/qml.qrc)
 
 if (UNIX)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(X11 REQUIRED)
-include_directories(${X11_INCLUDE_DIR})
+find_package(Threads REQUIRED)
+include_directories(${X11_INCLUDE_DIR} ${X11_Xinput_INCLUDE_PATH})
 endif(UNIX)
 
 include_directories("lib/json/single_include/nlohmann")
@@ -33,7 +35,8 @@ endif(MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 if (UNIX)
-target_link_libraries(main ${X11_LIBRARIES})
+target_link_libraries(main ${X11_LIBRARIES} ${X11_Xinput_LIB})
+target_link_libraries(main pthread)
 endif(UNIX)
 
 target_link_libraries(main
