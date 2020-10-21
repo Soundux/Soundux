@@ -3,6 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <json.hpp>
+#include <stdlib.h>
 #include <iostream>
 #include <streambuf>
 #include <exception>
@@ -32,7 +33,16 @@ namespace Soundux
         };
 
         inline Config gConfig;
-        inline std::string configPath; // Set this depending on OS
+
+#ifdef __linux__
+        inline std::string configPath = std::string(getenv("HOME")) + "/.config/Soundux/config.json";
+#else
+#if _WIN32
+        inline std::string configPath = std::string(getenv("APPDATA")) + "/Soundux/config.json";
+#else
+// is mac
+#endif
+#endif
 
         /*These are used, ignore possible warnings*/
         [[maybe_unused]] void to_json(json &j, const Song &song)
@@ -113,6 +123,11 @@ namespace Soundux
         {
             try
             {
+                if (!std::filesystem::exists(configPath))
+                {
+                    std::filesystem::create_directories(configPath.substr(0, configPath.find_last_of('/')));
+                }
+
                 std::ofstream outStream(configPath);
                 json configJson = gConfig;
 
