@@ -16,21 +16,18 @@ namespace Soundux
 
                 if (down)
                 {
-                    for (auto &hk : Config::gConfig.allHotkeys)
+                    for (auto &hk : Config::gConfig.tabs[Config::gConfig.currentTab].songs)
                     {
-                        if (hk.first == key)
+                        bool allPresed = true;
+                        for (auto &key : hk.hotKeys)
                         {
-                            bool allPresed = true;
-                            for (auto &key : hk.second.hotKeys)
-                            {
-                                if (!pressedKeys[key])
-                                    allPresed = false;
-                            }
-                            if (allPresed)
-                            {
-                                // TODO: Play sound
-                                break;
-                            }
+                            if (!pressedKeys[key])
+                                allPresed = false;
+                        }
+                        if (allPresed)
+                        {
+                            // TODO: Play sound
+                            break;
                         }
                     }
                 }

@@ -29,7 +29,6 @@ namespace Soundux
         };
         struct Config
         {
-            std::vector<std::pair<int, Song>> allHotkeys; //? Should we save this in the config?
             std::vector<Tab> tabs;
             int currentTab;
         };
