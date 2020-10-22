@@ -7,6 +7,7 @@
 #pragma once
 #include <atomic>
 #include <thread>
+#include "global.h"
 #include <iostream>
 #include <X11/XKBlib.h>
 #include <X11/extensions/XInput2.h>
@@ -59,6 +60,7 @@ namespace Soundux
                 mask.mask = (unsigned char *)calloc(mask.mask_len, sizeof(char));
 
                 XISetMask(mask.mask, XI_RawKeyPress);
+                XISetMask(mask.mask, XI_RawKeyRelease);
                 XISelectEvents(display, root, &mask, 1);
                 XSync(display, false);
                 free(mask.mask);
@@ -76,15 +78,15 @@ namespace Soundux
                         {
                             XIRawEvent *ev = reinterpret_cast<XIRawEvent *>(cookie->data);
                             auto key = ev->detail;
-
-                            KeySym s = XkbKeycodeToKeysym(display, key, 0, 0);
-                            if (NoSymbol == s)
-                                continue;
-                            char *str = XKeysymToString(s);
-                            if (NULL == str)
-                                continue;
-
-                            std::cout << str << std::endl;
+                            if (cookie->evtype == XI_RawKeyPress)
+                            {
+                                internal::pressedKeys[key] = true;
+                                internal::onKeyEvent(key);
+                            }
+                            else if (cookie->evtype == XI_RawKeyRelease)
+                            {
+                                internal::pressedKeys[key] = false;
+                            }
                         }
                     }
                 }

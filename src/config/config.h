@@ -19,7 +19,7 @@ namespace Soundux
         {
             std::string name;
             std::string path;
-            std::string hotKey;
+            std::vector<int> hotKeys;
         };
         struct Tab
         {
@@ -30,6 +30,7 @@ namespace Soundux
         struct Config
         {
             std::vector<Tab> tabs;
+            int currentTab;
         };
 
         inline Config gConfig;
@@ -47,13 +48,13 @@ namespace Soundux
         /*These are used, ignore possible warnings*/
         [[maybe_unused]] void to_json(json &j, const Song &song)
         {
-            j = json{{"name", song.name}, {"path", song.path}, {"hotKey", song.hotKey}};
+            j = json{{"name", song.name}, {"path", song.path}, {"hotKeys", song.hotKeys}};
         }
         [[maybe_unused]] void from_json(const json &j, Song &song)
         {
             j.at("name").get_to(song.name);
             j.at("path").get_to(song.path);
-            j.at("hotKey").get_to(song.hotKey);
+            j.at("hotKeys").get_to(song.hotKeys);
         }
 
         [[maybe_unused]] void to_json(json &j, const Tab &tab)
@@ -69,11 +70,12 @@ namespace Soundux
 
         [[maybe_unused]] void to_json(json &j, const Config &config)
         {
-            j = json{{"tabs", config.tabs}};
+            j = json{{"tabs", config.tabs}, {"currentTab", config.currentTab}};
         }
         [[maybe_unused]] void from_json(const json &j, Config &config)
         {
             j.at("tabs").get_to(config.tabs);
+            j.at("currentTab").get_to(config.currentTab);
         }
 
         inline void loadConfig()

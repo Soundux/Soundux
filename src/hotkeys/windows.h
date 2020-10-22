@@ -11,6 +11,7 @@
 #pragma once
 #include <Windows.h>
 #include <iostream>
+#include "global.h"
 #include <thread>
 #include <atomic>
 
@@ -65,7 +66,13 @@ namespace Soundux
                     if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
                     {
                         PKBDLLHOOKSTRUCT info = reinterpret_cast<PKBDLLHOOKSTRUCT>(lParam);
-                        // TODO: Process keyEvent here.
+                        internal::pressedKeys[info->vkCode] = true;
+                        internal::onKeyEvent(info->vkCode);
+                    }
+                    else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
+                    {
+                        PKBDLLHOOKSTRUCT info = reinterpret_cast<PKBDLLHOOKSTRUCT>(lParam);
+                        internal::pressedKeys[info->vkCode] = false;
                     }
                 }
                 return CallNextHookEx(oKeyBoardProc, nCode, wParam, lParam);
