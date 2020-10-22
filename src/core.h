@@ -4,6 +4,7 @@
 
 #ifdef _WIN32
 #include "hotkeys/windows.h"
+#include "playback/windows.h"
 #else
 #ifdef __linux__
 #include "hotkeys/linux.h"

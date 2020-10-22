@@ -6,6 +6,7 @@
     and vb-audio cable input) playback devices to play to.
 
 */
+#ifdef _WIN32
 #pragma once
 #include "global.h"
 
@@ -16,3 +17,4 @@ namespace Soundux
         //! Windows doesn't require additional implementations.
     } // namespace Playback
 } // namespace Soundux
+#endif

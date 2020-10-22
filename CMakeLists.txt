@@ -4,6 +4,7 @@ project(main VERSION 0.1.0)
 file(GLOB src
     "src/*.cpp"
     "src/*.qml"
+    "src/*/*.cpp"
 )
 
 set(CMAKE_AUTOMOC ON)
@@ -22,6 +23,7 @@ include_directories(${X11_INCLUDE_DIR} ${X11_Xinput_INCLUDE_PATH})
 endif(UNIX)
 
 include_directories("lib/json/single_include/nlohmann")
+include_directories("lib/object_threadsafe")
 include_directories("lib/miniaudio")
 
 if(MSVC)

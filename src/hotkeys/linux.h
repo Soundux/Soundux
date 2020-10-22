@@ -4,6 +4,7 @@
     This will probably fix #12 and #15
 
 */
+#ifdef __linux__
 #pragma once
 #include <atomic>
 #include <thread>
@@ -80,12 +81,11 @@ namespace Soundux
                             auto key = ev->detail;
                             if (cookie->evtype == XI_RawKeyPress)
                             {
-                                internal::pressedKeys[key] = true;
-                                internal::onKeyEvent(key);
+                                internal::onKeyEvent(key, true);
                             }
                             else if (cookie->evtype == XI_RawKeyRelease)
                             {
-                                internal::pressedKeys[key] = false;
+                                internal::onKeyEvent(key, false);
                             }
                         }
                     }
@@ -105,3 +105,4 @@ namespace Soundux
 
     } // namespace Hooks
 } // namespace Soundux
+#endif

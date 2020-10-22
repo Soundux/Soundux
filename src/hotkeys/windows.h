@@ -8,6 +8,7 @@
     thread is the time we load all the sounds and at that time the keyboard hook doesn't even run.
 
 */
+#ifdef _WIN32
 #pragma once
 #include <Windows.h>
 #include <iostream>
@@ -66,13 +67,12 @@ namespace Soundux
                     if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
                     {
                         PKBDLLHOOKSTRUCT info = reinterpret_cast<PKBDLLHOOKSTRUCT>(lParam);
-                        internal::pressedKeys[info->vkCode] = true;
-                        internal::onKeyEvent(info->vkCode);
+                        internal::onKeyEvent(info->vkCode, true);
                     }
                     else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
                     {
                         PKBDLLHOOKSTRUCT info = reinterpret_cast<PKBDLLHOOKSTRUCT>(lParam);
-                        internal::pressedKeys[info->vkCode] = false;
+                        internal::onKeyEvent(info->vkCode, false);
                     }
                 }
                 return CallNextHookEx(oKeyBoardProc, nCode, wParam, lParam);
@@ -101,3 +101,4 @@ namespace Soundux
         }
     } // namespace Hooks
 } // namespace Soundux
+#endif

@@ -7,3 +7,6 @@
 [submodule "lib/materialdesignicons"]
 	path = lib/materialdesignicons
 	url = https://github.com/Templarian/MaterialDesign-Webfont
+[submodule "lib/object_threadsafe"]
+	path = lib/object_threadsafe
+	url = https://github.com/AlexeyAB/object_threadsafe

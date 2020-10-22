@@ -29,6 +29,7 @@ namespace Soundux
         };
         struct Config
         {
+            std::vector<std::pair<int, Song>> allHotkeys; //? Should we save this in the config?
             std::vector<Tab> tabs;
             int currentTab;
         };
@@ -46,33 +47,33 @@ namespace Soundux
 #endif
 
         /*These are used, ignore possible warnings*/
-        [[maybe_unused]] void to_json(json &j, const Song &song)
+        [[maybe_unused]] inline void to_json(json &j, const Song &song)
         {
             j = json{{"name", song.name}, {"path", song.path}, {"hotKeys", song.hotKeys}};
         }
-        [[maybe_unused]] void from_json(const json &j, Song &song)
+        [[maybe_unused]] inline void from_json(const json &j, Song &song)
         {
             j.at("name").get_to(song.name);
             j.at("path").get_to(song.path);
             j.at("hotKeys").get_to(song.hotKeys);
         }
 
-        [[maybe_unused]] void to_json(json &j, const Tab &tab)
+        [[maybe_unused]] inline void to_json(json &j, const Tab &tab)
         {
             j = json{{"title", tab.title}, {"folder", tab.folder}, {"songs", tab.songs}};
         }
-        [[maybe_unused]] void from_json(const json &j, Tab &tab)
+        [[maybe_unused]] inline void from_json(const json &j, Tab &tab)
         {
             j.at("title").get_to(tab.title);
             j.at("songs").get_to(tab.songs);
             j.at("folder").get_to(tab.folder);
         }
 
-        [[maybe_unused]] void to_json(json &j, const Config &config)
+        [[maybe_unused]] inline void to_json(json &j, const Config &config)
         {
             j = json{{"tabs", config.tabs}, {"currentTab", config.currentTab}};
         }
-        [[maybe_unused]] void from_json(const json &j, Config &config)
+        [[maybe_unused]] inline void from_json(const json &j, Config &config)
         {
             j.at("tabs").get_to(config.tabs);
             j.at("currentTab").get_to(config.currentTab);

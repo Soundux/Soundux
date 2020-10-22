@@ -10,6 +10,9 @@ void Core::setEngine(QQmlApplicationEngine *engine)
 void Core::onClose()
 {
     Soundux::Hooks::stop();
+    Soundux::Playback::stopAllAudio();
+
+    Soundux::Playback::destroy();
 }
 
 void Core::refresh()
