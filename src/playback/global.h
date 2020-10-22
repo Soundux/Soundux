@@ -19,6 +19,7 @@ namespace Soundux
                 std::uint64_t id;
                 ma_device *device;
                 ma_decoder *decoder;
+                std::string soundPath;
                 bool finished = false;
             };
 
@@ -36,6 +37,10 @@ namespace Soundux
         std::uint64_t playAudio(const std::string &file, const ma_device_info &deviceInfo);
 
         void stop(const std::uint64_t &deviceId);
+
+        void pause(const std::uint64_t &deviceId);
+
+        void resume(const std::uint64_t &deviceId);
 
         void stopAllAudio();
 

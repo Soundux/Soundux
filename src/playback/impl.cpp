@@ -1,3 +1,4 @@
+#include <cstdint>
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
 #include "global.h"
@@ -81,7 +82,7 @@ namespace Soundux
             return -1;
         }
 
-        internal::currentlyPlayingDevices->push_back({++counter, device, decoder});
+        internal::currentlyPlayingDevices->push_back({++counter, device, decoder, file});
 
         return counter;
     }
@@ -101,6 +102,32 @@ namespace Soundux
 
                 internal::currentlyPlayingDevices->erase(internal::currentlyPlayingDevices->begin() + i);
 
+                break;
+            }
+        }
+    }
+    void Playback::pause(const std::uint64_t &deviceId)
+    {
+        for (int i = 0; internal::currentlyPlayingDevices->size() > i; i++)
+        {
+            auto &device = internal::currentlyPlayingDevices->at(i);
+
+            if (device.id == deviceId)
+            {
+                ma_device_stop(device.device);
+                break;
+            }
+        }
+    }
+    void Playback::resume(const std::uint64_t &deviceId)
+    {
+        for (int i = 0; internal::currentlyPlayingDevices->size() > i; i++)
+        {
+            auto &device = internal::currentlyPlayingDevices->at(i);
+
+            if (device.id == deviceId)
+            {
+                ma_device_start(device.device);
                 break;
             }
         }

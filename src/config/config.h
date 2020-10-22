@@ -30,6 +30,8 @@ namespace Soundux
         struct Config
         {
             std::vector<Tab> tabs;
+            bool tabHotkeysOnly;
+            bool darkTheme;
             int currentTab;
         };
 
@@ -70,12 +72,17 @@ namespace Soundux
 
         [[maybe_unused]] inline void to_json(json &j, const Config &config)
         {
-            j = json{{"tabs", config.tabs}, {"currentTab", config.currentTab}};
+            j = json{{"tabs", config.tabs},
+                     {"darkTheme", config.darkTheme},
+                     {"currentTab", config.currentTab},
+                     {"tabHotkeysOnly", config.tabHotkeysOnly}};
         }
         [[maybe_unused]] inline void from_json(const json &j, Config &config)
         {
             j.at("tabs").get_to(config.tabs);
+            j.at("darkTheme").get_to(config.darkTheme);
             j.at("currentTab").get_to(config.currentTab);
+            j.at("tabHotkeysOnly").get_to(config.tabHotkeysOnly);
         }
 
         inline void loadConfig()
