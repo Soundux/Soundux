@@ -16,18 +16,47 @@ namespace Soundux
 
                 if (down)
                 {
-                    for (auto &hk : Config::gConfig.tabs[Config::gConfig.currentTab].songs)
+                    if (Config::gConfig.tabHotkeysOnly)
                     {
-                        bool allPresed = true;
-                        for (auto &key : hk.hotKeys)
+                        for (auto &hk : Config::gConfig.tabs[Config::gConfig.currentTab].songs)
                         {
-                            if (!pressedKeys[key])
-                                allPresed = false;
+                            bool allPressed = true;
+                            for (auto &key : hk.hotKeys)
+                            {
+                                if (!pressedKeys[key])
+                                {
+                                    allPressed = false;
+                                    break;
+                                }
+                            }
+                            if (allPressed)
+                            {
+                                // TODO: Play sound
+                                break;
+                            }
                         }
-                        if (allPresed)
+                    }
+                    else
+                    {
+                        for (auto &tab : Config::gConfig.tabs)
                         {
-                            // TODO: Play sound
-                            break;
+                            for (auto &song : tab.songs)
+                            {
+                                bool allPressed = true;
+                                for (auto &key : song.hotKeys)
+                                {
+                                    if (!pressedKeys[key])
+                                    {
+                                        allPressed = false;
+                                        break;
+                                    }
+                                }
+                                if (allPressed)
+                                {
+                                    // TODO: Play sound
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
