@@ -90,10 +90,13 @@ namespace Soundux
 
                                         delete device.device;
                                         delete device.decoder;
+
+                                        device.device = nullptr;
+                                        device.decoder = nullptr;
                                     }
 
                                     internal::currentlyPlayingDevices->erase(
-                                        internal::currentlyPlayingDevices->begin() + i);
+                                        internal::currentlyPlayingDevices->begin() + j);
 
                                     break;
                                 }
@@ -112,6 +115,8 @@ namespace Soundux
         inline void destroy()
         {
             internal::killThreads.store(true);
+
+            internal::stopThread.join();
             internal::garbageCollector.join();
         }
     } // namespace Playback
