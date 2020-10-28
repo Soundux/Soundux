@@ -229,8 +229,20 @@ namespace Soundux
     {
         for (int i = 0; internal::currentlyPlayingDevices->size() > i; i++)
         {
-            stop(internal::currentlyPlayingDevices->at(i).id);
+            auto &device = internal::currentlyPlayingDevices->at(i);
+            if (device.device && device.decoder)
+            {
+                ma_device_uninit(device.device);
+                ma_decoder_uninit(device.decoder);
+
+                delete device.device;
+                delete device.decoder;
+
+                device.device = nullptr;
+                device.decoder = nullptr;
+            }
         }
+        internal::currentlyPlayingDevices->clear();
     }
     void Playback::internal::data_callback(ma_device *device, void *output, [[maybe_unused]] const void *input,
                                            std::uint32_t frameCount)
