@@ -176,23 +176,11 @@ namespace Soundux
     }
     void Playback::stop(const std::uint64_t &deviceId)
     {
-        for (int i = 0; internal::currentlyPlayingDevices->size() > i; i++)
+        if (std::find_if(internal::stopList->begin(), internal::stopList->end(),
+                         [&](auto &item) { return item == deviceId; }) == internal::stopList->end())
         {
-            auto &device = internal::currentlyPlayingDevices->at(i);
-
-            if (device.id == deviceId)
-            {
-                ma_device_uninit(device.device);
-                ma_decoder_uninit(device.decoder);
-
-                delete device.device;
-                delete device.decoder;
-
-                internal::currentlyPlayingDevices->erase(internal::currentlyPlayingDevices->begin() + i);
-
-                break;
-            }
-        }
+            internal::stopList->push_back(deviceId);
+        };
     }
     void Playback::pause(const std::uint64_t &deviceId)
     {
@@ -222,16 +210,11 @@ namespace Soundux
     }
     void Playback::stopAllAudio()
     {
+        internal::stopList->clear();
         for (int i = 0; internal::currentlyPlayingDevices->size() > i; i++)
         {
-            auto &player = internal::currentlyPlayingDevices->at(i);
-            ma_device_uninit(player.device);
-            ma_decoder_uninit(player.decoder);
-
-            delete player.device;
-            delete player.decoder;
+            internal::stopList->push_back(internal::currentlyPlayingDevices->at(i).id);
         }
-        internal::currentlyPlayingDevices->clear();
     }
     void Playback::internal::data_callback(ma_device *device, void *output, [[maybe_unused]] const void *input,
                                            std::uint32_t frameCount)
