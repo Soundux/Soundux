@@ -51,11 +51,10 @@ namespace Soundux
 
         namespace internal
         {
-            inline std::atomic<bool> killThreads = false;
-            inline sf::safe_ptr<std::vector<std::uint64_t>> stopList;
+            inline std::atomic<bool> killGarbageCollector = false;
             inline auto garbageCollector = [] {
                 std::thread collector([] {
-                    while (!killThreads.load())
+                    while (!killGarbageCollector.load())
                     {
                         for (int i = 0; currentlyPlayingDevices->size() > i; i++)
                         {
@@ -71,52 +70,10 @@ namespace Soundux
                 collector.detach();
                 return collector;
             }();
-            inline auto stopThread = [] {
-                std::thread _stopThread([] {
-                    while (!killThreads.load())
-                    {
-                        for (int i = 0; stopList->size() > i; i++)
-                        {
-                            auto &item = stopList->at(i);
-                            for (int j = 0; currentlyPlayingDevices->size() > j; j++)
-                            {
-                                auto &device = currentlyPlayingDevices->at(j);
-                                if (device.id == item)
-                                {
-                                    if (device.device && device.decoder)
-                                    {
-                                        ma_device_uninit(device.device);
-                                        ma_decoder_uninit(device.decoder);
-
-                                        delete device.device;
-                                        delete device.decoder;
-
-                                        device.device = nullptr;
-                                        device.decoder = nullptr;
-                                    }
-
-                                    internal::currentlyPlayingDevices->erase(
-                                        internal::currentlyPlayingDevices->begin() + j);
-
-                                    break;
-                                }
-                            }
-                        }
-                        stopList->clear();
-
-                        std::this_thread::sleep_for(std::chrono::seconds(1));
-                    }
-                });
-                _stopThread.detach();
-
-                return _stopThread;
-            }();
         } // namespace internal
         inline void destroy()
         {
-            internal::killThreads.store(true);
-
-            internal::stopThread.join();
+            internal::killGarbageCollector.store(true);
             internal::garbageCollector.join();
         }
     } // namespace Playback
