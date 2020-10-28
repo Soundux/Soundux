@@ -2,8 +2,8 @@
 #include <miniaudio.h>
 #include <safe_ptr.h>
 #include <exception>
-#include <cstdint>
 #include <iostream>
+#include <cstdint>
 #include <vector>
 #include <thread>
 #include <map>
@@ -30,10 +30,15 @@ namespace Soundux
                                std::uint32_t frameCount);
         } // namespace internal
 
+        auto getDefaultCaptureDevice();
+        auto getDefaultPlaybackDevice();
+
+        std::vector<ma_device_info> getCaptureDevices();
         std::vector<ma_device_info> getPlaybackDevices();
 
         void setVolume(const ma_device_info &deviceInfo, float volume);
 
+        std::uint64_t playAudio(const std::string &file);
         std::uint64_t playAudio(const std::string &file, const ma_device_info &deviceInfo);
 
         void stop(const std::uint64_t &deviceId);
