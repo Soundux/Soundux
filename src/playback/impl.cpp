@@ -11,7 +11,11 @@ namespace Soundux
         ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
         ma_device_init(0, &deviceConfig, &device);
 
-        return device.playback;
+        auto playbackInfo = device.playback;
+
+        ma_device_uninit(&device);
+
+        return playbackInfo;
     }
     auto Playback::getDefaultCaptureDevice()
     {
@@ -19,7 +23,11 @@ namespace Soundux
         ma_device_config deviceConfig = ma_device_config_init(ma_device_type_capture);
         ma_device_init(0, &deviceConfig, &device);
 
-        return device.capture;
+        auto captureInfo = device.capture;
+
+        ma_device_uninit(&device);
+
+        return captureInfo;
     }
     std::vector<ma_device_info> Playback::getPlaybackDevices()
     {
