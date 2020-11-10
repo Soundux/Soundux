@@ -2,8 +2,8 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <cstdlib>
 #include <json.hpp>
-#include <stdlib.h>
 #include <iostream>
 #include <streambuf>
 #include <exception>

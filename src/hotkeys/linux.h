@@ -4,7 +4,6 @@
     This will probably fix #12 and #15
 
 */
-#include <X11/extensions/XI2.h>
 #ifdef __linux__
 #pragma once
 #include <atomic>
@@ -12,6 +11,7 @@
 #include "global.h"
 #include <iostream>
 #include <X11/XKBlib.h>
+#include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
 
 namespace Soundux

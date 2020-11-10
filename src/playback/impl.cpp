@@ -99,6 +99,8 @@ namespace Soundux
     {
         static std::uint64_t counter = 0;
 
+        //? Theoretically we could remove this, but this will result in the defaultPlayBackVolume being 0. This will
+        //? only change when the user manually changes this value in the ui where the default value will not match.
         if (internal::usedDevices.find(defaultPlayback.name) == internal::usedDevices.end())
             internal::usedDevices.insert(std::make_pair(defaultPlayback.name, 1.f));
 
