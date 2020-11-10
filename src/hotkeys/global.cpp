@@ -37,7 +37,15 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
         }
         else if (!down)
         {
-            emit gCore.keyCleared();
+            bool nonePressed = true;
+            for (auto &state : capturedKeyStates)
+            {
+                if (state.second.first)
+                    nonePressed = false;
+            }
+
+            if (!nonePressed)
+                emit gCore.keyCleared();
         }
 
         capturedKeyStates[key] = std::make_pair(down, std::chrono::system_clock::now());
@@ -53,7 +61,7 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
         {
             for (auto &song : Config::gConfig.tabs[Config::gConfig.currentTab].songs)
             {
-                bool allPressed = song.hotKeys.empty();
+                bool allPressed = !song.hotKeys.empty();
                 for (auto &hotKey : song.hotKeys)
                 {
                     if (!pressedKeys[hotKey])
@@ -75,7 +83,7 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
             {
                 for (auto &song : tab.songs)
                 {
-                    bool allPressed = song.hotKeys.empty();
+                    bool allPressed = !song.hotKeys.empty();
                     for (auto &hotKey : song.hotKeys)
                     {
                         if (!pressedKeys[hotKey])
