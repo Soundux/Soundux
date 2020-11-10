@@ -35,18 +35,6 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
             }
             emit gCore.keyPress(stateStr);
         }
-        else if (!down)
-        {
-            bool nonePressed = true;
-            for (auto &state : capturedKeyStates)
-            {
-                if (state.second.first)
-                    nonePressed = false;
-            }
-
-            if (!nonePressed)
-                emit gCore.keyCleared();
-        }
 
         capturedKeyStates[key] = std::make_pair(down, std::chrono::system_clock::now());
         return;
