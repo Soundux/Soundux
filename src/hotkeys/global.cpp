@@ -53,7 +53,7 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
         {
             for (auto &song : Config::gConfig.tabs[Config::gConfig.currentTab].songs)
             {
-                bool allPressed = true;
+                bool allPressed = song.hotKeys.empty();
                 for (auto &hotKey : song.hotKeys)
                 {
                     if (!pressedKeys[hotKey])
@@ -75,7 +75,7 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
             {
                 for (auto &song : tab.songs)
                 {
-                    bool allPressed = true;
+                    bool allPressed = song.hotKeys.empty();
                     for (auto &hotKey : song.hotKeys)
                     {
                         if (!pressedKeys[hotKey])
