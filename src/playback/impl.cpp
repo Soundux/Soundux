@@ -5,25 +5,27 @@
 
 namespace Soundux
 {
-    auto Playback::getDefaultPlaybackDevice()
+    Playback::internal::DefaultDevice Playback::getDefaultPlaybackDevice()
     {
         ma_device device;
         ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
         ma_device_init(0, &deviceConfig, &device);
 
-        auto playbackInfo = device.playback;
+        Playback::internal::DefaultDevice playbackInfo;
+        playbackInfo.name = device.playback.name;
 
         ma_device_uninit(&device);
 
         return playbackInfo;
     }
-    auto Playback::getDefaultCaptureDevice()
+    Playback::internal::DefaultDevice Playback::getDefaultCaptureDevice()
     {
         ma_device device;
         ma_device_config deviceConfig = ma_device_config_init(ma_device_type_capture);
         ma_device_init(0, &deviceConfig, &device);
 
-        auto captureInfo = device.capture;
+        Playback::internal::DefaultDevice captureInfo;
+        captureInfo.name = device.capture.name;
 
         ma_device_uninit(&device);
 
@@ -50,7 +52,7 @@ namespace Soundux
         }
 
         std::vector<ma_device_info> playBackDevices;
-        for (int i = 0; deviceCount > i; i++)
+        for (unsigned int i = 0; deviceCount > i; i++)
         {
             playBackDevices.push_back(pPlayBackDeviceInfos[i]);
         }
@@ -80,7 +82,7 @@ namespace Soundux
         }
 
         std::vector<ma_device_info> captureDevices;
-        for (int i = 0; deviceCount > i; i++)
+        for (unsigned int i = 0; deviceCount > i; i++)
         {
             captureDevices.push_back(pCaptureDeviceInfos[i]);
         }
@@ -89,22 +91,16 @@ namespace Soundux
 
         return captureDevices;
     }
-    void Playback::setVolume(const ma_device_info &deviceInfo, float volume)
+    void Playback::setVolume(const std::string &deviceName, float volume)
     {
-        if (internal::usedDevices.find(deviceInfo.name) == internal::usedDevices.end())
-        {
-            std::cerr << "Device was not found" << std::endl;
-            return;
-        }
-        internal::usedDevices[deviceInfo.name] = volume;
+        internal::usedDevices[deviceName] = volume;
     }
     std::uint64_t Playback::playAudio(const std::string &file)
     {
         static std::uint64_t counter = 0;
-        auto defaultDevice = getDefaultPlaybackDevice();
 
-        if (internal::usedDevices.find(defaultDevice.name) == internal::usedDevices.end())
-            internal::usedDevices.insert(std::make_pair(defaultDevice.name, 1.f));
+        if (internal::usedDevices.find(defaultPlayback.name) == internal::usedDevices.end())
+            internal::usedDevices.insert(std::make_pair(defaultPlayback.name, 1.f));
 
         ma_decoder *decoder = new ma_decoder;
         ma_result result = ma_decoder_init_file(file.c_str(), 0, decoder);
@@ -136,7 +132,9 @@ namespace Soundux
             return -1;
         }
 
-        internal::currentlyPlayingDevices->push_back({++counter, device, decoder, file});
+        internal::playingDeviceMutex.lock();
+        internal::currentlyPlayingDevices.push_back({++counter, device, decoder, file});
+        internal::playingDeviceMutex.unlock();
 
         return counter;
     }
@@ -178,19 +176,24 @@ namespace Soundux
             return -1;
         }
 
-        internal::currentlyPlayingDevices->push_back({++counter, device, decoder, file});
+        internal::playingDeviceMutex.lock();
+        internal::currentlyPlayingDevices.push_back({++counter, device, decoder, file});
+        internal::playingDeviceMutex.unlock();
 
         return counter;
     }
     void Playback::stop(const std::uint64_t &deviceId)
     {
-        for (int i = 0; internal::currentlyPlayingDevices->size() > i; i++)
+        // No need to lock the mutex here, it only gets called when the mutex is locked!
+        for (unsigned int i = 0; internal::currentlyPlayingDevices.size() > i; i++)
         {
-            auto &device = internal::currentlyPlayingDevices->at(i);
+            auto &device = internal::currentlyPlayingDevices.at(i);
             if (device.id == deviceId)
             {
                 if (device.device && device.decoder)
                 {
+                    stopCallback(device);
+
                     ma_device_uninit(device.device);
                     ma_decoder_uninit(device.decoder);
 
@@ -201,17 +204,17 @@ namespace Soundux
                     device.decoder = nullptr;
                 }
 
-                internal::currentlyPlayingDevices->erase(internal::currentlyPlayingDevices->begin() + i);
-
+                internal::currentlyPlayingDevices.erase(internal::currentlyPlayingDevices.begin() + i);
                 break;
             }
         }
     }
     void Playback::pause(const std::uint64_t &deviceId)
     {
-        for (int i = 0; internal::currentlyPlayingDevices->size() > i; i++)
+        internal::playingDeviceMutex.lock();
+        for (unsigned int i = 0; internal::currentlyPlayingDevices.size() > i; i++)
         {
-            auto &device = internal::currentlyPlayingDevices->at(i);
+            auto &device = internal::currentlyPlayingDevices.at(i);
 
             if (device.id == deviceId)
             {
@@ -219,12 +222,14 @@ namespace Soundux
                 break;
             }
         }
+        internal::playingDeviceMutex.unlock();
     }
     void Playback::resume(const std::uint64_t &deviceId)
     {
-        for (int i = 0; internal::currentlyPlayingDevices->size() > i; i++)
+        internal::playingDeviceMutex.lock();
+        for (unsigned int i = 0; internal::currentlyPlayingDevices.size() > i; i++)
         {
-            auto &device = internal::currentlyPlayingDevices->at(i);
+            auto &device = internal::currentlyPlayingDevices.at(i);
 
             if (device.id == deviceId)
             {
@@ -232,14 +237,18 @@ namespace Soundux
                 break;
             }
         }
+        internal::playingDeviceMutex.unlock();
     }
     void Playback::stopAllAudio()
     {
-        for (int i = 0; internal::currentlyPlayingDevices->size() > i; i++)
+        internal::playingDeviceMutex.lock();
+        for (unsigned int i = 0; internal::currentlyPlayingDevices.size() > i; i++)
         {
-            auto &device = internal::currentlyPlayingDevices->at(i);
+            auto &device = internal::currentlyPlayingDevices.at(i);
             if (device.device && device.decoder)
             {
+                stopCallback(device);
+
                 ma_device_uninit(device.device);
                 ma_decoder_uninit(device.decoder);
 
@@ -250,7 +259,8 @@ namespace Soundux
                 device.decoder = nullptr;
             }
         }
-        internal::currentlyPlayingDevices->clear();
+        internal::currentlyPlayingDevices.clear();
+        internal::playingDeviceMutex.unlock();
     }
     void Playback::internal::data_callback(ma_device *device, void *output, [[maybe_unused]] const void *input,
                                            std::uint32_t frameCount)
@@ -266,14 +276,7 @@ namespace Soundux
 
         if (readFrames <= 0)
         {
-            for (int i = 0; internal::currentlyPlayingDevices->size() > i; i++)
-            {
-                auto &dev = internal::currentlyPlayingDevices->at(i);
-                if (dev.device == device)
-                {
-                    dev.finished = true;
-                }
-            }
+            internal::deviceClearQueue[device] = true;
         }
     }
 } // namespace Soundux

@@ -4,6 +4,7 @@
     This will probably fix #12 and #15
 
 */
+#include <X11/extensions/XI2.h>
 #ifdef __linux__
 #pragma once
 #include <atomic>
@@ -21,10 +22,10 @@ namespace Soundux
         {
             inline std::thread keyListener;
             inline std::atomic<bool> killThread = false;
+            inline Display *display = XOpenDisplay(":0");
 
             inline void hook()
             {
-                Display *display = XOpenDisplay(":0");
                 if (display == NULL)
                 {
                     std::cerr << "Failed to open X11 Display" << std::endl;
@@ -38,6 +39,7 @@ namespace Soundux
                     return;
                 }
 
+                // Custom context
                 {
                     int major = 2, minor = 0;
                     int queryResult = XIQueryVersion(display, &major, &minor);
@@ -75,18 +77,13 @@ namespace Soundux
                         XNextEvent(display, &event);
 
                         if (XGetEventData(display, cookie) && cookie->type == GenericEvent &&
-                            cookie->extension == xiOpCode)
+                            cookie->extension == xiOpCode &&
+                            (cookie->evtype == XI_RawKeyRelease || cookie->evtype == XI_RawKeyPress))
                         {
                             XIRawEvent *ev = reinterpret_cast<XIRawEvent *>(cookie->data);
                             auto key = ev->detail;
-                            if (cookie->evtype == XI_RawKeyPress)
-                            {
-                                internal::onKeyEvent(key, true);
-                            }
-                            else if (cookie->evtype == XI_RawKeyRelease)
-                            {
-                                internal::onKeyEvent(key, false);
-                            }
+
+                            internal::onKeyEvent(key, cookie->evtype == XI_RawKeyPress);
                         }
                     }
                 }
@@ -103,6 +100,18 @@ namespace Soundux
             internal::keyListener.join();
         }
 
+        inline std::string getKeyName(const int key)
+        {
+            KeySym s = XkbKeycodeToKeysym(internal::display, key, 0, 0);
+            if (NoSymbol == s)
+                return "Unknown";
+
+            char *str = XKeysymToString(s);
+            if (str == nullptr)
+                return "Unknown";
+
+            return str;
+        }
     } // namespace Hooks
 } // namespace Soundux
 #endif

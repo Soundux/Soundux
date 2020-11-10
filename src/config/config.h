@@ -26,13 +26,19 @@ namespace Soundux
             std::string title;
             std::string folder;
             std::vector<Song> songs;
+
+            bool operator==(const Tab &other)
+            {
+                return other.folder == folder && other.title == title;
+            }
         };
         struct Config
         {
             std::vector<Tab> tabs;
+            unsigned int currentOutputApplication;
+            unsigned int currentTab;
             bool tabHotkeysOnly;
             bool darkTheme;
-            int currentTab;
         };
 
         inline Config gConfig;
@@ -47,37 +53,36 @@ namespace Soundux
 #endif
 #endif
 
-        /*These are used, ignore possible warnings*/
-        [[maybe_unused]] inline void to_json(json &j, const Song &song)
+        inline void to_json(json &j, const Song &song)
         {
             j = json{{"name", song.name}, {"path", song.path}, {"hotKeys", song.hotKeys}};
         }
-        [[maybe_unused]] inline void from_json(const json &j, Song &song)
+        inline void from_json(const json &j, Song &song)
         {
             j.at("name").get_to(song.name);
             j.at("path").get_to(song.path);
             j.at("hotKeys").get_to(song.hotKeys);
         }
 
-        [[maybe_unused]] inline void to_json(json &j, const Tab &tab)
+        inline void to_json(json &j, const Tab &tab)
         {
             j = json{{"title", tab.title}, {"folder", tab.folder}, {"songs", tab.songs}};
         }
-        [[maybe_unused]] inline void from_json(const json &j, Tab &tab)
+        inline void from_json(const json &j, Tab &tab)
         {
             j.at("title").get_to(tab.title);
             j.at("songs").get_to(tab.songs);
             j.at("folder").get_to(tab.folder);
         }
 
-        [[maybe_unused]] inline void to_json(json &j, const Config &config)
+        inline void to_json(json &j, const Config &config)
         {
             j = json{{"tabs", config.tabs},
                      {"darkTheme", config.darkTheme},
                      {"currentTab", config.currentTab},
                      {"tabHotkeysOnly", config.tabHotkeysOnly}};
         }
-        [[maybe_unused]] inline void from_json(const json &j, Config &config)
+        inline void from_json(const json &j, Config &config)
         {
             j.at("tabs").get_to(config.tabs);
             j.at("darkTheme").get_to(config.darkTheme);

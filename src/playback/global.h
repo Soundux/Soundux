@@ -1,11 +1,13 @@
 #pragma once
 #include <miniaudio.h>
-#include <safe_ptr.h>
+#include <functional>
 #include <exception>
 #include <iostream>
-#include <cstdint>
 #include <vector>
 #include <thread>
+#include <atomic>
+#include <mutex>
+#include <map>
 #include <map>
 
 namespace Soundux
@@ -20,28 +22,36 @@ namespace Soundux
                 ma_device *device;
                 ma_decoder *decoder;
                 std::string soundPath;
-                bool finished = false;
+            };
+            struct DefaultDevice
+            {
+                std::string name;
             };
 
-            inline std::map<std::string, float> usedDevices; // Can't use id as key because its not map compliant
-            inline sf::safe_ptr<std::vector<PlayingDevice>> currentlyPlayingDevices;
+            inline std::map<std::string, float> usedDevices;
 
-            void data_callback(ma_device *device, void *output, [[maybe_unused]] const void *input,
-                               std::uint32_t frameCount);
+            inline std::mutex playingDeviceMutex;
+            inline std::vector<PlayingDevice> currentlyPlayingDevices;
+
+            void data_callback(ma_device *device, void *output, const void *input, std::uint32_t frameCount);
         } // namespace internal
 
-        auto getDefaultCaptureDevice();
-        auto getDefaultPlaybackDevice();
+        Playback::internal::DefaultDevice getDefaultCaptureDevice();
+        Playback::internal::DefaultDevice getDefaultPlaybackDevice();
+
+        inline auto defaultCapture = getDefaultCaptureDevice();
+        inline auto defaultPlayback = getDefaultPlaybackDevice();
 
         std::vector<ma_device_info> getCaptureDevices();
         std::vector<ma_device_info> getPlaybackDevices();
 
-        void setVolume(const ma_device_info &deviceInfo, float volume);
+        void setVolume(const std::string &deviceName, float volume);
 
         std::uint64_t playAudio(const std::string &file);
         std::uint64_t playAudio(const std::string &file, const ma_device_info &deviceInfo);
 
         void stop(const std::uint64_t &deviceId);
+        inline std::function<void(const internal::PlayingDevice &)> stopCallback = [](const auto &) {};
 
         void pause(const std::uint64_t &deviceId);
 
@@ -52,16 +62,28 @@ namespace Soundux
         namespace internal
         {
             inline std::atomic<bool> killGarbageCollector = false;
+
+            inline std::map<ma_device *, bool> deviceClearQueue;
+
             inline auto garbageCollector = [] {
                 std::thread collector([] {
                     while (!killGarbageCollector.load())
                     {
-                        for (int i = 0; currentlyPlayingDevices->size() > i; i++)
+                        for (auto sound = deviceClearQueue.begin(); deviceClearQueue.end() != sound; ++sound)
                         {
-                            auto &device = currentlyPlayingDevices->at(i);
-                            if (device.finished)
+                            if (sound->second)
                             {
-                                stop(device.id);
+                                playingDeviceMutex.lock();
+                                for (unsigned int i = 0; currentlyPlayingDevices.size() > i; i++)
+                                {
+                                    auto &device = currentlyPlayingDevices.at(i);
+                                    if (device.device != sound->first)
+                                        continue;
+                                    stop(device.id);
+                                }
+                                playingDeviceMutex.unlock();
+                                deviceClearQueue.erase(sound);
+                                break;
                             }
                         }
                         std::this_thread::sleep_for(std::chrono::seconds(1));

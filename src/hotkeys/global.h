@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <map>
 #include "../config/config.h"
 
@@ -6,61 +7,18 @@ namespace Soundux
 {
     namespace Hooks
     {
+        // Defined by linux/windows.h
+        std::string getKeyName(const int key);
+
         namespace internal
         {
             inline std::map<int, bool> pressedKeys;
 
-            inline void onKeyEvent(int key, bool down)
-            {
-                pressedKeys[key] = down;
+            inline bool translateHotkeys = false;
+            inline std::vector<int> capturedKeyList;
+            inline std::map<int, std::pair<bool, std::chrono::system_clock::time_point>> capturedKeyStates;
 
-                if (down)
-                {
-                    if (Config::gConfig.tabHotkeysOnly)
-                    {
-                        for (auto &hk : Config::gConfig.tabs[Config::gConfig.currentTab].songs)
-                        {
-                            bool allPressed = true;
-                            for (auto &key : hk.hotKeys)
-                            {
-                                if (!pressedKeys[key])
-                                {
-                                    allPressed = false;
-                                    break;
-                                }
-                            }
-                            if (allPressed)
-                            {
-                                // TODO: Play sound
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        for (auto &tab : Config::gConfig.tabs)
-                        {
-                            for (auto &song : tab.songs)
-                            {
-                                bool allPressed = true;
-                                for (auto &key : song.hotKeys)
-                                {
-                                    if (!pressedKeys[key])
-                                    {
-                                        allPressed = false;
-                                        break;
-                                    }
-                                }
-                                if (allPressed)
-                                {
-                                    // TODO: Play sound
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            void onKeyEvent(int key, bool down);
         } // namespace internal
     }     // namespace Hooks
 } // namespace Soundux

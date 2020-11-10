@@ -26,40 +26,6 @@ namespace Soundux
             inline std::thread keyListener;
             inline std::atomic<bool> killThread = false;
 
-            // ! May be useful later (for displaying the keys in the ui [?])
-            // inline std::string VirtualKeyCodeToString(UCHAR virtualKey)
-            // {
-            //     UINT scanCode = MapVirtualKey(virtualKey, MAPVK_VK_TO_VSC);
-
-            //     CHAR name[128];
-            //     int result = 0;
-            //     switch (virtualKey)
-            //     {
-            //     case VK_LEFT:
-            //     case VK_UP:
-            //     case VK_RIGHT:
-            //     case VK_DOWN:
-            //     case VK_RCONTROL:
-            //     case VK_RMENU:
-            //     case VK_LWIN:
-            //     case VK_RWIN:
-            //     case VK_APPS:
-            //     case VK_PRIOR:
-            //     case VK_NEXT:
-            //     case VK_END:
-            //     case VK_HOME:
-            //     case VK_INSERT:
-            //     case VK_DELETE:
-            //     case VK_DIVIDE:
-            //     case VK_NUMLOCK:
-            //         scanCode |= KF_EXTENDED;
-            //     default:
-            //         result = GetKeyNameTextA(scanCode << 16, name, 128);
-            //     }
-            //
-            //     return name;
-            // }
-
             inline LRESULT CALLBACK LLkeyBoardProc(int nCode, WPARAM wParam, LPARAM lParam)
             {
                 if (nCode == HC_ACTION)
@@ -98,6 +64,39 @@ namespace Soundux
         {
             internal::killThread.store(true);
             internal::keyListener.join();
+        }
+
+        std::string getKeyName(const int key)
+        {
+            UINT scanCode = MapVirtualKey(key, MAPVK_VK_TO_VSC);
+
+            CHAR name[128];
+            int result = 0;
+            switch (key)
+            {
+            case VK_LEFT:
+            case VK_UP:
+            case VK_RIGHT:
+            case VK_DOWN:
+            case VK_RCONTROL:
+            case VK_RMENU:
+            case VK_LWIN:
+            case VK_RWIN:
+            case VK_APPS:
+            case VK_PRIOR:
+            case VK_NEXT:
+            case VK_END:
+            case VK_HOME:
+            case VK_INSERT:
+            case VK_DELETE:
+            case VK_DIVIDE:
+            case VK_NUMLOCK:
+                scanCode |= KF_EXTENDED;
+            default:
+                result = GetKeyNameTextA(scanCode << 16, name, 128);
+            }
+
+            return name;
         }
     } // namespace Hooks
 } // namespace Soundux
