@@ -65,15 +65,6 @@ std::vector<QTab> Core::getTabs()
     return qTabs;
 }
 
-void Core::addTab(QString title)
-{
-    Soundux::Config::Tab tab;
-    tab.title = title.toStdString();
-    Soundux::Config::gConfig.tabs.push_back(tab);
-    Soundux::Config::saveConfig();
-    emit foldersChanged();
-}
-
 void Core::addFolderTab(QList<QUrl> folders)
 {
     for (QUrl folder : folders)
@@ -242,7 +233,7 @@ void Core::playSound(std::string path)
 
 void Core::changeLocalVolume(int volume)
 {
-    Soundux::Playback::setVolume(Soundux::Playback::getDefaultPlaybackDevice().name, volume / 100.f);
+    Soundux::Playback::setVolume(Soundux::Playback::defaultPlayback.name, volume / 100.f);
 }
 
 void Core::changeRemoteVolume(int volume)

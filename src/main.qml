@@ -245,17 +245,7 @@ ApplicationWindow {
         {
             if (visible)
             {
-                searchList.clear()
                 var sounds = core.getAllSounds()
-                for (var child in sounds) {
-                    if (searchField.text)
-                    {
-                        searchList.append({
-                            "name": sounds[child].getName(),
-                            "path": sounds[child].getPath()
-                        })
-                    }
-                }
                 _sounds = sounds
             }
         }
@@ -334,7 +324,9 @@ ApplicationWindow {
 
     Dialog {
         id: setHotkeyDialog
-        title: "Set hotkey for ..."
+        property string soundName;
+
+        title: "Set hotkey for " + soundName
         modal: true
         anchors.centerIn: parent
         standardButtons: Dialog.Ok | Dialog.Reset | Dialog.Cancel
@@ -463,30 +455,8 @@ ApplicationWindow {
     }
 
     Dialog {
-        id: addTabDialog
-        title: "Add Tab"
-        modal: true
-        anchors.centerIn: parent
-        standardButtons: Dialog.Ok | Dialog.Cancel
-
-        TextField {
-            id: addTabField
-            placeholderText: "Name"
-        }
-
-        onAccepted: {
-            core.addTab(addTabField.text)
-            addTabField.text = ""
-        }
-
-        onRejected: {
-            addTabField.text = ""
-        }
-    }
-
-    Dialog {
         id: removeTabDialog
-        title: "Remove tab "
+        title: "Remove tab"
         modal: true
         anchors.centerIn: parent
         contentHeight: -20
@@ -498,13 +468,13 @@ ApplicationWindow {
     }
 
     Dialogs.FileDialog {
-        id: addFolderTabDialog
+        id: addTabDialog
         title: "Please choose a folder"
         selectFolder: true
         selectMultiple: true
         folder: shortcuts.home
         onAccepted: {
-            core.addFolderTab(addFolderTabDialog.fileUrls)
+            core.addFolderTab(addTabDialog.fileUrls)
         }
     }
 
@@ -545,11 +515,6 @@ ApplicationWindow {
         onCurrentIndexChanged: {
             core.currentTabChanged(bar.currentIndex)
             soundsListStack.updateItems()
-            var isOnFolderTab = core.getCurrentTab().getFolder().length > 0
-            buttonRefreshFolder.visible = isOnFolderTab
-            buttonAddSound.visible = !isOnFolderTab
-            buttonRemoveSound.visible = !isOnFolderTab
-            buttonClearSounds.visible = !isOnFolderTab
         }
 
         Component.onCompleted: {
@@ -664,26 +629,19 @@ ApplicationWindow {
 
                 onClicked: {
                     searchPane.visible = !searchPane.visible
+                    if (searchPane.visible) {
+                        searchField.forceActiveFocus();
+                    }
                 }
             }
 
             IconButton {
                 Layout.fillWidth: true
                 text: "Add tab"
-                iconName: "tab_plus"
-
-                onClicked: {
-                    addTabDialog.visible = true
-                }
-            }
-
-            IconButton {
-                Layout.fillWidth: true
-                text: "Add folder tab"
                 iconName: "folder_plus"
 
                 onClicked: {
-                    addFolderTabDialog.visible = true
+                    addTabDialog.visible = true
                 }
             }
 
@@ -697,43 +655,16 @@ ApplicationWindow {
                 }
             }
 
-            Item {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 10
-            }
-
             IconButton {
                 id: buttonRefreshFolder
                 Layout.fillWidth: true
-                text: "Refresh folder"
+                text: "Refresh"
                 iconName: "refresh"
 
                 onClicked: {
                     core.updateFolderSounds(core.getCurrentTab())
                     soundsListStack.updateItems()
                 }
-            }
-
-            IconButton {
-                id: buttonAddSound
-                Layout.fillWidth: true
-                text: "Add"
-                iconName: "plus"
-            }
-
-            IconButton {
-                id: buttonRemoveSound
-                Layout.fillWidth: true
-                text: "Remove"
-                iconName: "minus"
-            }
-
-            IconButton {
-                id: buttonClearSounds
-                Layout.fillWidth: true
-
-                text: "Clear"
-                iconName: "trash_can"
             }
 
             Item {
@@ -750,6 +681,7 @@ ApplicationWindow {
                     if (soundsListView.currentIndex >= 0)
                     {
                         setHotkeyDialog.visible = true
+                        setHotkeyDialog.soundName = core.getSounds()[soundsListView.currentIndex].getName()
                     }
                 }
             }

@@ -32,7 +32,6 @@ class Core : public QObject
     void onClose();
 
     void removeTab();
-    void addTab(QString);
     QTab getCurrentTab();
     std::vector<QTab> getTabs();
     void addFolderTab(QList<QUrl>);
