@@ -47,10 +47,10 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
         // TODO: Detect Keyorder.
         if (Config::gConfig.tabHotkeysOnly)
         {
-            for (auto &song : Config::gConfig.tabs[Config::gConfig.currentTab].songs)
+            for (auto &sound : Config::gConfig.tabs[Config::gConfig.currentTab].sounds)
             {
-                bool allPressed = !song.hotKeys.empty();
-                for (auto &hotKey : song.hotKeys)
+                bool allPressed = !sound.hotKeys.empty();
+                for (const auto &hotKey : sound.hotKeys)
                 {
                     if (!pressedKeys[hotKey])
                     {
@@ -60,7 +60,7 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
                 }
                 if (allPressed)
                 {
-                    gCore.playSong(song.path);
+                    gCore.playSound(sound.path);
                     break;
                 }
             }
@@ -69,10 +69,10 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
         {
             for (auto &tab : Config::gConfig.tabs)
             {
-                for (auto &song : tab.songs)
+                for (const auto &sound : tab.sounds)
                 {
-                    bool allPressed = !song.hotKeys.empty();
-                    for (auto &hotKey : song.hotKeys)
+                    bool allPressed = !sound.hotKeys.empty();
+                    for (auto &hotKey : sound.hotKeys)
                     {
                         if (!pressedKeys[hotKey])
                         {
@@ -82,7 +82,7 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
                     }
                     if (allPressed)
                     {
-                        gCore.playSong(song.path);
+                        gCore.playSound(sound.path);
                         break;
                     }
                 }

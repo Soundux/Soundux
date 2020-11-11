@@ -15,7 +15,7 @@ namespace Soundux
     {
         using namespace nlohmann;
 
-        struct Song
+        struct Sound
         {
             std::string name;
             std::string path;
@@ -25,7 +25,7 @@ namespace Soundux
         {
             std::string title;
             std::string folder;
-            std::vector<Song> songs;
+            std::vector<Sound> sounds;
 
             bool operator==(const Tab &other)
             {
@@ -53,25 +53,25 @@ namespace Soundux
 #endif
 #endif
 
-        inline void to_json(json &j, const Song &song)
+        inline void to_json(json &j, const Sound &sound)
         {
-            j = json{{"name", song.name}, {"path", song.path}, {"hotKeys", song.hotKeys}};
+            j = json{{"name", sound.name}, {"path", sound.path}, {"hotKeys", sound.hotKeys}};
         }
-        inline void from_json(const json &j, Song &song)
+        inline void from_json(const json &j, Sound &sound)
         {
-            j.at("name").get_to(song.name);
-            j.at("path").get_to(song.path);
-            j.at("hotKeys").get_to(song.hotKeys);
+            j.at("name").get_to(sound.name);
+            j.at("path").get_to(sound.path);
+            j.at("hotKeys").get_to(sound.hotKeys);
         }
 
         inline void to_json(json &j, const Tab &tab)
         {
-            j = json{{"title", tab.title}, {"folder", tab.folder}, {"songs", tab.songs}};
+            j = json{{"title", tab.title}, {"folder", tab.folder}, {"sounds", tab.sounds}};
         }
         inline void from_json(const json &j, Tab &tab)
         {
             j.at("title").get_to(tab.title);
-            j.at("songs").get_to(tab.songs);
+            j.at("sounds").get_to(tab.sounds);
             j.at("folder").get_to(tab.folder);
         }
 
