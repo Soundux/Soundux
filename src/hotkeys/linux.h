@@ -22,10 +22,10 @@ namespace Soundux
         {
             inline std::thread keyListener;
             inline std::atomic<bool> killThread = false;
-            inline Display *display = XOpenDisplay(":0");
 
             inline void hook()
             {
+                Display *display = XOpenDisplay(":0");
                 if (display == NULL)
                 {
                     std::cerr << "Failed to open X11 Display" << std::endl;
@@ -102,7 +102,13 @@ namespace Soundux
 
         inline std::string getKeyName(const int key)
         {
-            KeySym s = XkbKeycodeToKeysym(internal::display, key, 0, 0);
+            Display *display = XOpenDisplay(":0");
+            if (display == NULL)
+            {
+                std::cerr << "Failed to open X11 Display" << std::endl;
+            }
+
+            KeySym s = XkbKeycodeToKeysym(display, key, 0, 0);
             if (NoSymbol == s)
                 return "Unknown";
 
