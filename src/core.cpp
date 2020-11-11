@@ -22,7 +22,6 @@ void Core::onClose()
 
     Soundux::Playback::stopAllAudio();
     Soundux::Playback::deleteSink();
-
     Soundux::Playback::destroy();
 }
 
@@ -231,7 +230,7 @@ void Core::playSound(std::string path)
     }
     else
     {
-        // TODO: open qt modal
+        emit invalidApplication();
     }
 #endif
 #ifdef _WIN32
@@ -265,42 +264,79 @@ QTab Core::getCurrentTab()
     }
     return qTab;
 }
-void Core::hotkeyDialogOpened()
-{
-    Soundux::Hooks::internal::translateHotkeys = true;
-    Soundux::Hooks::internal::capturedKeyStates.clear();
-}
-
-void Core::hotkeyDialogReset()
-{
-    Soundux::Hooks::internal::capturedKeyList.clear();
-    Soundux::Hooks::internal::translateHotkeys = false;
-    Soundux::Hooks::internal::capturedKeyStates.clear();
-}
 
 void Core::hotkeyDialogFocusChanged(int focus)
 {
     if (focus)
     {
         Soundux::Hooks::internal::translateHotkeys = true;
+        Soundux::Hooks::internal::capturedKeyList.clear();
         Soundux::Hooks::internal::capturedKeyStates.clear();
     }
     else
     {
-        Soundux::Hooks::internal::capturedKeyList.clear();
         Soundux::Hooks::internal::translateHotkeys = false;
         Soundux::Hooks::internal::capturedKeyStates.clear();
     }
 }
 
-void Core::hotkeyDialogClosed(unsigned int index, int state)
+void Core::setHotkey(int index)
 {
     Soundux::Hooks::internal::translateHotkeys = false;
-    if (state == 0 && Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds.size() > index)
+    if (index == -100)
+    {
+        Soundux::Config::gConfig.stopHotKey = Soundux::Hooks::internal::capturedKeyList;
+        Soundux::Config::saveConfig();
+    }
+    else if (Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds.size() > (unsigned int)index)
     {
         Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index].hotKeys =
             Soundux::Hooks::internal::capturedKeyList;
         Soundux::Config::saveConfig();
     }
     Soundux::Hooks::internal::capturedKeyStates.clear();
+}
+
+int Core::getDarkMode()
+{
+    return Soundux::Config::gConfig.darkTheme;
+}
+
+void Core::onDarkModeChanged(int mode)
+{
+    Soundux::Config::gConfig.darkTheme = mode;
+    Soundux::Config::saveConfig();
+}
+
+void Core::onTabHotkeyOnlyChanged(int state)
+{
+    Soundux::Config::gConfig.tabHotkeysOnly = state;
+    Soundux::Config::saveConfig();
+}
+int Core::getTabHotkeysOnly()
+{
+    return Soundux::Config::gConfig.tabHotkeysOnly;
+}
+
+QList<QString> Core::getCurrentHotKey(int index)
+{
+    QList<QString> rtn;
+    if (index == -100)
+    {
+        for (const auto &key : Soundux::Config::gConfig.stopHotKey)
+        {
+            rtn.push_back(QString::fromStdString(Soundux::Hooks::getKeyName(key)));
+        }
+        Soundux::Hooks::internal::capturedKeyList = Soundux::Config::gConfig.stopHotKey;
+    }
+    else if (Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds.size() > (unsigned int)index)
+    {
+        for (const auto &key : Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index].hotKeys)
+        {
+            rtn.push_back(QString::fromStdString(Soundux::Hooks::getKeyName(key)));
+        }
+        Soundux::Hooks::internal::capturedKeyList =
+            Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index].hotKeys;
+    }
+    return rtn;
 }

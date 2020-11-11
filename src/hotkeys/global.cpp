@@ -4,7 +4,6 @@
 
 void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
 {
-    // TODO: Check if window is focused.
     if (translateHotkeys)
     {
         if (down && !capturedKeyStates[key].first)
@@ -44,7 +43,21 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
 
     if (down && !translateHotkeys)
     {
-        // TODO: Detect Keyorder.
+        bool shouldStop = !Config::gConfig.stopHotKey.empty();
+        for (const auto &hotKey : Config::gConfig.stopHotKey)
+        {
+            if (!pressedKeys[hotKey])
+            {
+                shouldStop = false;
+                break;
+            }
+        }
+        if (shouldStop)
+        {
+            gCore.stopPlayback();
+            return;
+        }
+
         if (Config::gConfig.tabHotkeysOnly)
         {
             for (auto &sound : Config::gConfig.tabs[Config::gConfig.currentTab].sounds)

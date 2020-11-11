@@ -51,10 +51,16 @@ class Core : public QObject
 
     void currentTabChanged(int);
 
-    void hotkeyDialogClosed(unsigned int, int);
+    void setHotkey(int);
     void hotkeyDialogFocusChanged(int);
-    void hotkeyDialogOpened();
-    void hotkeyDialogReset();
+
+    int getDarkMode();
+    void onDarkModeChanged(int);
+
+    void onTabHotkeyOnlyChanged(int);
+    int getTabHotkeysOnly();
+
+    QList<QString> getCurrentHotKey(int);
 
 #ifdef __linux__
     void setLinuxSink(ma_device_info);
@@ -63,9 +69,11 @@ class Core : public QObject
 #endif
 
   signals:
-    void foldersChanged();
     void keyPress(QList<QString>);
     void keyCleared();
+
+    void foldersChanged();
+    void invalidApplication();
 
   private:
     QQmlApplicationEngine *engine{};

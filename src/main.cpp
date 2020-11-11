@@ -26,9 +26,13 @@
 int main(int argc, char **argv)
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication app(argc, argv);
+
+    QApplication app(argc, argv);
     QQmlApplicationEngine engine;
     QQuickStyle::setStyle("Material");
+
+    app.setOrganizationDomain("https://github.com/D3SOX/Soundux");
+    app.setOrganizationName("Soundux");
 
     Soundux::Config::loadConfig();
 

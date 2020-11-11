@@ -36,9 +36,10 @@ namespace Soundux
         {
             std::vector<Tab> tabs;
             unsigned int currentOutputApplication;
+            std::vector<int> stopHotKey;
             unsigned int currentTab;
+            bool darkTheme = true;
             bool tabHotkeysOnly;
-            bool darkTheme;
         };
 
         inline Config gConfig;
@@ -80,13 +81,15 @@ namespace Soundux
             j = json{{"tabs", config.tabs},
                      {"darkTheme", config.darkTheme},
                      {"currentTab", config.currentTab},
-                     {"tabHotkeysOnly", config.tabHotkeysOnly}};
+                     {"tabHotkeysOnly", config.tabHotkeysOnly},
+                     {"stopHotKey", config.stopHotKey}};
         }
         inline void from_json(const json &j, Config &config)
         {
             j.at("tabs").get_to(config.tabs);
             j.at("darkTheme").get_to(config.darkTheme);
             j.at("currentTab").get_to(config.currentTab);
+            j.at("stopHotKey").get_to(config.stopHotKey);
             j.at("tabHotkeysOnly").get_to(config.tabHotkeysOnly);
         }
 
