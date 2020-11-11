@@ -3,9 +3,6 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 
-// import QtQuick.Templates 2.15 as T
-// import QtQuick.Controls.impl 2.15
-// import QtQuick.Controls.Material.impl 2.15
 Button {
     id: control
     property string iconName
@@ -32,12 +29,9 @@ Button {
                 text: control.text
                 font: control.font
                 color: !control.enabled ? control.Material.hintTextColor : control.flat
-                                          && control.highlighted ? control.Material.accentColor : control.highlighted ? control.Material.primaryHighlightedTextColor : control.Material.foreground
+                && control.highlighted ? control.Material.accentColor : control.highlighted ? control.Material.primaryHighlightedTextColor : control.Material.foreground
                 visible: !(control.text === "")
             }
         }
     }
-    // Component.onCompleted: {
-    //     console.log("feneg", control.contentItem, control.width)
-    // }
 }
