@@ -14,7 +14,6 @@ Button {
     implicitHeight: 42
     contentItem: Item {
         RowLayout {
-            // anchors.fill: parent
             anchors.centerIn: parent
 
             MaterialDesignIcon {

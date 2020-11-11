@@ -1,13 +1,3 @@
-/*
-
-    Will use SetWindowsHookEx with WH_KEYBOARD_LL
-    To find the sound that uses this hotkey, we will have a map of all sounds that have hotkeys bound to them, the key
-    of that map will be the last key that has to be pressed for the sound to play, then we check all the previous keys
-    with GetAsyncKeyState ( if that works, if it doesn't well save the keystates from the KeyBoard hook in a map )
-    The Hotkey-Map should be able to be used without a mutex - since the only time we access it outside of the keyboard
-    thread is the time we load all the sounds and at that time the keyboard hook doesn't even run.
-
-*/
 #ifdef _WIN32
 #pragma once
 #include <Windows.h>
