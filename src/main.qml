@@ -262,7 +262,7 @@ ApplicationWindow {
                 {
                     searchList.clear();
                     for (var child in searchPane._sounds) {
-                        if (text && searchPane._sounds[child].getName().includes(text))
+                        if (text && searchPane._sounds[child].getName().toLowerCase().includes(text.toLowerCase()))
                         {
                             searchList.append({
                                 "name": searchPane._sounds[child].getName(),
