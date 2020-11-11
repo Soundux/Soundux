@@ -89,7 +89,6 @@ namespace Soundux
                         std::this_thread::sleep_for(std::chrono::seconds(1));
                     }
                 });
-                collector.detach();
                 return collector;
             }();
         } // namespace internal

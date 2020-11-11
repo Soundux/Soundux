@@ -1,15 +1,24 @@
-#include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QApplication>
 #include <QQuickStyle>
 #include <QQmlContext>
+#include <filesystem>
+#include <fstream>
+#include <qqml.h>
+
 #include "core.h"
+#include "config/config.h"
+#include "playback/global.h"
+#include "bindings/bindings.h"
+
 #ifdef _WIN32
 #include "hotkeys/windows.h"
 #include "playback/windows.h"
 #else
 #ifdef __linux__
 #include "hotkeys/linux.h"
-// #else
+#include "playback/linux.h"
+#else
 // #include "hotkeys/mac.h"
 #endif
 #endif
@@ -21,23 +30,35 @@ int main(int argc, char **argv)
     QQmlApplicationEngine engine;
     QQuickStyle::setStyle("Material");
 
-    Core core;
-    core.setEngine(&engine);
-    engine.rootContext()->setContextProperty("core", &core);
+    Soundux::Config::loadConfig();
+
+    gCore.setEngine(&engine);
+    engine.rootContext()->setContextProperty("core", &gCore);
+
+    // register meta types
+    qRegisterMetaType<QTab>();
+    qRegisterMetaType<std::vector<QTab>>();
+
+    qRegisterMetaType<QSound>();
+    qRegisterMetaType<std::vector<QSound>>();
+
+    qRegisterMetaType<QPulseAudioRecordingStream>();
+    qRegisterMetaType<std::vector<QPulseAudioRecordingStream>>();
 
     Soundux::Hooks::setup();
 
-    auto devices = Soundux::Playback::getPlaybackDevices();
-    for (auto device : devices)
+#ifdef __linux__
+    Soundux::Playback::deleteSink();
+    auto sinkName = Soundux::Playback::createSink();
+    for (const auto &device : Soundux::Playback::getPlaybackDevices())
     {
-        std::cout << device.name << std::endl;
+        if (device.name == sinkName)
+        {
+            gCore.setLinuxSink(device);
+            break;
+        }
     }
-
-    Soundux::Playback::playAudio("test.mp3", devices.back());
-    std::cin.get();
-    Soundux::Playback::stopAllAudio();
-    std::cout << "All playback stopped!" << std::endl;
-    std::cin.get();
+#endif
 
     engine.load("qrc:/main.qml");
     return QGuiApplication::exec();
