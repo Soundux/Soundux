@@ -16,6 +16,9 @@
     <a href="https://github.com/D3SOX/Soundux/blob/master/LICENSE">
       <img src="https://img.shields.io/github/license/D3SOX/Soundux.svg?style=for-the-badge" alt="License" />
     </a>
+    <a href="https://discord.gg/4HwSGN4Ec2">
+      <img src="https://img.shields.io/discord/697348809591750706?label=Discord&style=for-the-badge" alt="Discord" />
+    </a>
   </p>
 </div>
 
