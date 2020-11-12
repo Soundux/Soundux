@@ -56,7 +56,7 @@ namespace Soundux
             internal::keyListener.join();
         }
 
-        std::string getKeyName(const int key)
+        inline std::string getKeyName(const int key)
         {
             UINT scanCode = MapVirtualKey(key, MAPVK_VK_TO_VSC);
 

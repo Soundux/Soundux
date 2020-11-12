@@ -46,8 +46,10 @@ int main(int argc, char **argv)
     qRegisterMetaType<QSound>();
     qRegisterMetaType<std::vector<QSound>>();
 
+#ifdef __linux__
     qRegisterMetaType<QPulseAudioRecordingStream>();
     qRegisterMetaType<std::vector<QPulseAudioRecordingStream>>();
+#endif
 
     Soundux::Hooks::setup();
 

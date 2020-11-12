@@ -4,8 +4,8 @@
 #include "hotkeys/global.h"
 #include "playback/global.h"
 #include "playback/linux.h"
-#include <cstdint>
 #include <filesystem>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -21,7 +21,9 @@ void Core::onClose()
     Soundux::Hooks::stop();
 
     Soundux::Playback::stopAllAudio();
+#ifdef __linux__
     Soundux::Playback::deleteSink();
+#endif
     Soundux::Playback::destroy();
 }
 
@@ -31,9 +33,10 @@ void Core::refresh()
     this->engine->load("../src/main.qml");
 }
 
+#ifdef __linux__
 void Core::setLinuxSink(ma_device_info linuxSink)
 {
-    this->linuxSink = linuxSink;
+    sink = linuxSink;
 }
 
 std::vector<QPulseAudioRecordingStream> Core::getOutputApplications()
@@ -50,6 +53,44 @@ std::vector<QPulseAudioRecordingStream> Core::getOutputApplications()
 
     return qStreams;
 }
+void Core::currentOutputApplicationChanged(int index)
+{
+    if (index >= 0)
+    {
+        Soundux::Config::gConfig.currentOutputApplication = index;
+    }
+}
+#else
+#ifdef _WIN32
+// Define Linux functions to prevent moc failure.
+void Core::setLinuxSink(ma_device_info linuxSink) {}
+std::vector<QPulseAudioRecordingStream> Core::getOutputApplications()
+{
+    return {};
+}
+
+// Windows functions
+void Core::currentOutputApplicationChanged(int index)
+{
+    Soundux::Config::gConfig.currentOutputApplication = index;
+    auto devices = Soundux::Playback::getPlaybackDevices();
+    if (devices.size() > (unsigned int)index)
+    {
+        sink = devices[index];
+    }
+}
+QList<QString> Core::getPlaybackDevices()
+{
+    auto devices = Soundux::Playback::getPlaybackDevices();
+    QList<QString> rtn;
+    for (auto &device : devices)
+    {
+        rtn.push_back(QString::fromStdString(device.name));
+    }
+    return rtn;
+}
+#endif
+#endif
 
 std::vector<QTab> Core::getTabs()
 {
@@ -100,14 +141,26 @@ void Core::updateFolderSounds(QTab qTab)
 void Core::updateFolderSounds(Soundux::Config::Tab &tab)
 {
     tab.sounds.clear();
-    for (const auto &file : std::filesystem::directory_iterator(tab.folder))
+
+#ifdef _WIN32
+    // Please dont ask why we have to do this. I don't know either...
+    auto path = tab.folder;
+    if (path[0] == '/')
+    {
+        path = path.substr(1);
+    }
+#else
+    auto path = tab.folder;
+#endif
+
+    for (const auto &file : std::filesystem::directory_iterator(path))
     {
         if (file.path().extension() != ".mp3")
             continue;
 
         Soundux::Config::Sound sound;
-        sound.name = file.path().filename();
-        sound.path = file.path();
+        sound.name = file.path().filename().u8string();
+        sound.path = file.path().u8string();
         tab.sounds.push_back(sound);
     }
 }
@@ -169,14 +222,6 @@ std::vector<QSound> Core::getAllSounds(std::string name)
     return qSounds;
 }
 
-void Core::currentOutputApplicationChanged(int index)
-{
-    if (index >= 0)
-    {
-        Soundux::Config::gConfig.currentOutputApplication = index;
-    }
-}
-
 void Core::playSound(unsigned int index)
 {
     if (Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds.size() > index)
@@ -210,7 +255,7 @@ void Core::playSound(std::string path)
         }
 
         // play on linux sink
-        auto lastPlayedId = Soundux::Playback::playAudio(path, linuxSink);
+        auto lastPlayedId = Soundux::Playback::playAudio(path, sink);
 
         Soundux::Playback::stopCallback = [=](const auto &info) {
             if (info.id == lastPlayedId)
@@ -225,7 +270,7 @@ void Core::playSound(std::string path)
     }
 #endif
 #ifdef _WIN32
-// TODO: play on windows sink
+    Soundux::Playback::playAudio(path, sink);
 #endif
     // play for me on default playback device
     Soundux::Playback::playAudio(path);
@@ -238,7 +283,7 @@ void Core::changeLocalVolume(int volume)
 
 void Core::changeRemoteVolume(int volume)
 {
-    Soundux::Playback::setVolume(linuxSink.name, volume / 100.f);
+    Soundux::Playback::setVolume(sink.name, volume / 100.f);
 }
 
 void Core::stopPlayback()
@@ -330,4 +375,13 @@ QList<QString> Core::getCurrentHotKey(int index)
             Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index].hotKeys;
     }
     return rtn;
+}
+
+int Core::isWindows()
+{
+#ifdef _WIN32
+    return true;
+#else
+    return false;
+#endif
 }

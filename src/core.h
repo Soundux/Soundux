@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "config/config.h"
+#include "bindings/bindings.h"
+#include "qlist.h"
 
 #ifdef _WIN32
 #include "hotkeys/windows.h"
@@ -14,7 +16,6 @@
 #ifdef __linux__
 #include "hotkeys/linux.h"
 #include "playback/linux.h"
-#include "bindings/bindings.h"
 // #else
 // #include "hotkeys/mac.h"
 #endif
@@ -59,13 +60,20 @@ class Core : public QObject
     void onTabHotkeyOnlyChanged(int);
     int getTabHotkeysOnly();
 
+    int isWindows();
     QList<QString> getCurrentHotKey(int);
 
-#ifdef __linux__
+    // Can't use preprocessor here because qt doesnt like that.
+
+    /* Linux */
     void setLinuxSink(ma_device_info);
     void currentOutputApplicationChanged(int);
     std::vector<QPulseAudioRecordingStream> getOutputApplications();
-#endif
+    /* */
+
+    /* Windows */
+    QList<QString> getPlaybackDevices();
+    /* */
 
   signals:
     void keyPress(QList<QString>);
@@ -76,7 +84,7 @@ class Core : public QObject
 
   private:
     QQmlApplicationEngine *engine{};
-    ma_device_info linuxSink;
+    ma_device_info sink;
 };
 
 inline Core gCore;

@@ -13,6 +13,7 @@ ApplicationWindow {
     minimumWidth: 850
     minimumHeight: 500
 
+    property var isWindows: core.isWindows()
     property var darkMode:  core.getDarkMode()
     property var cBg: darkMode ? Material.color(Material.Grey, Material.Shade900) : Material.color(Material.Grey, Material.Shade400)
     property var cBgDarker: darkMode ? "#313131" : Material.color(Material.Grey, Material.Shade500)
@@ -188,17 +189,17 @@ ApplicationWindow {
                 }
 
                 Component.onCompleted: {
-                    var outputApplications = core.getOutputApplications();
+                    var outputApplications = isWindows ? core.getPlaybackDevices() : core.getOutputApplications();
                     for (var child in outputApplications) {
                         outputApplicationModel.append({
-                            "text": outputApplications[child].getName()
+                            "text": isWindows ? outputApplications[child] : outputApplications[child].getName()
                         })
                     }
                     outputApplicationBox.currentIndex = 0
                 }
 
                 Label {
-                    text: "Output application"
+                    text: isWindows ? "Output Device" : "Output application"
                     anchors.right: parent.left
                     anchors.rightMargin: 5
                     anchors.verticalCenter: parent.verticalCenter

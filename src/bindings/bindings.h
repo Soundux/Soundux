@@ -27,6 +27,12 @@ struct QPulseAudioRecordingStream
 Q_DECLARE_METATYPE(QPulseAudioRecordingStream)
 #endif
 
+#ifdef _WIN32
+struct QPulseAudioRecordingStream
+{
+};
+#endif
+
 struct QSound
 {
     Q_GADGET
