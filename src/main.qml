@@ -652,6 +652,7 @@ ApplicationWindow {
                 iconName: "tab_minus"
 
                 onClicked: {
+                    // TODO: open only when on a tab
                     removeTabDialog.visible = true
                 }
             }

@@ -130,6 +130,7 @@ void Core::addFolderTab(QList<QUrl> folders)
 
 void Core::updateFolderSounds(QTab qTab)
 {
+    // TODO: fix that the previously selected item is selected afterwards when it's still there
     auto instance = qTab.getInstance();
     for (auto &tab : Soundux::Config::gConfig.tabs)
     {
@@ -160,7 +161,7 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
 
     for (const auto &file : std::filesystem::directory_iterator(path))
     {
-        if (file.path().extension() != ".mp3")
+        if (file.path().extension() != ".mp3" && file.path().extension() != ".wav") 
             continue;
 
         Soundux::Config::Sound sound;
