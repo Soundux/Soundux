@@ -23,11 +23,21 @@
 #endif
 #endif
 
+#ifdef _WIN32
+INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
+{
+#else
 int main(int argc, char **argv)
 {
+#endif
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
+#ifdef _WIN32
+    int argc;
+    QApplication app(argc, nullptr);
+#else
     QApplication app(argc, argv);
+#endif
     QQmlApplicationEngine engine;
     QQuickStyle::setStyle("Material");
 
