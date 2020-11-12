@@ -218,10 +218,10 @@ ApplicationWindow {
 
                 onClicked: {
                     outputApplicationModel.clear()
-                    var outputApplications = core.getOutputApplications();
+                    var outputApplications = isWindows ? core.getPlaybackDevices() : core.getOutputApplications();
                     for (var child in outputApplications) {
                         outputApplicationModel.append({
-                            "text": outputApplications[child].getName()
+                            "text": isWindows ? outputApplications[child] : outputApplications[child].getName()
                         })
                     }
                     outputApplicationBox.currentIndex = 0
