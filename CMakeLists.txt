@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(main VERSION 0.1.0)
+project(soundux VERSION 0.1.0)
 
 file(GLOB src
     "src/*.cpp"
@@ -29,20 +29,20 @@ include_directories("lib/miniaudio")
 if(MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
-add_executable(main ${src} ${QT_RESOURCES})
+add_executable(soundux ${src} ${QT_RESOURCES})
 else()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall")
-add_executable(main ${src} ${QT_RESOURCES})
+add_executable(soundux ${src} ${QT_RESOURCES})
 endif(MSVC)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 if (UNIX)
-target_link_libraries(main ${X11_LIBRARIES} ${X11_Xinput_LIB} ${CMAKE_DL_LIBS})
-target_link_libraries(main pthread)
+target_link_libraries(soundux ${X11_LIBRARIES} ${X11_Xinput_LIB} ${CMAKE_DL_LIBS})
+target_link_libraries(soundux pthread)
 endif(UNIX)
 
-target_link_libraries(main
+target_link_libraries(soundux
     Qt5::Widgets
     Qt5::Qml
     Qt5::Quick
