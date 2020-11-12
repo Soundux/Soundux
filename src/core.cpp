@@ -60,6 +60,11 @@ void Core::currentOutputApplicationChanged(int index)
         Soundux::Config::gConfig.currentOutputApplication = index;
     }
 }
+// Windows function that we need to define for moc
+QList<QString> Core::getPlaybackDevices()
+{
+    return {};
+}
 #else
 #ifdef _WIN32
 // Define Linux functions to prevent moc failure.
