@@ -102,7 +102,7 @@ Automated Installation is currently not available but will be available in the f
 
 # Why _Soundux_?
 
-**Sound**board for Lin**ux**
+The project started as a **Sound**board for Lin**ux**
 
 # License
 The code is licensed under [GPLv3](LICENSE)
@@ -112,8 +112,6 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Icons in Output application dropdown on linux
 - [ ] Improve the logo
 - [ ] Volume normalization
-- [x] Play sounds while another sound is playing
-- [x] Organize code
 - [ ] Grid View
 - [ ] Save window size
 - [ ] Save volume states (+ Sync state)
