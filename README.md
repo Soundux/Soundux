@@ -42,7 +42,7 @@
 Soundux is a cross-platform soundboard that features a simple user interface.
 With Soundux you can play audio to a specific application on linux and to your vb-audio-cable sink on windows.
 
-# Runtime Dependencies
+# Runtime Dependencies (for linux)
 Please refer to your distro instructions on how to install
 - [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio)
 
