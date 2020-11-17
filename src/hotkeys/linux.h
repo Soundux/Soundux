@@ -1,6 +1,7 @@
 #ifdef __linux__
 #pragma once
 #include <atomic>
+#include <chrono>
 #include <thread>
 #include "global.h"
 #include <iostream>
@@ -64,20 +65,27 @@ namespace Soundux
 
                 while (!killThread.load())
                 {
-                    XEvent event;
-                    XGenericEventCookie *cookie = reinterpret_cast<XGenericEventCookie *>(&event.xcookie);
-                    while (!killThread.load() && XPending(display))
+                    while (!killThread.load())
                     {
-                        XNextEvent(display, &event);
-
-                        if (XGetEventData(display, cookie) && cookie->type == GenericEvent &&
-                            cookie->extension == xiOpCode &&
-                            (cookie->evtype == XI_RawKeyRelease || cookie->evtype == XI_RawKeyPress))
+                        if (XPending(display))
                         {
-                            XIRawEvent *ev = reinterpret_cast<XIRawEvent *>(cookie->data);
-                            auto key = ev->detail;
+                            XEvent event;
+                            XNextEvent(display, &event);
+                            XGenericEventCookie *cookie = reinterpret_cast<XGenericEventCookie *>(&event.xcookie);
 
-                            internal::onKeyEvent(key, cookie->evtype == XI_RawKeyPress);
+                            if (XGetEventData(display, cookie) && cookie->type == GenericEvent &&
+                                cookie->extension == xiOpCode &&
+                                (cookie->evtype == XI_RawKeyRelease || cookie->evtype == XI_RawKeyPress))
+                            {
+                                XIRawEvent *ev = reinterpret_cast<XIRawEvent *>(cookie->data);
+                                auto key = ev->detail;
+
+                                internal::onKeyEvent(key, cookie->evtype == XI_RawKeyPress);
+                            }
+                        }
+                        else
+                        {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(100));
                         }
                     }
                 }
