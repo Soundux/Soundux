@@ -13,6 +13,9 @@
     <a href="https://github.com/Soundux/Soundux/releases">
       <img src="https://img.shields.io/github/last-commit/Soundux/Soundux.svg?style=for-the-badge" alt="Last Commit" />
     </a>
+    <a href="https://github.com/Soundux/Soundux/stargazers">
+      <img src="https://img.shields.io/github/stars/Soundux/Soundux?style=for-the-badge" alt="Stars" />
+    </a>
     <a href="https://github.com/Soundux/Soundux/blob/master/LICENSE">
       <img src="https://img.shields.io/github/license/Soundux/Soundux.svg?style=for-the-badge" alt="License" />
     </a>
