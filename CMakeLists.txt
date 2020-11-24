@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(soundux VERSION 0.1.0)
 
+if (NOT EXISTS "${CMAKE_SOURCE_DIR}/src/MaterialDesign.js")
+    execute_process(COMMAND python "${CMAKE_SOURCE_DIR}/lib/generateMaterialDesignJs.py"
+                    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+    message("Generated MaterialDesign.js")
+endif()
+
 file(GLOB src
     "src/*.cpp"
     "src/*.qml"
