@@ -10,11 +10,11 @@
     <h4>A cross-platform soundboard in QtQuick</h4>
   </p>
   <p>
-    <a href="https://github.com/D3SOX/Soundux/releases">
-      <img src="https://img.shields.io/github/last-commit/D3SOX/Soundux.svg?style=for-the-badge" alt="Last Commit" />
+    <a href="https://github.com/Soundux/Soundux/releases">
+      <img src="https://img.shields.io/github/last-commit/Soundux/Soundux.svg?style=for-the-badge" alt="Last Commit" />
     </a>
-    <a href="https://github.com/D3SOX/Soundux/blob/master/LICENSE">
-      <img src="https://img.shields.io/github/license/D3SOX/Soundux.svg?style=for-the-badge" alt="License" />
+    <a href="https://github.com/Soundux/Soundux/blob/master/LICENSE">
+      <img src="https://img.shields.io/github/license/Soundux/Soundux.svg?style=for-the-badge" alt="License" />
     </a>
     <a href="https://discord.gg/4HwSGN4Ec2">
       <img src="https://img.shields.io/discord/697348809591750706?label=Discord&style=for-the-badge" alt="Discord" />
