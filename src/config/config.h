@@ -35,11 +35,13 @@ namespace Soundux
         struct Config
         {
             std::vector<Tab> tabs;
+            std::map<std::string, float> volumes;
             unsigned int currentOutputApplication;
             std::vector<int> stopHotKey;
             unsigned int currentTab;
             bool darkTheme = true;
             bool tabHotkeysOnly;
+            int width = 995, height = 550;
         };
 
         inline Config gConfig;
@@ -78,11 +80,16 @@ namespace Soundux
 
         inline void to_json(json &j, const Config &config)
         {
-            j = json{{"tabs", config.tabs},
-                     {"darkTheme", config.darkTheme},
-                     {"currentTab", config.currentTab},
-                     {"tabHotkeysOnly", config.tabHotkeysOnly},
-                     {"stopHotKey", config.stopHotKey}};
+            j = json{
+                {"tabs", config.tabs},
+                {"darkTheme", config.darkTheme},
+                {"currentTab", config.currentTab},
+                {"tabHotkeysOnly", config.tabHotkeysOnly},
+                {"stopHotKey", config.stopHotKey},
+                {"volumes", config.volumes},
+                {"width", config.width},
+                {"height", config.height},
+            };
         }
         inline void from_json(const json &j, Config &config)
         {
@@ -91,6 +98,13 @@ namespace Soundux
             j.at("currentTab").get_to(config.currentTab);
             j.at("stopHotKey").get_to(config.stopHotKey);
             j.at("tabHotkeysOnly").get_to(config.tabHotkeysOnly);
+
+            if (j.contains("volumes"))
+                j.at("volumes").get_to(config.volumes);
+            if (j.contains("width"))
+                j.at("width").get_to(config.width);
+            if (j.contains("height"))
+                j.at("height").get_to(config.height);
         }
 
         inline void loadConfig()

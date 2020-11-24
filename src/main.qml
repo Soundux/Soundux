@@ -25,6 +25,15 @@ ApplicationWindow {
     Material.accent: Material.Green
     property var currentTab: undefined
 
+    onWidthChanged:
+    {
+        core.onSizeChanged(width, height)
+    }
+    onHeightChanged:
+    {
+        core.onSizeChanged(width, height)
+    }
+
     onClosing: {
         core.onClose()
     }
@@ -36,11 +45,33 @@ ApplicationWindow {
         }
     }
 
+    Component.onCompleted:
+    {
+        core.loadSettings();
+    }
+
     Connections {
         target: core
         function onInvalidApplication() {
             invalidAppDialog.visible = true
             refreshOutputBtn.clicked();
+        }
+        function onSetLocalVolume(volume)
+        {
+            localVolume.value = volume * 100
+        }
+        function onSetRemoteVolume(volume)
+        {
+            remoteVolume.value = volume * 100
+        }
+        function onSetOutputApplication(index)
+        {
+            outputApplicationBox.currentIndex = index
+        }
+        function onSetSize(width, height)
+        {
+            window.width = width
+            window.height = height
         }
     }
 

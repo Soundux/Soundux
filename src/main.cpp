@@ -45,6 +45,7 @@ int main(int argc, char **argv)
     app.setOrganizationName("Soundux");
 
     Soundux::Config::loadConfig();
+    Soundux::Playback::usedDevices = Soundux::Config::gConfig.volumes;
 
     gCore.setEngine(&engine);
     engine.rootContext()->setContextProperty("core", &gCore);

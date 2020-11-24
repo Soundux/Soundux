@@ -16,8 +16,47 @@ void Core::setEngine(QQmlApplicationEngine *engine)
     this->engine = engine;
 }
 
+void Core::loadSettings()
+{
+    if (Soundux::Playback::usedDevices.find(Soundux::Playback::defaultPlayback.name) !=
+        Soundux::Playback::usedDevices.end())
+    {
+        setLocalVolume(Soundux::Playback::usedDevices[Soundux::Playback::defaultPlayback.name]);
+    }
+#ifdef __linux__
+    if (Soundux::Playback::usedDevices.find(Soundux::Playback::internal::sinkName) !=
+        Soundux::Playback::usedDevices.end())
+    {
+        setRemoteVolume(Soundux::Playback::usedDevices[Soundux::Playback::internal::sinkName]);
+    }
+
+    auto index = Soundux::Config::gConfig.currentOutputApplication;
+    auto sources = Soundux::Playback::getSources();
+    if (sources.size() > index)
+    {
+        setOutputApplication(index);
+    }
+#endif
+#ifdef _WIN32
+    auto index = Soundux::Config::gConfig.currentOutputApplication;
+    auto devices = Soundux::Playback::getPlaybackDevices();
+    if (devices.size() > index)
+    {
+        auto &device = devices[index];
+        if (Soundux::Playback::usedDevices.find(device.name) != Soundux::Playback::usedDevices.end())
+        {
+            setRemoteVolume(Soundux::Playback::usedDevices[device.name]);
+        }
+    }
+#endif
+    setSize(Soundux::Config::gConfig.width, Soundux::Config::gConfig.height);
+}
+
 void Core::onClose()
 {
+    Soundux::Config::gConfig.volumes = Soundux::Playback::usedDevices;
+    Soundux::Config::saveConfig();
+
     Soundux::Hooks::stop();
 
     Soundux::Playback::stopAllAudio();
@@ -161,7 +200,7 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
 
     for (const auto &file : std::filesystem::directory_iterator(path))
     {
-        if (file.path().extension() != ".mp3" && file.path().extension() != ".wav") 
+        if (file.path().extension() != ".mp3" && file.path().extension() != ".wav")
             continue;
 
         Soundux::Config::Sound sound;
@@ -390,4 +429,10 @@ int Core::isWindows()
 #else
     return false;
 #endif
+}
+
+void Core::onSizeChanged(int width, int height)
+{
+    Soundux::Config::gConfig.width = width;
+    Soundux::Config::gConfig.height = height;
 }

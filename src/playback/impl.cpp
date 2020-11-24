@@ -93,7 +93,7 @@ namespace Soundux
     }
     void Playback::setVolume(const std::string &deviceName, float volume)
     {
-        internal::usedDevices[deviceName] = volume;
+        usedDevices[deviceName] = volume;
     }
     std::uint64_t Playback::playAudio(const std::string &file)
     {
@@ -101,8 +101,8 @@ namespace Soundux
 
         //? Theoretically we could remove this, but this will result in the defaultPlayBackVolume being 0. This will
         //? only change when the user manually changes this value in the ui where the default value will not match.
-        if (internal::usedDevices.find(defaultPlayback.name) == internal::usedDevices.end())
-            internal::usedDevices.insert(std::make_pair(defaultPlayback.name, 1.f));
+        if (usedDevices.find(defaultPlayback.name) == usedDevices.end())
+            usedDevices.insert(std::make_pair(defaultPlayback.name, 1.f));
 
         ma_decoder *decoder = new ma_decoder;
         ma_result result = ma_decoder_init_file(file.c_str(), 0, decoder);
@@ -144,8 +144,8 @@ namespace Soundux
     {
         static std::uint64_t counter = 0;
 
-        if (internal::usedDevices.find(deviceInfo.name) == internal::usedDevices.end())
-            internal::usedDevices.insert(std::make_pair(deviceInfo.name, 1.f));
+        if (usedDevices.find(deviceInfo.name) == usedDevices.end())
+            usedDevices.insert(std::make_pair(deviceInfo.name, 1.f));
 
         ma_decoder *decoder = new ma_decoder;
         ma_result result = ma_decoder_init_file(file.c_str(), 0, decoder);

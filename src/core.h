@@ -29,8 +29,11 @@ class Core : public QObject
 
   public slots:
     void setEngine(QQmlApplicationEngine *);
+    void loadSettings();
     void refresh();
     void onClose();
+
+    void onSizeChanged(int, int);
 
     void removeTab();
     QTab getCurrentTab();
@@ -80,7 +83,11 @@ class Core : public QObject
     void keyCleared();
 
     void foldersChanged();
+    void setSize(int, int);
     void invalidApplication();
+    void setLocalVolume(float);
+    void setRemoteVolume(float);
+    void setOutputApplication(int);
 
   private:
     QQmlApplicationEngine *engine{};

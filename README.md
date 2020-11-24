@@ -116,8 +116,8 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Improve the logo
 - [ ] Volume normalization
 - [ ] Grid View
-- [ ] Save window size
-- [ ] Save volume states (+ Sync state)
+- [x] Save window size
+- [ ] ~~Save volume states~~ (+ Sync state)
 - [ ] Add ability to move tabs
 - [ ] Localization
 - [ ] Package it as deb and flatpak and create a repology

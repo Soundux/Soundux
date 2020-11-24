@@ -28,13 +28,13 @@ namespace Soundux
                 std::string name;
             };
 
-            inline std::map<std::string, float> usedDevices;
-
             inline std::mutex playingDeviceMutex;
             inline std::vector<PlayingDevice> currentlyPlayingDevices;
 
             void data_callback(ma_device *device, void *output, const void *input, std::uint32_t frameCount);
         } // namespace internal
+
+        inline std::map<std::string, float> usedDevices;
 
         Playback::internal::DefaultDevice getDefaultCaptureDevice();
         Playback::internal::DefaultDevice getDefaultPlaybackDevice();
