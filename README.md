@@ -78,7 +78,8 @@ This list may be not accurate. Contact me if you find missing dependencies that 
 
 ### Install dependencies for Ubuntu and derivatives
 ```sh
-sudo apt install git qt5-default libqt5x11extras5-dev
+sudo apt install git build-essential cmake qt5-default libx11-dev libqt5x11extras5-dev qtquickcontrols2-5-dev qtdeclarative5-dev libxi-dev
+
 ```
 
 ### Build
