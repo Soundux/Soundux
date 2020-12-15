@@ -21,4 +21,4 @@ jobs:
                 dir: '${{ github.workspace }}/qt/'
             
             - name: Compile
-              run: 'mkdir build && cd build && cmake --build .. --target INSTALL --config Release'
+              run: 'mkdir build && cd build && cmake .. && cmake --build . --target INSTALL --config Release'
