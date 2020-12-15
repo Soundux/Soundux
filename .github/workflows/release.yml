@@ -1,0 +1,24 @@
+on:
+    push:
+        branches: [ master ]
+        paths-ignore:
+        - '**/README.md'
+        - '**/docs/**'
+
+name: Build and Release
+jobs:
+    build-windows:
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v2
+            with:
+                submodules: 'true'
+                
+            - name: Install Qt
+              uses: jurplel/install-qt-action@v2
+              with:
+                arch: 'win64_msvc2017_64'
+                modules: 'quickcontrols2'
+            
+            - name: Compile
+              run: 'mkdir build && cd build && cmake ..'
