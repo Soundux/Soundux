@@ -85,7 +85,7 @@ sudo apt install git build-essential cmake qt5-default libx11-dev libqt5x11extra
 ### Build
 Clone the repository
 ```sh
-git clone https://github.com/D3SOX/Soundux.git
+git clone https://github.com/Soundux/Soundux.git
 cd Soundux
 git submodule update --init --recursive
 ```
