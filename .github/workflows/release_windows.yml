@@ -31,3 +31,11 @@ jobs:
               with:
                   name: Release
                   path: build/Release
+
+            - name: Install InnoSetup  
+              uses: crazy-max/ghaction-chocolatey@v1
+              with: 
+                args: install innosetup -y
+
+            - name: Create Installer
+              run: '&${Env:ProgramFiles(x86)}\Inno\ Setup\ 6\ISCC.exe src/Soundux.iss'
