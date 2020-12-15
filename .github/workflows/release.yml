@@ -18,8 +18,7 @@ jobs:
             - name: Install Qt
               uses: jurplel/install-qt-action@v2
               with:
-                arch: 'win64_msvc2017_64'
-                modules: 'quickcontrols2'
+                dir: '${{ github.workspace }}/qt/'
             
             - name: Compile
               run: 'mkdir build && cd build && cmake ..'
