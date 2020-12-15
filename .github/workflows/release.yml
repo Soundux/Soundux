@@ -25,3 +25,9 @@ jobs:
 
             - name: Windeploy
               run: 'cd build/Release && windeployqt --release --qmldir ../../src soundux.exe'
+
+            - name: Archive production artifacts
+              uses: actions/upload-artifact@v2.2.1
+              with:
+                  name: Release
+                  path: build/Release
