@@ -3,8 +3,11 @@
 import math
 import re
 
+print("Generating MaterialDesign.js")
+
 # open css file from submodule
 css = open("materialdesignicons/css/materialdesignicons.css")
+print("Got css file!")
 
 # lines to be written to js file
 lines = ["var icons = {"]
