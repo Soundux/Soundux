@@ -22,3 +22,6 @@ jobs:
             
             - name: Compile
               run: 'mkdir build && cd build && cmake .. && cmake --build . --target ALL_BUILD --config Release'
+
+            - name: Windeploy
+              run: 'cd build/Release && windeployqt --release --qmldir ../../src soundux.exe'
