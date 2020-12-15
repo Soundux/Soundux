@@ -10,8 +10,9 @@ jobs:
     build-windows:
         runs-on: windows-latest
         steps:
-            - uses: actions/checkout@v2
-            with:
+            - name: Checkout
+              uses: actions/checkout@v2
+              with:
                 submodules: 'true'
                 
             - name: Install Qt
