@@ -48,6 +48,7 @@ With Soundux you can play audio to a specific application on linux and to your v
 # Runtime Dependencies (for linux)
 Please refer to your distro instructions on how to install
 - [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio)
+- Xorg
 
 # Compilation & Installation
 
@@ -75,11 +76,11 @@ After installing the dependencies you should be able to follow the normal build 
 This list may be not accurate. Contact me if you find missing dependencies that I can update this list
 - [qt5-base](https://github.com/qt/qtbase)
 - [qt5-tools](https://github.com/qt/qt5)
+- [qt5-quickcontrols2](https://github.com/qt/qtquickcontrols2)
 
 ### Install dependencies for Ubuntu and derivatives
 ```sh
-sudo apt install git build-essential cmake qt5-default libx11-dev libqt5x11extras5-dev qtquickcontrols2-5-dev qtdeclarative5-dev libxi-dev
-
+sudo apt install git build-essential cmake qt5-default libx11-dev libqt5x11extras5-dev qtquickcontrols2-5-dev qtdeclarative5-dev libxi-dev qml-module-qtquick2 qml-module-qtquick-controls qml-module-qtquick-controls2 qml-module-qtquick-dialogs qml-module-qtquick-layouts qml-module-qtquick-window2 qml-module-qt-labs-settings qml-module-qt-labs-folderlistmodel
 ```
 
 ### Build
