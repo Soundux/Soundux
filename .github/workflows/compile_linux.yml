@@ -14,9 +14,9 @@ jobs:
               uses: actions/checkout@v2
               with:
                 submodules: 'true'
-                
+
             - name: Install Dependencies
               run: 'sudo apt install qt5-default libx11-dev libqt5x11extras5-dev qtquickcontrols2-5-dev qtdeclarative5-dev libxi-dev qml-module-qtquick2 qml-module-qtquick-controls qml-module-qtquick-controls2 qml-module-qtquick-dialogs qml-module-qtquick-layouts qml-module-qtquick-window2 qml-module-qt-labs-settings qml-module-qt-labs-folderlistmodel'
             
             - name: Compile
-              run: 'mkdir build && cd build && cmake .. && cmake --build . --target ALL_BUILD --config Release'
+              run: 'mkdir build && cd build && cmake .. && make'
