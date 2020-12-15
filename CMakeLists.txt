@@ -5,6 +5,8 @@ if (NOT EXISTS "${CMAKE_SOURCE_DIR}/src/MaterialDesign.js")
     if (MSVC)
     execute_process(COMMAND cmd /c python "${CMAKE_SOURCE_DIR}/lib/generateMaterialDesignJs.py"
                     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+    execute_process(COMMAND cmd /c windeployqt "--release --qmldir ${CMAKE_SOURCE_DIR}/src soundux.exe"
+                    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/build/Release")
     else()
     execute_process(COMMAND python3 "${CMAKE_SOURCE_DIR}/lib/generateMaterialDesignJs.py"
                     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
