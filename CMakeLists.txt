@@ -3,8 +3,9 @@ project(soundux VERSION 0.1.0)
 
 if (NOT EXISTS "${CMAKE_SOURCE_DIR}/src/MaterialDesign.js")
     execute_process(COMMAND python3 "${CMAKE_SOURCE_DIR}/lib/generateMaterialDesignJs.py"
-                    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
-    message("Generated MaterialDesign.js")
+                    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/lib"
+                    RESULT_VARIABLE rv)
+    message("Generated MaterialDesign.js with result: '${rv}'")
 endif()
 
 file(GLOB src
