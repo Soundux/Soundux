@@ -386,7 +386,7 @@ void Core::setHotkey(int index)
     {
         Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index].hotKeys =
             Soundux::Hooks::internal::capturedKeyList;
-        emit foldersChanged();
+        emit updateCurrentTab();
     }
     Soundux::Config::saveConfig();
     Soundux::Hooks::internal::capturedKeyStates.clear();

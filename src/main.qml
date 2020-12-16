@@ -74,6 +74,10 @@ ApplicationWindow {
             window.width = width
             window.height = height
         }
+        function onUpdateCurrentTab()
+        {
+            soundsListStack.updateItems();
+        }
     }
 
     Dialog

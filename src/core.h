@@ -87,6 +87,7 @@ class Core : public QObject
 
     void foldersChanged();
     void setSize(int, int);
+    void updateCurrentTab();
     void invalidApplication();
     void setLocalVolume(float);
     void setRemoteVolume(float);
