@@ -1,8 +1,10 @@
 #pragma once
-#include <QObject>
-#include <QString>
+#include <qlist.h>
 #include <vector>
+#include <QString>
+#include <QObject>
 #include "../config/config.h"
+#include "../hotkeys/global.h"
 
 #ifdef __linux__
 #include "../playback/linux.h"
@@ -52,6 +54,18 @@ struct QSound
     Q_INVOKABLE QString getPath() const
     {
         return QString::fromStdString(instance.path);
+    }
+    Q_INVOKABLE QList<QString> getKeyBinds() const
+    {
+        auto hotKeys = instance.hotKeys;
+        QList<QString> hotKeyStr;
+
+        for (auto &key : hotKeys)
+        {
+            hotKeyStr.push_back(QString::fromStdString(Soundux::Hooks::getKeyName(key)));
+        }
+
+        return hotKeyStr;
     }
 
   private:

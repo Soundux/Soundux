@@ -573,7 +573,8 @@ ApplicationWindow {
             for (var child in sounds) {
                 soundsList.append({
                     "name": sounds[child].getName(),
-                    "path": sounds[child].getPath()
+                    "path": sounds[child].getPath(),
+                    "hotKey": sounds[child].getKeyBinds().join("+")
                 })
             }
         }
@@ -616,6 +617,29 @@ ApplicationWindow {
                     anchors.left: parent.left
                     anchors.leftMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Rectangle
+                {
+                    visible: hotKey.length > 0
+
+                    radius: 5
+                    color: cBg
+
+                    height: 20
+                    width: hotkeyDisplay.implicitWidth + 10
+
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Text
+                    {
+                        text: hotKey
+                        color: "white"
+                        id: hotkeyDisplay
+                        anchors.centerIn: parent
+                    }
                 }
 
                 MouseArea {
