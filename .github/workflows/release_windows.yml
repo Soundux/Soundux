@@ -4,6 +4,8 @@ on:
         paths-ignore:
         - '**/README.md'
         - '**/docs/**'
+    pull_request:
+        branches: [ master ]
 
 name: Build on Windows
 jobs:
