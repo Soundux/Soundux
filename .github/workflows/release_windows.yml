@@ -70,4 +70,4 @@ jobs:
               uses: actions/upload-artifact@v2.2.1
               with:
                   name: Installer
-                  path: Output/setup.exe
+                  path: src/Output/setup.exe
