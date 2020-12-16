@@ -20,6 +20,7 @@ namespace Soundux
             std::string name;
             std::string path;
             std::vector<int> hotKeys;
+            std::uint64_t lastWriteTime;
         };
         struct Tab
         {
@@ -62,13 +63,19 @@ namespace Soundux
 
         inline void to_json(json &j, const Sound &sound)
         {
-            j = json{{"name", sound.name}, {"path", sound.path}, {"hotKeys", sound.hotKeys}};
+            j = json{{"name", sound.name},
+                     {"path", sound.path},
+                     {"hotKeys", sound.hotKeys},
+                     {"lastWriteTime", sound.lastWriteTime}};
         }
         inline void from_json(const json &j, Sound &sound)
         {
             j.at("name").get_to(sound.name);
             j.at("path").get_to(sound.path);
             j.at("hotKeys").get_to(sound.hotKeys);
+
+            if (j.contains("lastWriteTime"))
+                j.at("lastWriteTime").get_to(sound.lastWriteTime);
         }
 
         inline void to_json(json &j, const Tab &tab)

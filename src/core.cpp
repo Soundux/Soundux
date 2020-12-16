@@ -4,9 +4,9 @@
 #include "hotkeys/global.h"
 #include "playback/global.h"
 #include "playback/linux.h"
-#include <cstring>
 #include <filesystem>
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -205,6 +205,7 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
             continue;
 
         Soundux::Config::Sound sound;
+        sound.lastWriteTime = file.last_write_time().time_since_epoch().count();
         sound.name = file.path().filename().u8string();
         sound.path = file.path().u8string();
 
@@ -262,7 +263,7 @@ std::vector<QSound> Core::getSounds()
     }
 
     std::sort(qSounds.begin(), qSounds.end(), [](QSound &first, QSound &second) {
-        return first.getName().toStdString() < second.getName().toStdString();
+        return first.getInstance().lastWriteTime > second.getInstance().lastWriteTime;
     });
 
     return qSounds;
@@ -283,7 +284,7 @@ std::vector<QSound> Core::getAllSounds(std::string name)
     }
 
     std::sort(qSounds.begin(), qSounds.end(), [](QSound &first, QSound &second) {
-        return first.getName().toStdString() < second.getName().toStdString();
+        return first.getInstance().lastWriteTime < second.getInstance().lastWriteTime;
     });
 
     return qSounds;
