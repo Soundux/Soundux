@@ -4,6 +4,7 @@
 #include "hotkeys/global.h"
 #include "playback/global.h"
 #include "playback/linux.h"
+#include <cstring>
 #include <filesystem>
 #include <algorithm>
 #include <cstdint>
@@ -244,6 +245,8 @@ void Core::currentTabChanged(int index)
 std::vector<QSound> Core::getSounds()
 {
     std::vector<QSound> qSounds;
+    std::vector<std::string> beleg;
+
     if (Soundux::Config::gConfig.tabs.size() > Soundux::Config::gConfig.currentTab)
     {
         for (const auto &sound : Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds)
@@ -252,6 +255,7 @@ std::vector<QSound> Core::getSounds()
             qSound.setInstance(sound);
 
             qSounds.push_back(qSound);
+            beleg.push_back(sound.name);
         }
     }
     else
@@ -259,8 +263,9 @@ std::vector<QSound> Core::getSounds()
         Soundux::Config::gConfig.currentTab = Soundux::Config::gConfig.tabs.size() - 1;
     }
 
-    std::sort(qSounds.begin(), qSounds.end(),
-              [](auto &first, auto &second) { return first.getName() < second.getName(); });
+    std::sort(qSounds.begin(), qSounds.end(), [](QSound &first, QSound &second) {
+        return first.getName().toStdString() < second.getName().toStdString();
+    });
 
     return qSounds;
 }
