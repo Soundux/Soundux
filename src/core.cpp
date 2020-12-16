@@ -284,8 +284,9 @@ std::vector<QSound> Core::getAllSounds(std::string name)
         }
     }
 
-    std::sort(qSounds.begin(), qSounds.end(),
-              [](auto &first, auto &second) { return first.getName() < second.getName(); });
+    std::sort(qSounds.begin(), qSounds.end(), [](QSound &first, QSound &second) {
+        return first.getName().toStdString() < second.getName().toStdString();
+    });
 
     return qSounds;
 }
