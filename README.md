@@ -22,6 +22,9 @@
     <a href="https://discord.gg/4HwSGN4Ec2">
       <img src="https://img.shields.io/discord/697348809591750706?label=Discord&style=for-the-badge" alt="Discord" />
     </a>
+    <a href="https://github.com/Soundux/Soundux/actions">
+      <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20and%20Release?style=for-the-badge" alt="Builds" />
+    </a>
   </p>
 </div>
 
