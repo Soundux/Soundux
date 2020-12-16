@@ -258,6 +258,10 @@ std::vector<QSound> Core::getSounds()
     {
         Soundux::Config::gConfig.currentTab = Soundux::Config::gConfig.tabs.size() - 1;
     }
+
+    std::sort(qSounds.begin(), qSounds.end(),
+              [](auto &first, auto &second) { return first.getName() < second.getName(); });
+
     return qSounds;
 }
 
@@ -274,6 +278,10 @@ std::vector<QSound> Core::getAllSounds(std::string name)
             qSounds.push_back(qSound);
         }
     }
+
+    std::sort(qSounds.begin(), qSounds.end(),
+              [](auto &first, auto &second) { return first.getName() < second.getName(); });
+
     return qSounds;
 }
 
