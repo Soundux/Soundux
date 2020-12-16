@@ -290,6 +290,10 @@ void Core::playSound(QString path)
 
 void Core::playSound(std::string path)
 {
+    if (!Soundux::Config::gConfig.allowOverlapping)
+    {
+        Soundux::Playback::stopAllAudio();
+    }
 #ifdef __linux__
     static std::string moveBackCmd;
     static const std::string sinkMonitor = Soundux::Playback::internal::sinkName + ".monitor";
@@ -445,4 +449,15 @@ void Core::onSizeChanged(int width, int height)
 {
     Soundux::Config::gConfig.width = width;
     Soundux::Config::gConfig.height = height;
+}
+
+void Core::onAllowOverlappingChanged(int state)
+{
+    Soundux::Config::gConfig.allowOverlapping = state;
+    Soundux::Config::saveConfig();
+}
+
+int Core::getAllowOverlapping()
+{
+    return Soundux::Config::gConfig.allowOverlapping;
 }

@@ -35,12 +35,16 @@ namespace Soundux
         struct Config
         {
             std::vector<Tab> tabs;
+
             std::map<std::string, float> volumes;
             unsigned int currentOutputApplication;
             std::vector<int> stopHotKey;
             unsigned int currentTab;
+
+            bool allowOverlapping = false;
             bool darkTheme = true;
             bool tabHotkeysOnly;
+
             int width = 995, height = 550;
         };
 
@@ -83,6 +87,7 @@ namespace Soundux
             j = json{
                 {"tabs", config.tabs},
                 {"darkTheme", config.darkTheme},
+                {"allowOverlapping", config.allowOverlapping},
                 {"currentTab", config.currentTab},
                 {"tabHotkeysOnly", config.tabHotkeysOnly},
                 {"stopHotKey", config.stopHotKey},
@@ -105,6 +110,8 @@ namespace Soundux
                 j.at("width").get_to(config.width);
             if (j.contains("height"))
                 j.at("height").get_to(config.height);
+            if (j.contains("allowOverlapping"))
+                j.at("allowOverlapping").get_to(config.allowOverlapping);
         }
 
         inline void loadConfig()

@@ -60,6 +60,9 @@ class Core : public QObject
     int getDarkMode();
     void onDarkModeChanged(int);
 
+    int getAllowOverlapping();
+    void onAllowOverlappingChanged(int);
+
     void onTabHotkeyOnlyChanged(int);
     int getTabHotkeysOnly();
 
