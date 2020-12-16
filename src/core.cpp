@@ -5,6 +5,7 @@
 #include "playback/global.h"
 #include "playback/linux.h"
 #include <filesystem>
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -185,8 +186,6 @@ void Core::updateFolderSounds(QTab qTab)
 
 void Core::updateFolderSounds(Soundux::Config::Tab &tab)
 {
-    tab.sounds.clear();
-
 #ifdef _WIN32
     // Please dont ask why we have to do this. I don't know either...
     auto path = tab.folder;
@@ -198,6 +197,7 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
     auto path = tab.folder;
 #endif
 
+    std::vector<Soundux::Config::Sound> newSounds;
     for (const auto &file : std::filesystem::directory_iterator(path))
     {
         if (file.path().extension() != ".mp3" && file.path().extension() != ".wav")
@@ -206,8 +206,18 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
         Soundux::Config::Sound sound;
         sound.name = file.path().filename().u8string();
         sound.path = file.path().u8string();
-        tab.sounds.push_back(sound);
+
+        if (auto oldSound = std::find_if(tab.sounds.begin(), tab.sounds.end(),
+                                         [&](auto &item) { return item.path == file.path().u8string(); });
+            oldSound != tab.sounds.end())
+        {
+            sound.hotKeys = oldSound->hotKeys;
+        }
+
+        newSounds.push_back(sound);
     }
+
+    tab.sounds = newSounds;
 }
 
 void Core::removeTab()
@@ -367,14 +377,14 @@ void Core::setHotkey(int index)
     if (index == -100)
     {
         Soundux::Config::gConfig.stopHotKey = Soundux::Hooks::internal::capturedKeyList;
-        Soundux::Config::saveConfig();
     }
     else if (Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds.size() > (unsigned int)index)
     {
         Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index].hotKeys =
             Soundux::Hooks::internal::capturedKeyList;
-        Soundux::Config::saveConfig();
+        emit foldersChanged();
     }
+    Soundux::Config::saveConfig();
     Soundux::Hooks::internal::capturedKeyStates.clear();
 }
 
