@@ -24,6 +24,7 @@ ApplicationWindow {
 
     Material.accent: Material.Green
     property var currentTab: undefined
+    property var lastModifedLocal: true
 
     onWidthChanged:
     {
@@ -130,14 +131,14 @@ ApplicationWindow {
     Pane {
         id: volumePane
         anchors.left: stopButton.right
-        anchors.right: controlPane.left
+        anchors.right: syncVolumeStates.left
         anchors.top: stopButton.top
         anchors.bottom: stopButton.bottom
         anchors.leftMargin: 35
 
         GridLayout {
-            anchors.right: parent.right
             anchors.left: parent.left
+            anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             columns: 2
             rows: 2
@@ -169,6 +170,11 @@ ApplicationWindow {
 
                 onValueChanged: {
                     core.changeLocalVolume(localVolume.value)
+                    lastModifedLocal = true
+                    if (syncVolumeStates.checked)
+                    {
+                        remoteVolume.value = localVolume.value
+                    }
                 }
             }
             Label {
@@ -198,7 +204,32 @@ ApplicationWindow {
 
                 onValueChanged: {
                     core.changeRemoteVolume(remoteVolume.value)
+                    lastModifedLocal = false
+                    if (syncVolumeStates.checked)
+                    {
+                        localVolume.value = remoteVolume.value
+                    }
                 }
+            }
+        }
+    }
+
+    CheckBox
+    {
+        text: "Sync"
+        id: syncVolumeStates
+        anchors.right: controlPane.left
+        anchors.verticalCenter: volumePane.verticalCenter
+
+        onCheckedChanged:
+        {
+            if (lastModifedLocal)
+            {
+                remoteVolume.value = localVolume.value
+            }
+            else
+            {
+                localVolume.value = remoteVolume.value
             }
         }
     }
@@ -424,6 +455,18 @@ ApplicationWindow {
                 Component.onCompleted:
                 {
                     checked = core.getTabHotkeysOnly();
+                }
+            }
+            CheckBox {
+                checked: false
+                text: "Allow sound overlapping"
+                onCheckedChanged:
+                {
+                    core.onAllowOverlappingChanged(checked);
+                }
+                Component.onCompleted:
+                {
+                    checked = core.getAllowOverlapping();
                 }
             }
             CheckBox {
