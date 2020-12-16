@@ -5,7 +5,7 @@ on:
         - '**/README.md'
         - '**/docs/**'
 
-name: Build and Release
+name: Build on Windows
 jobs:
     build-windows:
         runs-on: windows-latest

@@ -5,7 +5,7 @@ on:
         - '**/README.md'
         - '**/docs/**'
 
-name: Compile
+name: Build on Linux
 jobs:
     build-linux:
         runs-on: ubuntu-20.04
