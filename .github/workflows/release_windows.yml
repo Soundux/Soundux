@@ -48,12 +48,17 @@ jobs:
               with: 
                 args: install wget -y
 
-            - name: Create Installer
-              run: |
-                '&"${Env:ProgramData}\chocolatey\bin\sed.exe" -i "s%PATH%${{github.workspace}}%" src/Soundux.iss'
-                '&"${Env:ProgramData}\chocolatey\bin\wget.exe" https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip'
-                '&"${Env:ProgramData}\chocolatey\bin\7z.exe" x .\VBCABLE_Driver_Pack43.zip -o*'
-                '&"${Env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" src/Soundux.iss'
+            - name: Run Sed
+              run: '&"${Env:ProgramData}\chocolatey\bin\sed.exe" -i "s%PATH%${{github.workspace}}%" src/Soundux.iss'
+            
+            - name: Download VB-Cable
+              run: '&"${Env:ProgramData}\chocolatey\bin\wget.exe" https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip'
+                
+            - name: Unpack VB-Cable
+              run: '&"${Env:ProgramData}\chocolatey\bin\7z.exe" x .\VBCABLE_Driver_Pack43.zip -o*'
+                
+            - name: Run InnoSetup
+              run: '&"${Env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" src/Soundux.iss'
 
             - name: Upload Build Artifact
               uses: actions/upload-artifact@v2.2.1
