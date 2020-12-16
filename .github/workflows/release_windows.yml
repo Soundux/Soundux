@@ -49,7 +49,7 @@ jobs:
                 args: install wget -y
 
             - name: Run Sed
-              run: &"${Env:ProgramData}\chocolatey\bin\sed.exe" -i 's%\$PATH%$D:\\a\\Soundux\\Soundux%' src/Soundux.iss
+              run: '&"${Env:ProgramData}\chocolatey\bin\sed.exe" -i ''s%\$PATH%$D:\\a\\Soundux\\Soundux%'' src/Soundux.iss'
             
             - name: Download VB-Cable
               run: '&"${Env:ProgramData}\chocolatey\bin\wget.exe" https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip'
