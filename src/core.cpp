@@ -245,7 +245,6 @@ void Core::currentTabChanged(int index)
 std::vector<QSound> Core::getSounds()
 {
     std::vector<QSound> qSounds;
-    std::vector<std::string> beleg;
 
     if (Soundux::Config::gConfig.tabs.size() > Soundux::Config::gConfig.currentTab)
     {
@@ -255,7 +254,6 @@ std::vector<QSound> Core::getSounds()
             qSound.setInstance(sound);
 
             qSounds.push_back(qSound);
-            beleg.push_back(sound.name);
         }
     }
     else
