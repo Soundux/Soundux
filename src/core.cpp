@@ -284,7 +284,7 @@ std::vector<QSound> Core::getAllSounds(std::string name)
     }
 
     std::sort(qSounds.begin(), qSounds.end(), [](QSound &first, QSound &second) {
-        return first.getInstance().lastWriteTime < second.getInstance().lastWriteTime;
+        return first.getInstance().lastWriteTime > second.getInstance().lastWriteTime;
     });
 
     return qSounds;
