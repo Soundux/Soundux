@@ -22,9 +22,9 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=C:\Users\nico\Desktop\LICENSE.txt
+LicenseFile=$PATH\LICENSE
 OutputBaseFilename=setup
-SetupIconFile=C:\Users\nico\Desktop\icon.ico
+SetupIconFile=$PATH\icon.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -36,9 +36,9 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "C:\Users\nico\Desktop\Release\soundux.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\nico\Desktop\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Users\nico\Desktop\VBCABLE_Driver_Pack43\*"; DestDir: "{app}\VBCable"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "$PATH\build\Release\soundux.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "$PATH\build\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "$PATH\VBCABLE_Driver_Pack43\*"; DestDir: "{app}\VBCable"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

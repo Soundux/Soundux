@@ -9,6 +9,8 @@ name: Build and Release
 jobs:
     build-windows:
         runs-on: windows-latest
+        env:
+          working-directory: .
         steps:
             - name: Checkout
               uses: actions/checkout@v2
@@ -26,16 +28,40 @@ jobs:
             - name: Windeploy
               run: 'cd build/Release && windeployqt --release --qmldir ../../src soundux.exe'
 
-            - name: Archive production artifacts
-              uses: actions/upload-artifact@v2.2.1
-              with:
-                  name: Release
-                  path: build/Release
-
             - name: Install InnoSetup  
               uses: crazy-max/ghaction-chocolatey@v1
               with: 
                 args: install innosetup -y
 
+            - name: Install Sed  
+              uses: crazy-max/ghaction-chocolatey@v1
+              with: 
+                args: install sed -y
+            
+            - name: Install 7zip  
+              uses: crazy-max/ghaction-chocolatey@v1
+              with: 
+                args: install 7zip -y
+            
+            - name: Install Wget  
+              uses: crazy-max/ghaction-chocolatey@v1
+              with: 
+                args: install wget -y
+
             - name: Create Installer
-              run: '&${Env:ProgramFiles(x86)}\Inno\ Setup\ 6\ISCC.exe src/Soundux.iss'
+              run: '&"${Env:ProgramData}\chocolatey\bin\sed.exe" -i "s%PATH%${{github.workspace}}%" src/Soundux.iss'
+              run: '&"${Env:ProgramData}\chocolatey\bin\wget.exe" https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip'
+              run: '&"${Env:ProgramData}\chocolatey\bin\7z.exe" x .\VBCABLE_Driver_Pack43.zip -o*'
+              run: '&"${Env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" src/Soundux.iss'
+
+            - name: Upload Build Artifact
+              uses: actions/upload-artifact@v2.2.1
+              with:
+                  name: Release
+                  path: build/Release
+            
+            - name: Upload Installer Artifact
+              uses: actions/upload-artifact@v2.2.1
+              with:
+                  name: Installer
+                  path: Output/setup.exe
