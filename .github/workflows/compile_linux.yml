@@ -39,15 +39,12 @@ jobs:
 
             - name: Compile
               run: 'mkdir build && cd build && cmake .. && make'
-            
+
             - name: Perform CodeQL Analysis
               uses: github/codeql-action/analyze@v1
 
-            - name: Find QML
-              run: 'sudo apt-get install mlocate && updatedb && locate builtins.qmltypes'
-
             - name: Make AppImage
-              run: 'mkdir -p AppDir/usr/{bin,share} && mkdir -p AppDir/usr/share/{applications,icons} && mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps && cp build/soundux AppDir/usr/bin && cp src/soundux.desktop AppDir/usr/share/applications && cp icon.png AppDir/usr/share/icons/hicolor/256x256/apps/soundux.png && wget https://github.com/probonopd/go-appimage/releases/download/continuous/appimagetool-587-x86_64.AppImage && chmod +x appimagetool-587-x86_64.AppImage && ./appimagetool-587-x86_64.AppImage -s deploy AppDir/usr/share/applications/*.desktop && QMLDIR=dirname $(locate builtins.qmltypes | head -n 1) && cp -r $QMLDIR AppDir/usr/libx86_64-linux-gnu/ && chmod +x AppDir/usr/lib64/ld-linux-x86-64.so.2 && VERSION=1.0 ./appimagetool-587-x86_64.AppImage ./AppDir'
+              run: 'mkdir -p AppDir/usr/{bin,share} && mkdir -p AppDir/usr/share/{applications,icons} && mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps && cp build/soundux AppDir/usr/bin && cp src/soundux.desktop AppDir/usr/share/applications && cp icon.png AppDir/usr/share/icons/hicolor/256x256/apps/soundux.png && wget https://github.com/probonopd/go-appimage/releases/download/continuous/appimagetool-587-x86_64.AppImage && chmod +x appimagetool-587-x86_64.AppImage && ./appimagetool-587-x86_64.AppImage -s deploy AppDir/usr/share/applications/*.desktop && QMLDIR=dirname $(find . -name 'builtins.qmltypes') && cp -r $QMLDIR AppDir/usr/libx86_64-linux-gnu/ && chmod +x AppDir/usr/lib64/ld-linux-x86-64.so.2 && VERSION=1.0 ./appimagetool-587-x86_64.AppImage ./AppDir'
 
             - name: Upload Build Artifact
               uses: actions/upload-artifact@v2.2.1
