@@ -31,14 +31,14 @@ jobs:
             - name: Install other build dependencies
               run: 'sudo apt-get install libx11-dev libxi-dev'
             
-            - name: Compile
-              run: 'mkdir build && cd build && cmake .. && make'
-            
             # Initializes the CodeQL tools for scanning.
             - name: Initialize CodeQL
               uses: github/codeql-action/init@v1
               with:
                 languages: ${{ matrix.language }}
+
+            - name: Compile
+              run: 'mkdir build && cd build && cmake .. && make'
 
             - name: Perform CodeQL Analysis
               uses: github/codeql-action/analyze@v1
