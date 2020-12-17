@@ -23,8 +23,8 @@ jobs:
                   bundle: "soundux.flatpak"
                   manifest-path: "io.github.Soundux.yml"
 
-            - name: Upload AppImage Artifact
+            - name: Upload Flatpak Artifact
               uses: actions/upload-artifact@v2.2.1
               with:
                   name: Flatpak
-                  path: "*soundux*.flatpak"
+                  path: "soundux.flatpak"
