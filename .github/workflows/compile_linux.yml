@@ -45,17 +45,17 @@ jobs:
             #  uses: github/codeql-action/analyze@v1
 
             - name: Create AppImage - Copy necessary files (1/2)
-              runs: 'mkdir AppImage && cd AppImage && cp ../build/soundux . && cp ../src/soundux.desktop . && cp ../icon.png . && mv icon.png soundux.png && mogrify -resize 256x256 soundux.png'
+              run: 'mkdir AppImage && cd AppImage && cp ../build/soundux . && cp ../src/soundux.desktop . && cp ../icon.png . && mv icon.png soundux.png && mogrify -resize 256x256 soundux.png'
 
             # This is just a test I have to find out where the qt/{plugins,qml} folder is
             - name: Create AppImage - Copy necessary files (2/2)
-              runs: 'ls qt && ls /usr/lib'
+              run: 'ls qt && ls /usr/lib'
 
             - name: Create AppImage - Download Linuxdeploy
-              runs: 'cd AppImage && wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod a+x linuxdeploy-x86_64.AppImage'
+              run: 'cd AppImage && wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod a+x linuxdeploy-x86_64.AppImage'
 
             - name: Create AppImage - Run LinuxDeploy
-              runs: 'cd AppImage && ./linuxdeploy-x86_64.AppImage --executable=soundux --icon-file=soundux.png --desktop-file=soundux.desktop --appdir AppDir --output appimage'
+              run: 'cd AppImage && ./linuxdeploy-x86_64.AppImage --executable=soundux --icon-file=soundux.png --desktop-file=soundux.desktop --appdir AppDir --output appimage'
 
             - name: Upload Build Artifact
               uses: actions/upload-artifact@v2.2.1
