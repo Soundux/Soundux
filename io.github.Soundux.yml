@@ -1,0 +1,22 @@
+app-id: io.github.Soundux
+runtime: org.kde.Platform
+runtime-version: '5.15'
+sdk: org.kde.Sdk
+command: soundux
+finish-args:
+  - --device=all
+  - --socket=pulseaudio
+  - --socket=x11
+  - --socket=session-bus
+  - --socket=system-bus
+  - --filesystem=host
+  - --talk-name=org.freedesktop.Flatpak
+modules:
+  - name: soundux
+    buildsystem: cmake
+    config-opts:
+      - -DUSE_FLATPAK=ON
+      - -DCMAKE_BUILD_TYPE=Release
+    sources:
+      - type: git
+        url: https://github.com/Soundux/Soundux.git
