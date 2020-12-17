@@ -26,6 +26,9 @@
       <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20and%20Release?style=for-the-badge" alt="Builds" />
     </a>
   </p>
+  
+  [![Packaging status](https://repology.org/badge/vertical-allrepos/soundux.svg)](https://repology.org/project/soundux/versions)
+  
 </div>
 
 ## Index
@@ -125,6 +128,6 @@ The code is licensed under [GPLv3](LICENSE)
 - [x] ~~Save volume states (+ Sync state)~~
 - [ ] Add ability to move tabs
 - [ ] Localization
-- [ ] Package it as deb and flatpak and create a repology
+- [ ] Package it as deb, Flatpak and AppImage
 - [ ] Support macOS
 - [ ] Fix FileDialog on windows (it's currently bugged and you have to just manually insert the path of the folder you want to add in the navigation bar)
