@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <qqml.h>
+#include <qurl.h>
 
 #include "core.h"
 #include "config/config.h"
@@ -30,7 +31,7 @@ INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nC
 int main(int argc, char **argv)
 {
 #endif
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 #ifdef _WIN32
     int argc;
@@ -77,6 +78,6 @@ int main(int argc, char **argv)
     }
 #endif
 
-    engine.load("qrc:/main.qml");
-    return QGuiApplication::exec();
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    return app.exec();
 }

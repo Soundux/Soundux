@@ -38,6 +38,7 @@ class Core : public QObject
     void removeTab();
     QTab getCurrentTab();
     std::vector<QTab> getTabs();
+
     void addFolderTab(QList<QUrl>);
     void updateFolderSounds(QTab);
     void updateFolderSounds(Soundux::Config::Tab &);
