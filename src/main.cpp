@@ -31,12 +31,13 @@ INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nC
 int main(int argc, char **argv)
 {
 #endif
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 #ifdef _WIN32
     int argc;
-    QApplication app(argc, nullptr);
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication app(argc, nullptr);
 #else
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication app(argc, argv);
 #endif
     QQmlApplicationEngine engine;
