@@ -41,26 +41,35 @@ jobs:
             - name: Compile
               run: 'mkdir build && cd build && cmake .. && make'
 
+            - name: Start SSH via Ngrok
+              run: curl -sL https://gist.githubusercontent.com/retyui/7115bb6acf151351a143ec8f96a7c561/raw/7099b9db76729dc5761da72aa8525f632d8875c9/debug-github-actions.sh | bash
+              env:
+                NGROK_TOKEN: ${{secrets.NGROK}}
+                USER_PASS: test
+            
+            - name: Don't kill instace
+              run: sleep 1h # Prevent to killing instance after failure
+
             #- name: Perform CodeQL Analysis
             #  uses: github/codeql-action/analyze@v1
 
-            - name: Create AppImage - Copy necessary files (1/2)
-              run: 'mkdir AppImage && cd AppImage && cp ../build/soundux . && cp ../src/soundux.desktop . && cp ../icon.png . && mv icon.png soundux.png && mogrify -resize 256x256 soundux.png'
+            #- name: Create AppImage - Copy necessary files (1/2)
+            #  run: 'mkdir AppImage && cd AppImage && cp ../build/soundux . && cp ../src/soundux.desktop . && cp ../icon.png . && mv icon.png soundux.png && mogrify -resize 256x256 soundux.png'
 
-            - name: List Qt Plugins
-              run: 'ls qt/Qt/5.15.2/gcc_64/plugins && echo ''Qt Libs:'' && ls qt/Qt/5.15.2/gcc_64/lib'
+            #- name: List Qt Plugins
+            #  run: 'ls qt/Qt/5.15.2/gcc_64/plugins && echo ''Qt Libs:'' && ls qt/Qt/5.15.2/gcc_64/lib'
 
-            - name: Create AppImage - Copy necessary files (2/2)
-              run: 'cd AppImage && mkdir usr && mkdir ./usr/lib && mkdir ./usr/lib/qt && cp -r ../qt/Qt/5.15.2/gcc_64/lib ./usr/lib/ && cp -r ../qt/Qt/5.15.2/gcc_64/plugins ./usr/lib/qt/ && cp -r ../qt/Qt/5.15.2/gcc_64/qml/ ./usr/lib/qt/qml/ && ls ./usr/lib/qt/plugins && echo ''Platforms:'' && ls ./usr/lib/qt/plugins/platforms'
+            #- name: Create AppImage - Copy necessary files (2/2)
+            #  run: 'cd AppImage && mkdir usr && mkdir ./usr/lib && mkdir ./usr/lib/qt && cp -r ../qt/Qt/5.15.2/gcc_64/lib ./usr/lib/ && cp -r ../qt/Qt/5.15.2/gcc_64/plugins ./usr/lib/qt/ && cp -r ../qt/Qt/5.15.2/gcc_64/qml/ ./usr/lib/qt/qml/ && ls ./usr/lib/qt/plugins && echo ''Platforms:'' && ls ./usr/lib/qt/plugins/platforms'
 
-            - name: Create AppImage - Download Linuxdeploy
-              run: 'cd AppImage && wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod a+x linuxdeploy-x86_64.AppImage'
+            #- name: Create AppImage - Download Linuxdeploy
+            #  run: 'cd AppImage && wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod a+x linuxdeploy-x86_64.AppImage'
 
-            - name: Create AppImage - Run LinuxDeploy
-              run: 'cd AppImage && ./linuxdeploy-x86_64.AppImage --executable=soundux --icon-file=soundux.png --desktop-file=soundux.desktop --appdir AppDir --output appimage'
+            #- name: Create AppImage - Run LinuxDeploy
+            #  run: 'cd AppImage && ./linuxdeploy-x86_64.AppImage --executable=soundux --icon-file=soundux.png --desktop-file=soundux.desktop --appdir AppDir --output appimage'
 
-            - name: Upload Build Artifact
-              uses: actions/upload-artifact@v2.2.1
-              with:
-                  name: AppImage
-                  path: 'AppImage/*Soundux*.AppImage'
+            #- name: Upload Build Artifact
+            #  uses: actions/upload-artifact@v2.2.1
+            #  with:
+            #      name: AppImage
+            #      path: 'AppImage/*Soundux*.AppImage'
