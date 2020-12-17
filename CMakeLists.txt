@@ -46,6 +46,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall")
 add_executable(soundux ${src} ${QT_RESOURCES})
 endif(MSVC)
 
+install(TARGETS soundux DESTINATION bin)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 if (UNIX)
