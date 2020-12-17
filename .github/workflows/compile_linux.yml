@@ -47,7 +47,9 @@ jobs:
             - name: Create AppImage - Copy necessary files (1/2)
               run: 'mkdir AppImage && cd AppImage && cp ../build/soundux . && cp ../src/soundux.desktop . && cp ../icon.png . && mv icon.png soundux.png && mogrify -resize 256x256 soundux.png'
 
-            # This is just a test I have to find out where the qt/{plugins,qml} folder is
+            - name: List Qt Plugins
+              run: 'ls qt/Qt/5.15.2/gcc_64/plugins'
+
             - name: Create AppImage - Copy necessary files (2/2)
               run: 'cd AppImage && mkdir usr && mkdir ./usr/lib && mkdir ./usr/lib/qt && cp -r ../qt/Qt/5.15.2/gcc_64/plugins ./usr/lib/qt && cp -r ../qt/Qt/5.15.2/gcc_64/plugins ./usr/lib/qml'
 
@@ -61,4 +63,4 @@ jobs:
               uses: actions/upload-artifact@v2.2.1
               with:
                   name: AppImage
-                  path: 'AppImage/*.AppImage'
+                  path: 'AppImage/*Soundux*.AppImage'
