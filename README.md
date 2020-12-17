@@ -36,7 +36,7 @@
 
 ## Index
 - [Introduction](#introduction)
-- [Runtime Dependencies](#runtime-dependencies)
+- [Runtime Dependencies (for linux)](#runtime-dependencies-for-linux)
 - [Compilation & Installation](#compilation--installation)
   - [Arch Linux and derivatives](#arch-linux-and-derivatives)
   - [Windows](#windows)
@@ -91,6 +91,7 @@ This list may be not accurate. Contact me if you find missing dependencies that 
 ```sh
 sudo apt install git build-essential cmake qt5-default libx11-dev libqt5x11extras5-dev qtquickcontrols2-5-dev qtdeclarative5-dev libxi-dev qml-module-qtquick2 qml-module-qtquick-controls qml-module-qtquick-controls2 qml-module-qtquick-dialogs qml-module-qtquick-layouts qml-module-qtquick-window2 qml-module-qt-labs-settings qml-module-qt-labs-folderlistmodel
 ```
+<b>We recommend to use our flatpak build instead! Building this from source on ubuntu will probably not work because ubuntu does not have Qt >=5.15 in its repos!</b>
 
 ### Build
 Clone the repository
@@ -127,7 +128,7 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Improve the logo
 - [ ] Volume normalization
 - [ ] Grid View
-- [x] Save window size
+- [x] ~~Save window size~~
 - [x] ~~Save volume states (+ Sync state)~~
 - [ ] Add ability to move tabs
 - [ ] Localization
