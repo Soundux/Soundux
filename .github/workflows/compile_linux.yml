@@ -27,7 +27,7 @@ jobs:
               uses: jurplel/install-qt-action@v2
               with:
                 version: '5.15.2'
-                dir: '${{ github.workspace }}/Qt/'
+                dir: '${{ github.workspace }}'
 
             - name: Install other build dependencies
               run: 'sudo apt-get install libx11-dev libxi-dev fuse imagemagick libgstreamer-plugins-base1.0-0 libxcb-xinerama0 libxcb-render-util0 libxcb-randr0 libxcb-keysyms1 libxcb-image0 libxcb-icccm4'
