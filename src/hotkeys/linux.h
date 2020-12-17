@@ -1,3 +1,4 @@
+#include <X11/Xlib.h>
 #ifdef __linux__
 #pragma once
 #include <atomic>
@@ -20,7 +21,14 @@ namespace Soundux
 
             inline void hook()
             {
-                Display *display = XOpenDisplay(":0");
+                Display *display = XOpenDisplay(std::getenv("DISPLAY"));
+                if (display == NULL)
+                {
+                    display = XOpenDisplay(":0");
+                    std::cerr << "Failed to get X11-Display with value provided by environment variable, falling back "
+                                 "to `:0`";
+                }
+
                 if (display == NULL)
                 {
                     std::cerr << "Failed to open X11 Display" << std::endl;
