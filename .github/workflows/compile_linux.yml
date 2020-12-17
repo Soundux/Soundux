@@ -29,7 +29,7 @@ jobs:
                 version: '5.15.2'
 
             - name: Install other build dependencies
-              run: 'sudo apt-get install libx11-dev libxi-dev fuse imagemagick libgstreamer-plugins-base1.0-0 libxcb-xinerma0 libxcb-render-util0 libxcb-randr0 libxcb-keysyms1 libxcb-image0 libxcb-icccm4'
+              run: 'sudo apt-get install libx11-dev libxi-dev fuse imagemagick libgstreamer-plugins-base1.0-0 libxcb-xinerama0 libxcb-render-util0 libxcb-randr0 libxcb-keysyms1 libxcb-image0 libxcb-icccm4'
             
             # Initializes the CodeQL tools for scanning.
             #- name: Initialize CodeQL
