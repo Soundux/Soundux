@@ -1,0 +1,30 @@
+on:
+    push:
+        branches: [master]
+        paths-ignore:
+            - "**/README.md"
+            - "**/docs/**"
+            - "**/release_windows.yml"
+    pull_request:
+        branches: [master]
+
+name: Build Flatpak
+jobs:
+    flatpak-builder:
+        runs-on: ubuntu-20.04
+        container:
+        image: docker.io/bilelmoussaoui/flatpak-github-actions
+        options: --privileged
+
+        steps:
+            - uses: actions/checkout@v2
+            - uses: bilelmoussaoui/flatpak-github-actions@v2
+              with:
+                  bundle: "soundux.flatpak"
+                  manifest-path: "io.github.Soundux.yml"
+
+            - name: Upload AppImage Artifact
+              uses: actions/upload-artifact@v2.2.1
+              with:
+                  name: Flatpak
+                  path: "*soundux*.flatpak"
