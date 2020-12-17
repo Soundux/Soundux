@@ -22,11 +22,14 @@ namespace Soundux
             inline void hook()
             {
                 Display *display = XOpenDisplay(std::getenv("DISPLAY"));
+                std::cout << "Trying to open X11Display " << std::getenv("DISPLAY") << std::endl;
+
                 if (display == NULL)
                 {
-                    display = XOpenDisplay(":0");
                     std::cerr << "Failed to get X11-Display with value provided by environment variable, falling back "
-                                 "to `:0`";
+                                 "to `:0`"
+                              << std::endl;
+                    display = XOpenDisplay(":0");
                 }
 
                 if (display == NULL)
