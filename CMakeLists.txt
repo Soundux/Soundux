@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(soundux VERSION 0.1.0)
 
+option(UseFlatpak "Flatpak" OFF)
+
 if (NOT EXISTS "${CMAKE_SOURCE_DIR}/src/MaterialDesign.js")
     if (MSVC)
     execute_process(COMMAND cmd /c python "${CMAKE_SOURCE_DIR}/lib/generateMaterialDesignJs.py"
@@ -26,6 +28,10 @@ include_directories(${Qt5Widgets_INCLUDE_DIRS} ${QtQml_INCLUDE_DIRS})
 add_definitions(${Qt5Widgets_DEFINITIONS} ${QtQml_DEFINITIONS} ${${Qt5Quick_DEFINITIONS}})
 qt5_add_resources(QT_RESOURCES src/qml.qrc)
 
+if (UseFlatPak)
+    add_compile_definitions(FLATPAK)
+endif()
+
 if (UNIX)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(X11 REQUIRED)
@@ -47,7 +53,6 @@ add_executable(soundux ${src} ${QT_RESOURCES})
 endif(MSVC)
 
 install(TARGETS soundux DESTINATION bin)
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 if (UNIX)
