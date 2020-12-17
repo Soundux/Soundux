@@ -131,6 +131,7 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Improve the logo
 - [ ] Volume normalization
 - [ ] Grid View
+- [ ] Detect if VBCable is already installed (InnoSetup)
 - [x] ~~Save window size~~
 - [x] ~~Save volume states (+ Sync state)~~
 - [ ] Add ability to move tabs
