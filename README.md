@@ -22,10 +22,10 @@
     <a href="https://discord.gg/4HwSGN4Ec2">
       <img src="https://img.shields.io/discord/697348809591750706?label=Discord&style=for-the-badge" alt="Discord" />
     </a>
-    <a href="https://github.com/Soundux/Soundux/actions">
+    <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+on+Windows%22">
       <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20on%20Windows?label=Windows%20Build&style=for-the-badge" alt="Windows Build" />
     </a>
-    <a href="https://github.com/Soundux/Soundux/actions">
+    <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+on+Linux%22">
       <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20on%20Linux?label=Linux%20Build&style=for-the-badge" alt="Linux Build" />
     </a>
   </p>
@@ -91,7 +91,7 @@ This list may be not accurate. Contact me if you find missing dependencies that 
 ```sh
 sudo apt install git build-essential cmake qt5-default libx11-dev libqt5x11extras5-dev qtquickcontrols2-5-dev qtdeclarative5-dev libxi-dev qml-module-qtquick2 qml-module-qtquick-controls qml-module-qtquick-controls2 qml-module-qtquick-dialogs qml-module-qtquick-layouts qml-module-qtquick-window2 qml-module-qt-labs-settings qml-module-qt-labs-folderlistmodel
 ```
-<b>We recommend to use our flatpak build instead! Building this from source on ubuntu will probably not work because ubuntu does not have Qt >=5.15 in its repos!</b>
+<b>We recommend to use our Flatpak build instead! Building this from source on Ubuntu will probably not work because Ubuntu does not have Qt >=5.15 in its repos!</b>
 
 ### Build
 Clone the repository
