@@ -63,13 +63,13 @@ jobs:
             #  run: 'ls qt/Qt/5.15.2/gcc_64/plugins && echo ''Qt Libs:'' && ls qt/Qt/5.15.2/gcc_64/lib'
 
             - name: Create AppImage - Download Linuxdeploy
-              run: 'cd AppImage && wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod a+x linuxdeploy-x86_64.AppImage'
+              run: 'wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod a+x linuxdeploy-x86_64.AppImage'
 
             - name: Create AppImage - Run LinuxDeploy
-              run: 'cd AppImage && ./linuxdeploy-x86_64.AppImage --executable=soundux --icon-file=soundux.png --desktop-file=soundux.desktop --appdir AppDir --output appimage'
+              run: './linuxdeploy-x86_64.AppImage --executable=soundux --icon-file=soundux.png --desktop-file=soundux.desktop --appdir AppDir --output appimage'
 
             - name: Upload AppImage Artifact
               uses: actions/upload-artifact@v2.2.1
               with:
                   name: AppImage
-                  path: 'AppImage/*Soundux*.AppImage'
+                  path: '*Soundux*.AppImage'
