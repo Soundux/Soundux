@@ -51,7 +51,7 @@ jobs:
               run: 'ls qt/Qt/5.15.2/gcc_64/plugins && echo ''Qt Libs:'' && ls qt/Qt/5.15.2/gcc_64/lib'
 
             - name: Create AppImage - Copy necessary files (2/2)
-              run: 'cd AppImage && mkdir usr && mkdir ./usr/lib && mkdir ./usr/lib/qt && cp -r ../qt/Qt/5.15.2/gcc_64/lib ./usr/lib/ && cp -r ../qt/Qt/5.15.2/gcc_64/plugins ./usr/lib/qt/ && cp -r ../qt/Qt/5.15.2/gcc_64/plugins/ ./usr/lib/qml && ls ./usr/lib/qt/plugins'
+              run: 'cd AppImage && mkdir usr && mkdir ./usr/lib && mkdir ./usr/lib/qt && cp -r ../qt/Qt/5.15.2/gcc_64/lib ./usr/lib/ && cp -r ../qt/Qt/5.15.2/gcc_64/plugins ./usr/lib/qt/ && cp -r ../qt/Qt/5.15.2/gcc_64/plugins/ ./usr/lib/qml && ls ./usr/lib/qt/plugins && echo ''Platforms:'' && ls ./usr/lib/qt/plugins/platforms'
 
             - name: Create AppImage - Download Linuxdeploy
               run: 'cd AppImage && wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod a+x linuxdeploy-x86_64.AppImage'
