@@ -28,6 +28,8 @@
   </p>
 </div>
 
+[![Packaging status](https://repology.org/badge/vertical-allrepos/soundux.svg)](https://repology.org/project/soundux/versions)
+
 ## Index
 - [Introduction](#introduction)
 - [Runtime Dependencies](#runtime-dependencies)
@@ -125,6 +127,6 @@ The code is licensed under [GPLv3](LICENSE)
 - [x] ~~Save volume states (+ Sync state)~~
 - [ ] Add ability to move tabs
 - [ ] Localization
-- [ ] Package it as deb and flatpak and create a repology
+- [ ] Package it as deb, Flatpak and AppImage
 - [ ] Support macOS
 - [ ] Fix FileDialog on windows (it's currently bugged and you have to just manually insert the path of the folder you want to add in the navigation bar)
