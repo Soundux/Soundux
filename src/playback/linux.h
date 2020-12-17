@@ -88,7 +88,12 @@ namespace Soundux
             {
                 auto createLoopBack = "pacmd load-module module-loopback source=\"" + defaultInput + "\" sink=\"" +
                                       internal::sinkName + "\"";
+
+#ifdef FLATPAK
+                system(("flatpak-spawn --host" + createLoopBack).c_str());
+#else
                 system(createLoopBack.c_str());
+#endif
             }
             return internal::sinkName;
         };

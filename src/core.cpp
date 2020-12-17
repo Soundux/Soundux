@@ -323,7 +323,11 @@ void Core::playSound(std::string path)
             auto moveToSink = "pacmd move-source-output " + std::to_string(outputApp->index) + " " + sinkMonitor;
             moveBackCmd = "pacmd move-source-output " + std::to_string(outputApp->index) + " " + source;
 
+#ifdef FLATPAK
+            system(("flatpak-spawn --host" + moveToSink).c_str());
+#else
             system(moveToSink.c_str());
+#endif
         }
 
         // play on linux sink
@@ -332,7 +336,11 @@ void Core::playSound(std::string path)
         Soundux::Playback::stopCallback = [=](const auto &info) {
             if (info.id == lastPlayedId)
             {
+#ifdef FLATPAK
+                system(("flatpak-spawn --host" + moveBackCmd).c_str());
+#else
                 system(moveBackCmd.c_str());
+#endif
             }
         };
     }
