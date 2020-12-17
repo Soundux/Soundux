@@ -13,8 +13,8 @@ jobs:
     flatpak-builder:
         runs-on: ubuntu-20.04
         container:
-        image: docker.io/bilelmoussaoui/flatpak-github-actions
-        options: --privileged
+            image: docker.io/bilelmoussaoui/flatpak-github-actions
+            options: --privileged
 
         steps:
             - uses: actions/checkout@v2
