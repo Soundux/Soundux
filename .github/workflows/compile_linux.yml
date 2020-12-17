@@ -57,7 +57,7 @@ jobs:
               run: 'mkdir -p AppDir/usr/lib/qt/plugins && cp -r Qt/5.15.2/gcc_64/qml/ AppDir/usr/lib/qt/ && cp -r Qt/5.15.2/gcc_64/lib/ AppDir/usr/lib/ && cp -r Qt/5.15.2/gcc_64/plugins/{xcbglintegrations,iconengines,platforms,xcbglintegrations}/ AppDir/usr/lib/qt/plugins'
 
             - name: Create AppImage - Copy necessary files (2/2)
-              run: 'cp src/soundux.desktop . && cp buid/soundux . && mv icon.png soundux.png && mogrify -resize 256x256 soundux.png'
+              run: 'cp src/soundux.desktop . && cp build/soundux . && mv icon.png soundux.png && mogrify -resize 256x256 soundux.png'
 
             #- name: List Qt Plugins
             #  run: 'ls qt/Qt/5.15.2/gcc_64/plugins && echo ''Qt Libs:'' && ls qt/Qt/5.15.2/gcc_64/lib'
