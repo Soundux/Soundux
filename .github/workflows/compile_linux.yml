@@ -48,10 +48,10 @@ jobs:
               run: 'mkdir AppImage && cd AppImage && cp ../build/soundux . && cp ../src/soundux.desktop . && cp ../icon.png . && mv icon.png soundux.png && mogrify -resize 256x256 soundux.png'
 
             - name: List Qt Plugins
-              run: 'ls qt/Qt/5.15.2/gcc_64/plugins'
+              run: 'ls qt/Qt/5.15.2/gcc_64/plugins && echo ''Qt Libs:'' && ls qt/Qt/5.15.2/gcc_64/lib'
 
             - name: Create AppImage - Copy necessary files (2/2)
-              run: 'cd AppImage && mkdir usr && mkdir ./usr/lib && mkdir ./usr/lib/qt && cp -r ../qt/Qt/5.15.2/gcc_64/plugins ./usr/lib/qt && cp -r ../qt/Qt/5.15.2/gcc_64/plugins ./usr/lib/qml'
+              run: 'cd AppImage && mkdir usr && mkdir ./usr/lib && mkdir ./usr/lib/qt && cp -r ../qt/Qt/5.15.2/gcc_64/plugins ./usr/lib/qt/ && cp -r ../qt/Qt/5.15.2/gcc_64/plugins/ ./usr/lib/qml'
 
             - name: Create AppImage - Download Linuxdeploy
               run: 'cd AppImage && wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod a+x linuxdeploy-x86_64.AppImage'
