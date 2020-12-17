@@ -49,7 +49,7 @@ jobs:
 
             # This is just a test I have to find out where the qt/{plugins,qml} folder is
             - name: Create AppImage - Copy necessary files (2/2)
-              run: 'cd AppImage && mkdir usr && mkdir ./usr/lib && mkdir ./usr/lib/qt && mkdir ./usr/lib/qt/plugins && cp -r /usr/lib/qt/plugins/iconengines ./usr/lib/qt/plugins && cp -r /usr/lib/qt/plugins/imageformats ./usr/lib/qt/plugins && cp -r /usr/lib/qt/plugins/platforms ./usr/lib/qt/plugins && cp -r /usr/lib/qt/plugins/xcbglintegrations ./usr/lib/qt/plugins && cp -r /usr/lib/qt/qml ./usr/lib/qt/'
+              run: 'cd AppImage && mkdir usr && mkdir ./usr/lib && mkdir ./usr/lib/qt && cp -r ../qt/Qt/5.15.2/gcc_64/plugins ./usr/lib/qt && cp -r ../qt/Qt/5.15.2/gcc_64/plugins ./usr/lib/qml'
 
             - name: Create AppImage - Download Linuxdeploy
               run: 'cd AppImage && wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod a+x linuxdeploy-x86_64.AppImage'
@@ -61,4 +61,4 @@ jobs:
               uses: actions/upload-artifact@v2.2.1
               with:
                   name: AppImage
-                  path: Soundux-1.0-x86_64.AppImage
+                  path: '*.AppImage'
