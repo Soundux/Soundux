@@ -26,9 +26,10 @@
       <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20and%20Release?style=for-the-badge" alt="Builds" />
     </a>
   </p>
+  
+  [![Packaging status](https://repology.org/badge/vertical-allrepos/soundux.svg)](https://repology.org/project/soundux/versions)
+  
 </div>
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/soundux.svg)](https://repology.org/project/soundux/versions)
 
 ## Index
 - [Introduction](#introduction)
