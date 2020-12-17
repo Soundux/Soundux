@@ -2,7 +2,9 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
-import QtQuick.Dialogs 1.3 as Dialogs
+//import QtQuick.Dialogs 1.3 as Dialogs
+import Qt.labs.folderlistmodel 2.1
+import Qt.labs.platform 1.0 as Dialogs
 
 ApplicationWindow {
     id: window
@@ -546,14 +548,21 @@ ApplicationWindow {
         }
     }
 
-    Dialogs.FileDialog {
+    // Dialogs.FileDialog {
+    //     id: addTabDialog
+    //     title: "Please choose a folder"
+    //     selectFolder: true
+    //     selectMultiple: true
+    //     folder: shortcuts.home
+    //     onAccepted: {
+    //         core.addFolderTab(addTabDialog.fileUrls)
+    //     }
+    // }
+    Dialogs.FolderDialog {
         id: addTabDialog
-        title: "Please choose a folder"
-        selectFolder: true
-        selectMultiple: true
-        folder: shortcuts.home
-        onAccepted: {
-            core.addFolderTab(addTabDialog.fileUrls)
+        currentFolder: ""
+        onFolderChanged: {
+            core.addFolderTab(folder)
         }
     }
 

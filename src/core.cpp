@@ -152,18 +152,15 @@ std::vector<QTab> Core::getTabs()
     return qTabs;
 }
 
-void Core::addFolderTab(QList<QUrl> folders)
+void Core::addFolderTab(QUrl folder)
 {
-    for (QUrl folder : folders)
-    {
-        Soundux::Config::Tab tab;
-        tab.title = folder.fileName().toStdString();
-        tab.folder = folder.path().toStdString();
+    Soundux::Config::Tab tab;
+    tab.title = folder.fileName().toStdString();
+    tab.folder = folder.path().toStdString();
 
-        updateFolderSounds(tab);
+    updateFolderSounds(tab);
 
-        Soundux::Config::gConfig.tabs.push_back(tab);
-    }
+    Soundux::Config::gConfig.tabs.push_back(tab);
 
     Soundux::Config::saveConfig();
     emit foldersChanged();
