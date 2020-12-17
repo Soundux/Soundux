@@ -27,6 +27,7 @@ jobs:
               uses: jurplel/install-qt-action@v2
               with:
                 version: '5.15.2'
+                dir: '${{ github.workspace }}/Qt/'
 
             - name: Install other build dependencies
               run: 'sudo apt-get install libx11-dev libxi-dev fuse imagemagick libgstreamer-plugins-base1.0-0 libxcb-xinerama0 libxcb-render-util0 libxcb-randr0 libxcb-keysyms1 libxcb-image0 libxcb-icccm4'
@@ -55,7 +56,7 @@ jobs:
             - name: Create AppImage - Copy necessary files (1/2)
               run: 'mkdir -p AppDir/usr/lib/qt/plugins && cp -r Qt/5.15.2/gcc_64/qml/ AppDir/usr/lib/qt/ && cp -r Qt/5.15.2/gcc_64/lib/ AppDir/usr/lib/ && cp -r Qt/5.15.2/gcc_64/plugins/{xcbglintegrations,iconengines,platforms,xcbglintegrations}/ AppDir/usr/lib/qt/plugins'
 
-            - name: Create AppImage - Copy necessary files (1/2)
+            - name: Create AppImage - Copy necessary files (2/2)
               run: 'cp src/soundux.desktop . && cp buid/soundux . && mv icon.png soundux.png && mogrify -resize 256x256 soundux.png'
 
             #- name: List Qt Plugins
