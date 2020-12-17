@@ -4,6 +4,7 @@ on:
         paths-ignore:
         - '**/README.md'
         - '**/docs/**'
+        - '**/compile_linux.yml'
     pull_request:
         branches: [ master ]
 
