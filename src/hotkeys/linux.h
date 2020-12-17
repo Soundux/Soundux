@@ -23,7 +23,6 @@ namespace Soundux
             {
                 const char *displayenv = std::getenv("DISPLAY");
                 Display *display = XOpenDisplay(displayenv);
-                std::cout << "Trying to open X11Display " << displayenv << std::endl;
 
                 if (display == NULL)
                 {
@@ -119,7 +118,6 @@ namespace Soundux
         {
             const char *displayenv = std::getenv("DISPLAY");
             Display *display = XOpenDisplay(displayenv);
-            std::cout << "Trying to open X11Display " << displayenv << std::endl;
 
             if (display == NULL)
             {
