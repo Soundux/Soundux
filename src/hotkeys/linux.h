@@ -21,12 +21,14 @@ namespace Soundux
 
             inline void hook()
             {
-                Display *display = XOpenDisplay(std::getenv("DISPLAY"));
-                std::cout << "Trying to open X11Display " << std::getenv("DISPLAY") << std::endl;
+                const char *displayenv = std::getenv("DISPLAY");
+                Display *display = XOpenDisplay(displayenv);
+                std::cout << "Trying to open X11Display " << displayenv << std::endl;
 
                 if (display == NULL)
                 {
-                    std::cerr << "Failed to get X11-Display with value provided by environment variable, falling back "
+                    std::cerr << "Failed to get X11-Display with value provided by environment variable(" << displayenv
+                              << "), falling back "
                                  "to `:0`"
                               << std::endl;
                     display = XOpenDisplay(":0");
@@ -115,7 +117,19 @@ namespace Soundux
 
         inline std::string getKeyName(const int key)
         {
-            Display *display = XOpenDisplay(":0");
+            const char *displayenv = std::getenv("DISPLAY");
+            Display *display = XOpenDisplay(displayenv);
+            std::cout << "Trying to open X11Display " << displayenv << std::endl;
+
+            if (display == NULL)
+            {
+                std::cerr << "Failed to get X11-Display with value provided by environment variable(" << displayenv
+                          << "), falling back "
+                             "to `:0`"
+                          << std::endl;
+                display = XOpenDisplay(":0");
+            }
+
             if (display == NULL)
             {
                 std::cerr << "Failed to open X11 Display" << std::endl;

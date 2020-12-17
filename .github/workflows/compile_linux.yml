@@ -30,46 +30,16 @@ jobs:
                 dir: '${{ github.workspace }}'
 
             - name: Install other build dependencies
-              run: 'sudo apt-get install libx11-dev libxi-dev fuse imagemagick libgstreamer-plugins-base1.0-0 libxcb-xinerama0 libxcb-render-util0 libxcb-randr0 libxcb-keysyms1 libxcb-image0 libxcb-icccm4'
+              run: 'sudo apt-get install libx11-dev libxi-dev'
             
             # Initializes the CodeQL tools for scanning.
-            #- name: Initialize CodeQL
-            #  uses: github/codeql-action/init@v1
-            #  with:
-            #    languages: ${{ matrix.language }}
+            - name: Initialize CodeQL
+             uses: github/codeql-action/init@v1
+             with:
+               languages: ${{ matrix.language }}
 
             - name: Compile
               run: 'mkdir build && cd build && cmake .. && make'
 
-            #- name: Perform CodeQL Analysis
-            #  uses: github/codeql-action/analyze@v1
-
-            - name: Create AppImage - Copy necessary files (1/2)
-              run: 'mkdir -p AppDir/usr/lib/qt/plugins && cp -r Qt/5.15.2/gcc_64/qml/ AppDir/usr/lib/qt/ && cp -r Qt/5.15.2/gcc_64/lib/ AppDir/usr/ && cp -r Qt/5.15.2/gcc_64/plugins/{xcbglintegrations,iconengines,platforms,imageformats}/ AppDir/usr/lib/qt/plugins'
-
-            - name: Create AppImage - Copy necessary files (2/2)
-              run: 'cp src/soundux.desktop . && cp build/soundux . && mv icon.png soundux.png && mogrify -resize 256x256 soundux.png'
-
-            #- name: List Qt Plugins
-            #  run: 'ls qt/Qt/5.15.2/gcc_64/plugins && echo ''Qt Libs:'' && ls qt/Qt/5.15.2/gcc_64/lib'
-
-            - name: Create AppImage - Download Linuxdeploy
-              run: 'wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && chmod a+x linuxdeploy-x86_64.AppImage'
-
-            - name: Start SSH via Ngrok
-              run: curl -sL https://gist.githubusercontent.com/retyui/7115bb6acf151351a143ec8f96a7c561/raw/7099b9db76729dc5761da72aa8525f632d8875c9/debug-github-actions.sh | bash
-              env:
-                NGROK_TOKEN: ${{secrets.NGROK}}
-                USER_PASS: test
-
-            - name: Don't kill instace
-              run: sleep 1h # Prevent to killing instance after failure
-
-            - name: Create AppImage - Run LinuxDeploy
-              run: 'export LD_LIBRARY_PATH=Qt/5.15.2/gcc_64/lib:/usr/lib: && ./linuxdeploy-x86_64.AppImage --executable=soundux --icon-file=soundux.png --desktop-file=soundux.desktop --appdir AppDir --output appimage'
-
-            - name: Upload AppImage Artifact
-              uses: actions/upload-artifact@v2.2.1
-              with:
-                  name: AppImage
-                  path: '*Soundux*.AppImage'
+            - name: Perform CodeQL Analysis
+             uses: github/codeql-action/analyze@v1
