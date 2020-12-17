@@ -27,7 +27,6 @@ jobs:
               uses: jurplel/install-qt-action@v2
               with:
                 version: '5.15.2'
-                dir: '${{ github.workspace }}/qt/'
 
             - name: Install other build dependencies
               run: 'sudo apt-get install libx11-dev libxi-dev fuse imagemagick'
