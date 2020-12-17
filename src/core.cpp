@@ -198,28 +198,37 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
     auto path = tab.folder;
 #endif
 
-    std::vector<Soundux::Config::Sound> newSounds;
-    for (const auto &file : std::filesystem::directory_iterator(path))
+    if (std::filesystem::exists(path))
     {
-        if (file.path().extension() != ".mp3" && file.path().extension() != ".wav")
-            continue;
-
-        Soundux::Config::Sound sound;
-        sound.lastWriteTime = file.last_write_time().time_since_epoch().count();
-        sound.name = file.path().filename().u8string();
-        sound.path = file.path().u8string();
-
-        if (auto oldSound = std::find_if(tab.sounds.begin(), tab.sounds.end(),
-                                         [&](auto &item) { return item.path == file.path().u8string(); });
-            oldSound != tab.sounds.end())
+        std::vector<Soundux::Config::Sound> newSounds;
+        for (const auto &file : std::filesystem::directory_iterator(path))
         {
-            sound.hotKeys = oldSound->hotKeys;
+            if (file.path().extension() != ".mp3" && file.path().extension() != ".wav")
+                continue;
+
+            Soundux::Config::Sound sound;
+            sound.lastWriteTime = file.last_write_time().time_since_epoch().count();
+            sound.name = file.path().filename().u8string();
+            sound.path = file.path().u8string();
+
+            if (auto oldSound = std::find_if(tab.sounds.begin(), tab.sounds.end(),
+                                             [&](auto &item) { return item.path == file.path().u8string(); });
+                oldSound != tab.sounds.end())
+            {
+                sound.hotKeys = oldSound->hotKeys;
+            }
+
+            newSounds.push_back(sound);
         }
 
-        newSounds.push_back(sound);
+        tab.sounds = newSounds;
     }
-
-    tab.sounds = newSounds;
+    else
+    {
+        Soundux::Config::gConfig.tabs.erase(
+            std::remove(Soundux::Config::gConfig.tabs.begin(), Soundux::Config::gConfig.tabs.end(), tab));
+        emit foldersChanged();
+    }
 }
 
 void Core::removeTab()
