@@ -22,11 +22,15 @@
     <a href="https://discord.gg/4HwSGN4Ec2">
       <img src="https://img.shields.io/discord/697348809591750706?label=Discord&style=for-the-badge" alt="Discord" />
     </a>
+    <br>
     <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+on+Windows%22">
       <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20on%20Windows?label=Windows%20Build&style=for-the-badge" alt="Windows Build" />
     </a>
     <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+on+Linux%22">
       <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20on%20Linux?label=Linux%20Build&style=for-the-badge" alt="Linux Build" />
+    </a>
+    <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+Flatpak%22">
+      <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20Flatpak?label=Flatpak%20Build&style=for-the-badge" alt="Flatpak Build" />
     </a>
   </p>
   
