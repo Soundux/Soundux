@@ -5,6 +5,8 @@ on:
             - "**/README.md"
             - "**/docs/**"
             - "**/release_windows.yml"
+            - '**/compile_linux.yml'
+            - '**/codeql-analysis-python.yml'
     pull_request:
         branches: [master]
 
