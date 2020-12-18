@@ -46,12 +46,11 @@ include_directories("lib/miniaudio")
 
 if(MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
-add_executable(soundux ${src} ${QT_RESOURCES})
 else()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall")
-add_executable(soundux ${src} ${QT_RESOURCES})
 endif(MSVC)
+
+add_executable(soundux ${src} ${QT_RESOURCES})
 
 install(TARGETS soundux DESTINATION bin)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
