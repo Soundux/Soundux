@@ -144,6 +144,7 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Implement hotkeys for Wayland
 - [ ] Add ability to move tabs
 - [ ] Localization
+- [ ] App icon for Windows
 - [ ] Package it as deb, ~~Flatpak~~ and AppImage
 - [ ] Support macOS (Testers needed!)
 - [ ] ~~Fix~~ FileDialog on windows - Its now somewhat fixed but still not truely native
