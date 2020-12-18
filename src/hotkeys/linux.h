@@ -18,27 +18,29 @@ namespace Soundux
         {
             inline std::thread keyListener;
             inline std::atomic<bool> killThread = false;
-
-            inline void hook()
-            {
+            inline Display *display = []() -> Display * {
                 const char *displayenv = std::getenv("DISPLAY");
-                Display *display = XOpenDisplay(displayenv);
+                Display *x11display = XOpenDisplay(displayenv);
 
-                if (display == NULL)
+                if (x11display == NULL)
                 {
                     std::cerr << "Failed to get X11-Display with value provided by environment variable(" << displayenv
                               << "), falling back "
                                  "to `:0`"
                               << std::endl;
-                    display = XOpenDisplay(":0");
+                    x11display = XOpenDisplay(":0");
                 }
 
-                if (display == NULL)
+                if (x11display == NULL)
                 {
                     std::cerr << "Failed to open X11 Display" << std::endl;
-                    return;
+                    return nullptr;
                 }
+                return x11display;
+            }();
 
+            inline void hook()
+            {
                 int xiOpCode, queryEvent, queryError;
                 if (!XQueryExtension(display, "XInputExtension", &xiOpCode, &queryEvent, &queryError))
                 {
@@ -116,24 +118,7 @@ namespace Soundux
 
         inline std::string getKeyName(const int key)
         {
-            const char *displayenv = std::getenv("DISPLAY");
-            Display *display = XOpenDisplay(displayenv);
-
-            if (display == NULL)
-            {
-                std::cerr << "Failed to get X11-Display with value provided by environment variable(" << displayenv
-                          << "), falling back "
-                             "to `:0`"
-                          << std::endl;
-                display = XOpenDisplay(":0");
-            }
-
-            if (display == NULL)
-            {
-                std::cerr << "Failed to open X11 Display" << std::endl;
-            }
-
-            KeySym s = XkbKeycodeToKeysym(display, key, 0, 0);
+            KeySym s = XkbKeycodeToKeysym(internal::display, key, 0, 0);
             if (NoSymbol == s)
                 return "Unknown";
 
