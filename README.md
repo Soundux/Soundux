@@ -22,11 +22,15 @@
     <a href="https://discord.gg/4HwSGN4Ec2">
       <img src="https://img.shields.io/discord/697348809591750706?label=Discord&style=for-the-badge" alt="Discord" />
     </a>
+    <br>
     <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+on+Windows%22">
       <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20on%20Windows?label=Windows%20Build&style=for-the-badge" alt="Windows Build" />
     </a>
     <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+on+Linux%22">
       <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20on%20Linux?label=Linux%20Build&style=for-the-badge" alt="Linux Build" />
+    </a>
+    <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+Flatpak%22">
+      <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20Flatpak?label=Flatpak%20Build&style=for-the-badge" alt="Flatpak Build" />
     </a>
   </p>
   
@@ -83,15 +87,18 @@ After installing the dependencies you should be able to follow the normal build 
 
 ### Dependencies
 This list may be not accurate. Contact me if you find missing dependencies that I can update this list
-- [qt5-base](https://github.com/qt/qtbase)
-- [qt5-tools](https://github.com/qt/qt5)
-- [qt5-quickcontrols2](https://github.com/qt/qtquickcontrols2)
+- [qt5-base](https://github.com/qt/qtbase) >=5.15
+- [qt5-tools](https://github.com/qt/qt5) >=5.15
+- [qt5-quickcontrols2](https://github.com/qt/qtquickcontrols2) >=5.15
+- X11 client-side development headers
+
+<b>If your distribution does not have Qt >= 5.15 it its repositories, you might want to use our [Flatpak build](https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+Flatpak%22) instead!</b>
 
 ### Install dependencies for Ubuntu and derivatives
 ```sh
-sudo apt install git build-essential cmake qt5-default libx11-dev libqt5x11extras5-dev qtquickcontrols2-5-dev qtdeclarative5-dev libxi-dev qml-module-qtquick2 qml-module-qtquick-controls qml-module-qtquick-controls2 qml-module-qtquick-dialogs qml-module-qtquick-layouts qml-module-qtquick-window2 qml-module-qt-labs-settings qml-module-qt-labs-folderlistmodel
+sudo apt install git build-essential cmake libx11-dev libqt5x11extras5-dev libxi-dev
 ```
-<b>We recommend to use our Flatpak build instead! Building this from source on Ubuntu will probably not work because Ubuntu does not have Qt >=5.15 in its repos!</b>
+Ubuntu does not have Qt 5.15 in its repositories so you need to use their [Online Installer](https://www.qt.io/download-thank-you?hsLang=en) or [compile it from source](https://doc.qt.io/qt-5/build-sources.html#linux-x11)
 
 ### Build
 Clone the repository

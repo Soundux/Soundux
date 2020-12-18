@@ -3,6 +3,12 @@ name: "CodeQL"
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+        - '**/README.md'
+        - '**/docs/**'
+        - '**/release_windows.yml'
+        - '**/compile_linux.yml'
+        - '**/build_flatpak.yml'
   pull_request:
     branches: [ master ]
 

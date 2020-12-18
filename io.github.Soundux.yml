@@ -7,8 +7,6 @@ finish-args:
   - --device=all
   - --socket=pulseaudio
   - --socket=x11
-  - --socket=session-bus
-  - --socket=system-bus
   - --filesystem=host
   - --talk-name=org.freedesktop.Flatpak
 modules:
