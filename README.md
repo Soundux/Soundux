@@ -126,16 +126,18 @@ The project started as a **Sound**board for Lin**ux**
 The code is licensed under [GPLv3](LICENSE)
 
 # TODO
+- [ ] (Un)Pause / Seek
 - [ ] Playlist mode (play sounds one after another)
 - [ ] Icons in Output application dropdown on linux
 - [ ] Improve the logo
 - [ ] Volume normalization
 - [ ] Grid View
-- [ ] Detect if VBCable is already installed (InnoSetup)
+- [x] ~~Detect if VBCable is already installed (InnoSetup)~~
 - [x] ~~Save window size~~
 - [x] ~~Save volume states (+ Sync state)~~
+- [ ] Implement hotkeys for Wayland
 - [ ] Add ability to move tabs
 - [ ] Localization
-- [ ] Package it as deb, Flatpak and AppImage
-- [ ] Support macOS
-- [ ] Fix FileDialog on windows (it's currently bugged and you have to just manually insert the path of the folder you want to add in the navigation bar)
+- [ ] Package it as deb, ~~Flatpak~~ and AppImage
+- [ ] Support macOS (Testers needed!)
+- [ ] ~~Fix~~ FileDialog on windows - Its now somewhat fixed but still not truely native
