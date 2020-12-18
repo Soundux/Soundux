@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
-import QtQuick.Dialogs 1.0 as Dialogs
+import QtQuick.Dialogs 1.3 as Dialogs
 
 ApplicationWindow {
     id: window

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <qqml.h>
 #include <qurl.h>
+#include <string>
 
 #include "core.h"
 #include "config/config.h"
@@ -24,18 +25,21 @@
 #endif
 #endif
 
-#ifdef _WIN32
-INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
-{
-#else
 int main(int argc, char **argv)
 {
-#endif
-
 #ifdef _WIN32
-    int argc;
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication app(argc, nullptr);
+
+    std::vector<char *> args(argv, argv + argc);
+
+    // Thanks to this article https://kb.froglogic.com/squish/qt/howto/automating-native-file-dialogs/ !
+    args.push_back(const_cast<char *>("-platformtheme"));
+    args.push_back(const_cast<char *>("none"));
+
+    argc = args.size();
+    argv = args.data();
+
+    QApplication app(argc, (char **)args.data());
 #else
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication app(argc, argv);
