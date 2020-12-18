@@ -139,12 +139,14 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Improve the logo
 - [ ] Volume normalization
 - [ ] Grid View
-- [x] ~~Detect if VBCable is already installed (InnoSetup)~~
-- [x] ~~Save window size~~
-- [x] ~~Save volume states (+ Sync state)~~
+- [ ] Repeat button
+- [ ] Playlist mode
 - [ ] Implement hotkeys for Wayland
 - [ ] Add ability to move tabs
 - [ ] Localization
 - [ ] Package it as deb, ~~Flatpak~~ and AppImage
 - [ ] Support macOS (Testers needed!)
 - [ ] ~~Fix~~ FileDialog on windows - Its now somewhat fixed but still not truely native
+- [x] ~~Detect if VBCable is already installed (InnoSetup)~~
+- [x] ~~Save window size~~
+- [x] ~~Save volume states (+ Sync state)~~
