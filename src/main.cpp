@@ -28,6 +28,7 @@
 int main(int argc, char **argv)
 {
 #ifdef _WIN32
+    ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     std::vector<char *> args(argv, argv + argc);
