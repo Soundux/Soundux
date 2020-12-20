@@ -330,9 +330,9 @@ void Core::playSound(std::string path)
             moveBackCmd = "pacmd move-source-output " + std::to_string(outputApp->index) + " " + source;
 
 #ifdef FLATPAK
-            system(("flatpak-spawn --host " + moveToSink).c_str());
+            static_cast<void>(system(("flatpak-spawn --host " + moveToSink).c_str()));
 #else
-            system(moveToSink.c_str());
+            static_cast<void>(system(moveToSink.c_str()));
 #endif
         }
 
@@ -343,9 +343,9 @@ void Core::playSound(std::string path)
             if (info.id == lastPlayedId)
             {
 #ifdef FLATPAK
-                system(("flatpak-spawn --host " + moveBackCmd).c_str());
+                static_cast<void>(system(("flatpak-spawn --host " + moveBackCmd).c_str()));
 #else
-                system(moveBackCmd.c_str());
+                static_cast<void>(system(moveBackCmd.c_str()));
 #endif
             }
         };

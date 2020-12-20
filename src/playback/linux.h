@@ -28,7 +28,8 @@ namespace Soundux
                 std::string result;
 
 #ifdef FLATPAK
-                std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(("flatpak-spawn --host " + command).c_str(), "r"), pclose);
+                std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(("flatpak-spawn --host " + command).c_str(), "r"),
+                                                              pclose);
 #else
                 std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"), pclose);
 #endif
@@ -96,9 +97,9 @@ namespace Soundux
                                       internal::sinkName + "\"";
 
 #ifdef FLATPAK
-                system(("flatpak-spawn --host " + createLoopBack).c_str());
+                static_cast<void>(system(("flatpak-spawn --host " + createLoopBack).c_str()));
 #else
-                system(createLoopBack.c_str());
+                static_cast<void>(system(createLoopBack.c_str()));
 #endif
             }
             return internal::sinkName;
