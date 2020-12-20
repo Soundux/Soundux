@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(soundux VERSION 0.1.0)
+project(soundux VERSION 0.1.1)
 
 option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
 
