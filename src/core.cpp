@@ -218,6 +218,9 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
             newSounds.push_back(sound);
         }
 
+        std::sort(newSounds.begin(), newSounds.end(),
+                  [](auto &first, auto &second) { return first.lastWriteTime > second.lastWriteTime; });
+
         tab.sounds = newSounds;
     }
     else
@@ -268,10 +271,6 @@ std::vector<QSound> Core::getSounds()
         Soundux::Config::gConfig.currentTab = Soundux::Config::gConfig.tabs.size() - 1;
     }
 
-    std::sort(qSounds.begin(), qSounds.end(), [](QSound &first, QSound &second) {
-        return first.getInstance().lastWriteTime > second.getInstance().lastWriteTime;
-    });
-
     return qSounds;
 }
 
@@ -288,10 +287,6 @@ std::vector<QSound> Core::getAllSounds(std::string name)
             qSounds.push_back(qSound);
         }
     }
-
-    std::sort(qSounds.begin(), qSounds.end(), [](QSound &first, QSound &second) {
-        return first.getInstance().lastWriteTime > second.getInstance().lastWriteTime;
-    });
 
     return qSounds;
 }
@@ -402,19 +397,31 @@ void Core::hotkeyDialogFocusChanged(int focus)
     }
 }
 
-void Core::setHotkey(int index)
+void Core::setStopHotkey()
 {
     Soundux::Hooks::internal::translateHotkeys = false;
-    if (index == -100)
+    Soundux::Config::gConfig.stopHotKey = Soundux::Hooks::internal::capturedKeyList;
+    Soundux::Config::saveConfig();
+    Soundux::Hooks::internal::capturedKeyStates.clear();
+}
+
+void Core::setHotkey(QString sound)
+{
+    Soundux::Hooks::internal::translateHotkeys = false;
+
+    auto &currentTab = Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab];
+    auto item = std::find(currentTab.sounds.begin(), currentTab.sounds.end(), sound.toStdString());
+
+    if (item != currentTab.sounds.end())
     {
-        Soundux::Config::gConfig.stopHotKey = Soundux::Hooks::internal::capturedKeyList;
-    }
-    else if (Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds.size() > (unsigned int)index)
-    {
-        Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index].hotKeys =
-            Soundux::Hooks::internal::capturedKeyList;
+        item->hotKeys = Soundux::Hooks::internal::capturedKeyList;
         emit updateCurrentTab();
     }
+    else
+    {
+        std::cerr << "Cant find requested sound(" << sound.toStdString() << ")!" << std::endl;
+    }
+
     Soundux::Config::saveConfig();
     Soundux::Hooks::internal::capturedKeyStates.clear();
 }
@@ -440,25 +447,32 @@ int Core::getTabHotkeysOnly()
     return Soundux::Config::gConfig.tabHotkeysOnly;
 }
 
-QList<QString> Core::getCurrentHotKey(int index)
+QList<QString> Core::getStopHotKey()
 {
     QList<QString> rtn;
-    if (index == -100)
+    for (const auto &key : Soundux::Config::gConfig.stopHotKey)
     {
-        for (const auto &key : Soundux::Config::gConfig.stopHotKey)
-        {
-            rtn.push_back(QString::fromStdString(Soundux::Hooks::getKeyName(key)));
-        }
-        Soundux::Hooks::internal::capturedKeyList = Soundux::Config::gConfig.stopHotKey;
+        rtn.push_back(QString::fromStdString(Soundux::Hooks::getKeyName(key)));
     }
-    else if (Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds.size() > (unsigned int)index)
+    return rtn;
+}
+QList<QString> Core::getCurrentHotKey(QString sound)
+{
+    QList<QString> rtn;
+
+    auto &currentTab = Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab];
+    auto item = std::find(currentTab.sounds.begin(), currentTab.sounds.end(), sound.toStdString());
+
+    if (item != currentTab.sounds.end())
     {
-        for (const auto &key : Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index].hotKeys)
+        for (const auto &key : item->hotKeys)
         {
             rtn.push_back(QString::fromStdString(Soundux::Hooks::getKeyName(key)));
         }
-        Soundux::Hooks::internal::capturedKeyList =
-            Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index].hotKeys;
+    }
+    else
+    {
+        std::cerr << "Cant find requested sound(" << sound.toStdString() << ")!" << std::endl;
     }
     return rtn;
 }

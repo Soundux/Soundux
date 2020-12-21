@@ -21,6 +21,15 @@ namespace Soundux
             std::string path;
             std::vector<int> hotKeys;
             std::uint64_t lastWriteTime;
+
+            bool operator==(const std::string &path)
+            {
+                return path == this->path;
+            }
+            bool operator==(const Sound &other)
+            {
+                return other.name == name && other.path == path;
+            }
         };
         struct Tab
         {

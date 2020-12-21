@@ -419,7 +419,7 @@ ApplicationWindow {
             hotkeyField.text = ""
             if (visible)
             {
-                hotkeyField.text = core.getCurrentHotKey(soundsListView.currentIndex).join(" + ")
+                hotkeyField.text = core.getCurrentHotKey(soundsListView.currentItem._path).join(" + ")
             }
         }
 
@@ -433,7 +433,7 @@ ApplicationWindow {
         }
 
         onAccepted: {
-            core.setHotkey(soundsListView.currentIndex)
+            core.setHotkey(soundsListView.currentItem._path)
         }
 
         onReset: {
@@ -523,13 +523,13 @@ ApplicationWindow {
             stopHotkey.text = ""
             if (visible)
             {
-                stopHotkey.text = core.getCurrentHotKey(-100).join(" + ")
+                stopHotkey.text = core.getStopHotKey().join(" + ")
             }
         }
 
         onAccepted:
         {
-            core.setHotkey(-100)
+            core.setStopHotkey()
         }
     }
 
@@ -620,7 +620,7 @@ ApplicationWindow {
                 soundsList.append({
                     "name": sounds[child].getName(),
                     "path": sounds[child].getPath(),
-                    "hotKey": sounds[child].getKeyBinds().join("+")
+                    "hotKey": sounds[child].getKeyBinds().join("+"),
                 })
             }
         }
@@ -654,6 +654,8 @@ ApplicationWindow {
             delegate: Rectangle {
                 color: soundsListView.currentIndex == index ? cBgDarkest : cBgDarker
                 width: soundsListView.width
+                property var _name: name
+                property var _path: path
                 Layout.fillWidth: true
                 height: 25
 
@@ -784,7 +786,7 @@ ApplicationWindow {
                     if (soundsListView.currentIndex >= 0)
                     {
                         setHotkeyDialog.visible = true
-                        setHotkeyDialog.soundName = core.getSounds()[soundsListView.currentIndex].getName()
+                        setHotkeyDialog.soundName = soundsListView.currentItem._name
                     }
                 }
             }

@@ -55,7 +55,8 @@ class Core : public QObject
 
     void currentTabChanged(int);
 
-    void setHotkey(int);
+    void setStopHotkey();
+    void setHotkey(QString);
     void hotkeyDialogFocusChanged(int);
 
     int getDarkMode();
@@ -68,7 +69,8 @@ class Core : public QObject
     int getTabHotkeysOnly();
 
     int isWindows();
-    QList<QString> getCurrentHotKey(int);
+    QList<QString> getStopHotKey();
+    QList<QString> getCurrentHotKey(QString);
 
     // Can't use preprocessor here because qt doesnt like that.
 
