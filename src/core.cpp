@@ -310,7 +310,6 @@ void Core::playSound(std::string path)
     }
 #ifdef __linux__
     static std::string moveBackCmd;
-    const auto *sinkMonitorId = "TODO";
 
     auto outputApp = Soundux::Playback::getCurrentOutputApplication();
 
@@ -318,9 +317,10 @@ void Core::playSound(std::string path)
     {
         auto source = outputApp->source;
 
-        if (source != sinkMonitorId)
+        if (source != Soundux::Playback::internal::sinkId)
         {
-            auto moveToSink = "pactl move-source-output " + std::to_string(outputApp->index) + " " + sinkMonitorId;
+            auto moveToSink = "pactl move-source-output " + std::to_string(outputApp->index) + " " +
+                              Soundux::Playback::internal::sinkId;
             moveBackCmd = "pactl move-source-output " + std::to_string(outputApp->index) + " " + source;
 
             static_cast<void>(system(moveToSink.c_str()));

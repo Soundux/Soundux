@@ -73,10 +73,11 @@ int main(int argc, char **argv)
 
 #ifdef __linux__
     Soundux::Playback::deleteSink();
-    auto sinkName = Soundux::Playback::createSink();
+    Soundux::Playback::createSink();
+
     for (const auto &device : Soundux::Playback::getPlaybackDevices())
     {
-        if (device.name == sinkName)
+        if (device.name == Soundux::Playback::internal::sinkName)
         {
             gCore.setLinuxSink(device);
             break;

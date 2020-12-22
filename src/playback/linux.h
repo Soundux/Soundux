@@ -20,6 +20,7 @@ namespace Soundux
     {
         namespace internal
         {
+            inline std::string sinkId;
             inline const std::string sinkName = "soundboard_sink";
 
             inline std::string getOutput(const std::string &command)
@@ -39,6 +40,19 @@ namespace Soundux
                 }
                 return result;
             }
+
+            inline std::vector<std::string> splitByNewLine(const std::string &str)
+            {
+                auto result = std::vector<std::string>{};
+                auto ss = std::stringstream{str};
+
+                for (std::string line; std::getline(ss, line, '\n');)
+                {
+                    result.push_back(line);
+                }
+
+                return result;
+            };
 
             inline std::string getDefaultCaptureDevice()
             {
@@ -73,7 +87,7 @@ namespace Soundux
             }
         } // namespace internal
 
-        inline std::string createSink()
+        inline void createSink()
         {
             system(("pactl load-module module-null-sink sink_name=" + internal::sinkName +
                     " sink_properties=device.description=" + internal::sinkName + " > nul")
@@ -88,7 +102,45 @@ namespace Soundux
 
                 static_cast<void>(system(createLoopBack.c_str()));
             }
-            return internal::sinkName;
+
+            auto sources = internal::getOutput("pactl list sources");
+            auto sourcesSplit = internal::splitByNewLine(sources);
+
+            struct
+            {
+                std::string id;
+                std::string name;
+            } device{};
+
+            static const std::regex sourceRegex(R"rgx((.*#(\d+))$|(Name: (.+)))rgx");
+            std::smatch match;
+
+            for (const std::string &line : sourcesSplit)
+            {
+                if (std::regex_search(line, match, sourceRegex))
+                {
+                    if (match[2].matched)
+                    {
+                        device.id = match[2];
+                    }
+                    else if (match[4].matched)
+                    {
+                        device.name = match[4];
+                    }
+
+                    if (device.name == internal::sinkName + ".monitor")
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (device.name != internal::sinkName + ".monitor")
+            {
+                std::cerr << "Failed to find soundboard sink in PulseAudio sources!" << std::endl;
+            }
+
+            internal::sinkId = device.id;
         };
         inline void deleteSink()
         {
@@ -100,20 +152,9 @@ namespace Soundux
         {
             using internal::getOutput;
             using internal::PulseAudioRecordingStream;
+            using internal::splitByNewLine;
 
             auto input = getOutput("pactl list source-outputs");
-
-            static auto splitByNewLine = [](const std::string &str) {
-                auto result = std::vector<std::string>{};
-                auto ss = std::stringstream{str};
-
-                for (std::string line; std::getline(ss, line, '\n');)
-                {
-                    result.push_back(line);
-                }
-
-                return result;
-            };
 
             auto splitted = splitByNewLine(input);
             std::vector<PulseAudioRecordingStream> streams;
