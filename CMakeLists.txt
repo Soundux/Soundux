@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(soundux VERSION 0.1.1)
 
-option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
-
 if (NOT EXISTS "${CMAKE_SOURCE_DIR}/src/MaterialDesign.js")
     if (MSVC)
     execute_process(COMMAND cmd /c python "${CMAKE_SOURCE_DIR}/lib/generateMaterialDesignJs.py"
@@ -27,11 +25,6 @@ find_package(Qt5 COMPONENTS Widgets Qml Quick QuickControls2 REQUIRED)
 include_directories(${Qt5Widgets_INCLUDE_DIRS} ${QtQml_INCLUDE_DIRS})
 add_definitions(${Qt5Widgets_DEFINITIONS} ${QtQml_DEFINITIONS} ${${Qt5Quick_DEFINITIONS}})
 qt5_add_resources(QT_RESOURCES src/qml.qrc)
-
-if (USE_FLATPAK)
-    message("Flatpak switch enabled!")
-    add_compile_definitions(FLATPAK)
-endif()
 
 if (UNIX)
 set(THREADS_PREFER_PTHREAD_FLAG ON)

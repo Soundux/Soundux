@@ -8,12 +8,10 @@ finish-args:
   - --socket=pulseaudio
   - --socket=x11
   - --filesystem=host
-  - --talk-name=org.freedesktop.Flatpak
 modules:
   - name: soundux
-    buildsystem: cmake
+    buildsystem: cmake-ninja
     config-opts:
-      - -DUSE_FLATPAK=ON
       - -DCMAKE_BUILD_TYPE=Release
     sources:
       - type: git

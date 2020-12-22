@@ -4,7 +4,7 @@
 #include <exception>
 #include <optional>
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <memory>
 #include <vector>
@@ -27,12 +27,7 @@ namespace Soundux
                 std::array<char, 128> buffer;
                 std::string result;
 
-#ifdef FLATPAK
-                std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(("flatpak-spawn --host " + command).c_str(), "r"),
-                                                              pclose);
-#else
                 std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"), pclose);
-#endif
 
                 if (!pipe)
                 {
@@ -48,10 +43,10 @@ namespace Soundux
             inline std::string getDefaultCaptureDevice()
             {
                 // get default input device
-                std::string defaultInput = "";
-                char cmd[] = "pacmd dump";
+                std::string defaultInput;
+                char cmd[] = "pactl info";
                 auto result = getOutput(cmd);
-                std::regex reg(R"rgx(set-default-source (.+))rgx");
+                std::regex reg(R"rgx(Default Source: (.+))rgx");
                 std::smatch sm;
                 regex_search(result, sm, reg);
                 defaultInput = sm[1].str();
@@ -62,12 +57,8 @@ namespace Soundux
             {
                 int index = -1;
                 std::string driver;
-                std::string flags;
-                std::string state;
                 std::string source;
-                bool muted;
-                std::string applicationName;
-                int processId;
+                std::string resampleMethod;
                 std::string processBinary;
 
                 operator bool()
@@ -78,42 +69,37 @@ namespace Soundux
 
             inline bool isValidDevice(const PulseAudioRecordingStream &stream)
             {
-                return (stream.source == internal::sinkName + ".monitor" ||
-                        stream.source.find(".monitor") == std::string::npos) &&
-                       stream.flags.find("DONT_MOVE") == std::string::npos && stream.driver == "<protocol-native.c>";
+                return stream.driver == "protocol-native.c" && stream.resampleMethod != "peaks";
             }
         } // namespace internal
 
         inline std::string createSink()
         {
-            auto sink = internal::getOutput("pacmd load-module module-null-sink sink_name=" + internal::sinkName +
-                                            " sink_properties=device.description=" + internal::sinkName);
+            system(("pactl load-module module-null-sink sink_name=" + internal::sinkName +
+                                            " sink_properties=device.description=" + internal::sinkName + " > nul").c_str());
 
             auto defaultInput = internal::getDefaultCaptureDevice();
             // Create loopback for input
-            if (defaultInput != "")
+            if (!defaultInput.empty())
             {
-                auto createLoopBack = "pacmd load-module module-loopback source=\"" + defaultInput + "\" sink=\"" +
-                                      internal::sinkName + "\"";
+                auto createLoopBack = "pactl load-module module-loopback source=\"" + defaultInput + "\" sink=\"" +
+                                      internal::sinkName + "\" > nul";
 
-#ifdef FLATPAK
-                static_cast<void>(system(("flatpak-spawn --host " + createLoopBack).c_str()));
-#else
                 static_cast<void>(system(createLoopBack.c_str()));
-#endif
             }
             return internal::sinkName;
         };
         inline void deleteSink()
         {
-            auto sink = internal::getOutput("pacmd unload-module module-null-sink");
-            auto loopback = internal::getOutput("pacmd unload-module module-loopback");
+            // TODO: only unload soundboard sink
+            system("pactl unload-module module-null-sink 2> nul");
+            system("pactl unload-module module-loopback 2> nul");
         };
         inline auto getSources()
         {
             using namespace internal;
 
-            auto input = getOutput("pacmd list-source-outputs");
+            auto input = getOutput("pactl list source-outputs");
 
             static auto splitByNewLine = [](const std::string &str) {
                 auto result = std::vector<std::string>{};
@@ -129,7 +115,7 @@ namespace Soundux
             std::vector<PulseAudioRecordingStream> streams;
 
             static auto regex = std::regex(
-                R"rgx(((index: (\d+)))|(driver: )(.*)|(state: )(.*)|(flags: )(.*)|(source: .*)(<(.*)>)|(muted: )(.{0,3})|([a-zA-Z-.0-9_]*)\ =\ (\"(.*)\"))rgx");
+                R"rgx((.*#(\d+))|(Driver: (.+))|(Source: (\d+))|(.*process.*binary.* = "(.+)")|(Resample method: (.+)))rgx");
 
             PulseAudioRecordingStream stream;
             for (auto &line : splitted)
@@ -145,38 +131,18 @@ namespace Soundux
                         }
 
                         stream = {};
-                        stream.index = std::stoi(match[3]);
+                        stream.index = std::stoi(match[2]);
                     }
                     else if (stream)
                     {
                         if (match[4].matched)
-                            stream.driver = match[5];
-                        else if (match[8].matched)
-                            stream.flags = match[9];
+                            stream.driver = match[4];
                         else if (match[6].matched)
-                            stream.state = match[7];
+                            stream.source = match[6];
+                        else if (match[8].matched)
+                            stream.processBinary = match[8];
                         else if (match[10].matched)
-                            stream.source = match[12];
-                        else if (match[13].matched)
-                            stream.muted = match[14] == "yes" ? true : false;
-                        else if (match[15].matched)
-                        {
-                            auto currentProperty = match[15];
-                            auto currentValue = match[17];
-
-                            if (currentProperty == "application.name")
-                            {
-                                stream.applicationName = currentValue;
-                            }
-                            else if (currentProperty == "application.process.id")
-                            {
-                                stream.processId = std::stoi(currentValue);
-                            }
-                            else if (currentProperty == "application.process.binary")
-                            {
-                                stream.processBinary = currentValue;
-                            }
-                        }
+                            stream.resampleMethod = match[10];
                     }
                 }
             }

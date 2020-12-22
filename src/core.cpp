@@ -310,25 +310,20 @@ void Core::playSound(std::string path)
     }
 #ifdef __linux__
     static std::string moveBackCmd;
-    static const std::string sinkMonitor = Soundux::Playback::internal::sinkName + ".monitor";
+    auto sinkMonitorId = "TODO";
 
-    auto outputApplications = Soundux::Playback::getSources();
     auto outputApp = Soundux::Playback::getCurrentOutputApplication();
 
     if (outputApp)
     {
         auto source = outputApp->source;
 
-        if (source != sinkMonitor)
+        if (source != sinkMonitorId)
         {
-            auto moveToSink = "pacmd move-source-output " + std::to_string(outputApp->index) + " " + sinkMonitor;
-            moveBackCmd = "pacmd move-source-output " + std::to_string(outputApp->index) + " " + source;
+            auto moveToSink = "pactl move-source-output " + std::to_string(outputApp->index) + " " + sinkMonitorId;
+            moveBackCmd = "pactl move-source-output " + std::to_string(outputApp->index) + " " + source;
 
-#ifdef FLATPAK
-            static_cast<void>(system(("flatpak-spawn --host " + moveToSink).c_str()));
-#else
             static_cast<void>(system(moveToSink.c_str()));
-#endif
         }
 
         // play on linux sink
@@ -337,11 +332,7 @@ void Core::playSound(std::string path)
         Soundux::Playback::stopCallback = [=](const auto &info) {
             if (info.id == lastPlayedId)
             {
-#ifdef FLATPAK
-                static_cast<void>(system(("flatpak-spawn --host " + moveBackCmd).c_str()));
-#else
                 static_cast<void>(system(moveBackCmd.c_str()));
-#endif
             }
         };
     }
