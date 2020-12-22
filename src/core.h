@@ -1,8 +1,8 @@
 #pragma once
+#include <QObject>
 #include <QQmlApplicationEngine>
 #include <QSharedPointer>
 #include <qglobal.h>
-#include <QObject>
 #include <vector>
 
 #include "config/config.h"
@@ -25,7 +25,7 @@ class Core : public QObject
 {
     Q_OBJECT
   public:
-    explicit Core(QObject * = 0);
+    explicit Core(QObject * = nullptr);
 
   public slots:
     void setEngine(QQmlApplicationEngine *);

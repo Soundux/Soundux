@@ -1,14 +1,14 @@
 #pragma once
-#include <miniaudio.h>
-#include <functional>
-#include <exception>
-#include <iostream>
-#include <vector>
-#include <thread>
 #include <atomic>
+#include <exception>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <map>
+#include <miniaudio.h>
 #include <mutex>
-#include <map>
-#include <map>
+#include <thread>
+#include <vector>
 
 namespace Soundux
 {
@@ -51,7 +51,7 @@ namespace Soundux
         std::uint64_t playAudio(const std::string &file, const ma_device_info &deviceInfo);
 
         void stop(const std::uint64_t &deviceId);
-        inline std::function<void(const internal::PlayingDevice &)> stopCallback = [](const auto &) {};
+        inline std::function<void(const internal::PlayingDevice &)> stopCallback = [](const auto &device) {};
 
         void pause(const std::uint64_t &deviceId);
 
@@ -78,7 +78,9 @@ namespace Soundux
                                 {
                                     auto &device = currentlyPlayingDevices.at(i);
                                     if (device.device != sound->first)
+                                    {
                                         continue;
+                                    }
                                     stop(device.id);
                                 }
                                 playingDeviceMutex.unlock();

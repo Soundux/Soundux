@@ -1,14 +1,14 @@
 #include <X11/Xlib.h>
 #ifdef __linux__
 #pragma once
-#include <atomic>
-#include <chrono>
-#include <thread>
 #include "global.h"
-#include <iostream>
 #include <X11/XKBlib.h>
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
+#include <atomic>
+#include <chrono>
+#include <iostream>
+#include <thread>
 
 namespace Soundux
 {
@@ -22,7 +22,7 @@ namespace Soundux
                 const char *displayenv = std::getenv("DISPLAY");
                 Display *x11display = XOpenDisplay(displayenv);
 
-                if (x11display == NULL)
+                if (x11display == nullptr)
                 {
                     std::cerr << "Failed to get X11-Display with value provided by environment variable(" << displayenv
                               << "), falling back "
@@ -31,7 +31,7 @@ namespace Soundux
                     x11display = XOpenDisplay(":0");
                 }
 
-                if (x11display == NULL)
+                if (x11display == nullptr)
                 {
                     std::cerr << "Failed to open X11 Display" << std::endl;
                     return nullptr;
@@ -41,8 +41,11 @@ namespace Soundux
 
             inline void hook()
             {
-                int xiOpCode, queryEvent, queryError;
-                if (!XQueryExtension(display, "XInputExtension", &xiOpCode, &queryEvent, &queryError))
+                int xiOpCode = 0;
+                int queryEvent = 0;
+                int queryError = 0;
+
+                if (XQueryExtension(display, "XInputExtension", &xiOpCode, &queryEvent, &queryError) == 0)
                 {
                     std::cerr << "XInput extension is not aviable" << std::endl;
                     return;
@@ -50,15 +53,17 @@ namespace Soundux
 
                 // Custom context
                 {
-                    int major = 2, minor = 0;
+                    int major = 2;
+                    int minor = 0;
                     int queryResult = XIQueryVersion(display, &major, &minor);
+
                     if (queryResult == BadRequest)
                     {
                         std::cerr << "XI 2.0 support is required - Current Version: " << major << "." << minor
                                   << std::endl;
                         return;
                     }
-                    else if (queryResult != Success)
+                    if (queryResult != Success)
                     {
                         std::cerr << "Unknown error" << std::endl;
                         return;
@@ -69,29 +74,29 @@ namespace Soundux
                 XIEventMask mask;
                 mask.deviceid = XIAllMasterDevices;
                 mask.mask_len = XIMaskLen(XI_LASTEVENT);
-                mask.mask = (unsigned char *)calloc(mask.mask_len, sizeof(char));
+                mask.mask = static_cast<unsigned char *>(calloc(mask.mask_len, sizeof(char)));
 
                 XISetMask(mask.mask, XI_RawKeyPress);
                 XISetMask(mask.mask, XI_RawKeyRelease);
                 XISelectEvents(display, root, &mask, 1);
-                XSync(display, false);
+                XSync(display, 0);
                 free(mask.mask);
 
                 while (!killThread.load())
                 {
                     while (!killThread.load())
                     {
-                        if (XPending(display))
+                        if (XPending(display) != 0)
                         {
                             XEvent event;
                             XNextEvent(display, &event);
-                            XGenericEventCookie *cookie = reinterpret_cast<XGenericEventCookie *>(&event.xcookie);
+                            auto *cookie = reinterpret_cast<XGenericEventCookie *>(&event.xcookie);
 
-                            if (XGetEventData(display, cookie) && cookie->type == GenericEvent &&
+                            if ((XGetEventData(display, cookie) != 0) && cookie->type == GenericEvent &&
                                 cookie->extension == xiOpCode &&
                                 (cookie->evtype == XI_RawKeyRelease || cookie->evtype == XI_RawKeyPress))
                             {
-                                XIRawEvent *ev = reinterpret_cast<XIRawEvent *>(cookie->data);
+                                auto *ev = reinterpret_cast<XIRawEvent *>(cookie->data);
                                 auto key = ev->detail;
 
                                 internal::onKeyEvent(key, cookie->evtype == XI_RawKeyPress);
@@ -120,11 +125,15 @@ namespace Soundux
         {
             KeySym s = XkbKeycodeToKeysym(internal::display, key, 0, 0);
             if (NoSymbol == s)
+            {
                 return "Unknown";
+            }
 
             char *str = XKeysymToString(s);
             if (str == nullptr)
+            {
                 return "Unknown";
+            }
 
             return str;
         }

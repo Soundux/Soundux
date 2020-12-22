@@ -1,15 +1,15 @@
 #pragma once
 #ifdef __linux__
-#include <stdexcept>
-#include <exception>
-#include <optional>
-#include <iostream>
-#include <cstdio>
-#include <string>
-#include <memory>
-#include <vector>
 #include <array>
+#include <cstdio>
+#include <exception>
+#include <iostream>
+#include <memory>
+#include <optional>
 #include <regex>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 #include "global.h"
 #include "../config/config.h"
@@ -61,7 +61,7 @@ namespace Soundux
                 std::string resampleMethod;
                 std::string processBinary;
 
-                operator bool()
+                operator bool() const
                 {
                     return index >= 0;
                 }
@@ -76,7 +76,8 @@ namespace Soundux
         inline std::string createSink()
         {
             system(("pactl load-module module-null-sink sink_name=" + internal::sinkName +
-                                            " sink_properties=device.description=" + internal::sinkName + " > nul").c_str());
+                    " sink_properties=device.description=" + internal::sinkName + " > nul")
+                       .c_str());
 
             auto defaultInput = internal::getDefaultCaptureDevice();
             // Create loopback for input
@@ -91,13 +92,14 @@ namespace Soundux
         };
         inline void deleteSink()
         {
-            // TODO: only unload soundboard sink
+            // TODO(d3s0x): only unload soundboard sink
             system("pactl unload-module module-null-sink 2> nul");
             system("pactl unload-module module-loopback 2> nul");
         };
         inline auto getSources()
         {
-            using namespace internal;
+            using internal::getOutput;
+            using internal::PulseAudioRecordingStream;
 
             auto input = getOutput("pactl list source-outputs");
 
@@ -106,7 +108,9 @@ namespace Soundux
                 auto ss = std::stringstream{str};
 
                 for (std::string line; std::getline(ss, line, '\n');)
+                {
                     result.push_back(line);
+                }
 
                 return result;
             };
@@ -136,13 +140,21 @@ namespace Soundux
                     else if (stream)
                     {
                         if (match[4].matched)
+                        {
                             stream.driver = match[4];
+                        }
                         else if (match[6].matched)
+                        {
                             stream.source = match[6];
+                        }
                         else if (match[8].matched)
+                        {
                             stream.processBinary = match[8];
+                        }
                         else if (match[10].matched)
+                        {
                             stream.resampleMethod = match[10];
+                        }
                     }
                 }
             }

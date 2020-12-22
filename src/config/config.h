@@ -13,7 +13,7 @@ namespace Soundux
 {
     namespace Config
     {
-        using namespace nlohmann;
+        using nlohmann::json;
 
         struct Sound
         {
@@ -22,11 +22,11 @@ namespace Soundux
             std::vector<int> hotKeys;
             std::uint64_t lastWriteTime;
 
-            bool operator==(const std::string &path)
+            bool operator==(const std::string &path) const
             {
                 return path == this->path;
             }
-            bool operator==(const Sound &other)
+            bool operator==(const Sound &other) const
             {
                 return other.name == name && other.path == path;
             }
@@ -37,7 +37,7 @@ namespace Soundux
             std::string folder;
             std::vector<Sound> sounds;
 
-            bool operator==(const Tab &other)
+            bool operator==(const Tab &other) const
             {
                 return other.folder == folder && other.title == title;
             }
@@ -84,7 +84,9 @@ namespace Soundux
             j.at("hotKeys").get_to(sound.hotKeys);
 
             if (j.contains("lastWriteTime"))
+            {
                 j.at("lastWriteTime").get_to(sound.lastWriteTime);
+            }
         }
 
         inline void to_json(json &j, const Tab &tab)
@@ -121,13 +123,21 @@ namespace Soundux
             j.at("tabHotkeysOnly").get_to(config.tabHotkeysOnly);
 
             if (j.contains("volumes"))
+            {
                 j.at("volumes").get_to(config.volumes);
+            }
             if (j.contains("width"))
+            {
                 j.at("width").get_to(config.width);
+            }
             if (j.contains("height"))
+            {
                 j.at("height").get_to(config.height);
+            }
             if (j.contains("allowOverlapping"))
+            {
                 j.at("allowOverlapping").get_to(config.allowOverlapping);
+            }
         }
 
         inline void loadConfig()

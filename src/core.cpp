@@ -4,10 +4,10 @@
 #include "hotkeys/global.h"
 #include "playback/global.h"
 #include "playback/linux.h"
-#include <filesystem>
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -168,7 +168,7 @@ void Core::addFolderTab(QUrl folder)
 
 void Core::updateFolderSounds(QTab qTab)
 {
-    // TODO: fix that the previously selected item is selected afterwards when it's still there
+    // TODO(d3s0x): fix that the previously selected item is selected afterwards when it's still there
     auto instance = qTab.getInstance();
     for (auto &tab : Soundux::Config::gConfig.tabs)
     {
@@ -310,7 +310,7 @@ void Core::playSound(std::string path)
     }
 #ifdef __linux__
     static std::string moveBackCmd;
-    auto sinkMonitorId = "TODO";
+    const auto *sinkMonitorId = "TODO";
 
     auto outputApp = Soundux::Playback::getCurrentOutputApplication();
 
@@ -350,12 +350,12 @@ void Core::playSound(std::string path)
 
 void Core::changeLocalVolume(int volume)
 {
-    Soundux::Playback::setVolume(Soundux::Playback::defaultPlayback.name, volume / 100.f);
+    Soundux::Playback::setVolume(Soundux::Playback::defaultPlayback.name, volume / 100.F);
 }
 
 void Core::changeRemoteVolume(int volume)
 {
-    Soundux::Playback::setVolume(sink.name, volume / 100.f);
+    Soundux::Playback::setVolume(sink.name, volume / 100.F);
 }
 
 void Core::stopPlayback()

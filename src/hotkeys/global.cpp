@@ -12,8 +12,10 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
             for (auto keyState : capturedKeyStates)
             {
                 if (keyState.second.first)
+                {
                     pressedStates.push_back(
                         std::make_tuple(keyState.first, keyState.second.first, keyState.second.second));
+                }
             }
 
             pressedStates.push_back(std::make_tuple(key, down, std::chrono::system_clock::now()));
@@ -85,7 +87,7 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
                 for (const auto &sound : tab.sounds)
                 {
                     bool allPressed = !sound.hotKeys.empty();
-                    for (auto &hotKey : sound.hotKeys)
+                    for (const auto &hotKey : sound.hotKeys)
                     {
                         if (!pressedKeys[hotKey])
                         {

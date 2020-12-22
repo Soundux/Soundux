@@ -44,4 +44,8 @@ Checks: "*,\
   -modernize-avoid-c-arrays,\
   -cppcoreguidelines-avoid-c-arrays,\
   -cert-env33-c,\
-  -abseil-*"
+  -abseil-*,\
+  -fuchsia-default-arguments-declarations,\
+  -readability-redundant-access-specifiers,\
+  -readability-convert-member-functions-to-static,\
+  -readability-implicit-bool-conversion"

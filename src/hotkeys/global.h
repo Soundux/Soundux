@@ -1,14 +1,14 @@
 #pragma once
+#include "../config/config.h"
 #include <chrono>
 #include <map>
-#include "../config/config.h"
 
 namespace Soundux
 {
     namespace Hooks
     {
         // Defined by linux/windows.h
-        std::string getKeyName(const int key);
+        std::string getKeyName(int key);
 
         namespace internal
         {

@@ -1,5 +1,6 @@
 #pragma once
 #include <qlist.h>
+#include <utility>
 #include <vector>
 #include <QString>
 #include <QObject>
@@ -15,7 +16,7 @@ struct QPulseAudioRecordingStream
   public:
     void setInstance(Soundux::Playback::internal::PulseAudioRecordingStream instance)
     {
-        this->instance = instance;
+        this->instance = std::move(instance);
     }
     Q_INVOKABLE QString getName() const
     {
@@ -41,7 +42,7 @@ struct QSound
   public:
     void setInstance(Soundux::Config::Sound instance)
     {
-        this->instance = instance;
+        this->instance = std::move(instance);
     }
     Soundux::Config::Sound getInstance() const
     {
@@ -80,7 +81,7 @@ struct QTab
   public:
     void setInstance(Soundux::Config::Tab instance)
     {
-        this->instance = instance;
+        this->instance = std::move(instance);
     }
     Soundux::Config::Tab getInstance() const
     {
@@ -96,7 +97,7 @@ struct QTab
     }
     Q_INVOKABLE std::vector<QSound> getSounds() const
     {
-        auto &sounds = instance.sounds;
+        const auto &sounds = instance.sounds;
 
         std::vector<QSound> qSounds;
         for (const auto &sound : sounds)

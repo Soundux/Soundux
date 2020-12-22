@@ -1,7 +1,7 @@
-#include <QQmlApplicationEngine>
 #include <QApplication>
-#include <QQuickStyle>
+#include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickStyle>
 #include <filesystem>
 #include <fstream>
 #include <qqml.h>
@@ -9,9 +9,9 @@
 #include <string>
 
 #include "core.h"
+#include "bindings/bindings.h"
 #include "config/config.h"
 #include "playback/global.h"
-#include "bindings/bindings.h"
 
 #ifdef _WIN32
 #include "hotkeys/windows.h"
