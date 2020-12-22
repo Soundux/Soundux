@@ -90,15 +90,15 @@ namespace Soundux
         inline void createSink()
         {
             system(("pactl load-module module-null-sink sink_name=" + internal::sinkName +
-                    " sink_properties=device.description=" + internal::sinkName + " > nul")
+                    " rate=44100 sink_properties=device.description=" + internal::sinkName + " > /dev/null")
                        .c_str());
 
             auto defaultInput = internal::getDefaultCaptureDevice();
             // Create loopback for input
             if (!defaultInput.empty())
             {
-                auto createLoopBack = "pactl load-module module-loopback source=\"" + defaultInput + "\" sink=\"" +
-                                      internal::sinkName + "\" > nul";
+                auto createLoopBack = "pactl load-module module-loopback rate=44100 source=\"" + defaultInput +
+                                      "\" sink=\"" + internal::sinkName + "\" > /dev/null";
 
                 static_cast<void>(system(createLoopBack.c_str()));
             }
@@ -145,8 +145,8 @@ namespace Soundux
         inline void deleteSink()
         {
             // TODO(d3s0x): only unload soundboard sink
-            system("pactl unload-module module-null-sink 2> nul");
-            system("pactl unload-module module-loopback 2> nul");
+            system("pactl unload-module module-null-sink 2> /dev/null");
+            system("pactl unload-module module-loopback 2> /dev/null");
         };
         inline auto getSources()
         {
