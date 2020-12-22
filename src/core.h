@@ -46,7 +46,7 @@ class Core : public QObject
     void changeLocalVolume(int);
     void changeRemoteVolume(int);
 
-    std::vector<QSound> getAllSounds(std::string = "");
+    std::vector<QSound> getAllSounds();
     std::vector<QSound> getSounds();
     void playSound(unsigned int);
     void playSound(std::string);

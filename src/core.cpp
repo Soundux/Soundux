@@ -201,7 +201,9 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
         for (const auto &file : std::filesystem::directory_iterator(path))
         {
             if (file.path().extension() != ".mp3" && file.path().extension() != ".wav")
+            {
                 continue;
+            }
 
             Soundux::Config::Sound sound;
             sound.lastWriteTime = file.last_write_time().time_since_epoch().count();
@@ -274,7 +276,7 @@ std::vector<QSound> Core::getSounds()
     return qSounds;
 }
 
-std::vector<QSound> Core::getAllSounds(std::string name)
+std::vector<QSound> Core::getAllSounds()
 {
     std::vector<QSound> qSounds;
     for (auto &tab : Soundux::Config::gConfig.tabs)
@@ -294,7 +296,9 @@ std::vector<QSound> Core::getAllSounds(std::string name)
 void Core::playSound(unsigned int index)
 {
     if (Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds.size() > index)
+    {
         playSound(Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index].path);
+    }
 }
 
 void Core::playSound(QString path)

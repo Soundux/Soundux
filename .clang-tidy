@@ -48,4 +48,5 @@ Checks: "*,\
   -fuchsia-default-arguments-declarations,\
   -readability-redundant-access-specifiers,\
   -readability-convert-member-functions-to-static,\
-  -readability-implicit-bool-conversion"
+  -readability-implicit-bool-conversion,\
+  -bugprone-inaccurate-erase"
