@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(soundux VERSION 0.1.2)
+project(soundux VERSION 0.1.3)
 
 if (NOT EXISTS "${CMAKE_SOURCE_DIR}/src/MaterialDesign.js")
     if (MSVC)
