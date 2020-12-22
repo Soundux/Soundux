@@ -151,3 +151,4 @@ The code is licensed under [GPLv3](LICENSE)
 - [x] ~~Detect if VBCable is already installed (InnoSetup)~~
 - [x] ~~Save window size~~
 - [x] ~~Save volume states (+ Sync state)~~
+- [ ] Kill UI instantly and wait for threads to finish in background
