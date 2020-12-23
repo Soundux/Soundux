@@ -1,10 +1,6 @@
 Checks: "*,\
   -google-runtime-int,\
   -google-explicit-constructor,\
-  -hicpp-no-malloc,\
-  -hicpp-vararg,\
-  -hicpp-invalid-access-moved,\
-  -hicpp-no-array-decay,\
   -llvm-header-guard,\
   -llvmlibc-*,\
   -readability-magic-numbers,\
@@ -33,14 +29,10 @@ Checks: "*,\
   -cppcoreguidelines-pro-type-member-init,\
   -fuchsia-statically-constructed-objects,\
   -cppcoreguidelines-avoid-non-const-global-variables,\
-  -hicpp-member-init,\
   -readability-function-cognitive-complexity,\
   -modernize-use-emplace,\
-  -hicpp-use-emplace,\
   -cppcoreguidelines-interfaces-global-init,\
   -modernize-loop-convert,\
-  -hicpp-avoid-c-arrays,
-  -hicpp-explicit-conversions,\
   -modernize-avoid-c-arrays,\
   -cppcoreguidelines-avoid-c-arrays,\
   -cert-env33-c,\
@@ -49,4 +41,6 @@ Checks: "*,\
   -readability-redundant-access-specifiers,\
   -readability-convert-member-functions-to-static,\
   -readability-implicit-bool-conversion,\
-  -bugprone-inaccurate-erase"
+  -bugprone-inaccurate-erase,\
+  -readability-uppercase-literal-suffix,\
+  -hicpp*"
