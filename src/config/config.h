@@ -61,7 +61,7 @@ namespace Soundux
         inline Config gConfig;
 
 #ifdef __linux__
-        inline std::string configPath = std::string(getenv("HOME")) + "/.config/Soundux/config.json";
+        inline std::string configPath = getenv("XDG_CONFIG_HOME") ? std::string(getenv("XDG_CONFIG_HOME")) + "/Soundux/config.json" : std::string(getenv("HOME")) + "/.config/Soundux/config.json";
 #else
 #if _WIN32
         inline std::string configPath = std::string(getenv("APPDATA")) + "/Soundux/config.json";
