@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Soundux"
-#define MyAppVersion "0.1.3"
+#define MyAppVersion "0.1.4"
 #define MyAppPublisher "Soundux"
 #define MyAppURL "https://soundux.github.io"
 #define MyAppExeName "soundux.exe"
