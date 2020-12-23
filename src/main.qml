@@ -35,10 +35,6 @@ ApplicationWindow {
         core.onSizeChanged(width, height)
     }
 
-    onClosing: {
-        core.onClose()
-    }
-
     Shortcut {
         sequence: "Ctrl+F"
         onActivated: {

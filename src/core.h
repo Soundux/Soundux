@@ -31,7 +31,6 @@ class Core : public QObject
     void setEngine(QQmlApplicationEngine *);
     void loadSettings();
     void refresh();
-    void onClose();
 
     void onSizeChanged(int, int);
 

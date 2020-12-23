@@ -54,20 +54,6 @@ void Core::loadSettings()
     setSize(Soundux::Config::gConfig.width, Soundux::Config::gConfig.height);
 }
 
-void Core::onClose()
-{
-    Soundux::Config::gConfig.volumes = Soundux::Playback::usedDevices;
-    Soundux::Config::saveConfig();
-
-    Soundux::Hooks::stop();
-
-    Soundux::Playback::stopAllAudio();
-#ifdef __linux__
-    Soundux::Playback::deleteSink();
-#endif
-    Soundux::Playback::destroy();
-}
-
 void Core::refresh()
 {
     this->engine->clearComponentCache();

@@ -7,6 +7,7 @@
 #include <qqml.h>
 #include <qurl.h>
 #include <string>
+#include <thread>
 
 #include "core.h"
 #include "bindings/bindings.h"
@@ -86,5 +87,18 @@ int main(int argc, char **argv)
 #endif
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-    return app.exec();
+    static_cast<void>(app.exec());
+
+    Soundux::Config::gConfig.volumes = Soundux::Playback::usedDevices;
+    Soundux::Config::saveConfig();
+
+    Soundux::Hooks::stop();
+
+    Soundux::Playback::stopAllAudio();
+#ifdef __linux__
+    Soundux::Playback::deleteSink();
+#endif
+    Soundux::Playback::destroy();
+
+    return 0;
 }
