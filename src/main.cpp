@@ -7,7 +7,6 @@
 #include <qqml.h>
 #include <qurl.h>
 #include <string>
-#include <thread>
 
 #include "core.h"
 #include "bindings/bindings.h"
