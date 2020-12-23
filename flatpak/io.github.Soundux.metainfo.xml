@@ -18,6 +18,15 @@
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/Soundux/soundux.github.io/master/src/assets/screenshots/1.png</image>
     </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/Soundux/soundux.github.io/master/src/assets/screenshots/2.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/Soundux/soundux.github.io/master/src/assets/screenshots/3.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/Soundux/soundux.github.io/master/src/assets/screenshots/4.png</image>
+    </screenshot>
   </screenshots>
   <releases>
     <release version="0.1.4" date="2020-12-23"/>
