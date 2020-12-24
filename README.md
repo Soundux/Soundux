@@ -67,10 +67,11 @@ Please refer to your distro instructions on how to install
 # Compilation & Installation
 
 ## Arch Linux and derivatives
-You can install my package with your AUR helper of choice which will automatically compile and install the master branch
+You can install our package with your AUR helper of choice which will automatically compile and install the latest release version
 ```sh
 yay -S soundux
 ```
+We also provide a `soundux-git` package which compiles from the master branch
 
 ## Flatpak
 You can grab the latest release from Flathub
