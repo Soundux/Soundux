@@ -11,69 +11,59 @@
   </p>
   <p>
     <a href="https://github.com/Soundux/Soundux/releases">
-      <img src="https://img.shields.io/github/last-commit/Soundux/Soundux.svg?style=for-the-badge" alt="Last Commit" />
-    </a>
-    <a href="https://github.com/Soundux/Soundux/stargazers">
-      <img src="https://img.shields.io/github/stars/Soundux/Soundux?style=for-the-badge" alt="Stars" />
-    </a>
-    <a href="https://github.com/Soundux/Soundux/blob/master/LICENSE">
-      <img src="https://img.shields.io/github/license/Soundux/Soundux.svg?style=for-the-badge" alt="License" />
+      <img src="https://img.shields.io/github/release/Soundux/Soundux.svg?style=flat-square" alt="Latest Stable Release" />
     </a>
     <a href="https://discord.gg/4HwSGN4Ec2">
-      <img src="https://img.shields.io/discord/697348809591750706?label=Discord&style=for-the-badge" alt="Discord" />
+      <img src="https://img.shields.io/discord/697348809591750706?label=discord&style=flat-square" alt="Discord" />
+    </a>
+    <a href="https://github.com/Soundux/Soundux/stargazers">
+      <img src="https://img.shields.io/github/stars/Soundux/Soundux?style=flat-square" alt="Stars" />
+    </a>
+    <a href="https://github.com/Soundux/Soundux/blob/master/LICENSE">
+      <img src="https://img.shields.io/github/license/Soundux/Soundux.svg?style=flat-square" alt="License" />
     </a>
     <br>
     <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+on+Windows%22">
-      <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20on%20Windows?label=Windows%20Build&style=for-the-badge" alt="Windows Build" />
+      <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20on%20Windows?label=windows%20build&style=flat-square" alt="Windows Build" />
     </a>
     <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+on+Linux%22">
-      <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20on%20Linux?label=Linux%20Build&style=for-the-badge" alt="Linux Build" />
+      <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20on%20Linux?label=linux%20build&style=flat-square" alt="Linux Build" />
     </a>
     <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+Flatpak%22">
-      <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20Flatpak?label=Flatpak%20Build&style=for-the-badge" alt="Flatpak Build" />
+      <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20Flatpak?label=flatpak%20build&style=flat-square" alt="Flatpak Build" />
     </a>
   </p>
-  
-  [![Packaging status](https://repology.org/badge/vertical-allrepos/soundux.svg)](https://repology.org/project/soundux/versions)
-  
 </div>
 
-## Index
-- [Introduction](#introduction)
-- [Runtime Dependencies (for linux)](#runtime-dependencies-for-linux)
-- [Compilation & Installation](#compilation--installation)
-  - [Arch Linux and derivatives](#arch-linux-and-derivatives)
-  - [Flatpak](#flatpak)
-  - [Windows](#windows)
-    - [Dependencies](#dependencies)
-  - [Other distros](#other-distros)
-    - [Dependencies](#dependencies-1)
-    - [Install dependencies for Ubuntu and derivatives](#install-dependencies-for-ubuntu-and-derivatives)
-    - [Build](#build)
-    - [Install](#install)
-- [Why _Soundux_?](#why-soundux)
-- [License](#license)
-- [TODO](#todo)
+# Preview
+![Dark Interface](https://raw.githubusercontent.com/Soundux/soundux.github.io/master/src/assets/screenshots/1.png)
 
 # Introduction
 Soundux is a cross-platform soundboard that features a simple user interface.
 With Soundux you can play audio to a specific application on linux and to your vb-audio-cable sink on windows.
 
-# Runtime Dependencies (for linux)
+# Runtime Dependencies
+These are required to run the program
+
+## Linux
 Please refer to your distro instructions on how to install
 - [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio)
 - Xorg
+## Windows
+- [VB-CABLE](https://vb-audio.com/Cable/) (Our installer automatically installs VB-CABLE)
 
-# Compilation & Installation
+# Installation
 
-## Arch Linux and derivatives
+## Linux
+
+### Arch Linux and derivatives
 You can install our package with your AUR helper of choice which will automatically compile and install the latest release version
 ```sh
 yay -S soundux
 ```
 We also provide a `soundux-git` package which compiles from the master branch
 
-## Flatpak
+### Other distros
 You can grab the latest release from Flathub
 
 <a
@@ -82,20 +72,13 @@ width='240' alt='Download on Flathub'
 src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 
 ## Windows
-*(We highly recommend you to just download the latest release for windows since it has all its dependencies packed with it)*
+Download our installer or portable from [the latest release](https://github.com/Soundux/Soundux/releases/latest)
 
-To compile on windows you'll have to install qt (*make sure the the important qt-paths are in your system-path!*)
-### Dependencies
-- [VB-Audio Cable](https://vb-audio.com/Cable/)
-- [Qt](https://www.qt.io/download-thank-you?os=windows)
-- MSVC
-- CMake
+# Compilation
 
-After installing the dependencies you should be able to follow the normal build steps!
+## Build Dependencies
 
-## Other distros
-
-### Dependencies
+### Linux
 This list may be not accurate. Contact me if you find missing dependencies that I can update this list
 - [qt5-base](https://github.com/qt/qtbase) >=5.15
 - [qt5-tools](https://github.com/qt/qt5) >=5.15
@@ -104,13 +87,21 @@ This list may be not accurate. Contact me if you find missing dependencies that 
 
 <b>Qt >= 5.15 is strictly required!</b>
 
-### Install dependencies for Ubuntu and derivatives
+#### Ubuntu and derivatives
 ```sh
 sudo apt install git build-essential cmake libx11-dev libqt5x11extras5-dev libxi-dev
 ```
 Ubuntu does not have Qt 5.15 in its repositories so you need to use their [Online Installer](https://www.qt.io/download-thank-you?hsLang=en) or [compile it from source](https://doc.qt.io/qt-5/build-sources.html#linux-x11)
 
-### Build
+### Windows
+*(We highly recommend you to just download the latest release for windows since it has all its dependencies packed with it)*
+
+To compile on windows you'll have to install qt (*make sure the the important qt-paths are in your system-path!*)
+- [Qt](https://www.qt.io/download-thank-you?os=windows)
+- MSVC
+- CMake
+
+## Build
 Clone the repository
 ```sh
 git clone https://github.com/Soundux/Soundux.git
@@ -122,14 +113,16 @@ Create a build folder and start compilation
 mkdir build
 cd build
 cmake ..
-make
+make # msbuild on Windows
 ```
 To start the program
 ```sh
-./soundux
+./soundux # .\soundux.exe on Windows
 ```
 
-### Install
+## Install
+
+### Linux
 ```sh
 sudo make install
 ```
@@ -158,7 +151,6 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Package it as deb, ~~Flatpak~~ and AppImage
 - [ ] Support macOS (Testers needed!)
 - [ ] ~~Fix~~ FileDialog on windows - Its now somewhat fixed but still not truely native
-- [x] ~~Detect if VBCable is already installed (InnoSetup)~~
-- [x] ~~Save window size~~
-- [x] ~~Save volume states (+ Sync state)~~
-- [x] ~~Kill UI instantly and wait for threads to finish in background~~
+- [ ] Block opening the program multiple times
+- [ ] Display warning when `move-source-ouput` fails
+- [ ] Use toast messages instead of modals
