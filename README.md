@@ -79,7 +79,7 @@ Download our installer or portable from [the latest release](https://github.com/
 ## Build Dependencies
 
 ### Linux
-This list may be not accurate. Contact me if you find missing dependencies that I can update this list
+This list may not be accurate. Contact me if you find missing dependencies that I can update this list
 - [qt5-base](https://github.com/qt/qtbase) >=5.15
 - [qt5-tools](https://github.com/qt/qt5) >=5.15
 - [qt5-quickcontrols2](https://github.com/qt/qtquickcontrols2) >=5.15
