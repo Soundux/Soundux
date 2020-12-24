@@ -86,7 +86,7 @@ ApplicationWindow {
 
         Label
         {
-            text: "Invalid output appliaction!"
+            text: "Invalid output application!"
         }
 
         standardButtons: Dialog.Ok
