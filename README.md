@@ -43,6 +43,7 @@
 - [Runtime Dependencies (for linux)](#runtime-dependencies-for-linux)
 - [Compilation & Installation](#compilation--installation)
   - [Arch Linux and derivatives](#arch-linux-and-derivatives)
+  - [Flatpak](#flatpak)
   - [Windows](#windows)
     - [Dependencies](#dependencies)
   - [Other distros](#other-distros)
@@ -68,8 +69,16 @@ Please refer to your distro instructions on how to install
 ## Arch Linux and derivatives
 You can install my package with your AUR helper of choice which will automatically compile and install the master branch
 ```sh
-yay -S soundux-git
+yay -S soundux
 ```
+
+## Flatpak
+You can grab the latest release from Flathub
+
+<a
+ href='https://flathub.org/apps/details/io.github.Soundux'><img 
+width='240' alt='Download on Flathub' 
+src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 
 ## Windows
 *(We highly recommend you to just download the latest release for windows since it has all its dependencies packed with it)*
@@ -92,7 +101,7 @@ This list may be not accurate. Contact me if you find missing dependencies that 
 - [qt5-quickcontrols2](https://github.com/qt/qtquickcontrols2) >=5.15
 - X11 client-side development headers
 
-<b>If your distribution does not have Qt >= 5.15 it its repositories, you might want to use our [Flatpak build](https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+Flatpak%22) instead!</b>
+<b>Qt >= 5.15 is strictly required!</b>
 
 ### Install dependencies for Ubuntu and derivatives
 ```sh
