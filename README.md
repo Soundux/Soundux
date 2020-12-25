@@ -113,7 +113,7 @@ Create a build folder and start compilation
 mkdir build
 cd build
 cmake ..
-make # msbuild on Windows
+cmake --build . --config Release
 ```
 To start the program
 ```sh
