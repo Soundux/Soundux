@@ -154,7 +154,7 @@ namespace Soundux
             using internal::PulseAudioRecordingStream;
             using internal::splitByNewLine;
 
-            auto input = getOutput("LC_ALL=C list source-outputs");
+            auto input = getOutput("LC_ALL=C pactl list source-outputs");
 
             auto splitted = splitByNewLine(input);
             std::vector<PulseAudioRecordingStream> streams;
