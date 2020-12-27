@@ -58,7 +58,7 @@ namespace Soundux
             {
                 // get default input device
                 std::string defaultInput;
-                char cmd[] = "pactl info";
+                char cmd[] = "LC_ALL=C pactl info";
                 auto result = getOutput(cmd);
                 std::regex reg(R"rgx(Default Source: (.+))rgx");
                 std::smatch sm;
@@ -103,7 +103,7 @@ namespace Soundux
                 static_cast<void>(system(createLoopBack.c_str()));
             }
 
-            auto sources = internal::getOutput("pactl list sources");
+            auto sources = internal::getOutput("LC_ALL=C pactl list sources");
             auto sourcesSplit = internal::splitByNewLine(sources);
 
             struct
@@ -154,7 +154,7 @@ namespace Soundux
             using internal::PulseAudioRecordingStream;
             using internal::splitByNewLine;
 
-            auto input = getOutput("pactl list source-outputs");
+            auto input = getOutput("LC_ALL=C list source-outputs");
 
             auto splitted = splitByNewLine(input);
             std::vector<PulseAudioRecordingStream> streams;
