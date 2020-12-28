@@ -27,10 +27,9 @@
 
 int main(int argc, char **argv)
 {
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #ifdef _WIN32
     ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
-    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
     std::vector<char *> args(argv, argv + argc);
 
     // Thanks to this article https://kb.froglogic.com/squish/qt/howto/automating-native-file-dialogs/ !
@@ -42,7 +41,6 @@ int main(int argc, char **argv)
 
     QApplication app(argc, (char **)args.data());
 #else
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication app(argc, argv);
 #endif
     QQmlApplicationEngine engine;
