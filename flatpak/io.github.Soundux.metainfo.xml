@@ -48,6 +48,7 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.1.5" date="2021-01-03"/>
     <release version="0.1.4" date="2020-12-23"/>
   </releases>
   <content_rating type="oars-1.1" />
