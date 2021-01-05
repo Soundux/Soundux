@@ -66,13 +66,13 @@ jobs:
               run: '&"${Env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" src/Soundux.iss'
 
             - name: Upload Build Artifact
-              uses: actions/upload-artifact@v2.2.1
+              uses: actions/upload-artifact@v2.2.2
               with:
                   name: Release
                   path: build/Release
             
             - name: Upload Installer Artifact
-              uses: actions/upload-artifact@v2.2.1
+              uses: actions/upload-artifact@v2.2.2
               with:
                   name: Installer
                   path: src/Output/setup.exe

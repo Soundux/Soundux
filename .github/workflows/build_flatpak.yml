@@ -26,7 +26,7 @@ jobs:
                   manifest-path: "io.github.Soundux.yml"
 
             - name: Upload Flatpak Artifact
-              uses: actions/upload-artifact@v2.2.1
+              uses: actions/upload-artifact@v2.2.2
               with:
                   name: Flatpak
                   path: "soundux.flatpak"
