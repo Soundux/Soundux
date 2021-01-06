@@ -2,8 +2,10 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
+#include <exception>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <qqml.h>
 #include <qurl.h>
 #include <string>
@@ -20,10 +22,65 @@
 #ifdef __linux__
 #include "hotkeys/linux.h"
 #include "playback/linux.h"
+#include <csignal>
+#include <execinfo.h>
 #else
 // #include "hotkeys/mac.h"
 #endif
 #endif
+
+#ifdef __linux__
+void sigHandler(int signal)
+{
+    std::cerr << "Received Signal: " << signal << std::endl;
+    std::cerr << "Backtrace available" << std::endl;
+
+    void *elements[20];
+    auto size = backtrace(elements, 20);
+    auto *stack = backtrace_symbols(elements, size);
+
+    for (int i = 0; size > i; i++)
+    {
+        std::cerr << stack[i] << std::endl;
+    }
+    free(stack);
+
+    exit(1);
+}
+#endif
+
+void exceptionHandler()
+{
+    std::cerr << "An exception caused the program to crash" << std::endl;
+    auto exception = std::current_exception();
+
+    try
+    {
+        std::rethrow_exception(exception);
+    }
+    catch (std::exception &e)
+    {
+        std::cerr << "Exception: " << e.what() << std::endl;
+        std::cerr << "Exception Type: " << typeid(e).name() << std::endl;
+    }
+    catch (...)
+    {
+        std::cerr << "Unknown exception" << std::endl;
+    }
+
+#ifdef __linux__
+    std::cerr << "Backtrace available" << std::endl;
+    void *elements[20];
+    auto size = backtrace(elements, 20);
+    auto *stack = backtrace_symbols(elements, size);
+
+    for (int i = 0; size > i; i++)
+    {
+        std::cerr << stack[i] << std::endl;
+    }
+    free(stack);
+#endif
+}
 
 int main(int argc, char **argv)
 {
@@ -68,8 +125,13 @@ int main(int argc, char **argv)
 #endif
 
     Soundux::Hooks::setup();
+    std::set_terminate(exceptionHandler);
 
 #ifdef __linux__
+    signal(SIGSEGV, sigHandler);
+    signal(SIGABRT, sigHandler);
+    signal(SIGFPE, sigHandler);
+
     Soundux::Playback::deleteSink();
     Soundux::Playback::createSink();
 

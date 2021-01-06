@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.1)
 project(soundux VERSION 0.1.5 DESCRIPTION "A cross-platform soundboard in QtQuick")
 
 # Options
-option(SOUNDUX_INSTALL "Install Target" ON)
+option(SOUNDUX_DEBUGINFO "Compiles with debug symbols to provide useful information for debugging" Off)
+if (SOUNDUX_DEBUGINFO)
+    message("Compiling with debug info")
+    set(CMAKE_BUILD_TYPE RelWithDebInfo)
+endif()
 # -------
 
 # Generate Material Design Js
@@ -73,6 +77,4 @@ set_target_properties(soundux PROPERTIES CMAKE_CXX_STANDARD_REQUIRED On)
 set_target_properties(soundux PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(soundux PROPERTIES PROJECT_NAME ${PROJECT_NAME})
 
-if (SOUNDUX_INSTALL)
-    install(TARGETS soundux DESTINATION bin)
-endif()
+install(TARGETS soundux DESTINATION bin)
