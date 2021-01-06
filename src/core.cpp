@@ -138,7 +138,7 @@ std::vector<QTab> Core::getTabs()
     return qTabs;
 }
 
-void Core::addFolderTab(QUrl folder)
+void Core::addFolderTab(QUrl folder) // NOLINT
 {
     Soundux::Config::Tab tab;
     tab.title = folder.fileName().toStdString();
@@ -152,7 +152,7 @@ void Core::addFolderTab(QUrl folder)
     emit foldersChanged();
 }
 
-void Core::updateFolderSounds(QTab qTab)
+void Core::updateFolderSounds(QTab qTab) // NOLINT
 {
     // TODO(d3s0x): fix that the previously selected item is selected afterwards when it's still there
     auto instance = qTab.getInstance();
@@ -281,18 +281,23 @@ std::vector<QSound> Core::getAllSounds()
 
 void Core::playSound(unsigned int index)
 {
-    if (Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds.size() > index)
+    if (Soundux::Config::gConfig.currentTab < Soundux::Config::gConfig.tabs.size() &&
+        Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds.size() > index)
     {
         playSound(Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index].path);
     }
+    else
+    {
+        std::cerr << "Invalid tab when playing audio" << std::endl;
+    }
 }
 
-void Core::playSound(QString path)
+void Core::playSound(QString path) // NOLINT because Qt wont allow it to be a const reference
 {
     playSound(path.toStdString());
 }
 
-void Core::playSound(std::string path)
+void Core::playSound(std::string path) // NOLINT
 {
     if (!Soundux::Config::gConfig.allowOverlapping)
     {
@@ -340,12 +345,12 @@ void Core::playSound(std::string path)
 
 void Core::changeLocalVolume(int volume)
 {
-    Soundux::Playback::setVolume(Soundux::Playback::defaultPlayback.name, volume / 100.F);
+    Soundux::Playback::setVolume(Soundux::Playback::defaultPlayback.name, static_cast<float>(volume) / 100.F);
 }
 
 void Core::changeRemoteVolume(int volume)
 {
-    Soundux::Playback::setVolume(sink.name, volume / 100.F);
+    Soundux::Playback::setVolume(sink.name, static_cast<float>(volume) / 100.F);
 }
 
 void Core::stopPlayback()
@@ -386,7 +391,7 @@ void Core::setStopHotkey()
     Soundux::Hooks::internal::capturedKeyStates.clear();
 }
 
-void Core::setHotkey(QString sound)
+void Core::setHotkey(QString sound) // NOLINT
 {
     Soundux::Hooks::internal::translateHotkeys = false;
 
@@ -437,7 +442,7 @@ QList<QString> Core::getStopHotKey()
     }
     return rtn;
 }
-QList<QString> Core::getCurrentHotKey(QString sound)
+QList<QString> Core::getCurrentHotKey(QString sound) // NOLINT
 {
     QList<QString> rtn;
 
