@@ -51,7 +51,7 @@ target_include_directories(soundux PRIVATE "lib/json/single_include/nlohmann")
 target_include_directories(soundux PRIVATE "lib/object_threadsafe")
 target_include_directories(soundux PRIVATE "lib/miniaudio")
 
-target_compile_definitions(soundux PRIVATE ${Qt5Widgets_DEFINITIONS} ${QtQml_DEFINITIONS} ${${Qt5Quick_DEFINITIONS}})
+target_compile_definitions(soundux PRIVATE ${Qt5Widgets_DEFINITIONS} ${QtQml_DEFINITIONS} ${Qt5Quick_DEFINITIONS})
 
 if (UNIX)
     target_link_libraries(soundux ${X11_LIBRARIES} ${X11_Xinput_LIB} ${CMAKE_DL_LIBS})
