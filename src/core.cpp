@@ -186,7 +186,8 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
         std::vector<Soundux::Config::Sound> newSounds;
         for (const auto &file : std::filesystem::directory_iterator(path))
         {
-            if (file.path().extension() != ".mp3" && file.path().extension() != ".wav")
+            if (file.path().extension() != ".mp3" && file.path().extension() != ".wav" &&
+                file.path().extension() != ".flac")
             {
                 continue;
             }

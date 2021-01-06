@@ -15,7 +15,7 @@
     <p>
       A universal soundboard using pulseaudio modules
     </p>
-    <h2>Features</h2>
+    <p>Features</p>
     <ul>
       <li>Dark and light theme</li>
       <li>Folder tabs</li>
@@ -48,7 +48,23 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="0.1.4" date="2020-12-23"/>
+    <release version="0.1.5" date="2021-01-03">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.1.5</url>
+      <description>
+        <ul>
+          <li>Fix detection for non English systems on Linux</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.1.4" date="2020-12-23">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.1.4</url>
+      <description>
+        <ul>
+          <li>Use $XDG_CONFIG_HOME on Linux if it's set</li>
+          <li>UI now closes instantly</li>
+        </ul>
+      </description>
+    </release>
   </releases>
   <content_rating type="oars-1.1" />
 </component>
