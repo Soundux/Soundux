@@ -32,6 +32,11 @@
 #ifdef __linux__
 void sigHandler(int signal)
 {
+    if (signal == 8)
+    {
+        std::cerr << "This crash is probably related to a bad pulseaudio config" << std::endl;
+    }
+
     std::cerr << "Received Signal: " << signal << std::endl;
     std::cerr << "Backtrace available" << std::endl;
 
