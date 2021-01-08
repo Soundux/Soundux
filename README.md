@@ -151,6 +151,6 @@ The code is licensed under [GPLv3](LICENSE)
 - [ ] Package it as deb, ~~Flatpak~~ and AppImage
 - [ ] Support macOS (Testers needed!)
 - [ ] ~~Fix~~ FileDialog on windows - Its now somewhat fixed but still not truely native
-- [ ] Block opening the program multiple times
+- [x] ~~Block opening the program multiple times~~
 - [ ] Display warning when `move-source-ouput` fails
 - [ ] Use toast messages instead of modals

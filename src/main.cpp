@@ -14,6 +14,7 @@
 #include "bindings/bindings.h"
 #include "config/config.h"
 #include "playback/global.h"
+#include "runguard/runguard.h"
 
 #ifdef _WIN32
 #include "hotkeys/windows.h"
@@ -89,6 +90,13 @@ void exceptionHandler()
 
 int main(int argc, char **argv)
 {
+    Soundux::RunGuard guard("soundux");
+    if (!guard.tryToRun())
+    {
+        std::cerr << "Soundux is already running!";
+        return 0;
+    }
+
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #ifdef _WIN32
     ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
