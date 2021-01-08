@@ -329,7 +329,7 @@ ApplicationWindow {
                         {
                             searchList.append({
                                 "name": searchPane._sounds[child].getName(),
-                                "path": searchPane._sounds[child].getPath()
+                                "path": searchPane._sounds[child].getPath(),
                             })
                         }
                     }
@@ -377,7 +377,7 @@ ApplicationWindow {
                             searchResults.currentIndex = index
                         }
                         onDoubleClicked: {
-                            core.playSound(path)
+                            core.playSoundByPath(path)
                         }
                     }
                 }
@@ -612,12 +612,18 @@ ApplicationWindow {
         function updateItems() {
             soundsList.clear()
             var sounds = core.getSounds()
-            for (var child in sounds) {
-                soundsList.append({
-                    "name": sounds[child].getName(),
-                    "path": sounds[child].getPath(),
-                    "hotKey": sounds[child].getKeyBinds().join("+"),
-                })
+
+            for (var child in sounds)
+            {
+                var item =
+                {
+                    index: child,
+                    name: sounds[child].getName(),
+                    path: sounds[child].getPath(),
+                    hotKey: sounds[child].getKeyBinds().join("+")
+                }
+
+                soundsList.append(item)
             }
         }
 
@@ -650,8 +656,10 @@ ApplicationWindow {
             delegate: Rectangle {
                 color: soundsListView.currentIndex == index ? cBgDarkest : cBgDarker
                 width: soundsListView.width
+
                 property var _name: name
                 property var _path: path
+
                 Layout.fillWidth: true
                 height: 25
 
@@ -694,7 +702,7 @@ ApplicationWindow {
                         soundsListView.currentIndex = index
                     }
                     onDoubleClicked: {
-                        core.playSound(path)
+                        core.playSound(index)
                     }
                     ToolTip {
                         x: parent.mouseX + 20

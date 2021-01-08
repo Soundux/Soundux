@@ -47,9 +47,10 @@ class Core : public QObject
 
     std::vector<QSound> getAllSounds();
     std::vector<QSound> getSounds();
-    void playSound(unsigned int);
-    void playSound(std::string);
-    void playSound(QString);
+
+    void playSound(Soundux::Config::Sound);
+    void playSoundByPath(QString);
+    void playSound(int);
     void stopPlayback();
 
     void currentTabChanged(int);

@@ -95,7 +95,7 @@ namespace Soundux
     {
         usedDevices[deviceName] = volume;
     }
-    std::uint64_t Playback::playAudio(const std::string &file)
+    std::uint64_t Playback::playAudio(const Config::Sound &sound)
     {
         static std::uint64_t counter = 0;
 
@@ -107,7 +107,7 @@ namespace Soundux
         }
 
         auto *decoder = new ma_decoder;
-        ma_result result = ma_decoder_init_file(file.c_str(), nullptr, decoder);
+        ma_result result = ma_decoder_init_file(sound.path.c_str(), nullptr, decoder);
 
         if (result != MA_SUCCESS)
         {
@@ -137,12 +137,17 @@ namespace Soundux
         }
 
         internal::playingSoundsMutext.lock();
-        internal::playingSounds.push_back({++counter, device, decoder, file});
+        internal::playingSounds.push_back({
+            ++counter,
+            device,
+            decoder,
+            sound,
+        });
         internal::playingSoundsMutext.unlock();
 
         return counter;
     }
-    std::uint64_t Playback::playAudio(const std::string &file, const ma_device_info &deviceInfo)
+    std::uint64_t Playback::playAudio(const Config::Sound &sound, const ma_device_info &deviceInfo)
     {
         static std::uint64_t counter = 0;
 
@@ -152,7 +157,7 @@ namespace Soundux
         }
 
         auto *decoder = new ma_decoder;
-        ma_result result = ma_decoder_init_file(file.c_str(), nullptr, decoder);
+        ma_result result = ma_decoder_init_file(sound.path.c_str(), nullptr, decoder);
 
         if (result != MA_SUCCESS)
         {
@@ -183,7 +188,7 @@ namespace Soundux
         }
 
         internal::playingSoundsMutext.lock();
-        internal::playingSounds.push_back({++counter, device, decoder, file});
+        internal::playingSounds.push_back({++counter, device, decoder, sound});
         internal::playingSoundsMutext.unlock();
 
         return counter;
@@ -289,7 +294,7 @@ namespace Soundux
             internal::deviceClearQueue[device] = true;
         }
     }
-    std::vector<Playback::internal::PlayingDevice> Playback::getPlayingSounds()
+    std::vector<Playback::internal::PlayingSound> Playback::getPlayingSounds()
     {
         Playback::internal::playingSoundsMutext.lock();
         auto rtn = Playback::internal::playingSounds;

@@ -1,13 +1,13 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <fstream>
 #include <cstdlib>
-#include <json.hpp>
-#include <iostream>
-#include <streambuf>
 #include <exception>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <json.hpp>
+#include <streambuf>
+#include <string>
+#include <vector>
 
 namespace Soundux
 {
@@ -61,7 +61,9 @@ namespace Soundux
         inline Config gConfig;
 
 #ifdef __linux__
-        inline std::string configPath = getenv("XDG_CONFIG_HOME") ? std::string(getenv("XDG_CONFIG_HOME")) + "/Soundux/config.json" : std::string(getenv("HOME")) + "/.config/Soundux/config.json";
+        inline std::string configPath = getenv("XDG_CONFIG_HOME")
+                                            ? std::string(getenv("XDG_CONFIG_HOME")) + "/Soundux/config.json"
+                                            : std::string(getenv("HOME")) + "/.config/Soundux/config.json";
 #else
 #if _WIN32
         inline std::string configPath = std::string(getenv("APPDATA")) + "/Soundux/config.json";

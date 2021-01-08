@@ -1,4 +1,5 @@
 #pragma once
+#include "../config/config.h"
 #include <atomic>
 #include <exception>
 #include <functional>
@@ -16,12 +17,12 @@ namespace Soundux
     {
         namespace internal
         {
-            struct PlayingDevice
+            struct PlayingSound
             {
                 std::uint64_t id;
                 ma_device *device;
                 ma_decoder *decoder;
-                std::string soundPath;
+                Config::Sound sound;
             };
             struct DefaultDevice
             {
@@ -29,7 +30,7 @@ namespace Soundux
             };
 
             inline std::mutex playingSoundsMutext;
-            inline std::vector<PlayingDevice> playingSounds;
+            inline std::vector<PlayingSound> playingSounds;
 
             void data_callback(ma_device *device, void *output, const void *input, std::uint32_t frameCount);
         } // namespace internal
@@ -45,15 +46,15 @@ namespace Soundux
         std::vector<ma_device_info> getCaptureDevices();
         std::vector<ma_device_info> getPlaybackDevices();
 
-        std::vector<internal::PlayingDevice> getPlayingSounds();
+        std::vector<internal::PlayingSound> getPlayingSounds();
 
         void setVolume(const std::string &deviceName, float volume);
 
-        std::uint64_t playAudio(const std::string &file);
-        std::uint64_t playAudio(const std::string &file, const ma_device_info &deviceInfo);
+        std::uint64_t playAudio(const Config::Sound &sound);
+        std::uint64_t playAudio(const Config::Sound &sound, const ma_device_info &deviceInfo);
 
         void stop(const std::uint64_t &deviceId);
-        inline std::function<void(const internal::PlayingDevice &)> stopCallback = [](const auto &device) {};
+        inline std::function<void(const internal::PlayingSound &)> stopCallback = [](const auto &device) {};
 
         void pause(const std::uint64_t &deviceId);
 

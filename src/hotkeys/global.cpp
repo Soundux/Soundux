@@ -75,7 +75,7 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
                 }
                 if (allPressed)
                 {
-                    gCore.playSound(sound.path);
+                    gCore.playSound(sound);
                     break;
                 }
             }
@@ -97,7 +97,7 @@ void Soundux::Hooks::internal::onKeyEvent(int key, bool down)
                     }
                     if (allPressed)
                     {
-                        gCore.playSound(sound.path);
+                        gCore.playSound(sound);
                         break;
                     }
                 }

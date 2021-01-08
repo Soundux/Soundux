@@ -280,12 +280,26 @@ std::vector<QSound> Core::getAllSounds()
     return qSounds;
 }
 
-void Core::playSound(unsigned int index)
+void Core::playSoundByPath(QString path)
+{
+    for (const auto &tab : Soundux::Config::gConfig.tabs)
+    {
+        auto sound = std::find_if(tab.sounds.begin(), tab.sounds.end(),
+                                  [&](const auto &item) { return item.path == path.toStdString(); });
+        if (sound != tab.sounds.end())
+        {
+            playSound(*sound);
+            break;
+        }
+    }
+}
+
+void Core::playSound(int index)
 {
     if (Soundux::Config::gConfig.currentTab < Soundux::Config::gConfig.tabs.size() &&
         Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds.size() > index)
     {
-        playSound(Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index].path);
+        playSound(Soundux::Config::gConfig.tabs[Soundux::Config::gConfig.currentTab].sounds[index]);
     }
     else
     {
@@ -293,12 +307,7 @@ void Core::playSound(unsigned int index)
     }
 }
 
-void Core::playSound(QString path) // NOLINT because Qt wont allow it to be a const reference
-{
-    playSound(path.toStdString());
-}
-
-void Core::playSound(std::string path) // NOLINT
+void Core::playSound(Soundux::Config::Sound sound) // NOLINT
 {
     if (!Soundux::Config::gConfig.allowOverlapping)
     {
@@ -323,7 +332,7 @@ void Core::playSound(std::string path) // NOLINT
         }
 
         // play on linux sink
-        auto lastPlayedId = Soundux::Playback::playAudio(path, sink);
+        auto lastPlayedId = Soundux::Playback::playAudio(sound, sink);
 
         Soundux::Playback::stopCallback = [=](const auto &info) {
             if (info.id == lastPlayedId)
@@ -341,7 +350,7 @@ void Core::playSound(std::string path) // NOLINT
     Soundux::Playback::playAudio(path, sink);
 #endif
     // play for me on default playback device
-    Soundux::Playback::playAudio(path);
+    Soundux::Playback::playAudio(sound);
 }
 
 void Core::changeLocalVolume(int volume)
