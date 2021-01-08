@@ -347,7 +347,7 @@ void Core::playSound(Soundux::Config::Sound sound) // NOLINT
     }
 #endif
 #ifdef _WIN32
-    Soundux::Playback::playAudio(path, sink);
+    Soundux::Playback::playAudio(sound, sink);
 #endif
     // play for me on default playback device
     Soundux::Playback::playAudio(sound);
