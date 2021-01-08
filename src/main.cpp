@@ -137,7 +137,6 @@ int main(int argc, char **argv)
     signal(SIGABRT, sigHandler);
     signal(SIGFPE, sigHandler);
 
-    Soundux::Playback::deleteSink();
     Soundux::Playback::createSink();
 
     for (const auto &device : Soundux::Playback::getPlaybackDevices())

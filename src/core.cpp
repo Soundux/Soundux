@@ -313,10 +313,10 @@ void Core::playSound(std::string path) // NOLINT
     {
         auto source = outputApp->source;
 
-        if (source != Soundux::Playback::internal::sinkId)
+        if (source != Soundux::Playback::internal::sinkMonitorId)
         {
             auto moveToSink = "pactl move-source-output " + std::to_string(outputApp->index) + " " +
-                              Soundux::Playback::internal::sinkId;
+                              Soundux::Playback::internal::sinkMonitorId;
             moveBackCmd = "pactl move-source-output " + std::to_string(outputApp->index) + " " + source;
 
             static_cast<void>(system(moveToSink.c_str()));

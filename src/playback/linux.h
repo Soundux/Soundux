@@ -20,7 +20,9 @@ namespace Soundux
     {
         namespace internal
         {
+            inline std::string sinkMonitorId;
             inline std::string sinkId;
+            inline std::string loopBackId;
             inline const std::string sinkName = "soundboard_sink";
 
             inline std::string getOutput(const std::string &command)
@@ -89,21 +91,24 @@ namespace Soundux
 
         inline void createSink()
         {
-            system(("pactl load-module module-null-sink sink_name=" + internal::sinkName +
-                    " rate=44100 sink_properties=device.description=" + internal::sinkName + " > /dev/null")
-                       .c_str());
+            using internal::getOutput;
+
+            auto sinkId = getOutput(("pactl load-module module-null-sink sink_name=" + internal::sinkName +
+                                     " rate=44100 sink_properties=device.description=" + internal::sinkName));
+            internal::sinkId = sinkId;
 
             auto defaultInput = internal::getDefaultCaptureDevice();
             // Create loopback for input
             if (!defaultInput.empty())
             {
                 auto createLoopBack = "pactl load-module module-loopback rate=44100 source=\"" + defaultInput +
-                                      "\" sink=\"" + internal::sinkName + "\" > /dev/null";
+                                      "\" sink=\"" + internal::sinkName + "\"";
 
-                static_cast<void>(system(createLoopBack.c_str()));
+                auto loopBackId = getOutput(createLoopBack);
+                internal::loopBackId = loopBackId;
             }
 
-            auto sources = internal::getOutput("LC_ALL=C pactl list sources");
+            auto sources = getOutput("LC_ALL=C pactl list sources");
             auto sourcesSplit = internal::splitByNewLine(sources);
 
             struct
@@ -140,13 +145,12 @@ namespace Soundux
                 std::cerr << "Failed to find soundboard sink in PulseAudio sources!" << std::endl;
             }
 
-            internal::sinkId = device.id;
+            internal::sinkMonitorId = device.id;
         };
         inline void deleteSink()
         {
-            // TODO(d3s0x): only unload soundboard sink
-            system("pactl unload-module module-null-sink 2> /dev/null");
-            system("pactl unload-module module-loopback 2> /dev/null");
+            system(("pactl unload-module " + internal::loopBackId).c_str());
+            system(("pactl unload-module " + internal::sinkId).c_str());
         };
         inline auto getSources()
         {
