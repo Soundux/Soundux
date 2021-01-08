@@ -67,13 +67,11 @@ namespace Soundux
 #else
 #if _WIN32
         inline std::string configPath = []() {
-            std::size_t size = 512;
-            auto *buffer = new char[size];
+            char *buffer;
+            std::size_t size;
             _dupenv_s(&buffer, &size, "APPDATA");
             auto rtn = std::string(buffer) + "\\Soundux\\config.json";
-            delete[] buffer;
-
-            std::cout << rtn << std::endl;
+            free(buffer);
 
             return rtn;
         }();
