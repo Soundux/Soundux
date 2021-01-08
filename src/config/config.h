@@ -66,7 +66,17 @@ namespace Soundux
                                             : std::string(getenv("HOME")) + "/.config/Soundux/config.json";
 #else
 #if _WIN32
-        inline std::string configPath = std::string(getenv("APPDATA")) + "/Soundux/config.json";
+        inline std::string configPath = []() {
+            std::size_t size = 512;
+            auto *buffer = new char[size];
+            _dupenv_s(&buffer, &size, "APPDATA");
+            auto rtn = std::string(buffer) + "\\Soundux\\config.json";
+            delete[] buffer;
+
+            std::cout << rtn << std::endl;
+
+            return rtn;
+        }();
 #else
 // is mac
 #endif
