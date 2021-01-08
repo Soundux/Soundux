@@ -28,8 +28,8 @@ namespace Soundux
                 std::string name;
             };
 
-            inline std::mutex playingDeviceMutex;
-            inline std::vector<PlayingDevice> currentlyPlayingDevices;
+            inline std::mutex playingSoundsMutext;
+            inline std::vector<PlayingDevice> playingSounds;
 
             void data_callback(ma_device *device, void *output, const void *input, std::uint32_t frameCount);
         } // namespace internal
@@ -44,6 +44,8 @@ namespace Soundux
 
         std::vector<ma_device_info> getCaptureDevices();
         std::vector<ma_device_info> getPlaybackDevices();
+
+        std::vector<internal::PlayingDevice> getPlayingSounds();
 
         void setVolume(const std::string &deviceName, float volume);
 
@@ -73,17 +75,17 @@ namespace Soundux
                         {
                             if (sound->second)
                             {
-                                playingDeviceMutex.lock();
-                                for (unsigned int i = 0; currentlyPlayingDevices.size() > i; i++)
+                                playingSoundsMutext.lock();
+                                for (unsigned int i = 0; playingSounds.size() > i; i++)
                                 {
-                                    auto &device = currentlyPlayingDevices.at(i);
+                                    auto &device = playingSounds.at(i);
                                     if (device.device != sound->first)
                                     {
                                         continue;
                                     }
                                     stop(device.id);
                                 }
-                                playingDeviceMutex.unlock();
+                                playingSoundsMutext.unlock();
                                 deviceClearQueue.erase(sound);
                                 break;
                             }
