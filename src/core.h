@@ -38,8 +38,8 @@ class Core : public QObject
     QTab getCurrentTab();
     std::vector<QTab> getTabs();
 
-    void addFolderTab(QUrl);
-    void updateFolderSounds(QTab);
+    void addFolderTab(const QUrl &);
+    void updateFolderSounds(const QTab &);
     void updateFolderSounds(Soundux::Config::Tab &);
 
     void changeLocalVolume(int);
@@ -48,15 +48,15 @@ class Core : public QObject
     std::vector<QSound> getAllSounds();
     std::vector<QSound> getSounds();
 
-    void playSound(Soundux::Config::Sound);
-    void playSoundByPath(QString);
+    void playSound(const Soundux::Config::Sound &);
+    void playSoundByPath(const QString &);
     void playSound(int);
     void stopPlayback();
 
     void currentTabChanged(int);
 
     void setStopHotkey();
-    void setHotkey(QString);
+    void setHotkey(const QString &);
     void hotkeyDialogFocusChanged(int);
 
     int getDarkMode();
@@ -70,12 +70,12 @@ class Core : public QObject
 
     int isWindows();
     QList<QString> getStopHotKey();
-    QList<QString> getCurrentHotKey(QString);
+    QList<QString> getCurrentHotKey(const QString &);
 
     // Can't use preprocessor here because qt doesnt like that.
 
     /* Linux */
-    void setLinuxSink(ma_device_info);
+    void setLinuxSink(const ma_device_info &);
     void currentOutputApplicationChanged(int);
     std::vector<QPulseAudioRecordingStream> getOutputApplications();
     /* */

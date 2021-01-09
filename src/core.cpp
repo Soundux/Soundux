@@ -61,7 +61,7 @@ void Core::refresh()
 }
 
 #ifdef __linux__
-void Core::setLinuxSink(ma_device_info linuxSink)
+void Core::setLinuxSink(const ma_device_info &linuxSink)
 {
     sink = linuxSink;
 }
@@ -138,7 +138,7 @@ std::vector<QTab> Core::getTabs()
     return qTabs;
 }
 
-void Core::addFolderTab(QUrl folder) // NOLINT
+void Core::addFolderTab(const QUrl &folder)
 {
     Soundux::Config::Tab tab;
     tab.title = folder.fileName().toStdString();
@@ -152,7 +152,7 @@ void Core::addFolderTab(QUrl folder) // NOLINT
     emit foldersChanged();
 }
 
-void Core::updateFolderSounds(QTab qTab) // NOLINT
+void Core::updateFolderSounds(const QTab &qTab)
 {
     // TODO(d3s0x): fix that the previously selected item is selected afterwards when it's still there
     auto instance = qTab.getInstance();
@@ -280,7 +280,7 @@ std::vector<QSound> Core::getAllSounds()
     return qSounds;
 }
 
-void Core::playSoundByPath(QString path)
+void Core::playSoundByPath(const QString &path)
 {
     for (const auto &tab : Soundux::Config::gConfig.tabs)
     {
@@ -307,7 +307,7 @@ void Core::playSound(int index)
     }
 }
 
-void Core::playSound(Soundux::Config::Sound sound) // NOLINT
+void Core::playSound(const Soundux::Config::Sound &sound)
 {
     if (!Soundux::Config::gConfig.allowOverlapping)
     {
@@ -401,7 +401,7 @@ void Core::setStopHotkey()
     Soundux::Hooks::internal::capturedKeyStates.clear();
 }
 
-void Core::setHotkey(QString sound) // NOLINT
+void Core::setHotkey(const QString &sound)
 {
     Soundux::Hooks::internal::translateHotkeys = false;
 
@@ -452,7 +452,7 @@ QList<QString> Core::getStopHotKey()
     }
     return rtn;
 }
-QList<QString> Core::getCurrentHotKey(QString sound) // NOLINT
+QList<QString> Core::getCurrentHotKey(const QString &sound)
 {
     QList<QString> rtn;
 
