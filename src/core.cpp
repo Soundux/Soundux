@@ -95,7 +95,7 @@ QList<QString> Core::getPlaybackDevices()
 #else
 #ifdef _WIN32
 // Define Linux functions to prevent moc failure.
-void Core::setLinuxSink(ma_device_info linuxSink) {}
+void Core::setLinuxSink(const ma_device_info &linuxSink) {}
 std::vector<QPulseAudioRecordingStream> Core::getOutputApplications()
 {
     return {};
