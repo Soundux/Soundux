@@ -60,12 +60,16 @@ namespace Soundux
             {
                 // get default input device
                 std::string defaultInput;
-                char cmd[] = "LC_ALL=C pactl info";
-                auto result = getOutput(cmd);
-                std::regex reg(R"rgx(Default Source: (.+))rgx");
+                auto result = getOutput("LC_ALL=C pactl info");
+
+                static const std::regex reg(R"rgx(Default Source: (.+))rgx");
                 std::smatch sm;
-                regex_search(result, sm, reg);
-                defaultInput = sm[1].str();
+
+                if (std::regex_search(result, sm, reg))
+                    defaultInput = sm[1].str();
+                else
+                    std::cerr << "Failed to get default capture device" << std::endl;
+
                 return defaultInput;
             }
 
@@ -163,7 +167,7 @@ namespace Soundux
             auto splitted = splitByNewLine(input);
             std::vector<PulseAudioRecordingStream> streams;
 
-            static auto regex = std::regex(
+            static const auto regex = std::regex(
                 R"rgx((.*#(\d+))|(Driver: (.+))|(Source: (\d+))|(.*process.*binary.* = "(.+)")|(Resample method: (.+)))rgx");
 
             PulseAudioRecordingStream stream;
