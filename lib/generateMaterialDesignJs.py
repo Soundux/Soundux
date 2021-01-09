@@ -36,6 +36,6 @@ for line in css:
 lines.append("}")
 
 # save to src js file
-new_file = open("../src/qml/MaterialDesign.js", "w")
+new_file = open("../src/qml/resources/MaterialDesign.js", "w")
 for line in lines:
     new_file.write(line + "\n")

@@ -1,10 +1,12 @@
 <RCC>
     <qresource prefix="/">
-        <file>MaterialDesignIcon.qml</file>
-        <file>IconButton.qml</file>
         <file>main.qml</file>
-        <file>MaterialDesign.js</file>
-        <file>icon.jpg</file>
         <file>../../lib/materialdesignicons/fonts/materialdesignicons-webfont.ttf</file>
+        
+        <file>components/IconButton.qml</file>
+        <file>components/MaterialDesignIcon.qml</file>
+
+        <file>resources/icon.jpg</file>
+        <file>resources/MaterialDesign.js</file>
     </qresource>
 </RCC>

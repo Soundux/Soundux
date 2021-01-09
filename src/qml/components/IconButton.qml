@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
+import "./" as Components
 
 Button {
     id: control
@@ -16,7 +17,7 @@ Button {
         RowLayout {
             anchors.centerIn: parent
 
-            MaterialDesignIcon {
+            Components.MaterialDesignIcon {
                 name: iconName
                 size: control.font.pixelSize * 1.4
                 Layout.fillWidth: true

@@ -10,7 +10,7 @@ endif()
 # -------
 
 # Generate Material Design Js
-if (NOT EXISTS "${CMAKE_SOURCE_DIR}/src/qml/MaterialDesign.js")
+if (NOT EXISTS "${CMAKE_SOURCE_DIR}/src/qml/resources/MaterialDesign.js")
     if (MSVC)
         execute_process(COMMAND cmd /c python "${CMAKE_SOURCE_DIR}/lib/generateMaterialDesignJs.py"
             WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")

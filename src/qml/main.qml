@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Dialogs 1.3 as Dialogs
+import "./components/" as Components
 
 ApplicationWindow {
     id: window
@@ -94,7 +95,7 @@ ApplicationWindow {
 
     Image {
         id: icon
-        source: "icon.jpg"
+        source: "resources/icon.jpg"
         width: 64
         fillMode: Image.PreserveAspectFit
         anchors.top: parent.top
@@ -112,7 +113,7 @@ ApplicationWindow {
         text: "Soundux"
     }
 
-    IconButton {
+    Components.IconButton {
         id: stopButton
         text: "Stop"
         iconName: "stop"
@@ -272,7 +273,7 @@ ApplicationWindow {
                 }
             }
 
-            IconButton {
+            Components.IconButton {
                 id: refreshOutputBtn
                 Layout.fillWidth: true
                 text: "Refresh"
@@ -729,7 +730,7 @@ ApplicationWindow {
             columns: 1
             rowSpacing: -5
 
-            IconButton {
+            Components.IconButton {
                 Layout.fillWidth: true
                 id: searchBtn
                 text: "Search"
@@ -743,7 +744,7 @@ ApplicationWindow {
                 }
             }
 
-            IconButton {
+            Components.IconButton {
                 Layout.fillWidth: true
                 text: "Add tab"
                 iconName: "folder_plus"
@@ -753,7 +754,7 @@ ApplicationWindow {
                 }
             }
 
-            IconButton {
+            Components.IconButton {
                 Layout.fillWidth: true
                 text: "Remove tab"
                 iconName: "tab_minus"
@@ -764,7 +765,7 @@ ApplicationWindow {
                 }
             }
 
-            IconButton {
+            Components.IconButton {
                 id: buttonRefreshFolder
                 Layout.fillWidth: true
                 text: "Refresh"
@@ -781,7 +782,7 @@ ApplicationWindow {
                 Layout.fillHeight: true
             }
 
-            IconButton {
+            Components.IconButton {
                 Layout.fillWidth: true
                 text: "Set hotkey"
                 iconName: "keyboard"
@@ -795,7 +796,7 @@ ApplicationWindow {
                 }
             }
 
-            IconButton {
+            Components.IconButton {
                 Layout.fillWidth: true
                 text: "Play"
                 iconName: "play"
@@ -805,7 +806,7 @@ ApplicationWindow {
                 }
             }
 
-            IconButton {
+            Components.IconButton {
                 Layout.fillWidth: true
                 text: "Settings"
                 iconName: "cog"

@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls.Material 2.15
-import "MaterialDesign.js" as MD
+import "../resources/MaterialDesign.js" as MD
 
 Item {
     property real size: 24
@@ -23,6 +23,6 @@ Item {
 
     FontLoader {
         id: materialFont
-        source: "../lib/materialdesignicons/fonts/materialdesignicons-webfont.ttf"
+        source: "../../lib/materialdesignicons/fonts/materialdesignicons-webfont.ttf"
     }
 }
