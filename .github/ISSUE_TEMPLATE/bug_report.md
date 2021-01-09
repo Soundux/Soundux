@@ -17,6 +17,9 @@ Steps to reproduce the behavior:
 3. Scroll down to '....'
 4. See error
 
+**Console output**
+If the program crashes, please provide **all** of the console output.
+
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
@@ -24,7 +27,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
-- Environment: [Windows Installer/Portable or Linux Flathub/AUR/self-compiled]
+- Environment: **[Windows Installer/Portable or Linux Flathub/AUR/self-compiled]**
  - Version [version number or commit]
 
 **Additional context**
