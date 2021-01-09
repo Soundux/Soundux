@@ -1,23 +1,19 @@
 #pragma once
-#include <QObject>
 #include <QQmlApplicationEngine>
-#include <QSharedPointer>
-#include <qglobal.h>
 #include <vector>
 
-#include "config/config.h"
-#include "bindings/bindings.h"
-#include "qlist.h"
+#include "../config/config.h"
+#include "../bindings/bindings.h"
 
 #ifdef _WIN32
-#include "hotkeys/windows.h"
-#include "playback/windows.h"
+#include "../hotkeys/windows.h"
+#include "../playback/windows.h"
 #else
 #ifdef __linux__
-#include "hotkeys/linux.h"
-#include "playback/linux.h"
+#include "../hotkeys/linux.h"
+#include "../playback/linux.h"
 // #else
-// #include "hotkeys/mac.h"
+// #include "../hotkeys/mac.h"
 #endif
 #endif
 

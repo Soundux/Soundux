@@ -1,15 +1,5 @@
 #include "core.h"
-#include "bindings/bindings.h"
-#include "config/config.h"
-#include "hotkeys/global.h"
-#include "playback/global.h"
-#include "playback/linux.h"
-#include <algorithm>
-#include <chrono>
-#include <cstdint>
 #include <filesystem>
-#include <string>
-#include <vector>
 
 Core::Core(QObject *parent) : QObject(parent) {}
 

@@ -1,5 +1,5 @@
 #include "global.h"
-#include "../core.h"
+#include "../core/core.h"
 #include <chrono>
 
 void Soundux::Hooks::internal::onKeyEvent(int key, bool down)

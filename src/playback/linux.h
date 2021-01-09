@@ -1,13 +1,7 @@
 #pragma once
 #ifdef __linux__
-#include <array>
-#include <cstdio>
-#include <exception>
-#include <iostream>
 #include <memory>
-#include <optional>
 #include <regex>
-#include <stdexcept>
 #include <string>
 #include <vector>
 

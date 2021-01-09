@@ -5,6 +5,6 @@
         <file>main.qml</file>
         <file>MaterialDesign.js</file>
         <file>icon.jpg</file>
-        <file>../lib/materialdesignicons/fonts/materialdesignicons-webfont.ttf</file>
+        <file>../../lib/materialdesignicons/fonts/materialdesignicons-webfont.ttf</file>
     </qresource>
 </RCC>

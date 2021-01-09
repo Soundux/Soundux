@@ -31,7 +31,7 @@ jobs:
               run: 'mkdir build && cd build && cmake .. && cmake --build . --target ALL_BUILD --config Release'
 
             - name: Run Windeploy
-              run: 'cd build/Release && windeployqt --release --qmldir ../../src soundux.exe'
+              run: 'cd build/Release && windeployqt --release --qmldir ../../src/qml soundux.exe'
 
             - name: Install InnoSetup  
               uses: crazy-max/ghaction-chocolatey@v1
@@ -54,7 +54,7 @@ jobs:
                 args: install wget -y
 
             - name: Run Sed
-              run: '&"${Env:ProgramData}\chocolatey\bin\sed.exe" -i ''s%\$PATH%D:\\a\\Soundux\\Soundux%'' src/Soundux.iss'
+              run: '&"${Env:ProgramData}\chocolatey\bin\sed.exe" -i ''s%\$PATH%D:\\a\\Soundux\\Soundux%'' src/innosetup/Soundux.iss'
             
             - name: Download VB-Cable
               run: '&"${Env:ProgramData}\chocolatey\bin\wget.exe" https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip'
@@ -63,7 +63,7 @@ jobs:
               run: '&"${Env:ProgramData}\chocolatey\bin\7z.exe" x .\VBCABLE_Driver_Pack43.zip -o*'
                 
             - name: Run InnoSetup
-              run: '&"${Env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" src/Soundux.iss'
+              run: '&"${Env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" src/innosetup/Soundux.iss'
 
             - name: Upload Build Artifact
               uses: actions/upload-artifact@v2.2.2
@@ -75,4 +75,4 @@ jobs:
               uses: actions/upload-artifact@v2.2.2
               with:
                   name: Installer
-                  path: src/Output/setup.exe
+                  path: src/innosetup/Output/setup.exe

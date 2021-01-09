@@ -10,7 +10,7 @@ endif()
 # -------
 
 # Generate Material Design Js
-if (NOT EXISTS "${CMAKE_SOURCE_DIR}/src/MaterialDesign.js")
+if (NOT EXISTS "${CMAKE_SOURCE_DIR}/src/qml/MaterialDesign.js")
     if (MSVC)
         execute_process(COMMAND cmd /c python "${CMAKE_SOURCE_DIR}/lib/generateMaterialDesignJs.py"
             WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
@@ -28,7 +28,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 find_package(Qt5 COMPONENTS Widgets Qml Quick QuickControls2 REQUIRED)
-qt5_add_resources(QT_RESOURCES src/qml.qrc)
+qt5_add_resources(QT_RESOURCES src/qml/qml.qrc)
 # ----------
 
 # Source Files to compile

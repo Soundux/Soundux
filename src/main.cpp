@@ -10,7 +10,7 @@
 #include <qurl.h>
 #include <string>
 
-#include "core.h"
+#include "core/core.h"
 #include "bindings/bindings.h"
 #include "config/config.h"
 #include "playback/global.h"
