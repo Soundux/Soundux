@@ -15,7 +15,7 @@ jobs:
     flatpak-builder:
         runs-on: ubuntu-20.04
         container:
-            image: docker.io/bilelmoussaoui/flatpak-github-actions
+            image: bilelmoussaoui/flatpak-github-actions:kde-5.15
             options: --privileged
 
         steps:
