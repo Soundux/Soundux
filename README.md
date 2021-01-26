@@ -1,3 +1,5 @@
+# This is the old Linux only Qt Widgets codebase. [See the new, current version](https://github.com/Soundux/Soundux)
+
 <div align="center">
   <p>
     <h1>
