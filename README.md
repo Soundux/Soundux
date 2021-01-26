@@ -122,23 +122,3 @@ The project started as a **Sound**board for Lin**ux**
 
 # License
 The code is licensed under [GPLv3](LICENSE)
-
-# TODO
-- [ ] (Un)Pause / Seek
-- [ ] Playlist mode (play sounds one after another)
-- [ ] Icons in Output application dropdown on linux
-- [ ] Improve the logo
-- [ ] Volume normalization
-- [ ] Grid View
-- [ ] Repeat button
-- [ ] Playlist mode
-- [ ] Implement hotkeys for Wayland
-- [ ] Add ability to move tabs
-- [ ] Localization
-- [ ] App icon for Windows
-- [ ] Package it as deb, ~~Flatpak~~ and AppImage
-- [ ] Support macOS (Testers needed!)
-- [ ] ~~Fix~~ FileDialog on windows - Its now somewhat fixed but still not truely native
-- [x] ~~Block opening the program multiple times~~
-- [ ] Display warning when `move-source-ouput` fails
-- [ ] Use toast messages instead of modals
