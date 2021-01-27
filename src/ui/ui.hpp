@@ -11,6 +11,7 @@ namespace Soundux
         {
             virtual void stopSounds();
             virtual void playSound(const std::uint32_t & /*soundId*/);
+            virtual void stopSound(const std::uint32_t & /*playingSoundId*/);
             virtual void pauseSound(const std::uint32_t & /*playingSoundId*/);
 
             virtual void dataChanged(const Data &);
