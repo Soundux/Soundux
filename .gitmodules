@@ -4,3 +4,6 @@
 [submodule "lib/miniaudio"]
 	path = lib/miniaudio
 	url = https://github.com/mackron/miniaudio
+[submodule "lib/cpp-subprocess"]
+	path = lib/cpp-subprocess
+	url = https://github.com/tsaarni/cpp-subprocess
