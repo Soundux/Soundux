@@ -4,6 +4,3 @@
 [submodule "lib/miniaudio"]
 	path = lib/miniaudio
 	url = https://github.com/mackron/miniaudio
-[submodule "lib/materialdesignicons"]
-	path = lib/materialdesignicons
-	url = https://github.com/Templarian/MaterialDesign-Webfont
