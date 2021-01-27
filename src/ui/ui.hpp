@@ -35,6 +35,9 @@ namespace Soundux
             /*         */
 
             virtual std::string getHotKeyForSound(const std::uint32_t &) const;
+
+            virtual void setup() = 0;
+            virtual void mainLoop() = 0;
         };
     } // namespace Objects
 } // namespace Soundux
