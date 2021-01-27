@@ -3,4 +3,3 @@ cmake-build-debug
 .idea
 .vscode
 .history
-src/qml/resources/*.js
