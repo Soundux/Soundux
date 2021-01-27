@@ -13,6 +13,7 @@ namespace Soundux
             virtual void playSound(const std::uint32_t & /*soundId*/);
             virtual void stopSound(const std::uint32_t & /*playingSoundId*/);
             virtual void pauseSound(const std::uint32_t & /*playingSoundId*/);
+            virtual void resumeSound(const std::uint32_t & /*playingSoundId*/);
 
             virtual void dataChanged(const Data &);
             virtual void changeSettings(const Settings &);
@@ -35,7 +36,7 @@ namespace Soundux
                                          const std::string &) = 0; //* Will trigger on KeyUp
             /*         */
 
-            virtual std::string getHotKeyForSound(const std::uint32_t &) const;
+            virtual const std::string getHotKeyForSound(const std::uint32_t &);
 
             virtual void setup() = 0;
             virtual void mainLoop() = 0;

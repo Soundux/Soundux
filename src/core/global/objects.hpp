@@ -7,6 +7,8 @@ namespace Soundux
 {
     namespace Objects
     {
+        struct AudioDevice;
+
         struct Sound
         {
             std::uint32_t id;
@@ -26,8 +28,8 @@ namespace Soundux
 
         struct Settings
         {
+            std::vector<AudioDevice> deviceSettings;
             std::vector<std::uint32_t> stopHotkey;
-            std::map<std::string, float> volumes;
             bool allowOverlapping;
             bool tabHotKeysOnly;
             bool darkTheme;

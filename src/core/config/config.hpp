@@ -15,7 +15,7 @@ namespace Soundux
 
             static void save();
             static void load();
-            static std::string path;
+            static const std::string path;
         };
     } // namespace Objects
 } // namespace Soundux
