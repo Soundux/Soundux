@@ -117,12 +117,20 @@ ApplicationWindow {
         id: stopButton
         text: "Stop"
         iconName: "stop"
+        enabled: false
         anchors.top: icon.bottom
         anchors.left: parent.left
         anchors.topMargin: 5
         anchors.leftMargin: 5
         height: 60
         width: 130
+
+        Connections {
+            target: core
+            function onPlaybackChanged(state) {
+                stopButton.enabled = state
+            }
+        }
 
         onClicked: {
             core.stopPlayback()

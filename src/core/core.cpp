@@ -310,6 +310,7 @@ void Core::playSound(const Soundux::Config::Sound &sound)
 
     if (outputApp)
     {
+        emit playbackChanged(true);
         auto source = outputApp->source;
 
         if (source != Soundux::Playback::internal::sinkMonitorId)
@@ -327,12 +328,14 @@ void Core::playSound(const Soundux::Config::Sound &sound)
         Soundux::Playback::stopCallback = [=](const auto &info) {
             if (info.id == lastPlayedId)
             {
+                emit playbackChanged(false);
                 static_cast<void>(system(moveBackCmd.c_str()));
             }
         };
     }
     else
     {
+        emit playbackChanged(false);
         emit invalidApplication();
     }
 #endif
