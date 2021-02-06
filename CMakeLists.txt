@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(soundux VERSION 0.1.5 DESCRIPTION "A cross-platform soundboard in QtQuick")
+project(soundux VERSION 0.1.6 DESCRIPTION "A cross-platform soundboard in QtQuick")
 
 # Options
 option(SOUNDUX_DEBUGINFO "Compiles with debug symbols to provide useful information for debugging" Off)
