@@ -1,5 +1,6 @@
 #include "core.h"
 #include <filesystem>
+#include <system_error>
 
 Core::Core(QObject *parent) : QObject(parent) {}
 
@@ -183,7 +184,18 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
             }
 
             Soundux::Config::Sound sound;
-            sound.lastWriteTime = file.last_write_time().time_since_epoch().count();
+
+            std::error_code ec;
+            auto writeTime = file.last_write_time(ec);
+            if (!ec)
+            {
+                sound.lastWriteTime = writeTime.time_since_epoch().count();
+            }
+            else
+            {
+                std::cerr << "Failed to get last write time" << std::endl;
+            }
+
             sound.name = file.path().filename().u8string();
             sound.path = file.path().u8string();
 
