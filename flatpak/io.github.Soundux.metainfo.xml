@@ -9,6 +9,7 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-only</project_license>
   <url type="homepage">https://soundux.github.io/</url>
+  <url type="donation">https://ko-fi.com/soundux/</url>
   <url type="bugtracker">https://github.com/Soundux/Soundux/issues</url>
   <url type="help">https://github.com/Soundux/Soundux/issues</url>
   <description>
@@ -48,6 +49,18 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.1.6" date="2021-02-06">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.1.6</url>
+      <description>
+        <ul>
+          <li>Support FLAC files</li>
+          <li>Changelogs on Flathub</li>
+          <li>General bugfixes and stability improvements</li>
+          <li>Only unload PulseAudio modules created by Soundux</li>
+          <li>Prevent opening the program multiple times</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.5" date="2021-01-03">
       <url>https://github.com/Soundux/Soundux/releases/tag/0.1.5</url>
       <description>

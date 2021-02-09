@@ -1,23 +1,11 @@
+![Soundux](https://socialify.git.ci/Soundux/Soundux/image?description=1&issues=1&logo=https%3A%2F%2Fraw.githubusercontent.com%2FSoundux%2FSoundux%2Fmaster%2Ficon.png&pattern=Plus&pulls=1&stargazers=1&theme=Dark)
 <div align="center">
-  <p>
-    <h1>
-      <a href="#readme">
-        <img src="icon.png" width="50" alt="Soundboard" />
-      </a>
-      <br />
-      Soundux
-    </h1>
-    <h4>A cross-platform soundboard in QtQuick</h4>
-  </p>
   <p>
     <a href="https://github.com/Soundux/Soundux/releases">
       <img src="https://img.shields.io/github/release/Soundux/Soundux.svg?style=flat-square" alt="Latest Stable Release" />
     </a>
     <a href="https://discord.gg/4HwSGN4Ec2">
       <img src="https://img.shields.io/discord/697348809591750706?label=discord&style=flat-square" alt="Discord" />
-    </a>
-    <a href="https://github.com/Soundux/Soundux/stargazers">
-      <img src="https://img.shields.io/github/stars/Soundux/Soundux?style=flat-square" alt="Stars" />
     </a>
     <a href="https://github.com/Soundux/Soundux/blob/master/LICENSE">
       <img src="https://img.shields.io/github/license/Soundux/Soundux.svg?style=flat-square" alt="License" />
@@ -134,23 +122,3 @@ The project started as a **Sound**board for Lin**ux**
 
 # License
 The code is licensed under [GPLv3](LICENSE)
-
-# TODO
-- [ ] (Un)Pause / Seek
-- [ ] Playlist mode (play sounds one after another)
-- [ ] Icons in Output application dropdown on linux
-- [ ] Improve the logo
-- [ ] Volume normalization
-- [ ] Grid View
-- [ ] Repeat button
-- [ ] Playlist mode
-- [ ] Implement hotkeys for Wayland
-- [ ] Add ability to move tabs
-- [ ] Localization
-- [ ] App icon for Windows
-- [ ] Package it as deb, ~~Flatpak~~ and AppImage
-- [ ] Support macOS (Testers needed!)
-- [ ] ~~Fix~~ FileDialog on windows - Its now somewhat fixed but still not truely native
-- [x] ~~Block opening the program multiple times~~
-- [ ] Display warning when `move-source-ouput` fails
-- [ ] Use toast messages instead of modals

@@ -91,6 +91,7 @@ class Core : public QObject
     void setLocalVolume(float);
     void setRemoteVolume(float);
     void setOutputApplication(int);
+    void playbackChanged(int);
 
   private:
     QQmlApplicationEngine *engine{};

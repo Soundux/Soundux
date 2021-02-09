@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(soundux VERSION 0.1.5 DESCRIPTION "A cross-platform soundboard in QtQuick")
+project(soundux VERSION 0.1.6 DESCRIPTION "A cross-platform soundboard in QtQuick")
 
 # Options
 option(SOUNDUX_DEBUGINFO "Compiles with debug symbols to provide useful information for debugging" Off)
@@ -40,9 +40,13 @@ file(GLOB src
 # -----------------------
 
 # Linux Dependencies
+if (UNIX AND NOT APPLE)
+    find_package(X11 REQUIRED)
+endif()
+# ------------------
+# Unix Dependencies
 if (UNIX)
     set(THREADS_PREFER_PTHREAD_FLAG ON)
-    find_package(X11 REQUIRED)
     find_package(Threads REQUIRED)
 endif()
 # ------------------
@@ -50,7 +54,7 @@ endif()
 add_executable(soundux ${src} ${QT_RESOURCES})
 
 target_include_directories(soundux PRIVATE ${Qt5Widgets_INCLUDE_DIRS} ${QtQml_INCLUDE_DIRS})
-if (UNIX)
+if (UNIX AND NOT APPLE)
     target_include_directories(soundux PRIVATE ${X11_INCLUDE_DIR} ${X11_Xinput_INCLUDE_PATH})
 endif()
 target_include_directories(soundux PRIVATE "lib/json/single_include/nlohmann")
@@ -59,8 +63,10 @@ target_include_directories(soundux PRIVATE "lib/miniaudio")
 
 target_compile_definitions(soundux PRIVATE ${Qt5Widgets_DEFINITIONS} ${QtQml_DEFINITIONS} ${Qt5Quick_DEFINITIONS})
 
-if (UNIX)
+if (UNIX AND NOT APPLE)
     target_link_libraries(soundux ${X11_LIBRARIES} ${X11_Xinput_LIB} ${CMAKE_DL_LIBS})
+endif()
+if (UNIX)
     target_link_libraries(soundux pthread)
 endif()
 
