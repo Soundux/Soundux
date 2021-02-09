@@ -1,6 +1,7 @@
 #include "audio.hpp"
 #include "../../core/global/globals.hpp"
 #include "../../ui/ui.hpp"
+#include <fancy.hpp>
 #include <iostream>
 #include <optional>
 
@@ -35,7 +36,8 @@ namespace Soundux::Objects
 
         if (res != MA_SUCCESS)
         {
-            // TODO(curve): Error
+            Fancy::fancy.logTime().logTime().failure()
+                << "Failed to create decoder from file: " << sound.path << std::endl;
             return std::nullopt;
         }
 
@@ -50,7 +52,7 @@ namespace Soundux::Objects
 
         if (ma_device_init(nullptr, &config, device) != MA_SUCCESS)
         {
-            // TODO(curve): Error
+            Fancy::fancy.logTime().failure() << "Failed to create default playback device" << std::endl;
             return std::nullopt;
         }
         if (ma_device_start(device) != MA_SUCCESS)
@@ -58,6 +60,8 @@ namespace Soundux::Objects
             ma_device_uninit(device);
             ma_decoder_uninit(decoder);
             // TODO(curve): Call some sort of on finished
+            Fancy::fancy.logTime().warning() << "Failed to play sound " << sound.path << std::endl;
+
             return std::nullopt;
         }
 
@@ -96,7 +100,6 @@ namespace Soundux::Objects
     }
     void Audio::stop(const std::uint32_t &soundId)
     {
-        // TODO(curve): Could be a shared_mutex
         std::unique_lock lock(soundsMutex);
         auto sound = std::find_if(playingSounds.begin(), playingSounds.end(),
                                   [soundId](const auto &sound) { return sound.second.id == soundId; });
@@ -110,12 +113,12 @@ namespace Soundux::Objects
         }
         else
         {
-            // TODO(curve): Error message
+            Fancy::fancy.logTime().failure()
+                << "Failed to stop sound with id " << soundId << ", sound does not exist" << std::endl;
         }
     }
     void Audio::pause(const std::uint32_t &soundId)
     {
-        // TODO(curve): Could be a shared_mutex
         std::unique_lock lock(soundsMutex);
         auto sound = std::find_if(playingSounds.begin(), playingSounds.end(),
                                   [soundId](const auto &sound) { return sound.second.id == soundId; });
@@ -129,12 +132,12 @@ namespace Soundux::Objects
         }
         else
         {
-            // TODO(curve): Error message
+            Fancy::fancy.logTime().failure()
+                << "Failed to pause sound with id " << soundId << ", sound does not exist" << std::endl;
         }
     }
     void Audio::resume(const std::uint32_t &soundId)
     {
-        // TODO(curve): Could be a shared_mutex
         std::unique_lock lock(soundsMutex);
         auto sound = std::find_if(playingSounds.begin(), playingSounds.end(),
                                   [soundId](const auto &sound) { return sound.second.id == soundId; });
@@ -148,7 +151,8 @@ namespace Soundux::Objects
         }
         else
         {
-            // TODO(curve): Error message
+            Fancy::fancy.logTime().failure()
+                << "Failed to resume sound with id " << soundId << ", sound does not exist" << std::endl;
         }
     }
     float Audio::getVolume(const std::string &name)
@@ -176,7 +180,7 @@ namespace Soundux::Objects
         }
         else
         {
-            // TODO(curve): Error
+            Fancy::fancy.logTime().failure() << "Sound finished but is not playing?" << std::endl;
         }
     }
     std::optional<PlayingSound> Audio::getSound(ma_device *device)
