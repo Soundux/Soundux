@@ -13,7 +13,9 @@ using namespace std::chrono_literals;
 
 namespace Soundux::Objects
 {
-    Display *display = [] {
+    Display *display;
+    void Hotkeys::listen()
+    {
         auto *displayenv = std::getenv("DISPLAY");
         auto *x11Display = XOpenDisplay(displayenv);
 
@@ -23,14 +25,11 @@ namespace Soundux::Objects
             if (!(x11Display = XOpenDisplay(":0")))
             {
                 Fancy::fancy.logTime().failure() << "Could not open X11 Display" << std::endl;
+                return;
             }
         }
+        display = x11Display;
 
-        return x11Display;
-    }();
-
-    void Hotkeys::listen()
-    {
         int major_op = 0, event_rtn = 0, ext_rtn = 0;
         if (!XQueryExtension(display, "XInputExtension", &major_op, &event_rtn, &ext_rtn))
         {
