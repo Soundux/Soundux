@@ -175,10 +175,15 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
     if (std::filesystem::exists(path))
     {
         std::vector<Soundux::Config::Sound> newSounds;
-        for (const auto &file : std::filesystem::directory_iterator(path))
+        for (const auto &entry : std::filesystem::directory_iterator(path))
         {
-            if (file.path().extension() != ".mp3" && file.path().extension() != ".wav" &&
-                file.path().extension() != ".flac")
+            std::filesystem::path file = entry;
+            if (entry.is_symlink())
+            {
+                file = std::filesystem::read_symlink(entry);
+            }
+
+            if (file.extension() != ".mp3" && file.extension() != ".wav" && file.extension() != ".flac")
             {
                 continue;
             }
@@ -186,7 +191,7 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
             Soundux::Config::Sound sound;
 
             std::error_code ec;
-            auto writeTime = file.last_write_time(ec);
+            auto writeTime = std::filesystem::last_write_time(file, ec);
             if (!ec)
             {
                 sound.lastWriteTime = writeTime.time_since_epoch().count();
@@ -196,11 +201,11 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
                 std::cerr << "Failed to get last write time" << std::endl;
             }
 
-            sound.name = file.path().filename().u8string();
-            sound.path = file.path().u8string();
+            sound.name = file.filename().u8string();
+            sound.path = file.u8string();
 
             if (auto oldSound = std::find_if(tab.sounds.begin(), tab.sounds.end(),
-                                             [&](auto &item) { return item.path == file.path().u8string(); });
+                                             [&](auto &item) { return item.path == file.u8string(); });
                 oldSound != tab.sounds.end())
             {
                 sound.hotKeys = oldSound->hotKeys;
