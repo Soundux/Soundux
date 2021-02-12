@@ -181,6 +181,10 @@ void Core::updateFolderSounds(Soundux::Config::Tab &tab)
             if (entry.is_symlink())
             {
                 file = std::filesystem::read_symlink(entry);
+                if (file.has_relative_path())
+                {
+                    file = std::filesystem::canonical(path / file);
+                }
             }
 
             if (file.extension() != ".mp3" && file.extension() != ".wav" && file.extension() != ".flac")
