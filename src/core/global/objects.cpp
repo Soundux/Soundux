@@ -7,13 +7,15 @@
 
 namespace Soundux::Objects
 {
+    Sound::Sound() : id(Globals::gData.soundIdCounter++) {}
+
     void Data::addTab(Tab tab)
     {
         tab.id = tabs.size();
         tabs.push_back(tab);
         std::unique_lock lock(Globals::gSoundsMutex);
 
-        for (const auto &sound : tab.sounds)
+        for (auto &sound : tabs.back().sounds)
         {
             Globals::gSounds.insert({sound.id, sound});
         }
@@ -42,9 +44,9 @@ namespace Soundux::Objects
         std::unique_lock lock(Globals::gSoundsMutex);
 
         Globals::gSounds.clear();
-        for (const auto &tab : tabs)
+        for (auto &tab : tabs)
         {
-            for (const auto &sound : tab.sounds)
+            for (auto &sound : tab.sounds)
             {
                 Globals::gSounds.insert({sound.id, sound});
             }
@@ -54,7 +56,7 @@ namespace Soundux::Objects
     {
         return tabs;
     }
-    std::optional<Sound> Data::getSound(const std::uint32_t &id)
+    std::optional<std::reference_wrapper<Sound>> Data::getSound(const std::uint32_t &id)
     {
         std::shared_lock lock(Globals::gSoundsMutex);
 

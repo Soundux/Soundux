@@ -21,6 +21,6 @@ namespace Soundux
 
         /* Allows for fast & easy sound access, is populated on start up */
         inline std::shared_mutex gSoundsMutex;
-        inline std::map<std::uint32_t, Objects::Sound> gSounds;
+        inline std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>> gSounds;
     } // namespace Globals
 } // namespace Soundux
