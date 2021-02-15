@@ -10,3 +10,6 @@
 [submodule "lib/fancypp"]
 	path = lib/fancypp
 	url = https://github.com/Curve/fancypp
+[submodule "src/ui/impl/webview/lib/webview"]
+	path = src/ui/impl/webview/lib/webview
+	url = https://github.com/Soundux/webview
