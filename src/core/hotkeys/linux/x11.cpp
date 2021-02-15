@@ -28,6 +28,10 @@ namespace Soundux::Objects
                 return;
             }
         }
+        else
+        {
+            Fancy::fancy.logTime() << "Using DISPLAY " << displayenv;
+        }
         display = x11Display;
 
         int major_op = 0, event_rtn = 0, ext_rtn = 0;

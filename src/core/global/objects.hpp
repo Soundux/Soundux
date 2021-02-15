@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -15,11 +16,13 @@ namespace Soundux
             std::string name;
             std::string path;
 
+            std::vector<int> hotkeys;
             std::uint64_t modifiedDate;
-            std::vector<std::size_t> hotKeys;
         };
         struct Tab
         {
+            // TODO(curve) will be used later to move tabs
+            std::uint32_t id; //* Equal to index
             std::string name;
             std::string path;
 
@@ -28,18 +31,30 @@ namespace Soundux
 
         struct Settings
         {
+            // TODO(curve): Adjust deviceSettings & Audio::Devices when UI changes some settings
             std::vector<AudioDevice> deviceSettings;
-            std::vector<std::uint32_t> stopHotkey;
+            std::vector<int> stopHotkey;
             bool allowOverlapping;
-            bool tabHotKeysOnly;
+            bool tabHotkeysOnly;
             bool darkTheme;
         };
-        struct Data
+        class Data
         {
-            int width, height;
-            std::uint32_t output;
+          private:
             std::vector<Tab> tabs;
+
+          public:
+            int width, height;
+            std::string output; // TODO(curve): Make use of `output`
             std::uint32_t soundIdCounter;
+
+            std::vector<Tab> getTabs() const;
+            void setTabs(const std::vector<Tab> &);
+
+            void addTab(Tab);
+            void removeTabById(const std::uint32_t &);
+
+            std::optional<Sound> getSound(const std::uint32_t &);
         };
     } // namespace Objects
 } // namespace Soundux

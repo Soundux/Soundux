@@ -23,6 +23,14 @@ namespace Soundux::Objects
                 defaultOutputDevice = &devices.at(device.name);
             }
         }
+
+        for (const auto &device : Globals::gSettings.deviceSettings)
+        {
+            if (devices.find(device.name) != devices.end())
+            {
+                devices.at(device.name).volume = device.volume;
+            }
+        }
     }
     Audio::~Audio()
     {
@@ -31,6 +39,11 @@ namespace Soundux::Objects
     std::optional<PlayingSound> Audio::play(const Objects::Sound &sound,
                                             const std::optional<Objects::AudioDevice> &playbackDevice)
     {
+        if (!Globals::gSettings.allowOverlapping)
+        {
+            stopAll();
+        }
+
         auto *decoder = new ma_decoder;
         auto res = ma_decoder_init_file(sound.path.c_str(), nullptr, decoder);
 
@@ -69,9 +82,9 @@ namespace Soundux::Objects
         pSound.sound = sound;
         pSound.rawDevice = device;
         pSound.rawDecoder = decoder;
-        // TODO(curve): This may only work on mp3s
         pSound.length = ma_decoder_get_length_in_pcm_frames(decoder);
-        pSound.id = ++idCounter;
+        pSound.lengthInSeconds = static_cast<int>(pSound.length / config.sampleRate);
+        pSound.id = ++Globals::gData.soundIdCounter;
 
         if (playbackDevice)
         {
@@ -305,5 +318,16 @@ namespace Soundux::Objects
         ma_context_uninit(&context);
 
         return playBackDevices;
+    }
+    std::vector<PlayingSound> Audio::getPlayingSounds()
+    {
+        std::shared_lock lock(soundsMutex);
+        std::vector<PlayingSound> rtn;
+        for (const auto &sound : playingSounds)
+        {
+            rtn.push_back(sound.second);
+        }
+
+        return rtn;
     }
 } // namespace Soundux::Objects

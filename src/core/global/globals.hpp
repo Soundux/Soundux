@@ -16,10 +16,11 @@ namespace Soundux
         inline Objects::Config gConfig;
         inline Objects::Hotkeys gHotKeys;
         inline Objects::Settings gSettings;
-        inline std::shared_ptr<Objects::Window> gGui;
+        inline std::unique_ptr<Objects::Window> gGui;
         inline Objects::ProcessingQueue<std::uintptr_t> gQueue;
 
         /* Allows for fast & easy sound access, is populated on start up */
-        inline std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>> gSounds;
+        inline std::shared_mutex gSoundsMutex;
+        inline std::map<std::uint32_t, Objects::Sound> gSounds;
     } // namespace Globals
 } // namespace Soundux

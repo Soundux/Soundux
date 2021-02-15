@@ -28,6 +28,7 @@ namespace Soundux
             ma_decoder *rawDecoder;
             long long length = 0;
             long long seekTo = 0;
+            int lengthInSeconds = 0;
             long long readFrames = 0;
 
             AudioDevice device;
@@ -38,7 +39,6 @@ namespace Soundux
         };
         class Audio
         {
-            std::uint32_t idCounter;
             std::shared_mutex soundsMutex;
             std::map<ma_device *, PlayingSound> playingSounds;
 
@@ -63,7 +63,7 @@ namespace Soundux
 
             float getVolume(const std::string &);
             std::vector<AudioDevice> getAudioDevices();
-            // std::vector<Objects::PlayingSound> getPlayingSounds();
+            std::vector<Objects::PlayingSound> getPlayingSounds();
 
             Audio();
             ~Audio();
