@@ -84,7 +84,7 @@ namespace Soundux::Objects
         pSound.rawDecoder = decoder;
         pSound.length = ma_decoder_get_length_in_pcm_frames(decoder);
         pSound.lengthInSeconds = static_cast<int>(pSound.length / config.sampleRate);
-        pSound.id = ++Globals::gData.soundIdCounter;
+        pSound.id = ++playingSoundIdCounter;
 
         if (playbackDevice)
         {
@@ -97,6 +97,7 @@ namespace Soundux::Objects
 
         std::unique_lock lock(soundsMutex);
         playingSounds.insert({device, pSound});
+        lock.unlock();
 
         Globals::gGui->onSoundPlayed(pSound);
 
@@ -111,7 +112,8 @@ namespace Soundux::Objects
             ma_device_uninit(sound.second.rawDevice);
             ma_decoder_uninit(decoder);
 
-            Globals::gGui->onSoundFinished(sound.second);
+            if (Globals::gGui)
+                Globals::gGui->onSoundFinished(sound.second);
         }
         playingSounds.clear();
     }
@@ -128,7 +130,9 @@ namespace Soundux::Objects
             ma_device_uninit(sound->second.rawDevice);
             ma_decoder_uninit(decoder);
 
-            Globals::gGui->onSoundFinished(sound->second);
+            if (Globals::gGui)
+                Globals::gGui->onSoundFinished(sound->second);
+
             playingSounds.erase(sound);
         }
         else
@@ -150,8 +154,6 @@ namespace Soundux::Objects
             ma_device_stop(sound->second.rawDevice);
             sound->second.paused = true;
 
-            Globals::gGui->onSoundPaused(sound->second);
-
             return sound->second;
         }
 
@@ -171,8 +173,6 @@ namespace Soundux::Objects
 
             ma_device_start(sound->second.rawDevice);
             sound->second.paused = false;
-
-            Globals::gGui->onSoundResumed(sound->second);
 
             return sound->second;
         }
@@ -244,8 +244,6 @@ namespace Soundux::Objects
         {
             sound->second.seekTo = position;
             sound->second.shouldSeek = true;
-
-            Globals::gGui->onSoundSeeked(sound->second);
 
             return sound->second;
         }

@@ -41,6 +41,8 @@ namespace Soundux
         };
         class Audio
         {
+            std::uint32_t playingSoundIdCounter;
+
             std::shared_mutex soundsMutex;
             std::map<ma_device *, PlayingSound> playingSounds;
 
