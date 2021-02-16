@@ -7,9 +7,7 @@
 
 namespace Soundux::Objects
 {
-    Sound::Sound() : id(Globals::gData.soundIdCounter++) {}
-
-    void Data::addTab(Tab tab)
+    Tab Data::addTab(Tab tab)
     {
         tab.id = tabs.size();
         tabs.push_back(tab);
@@ -17,8 +15,11 @@ namespace Soundux::Objects
 
         for (auto &sound : tabs.back().sounds)
         {
+            sound.id = soundIdCounter++;
             Globals::gSounds.insert({sound.id, sound});
         }
+
+        return tabs.back();
     }
     void Data::removeTabById(const std::uint32_t &index)
     {

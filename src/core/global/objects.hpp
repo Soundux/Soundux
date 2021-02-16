@@ -18,8 +18,6 @@ namespace Soundux
 
             std::vector<int> hotkeys;
             std::uint64_t modifiedDate;
-
-            Sound();
         };
         struct Tab
         {
@@ -53,7 +51,7 @@ namespace Soundux
             std::vector<Tab> getTabs() const;
             void setTabs(const std::vector<Tab> &);
 
-            void addTab(Tab);
+            Tab addTab(Tab);
             void removeTabById(const std::uint32_t &);
 
             std::optional<std::reference_wrapper<Sound>> getSound(const std::uint32_t &);
