@@ -16,7 +16,7 @@ namespace Soundux::Objects
     Display *display;
     void Hotkeys::listen()
     {
-        auto *displayenv = std::getenv("DISPLAY");
+        auto *displayenv = std::getenv("DISPLAY"); // NOLINT
         auto *x11Display = XOpenDisplay(displayenv);
 
         if (!x11Display)
@@ -30,7 +30,7 @@ namespace Soundux::Objects
         }
         else
         {
-            Fancy::fancy.logTime() << "Using DISPLAY " << displayenv;
+            Fancy::fancy.logTime() << "Using DISPLAY " << displayenv << std::endl;
         }
         display = x11Display;
 
