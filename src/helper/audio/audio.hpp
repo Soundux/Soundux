@@ -2,6 +2,7 @@
 #include "../../core/global/objects.hpp"
 
 #include <atomic>
+#include <cstdint>
 #include <functional>
 #include <map>
 #include <memory>
@@ -26,16 +27,17 @@ namespace Soundux
         {
             ma_device *rawDevice;
             ma_decoder *rawDecoder;
-            long long length = 0;
-            long long seekTo = 0;
             int lengthInSeconds = 0;
-            long long readFrames = 0;
+            std::uint64_t seekTo = 0;
+            std::uint64_t length = 0;
+            std::uint64_t readFrames = 0;
 
             AudioDevice device;
             std::uint32_t id;
             Sound sound;
             bool paused = false;
             bool repeat = false;
+            bool shouldSeek = false;
         };
         class Audio
         {
@@ -50,15 +52,15 @@ namespace Soundux
           public:
             void stopAll();
             void stop(const std::uint32_t &);
-            void pause(const std::uint32_t &);
-            void resume(const std::uint32_t &);
-            void seek(const std::uint32_t &, long long);
+            std::optional<PlayingSound> pause(const std::uint32_t &);
+            std::optional<PlayingSound> resume(const std::uint32_t &);
+            std::optional<PlayingSound> seek(const std::uint32_t &, std::uint64_t);
             std::optional<PlayingSound> play(const Objects::Sound &,
                                              const std::optional<AudioDevice> &device = std::nullopt);
 
             void onFinished(ma_device *);
-            void onSoundSeeked(ma_device *, long long);
-            void onSoundProgressed(ma_device *, long long);
+            void onSoundSeeked(ma_device *, std::uint64_t);
+            void onSoundProgressed(ma_device *, std::uint64_t);
             std::optional<PlayingSound> getSound(ma_device *);
 
             float getVolume(const std::string &);

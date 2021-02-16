@@ -98,6 +98,8 @@ namespace Soundux::Objects
         std::unique_lock lock(soundsMutex);
         playingSounds.insert({device, pSound});
 
+        Globals::gGui->onSoundPlayed(pSound);
+
         return pSound;
     }
     void Audio::stopAll()
@@ -108,6 +110,8 @@ namespace Soundux::Objects
             auto *decoder = static_cast<ma_decoder *>(sound.second.rawDevice->pUserData);
             ma_device_uninit(sound.second.rawDevice);
             ma_decoder_uninit(decoder);
+
+            Globals::gGui->onSoundFinished(sound.second);
         }
         playingSounds.clear();
     }
@@ -123,6 +127,9 @@ namespace Soundux::Objects
 
             ma_device_uninit(sound->second.rawDevice);
             ma_decoder_uninit(decoder);
+
+            Globals::gGui->onSoundFinished(sound->second);
+            playingSounds.erase(sound);
         }
         else
         {
@@ -130,7 +137,7 @@ namespace Soundux::Objects
                 << "Failed to stop sound with id " << soundId << ", sound does not exist" << std::endl;
         }
     }
-    void Audio::pause(const std::uint32_t &soundId)
+    std::optional<PlayingSound> Audio::pause(const std::uint32_t &soundId)
     {
         std::unique_lock lock(soundsMutex);
         auto sound = std::find_if(playingSounds.begin(), playingSounds.end(),
@@ -142,14 +149,17 @@ namespace Soundux::Objects
 
             ma_device_stop(sound->second.rawDevice);
             sound->second.paused = true;
+
+            Globals::gGui->onSoundPaused(sound->second);
+
+            return sound->second;
         }
-        else
-        {
-            Fancy::fancy.logTime().failure()
-                << "Failed to pause sound with id " << soundId << ", sound does not exist" << std::endl;
-        }
+
+        Fancy::fancy.logTime().failure() << "Failed to pause sound with id " << soundId << ", sound does not exist"
+                                         << std::endl;
+        return std::nullopt;
     }
-    void Audio::resume(const std::uint32_t &soundId)
+    std::optional<PlayingSound> Audio::resume(const std::uint32_t &soundId)
     {
         std::unique_lock lock(soundsMutex);
         auto sound = std::find_if(playingSounds.begin(), playingSounds.end(),
@@ -161,12 +171,14 @@ namespace Soundux::Objects
 
             ma_device_start(sound->second.rawDevice);
             sound->second.paused = false;
+
+            Globals::gGui->onSoundResumed(sound->second);
+
+            return sound->second;
         }
-        else
-        {
-            Fancy::fancy.logTime().failure()
-                << "Failed to resume sound with id " << soundId << ", sound does not exist" << std::endl;
-        }
+        Fancy::fancy.logTime().failure() << "Failed to resume sound with id " << soundId << ", sound does not exist"
+                                         << std::endl;
+        return std::nullopt;
     }
     float Audio::getVolume(const std::string &name)
     {
@@ -186,8 +198,7 @@ namespace Soundux::Objects
             ma_device_uninit(sound.rawDevice);
             ma_decoder_uninit(sound.rawDecoder);
 
-            // TODO(curve): Implement in UI
-            // Globals::gGui->onSoundFinished(sound->second);
+            Globals::gGui->onSoundFinished(sound);
 
             playingSounds.erase(device);
         }
@@ -206,7 +217,7 @@ namespace Soundux::Objects
 
         return std::nullopt;
     }
-    void Audio::onSoundProgressed(ma_device *device, long long frames)
+    void Audio::onSoundProgressed(ma_device *device, std::uint64_t frames)
     {
         std::unique_lock lock(soundsMutex);
         if (playingSounds.find(device) != playingSounds.end())
@@ -215,16 +226,16 @@ namespace Soundux::Objects
             sound.readFrames += frames;
         }
     }
-    void Audio::onSoundSeeked(ma_device *device, long long frame)
+    void Audio::onSoundSeeked(ma_device *device, std::uint64_t frame)
     {
         std::unique_lock lock(soundsMutex);
         if (playingSounds.find(device) != playingSounds.end())
         {
-            playingSounds.at(device).seekTo = 0;
+            playingSounds.at(device).shouldSeek = false;
             playingSounds.at(device).readFrames = frame;
         }
     }
-    void Audio::seek(const std::uint32_t &soundId, long long position)
+    std::optional<PlayingSound> Audio::seek(const std::uint32_t &soundId, std::uint64_t position)
     {
         std::unique_lock lock(soundsMutex);
         auto sound = std::find_if(playingSounds.begin(), playingSounds.end(),
@@ -232,7 +243,15 @@ namespace Soundux::Objects
         if (sound != playingSounds.end())
         {
             sound->second.seekTo = position;
+            sound->second.shouldSeek = true;
+
+            Globals::gGui->onSoundSeeked(sound->second);
+
+            return sound->second;
         }
+        Fancy::fancy.logTime().failure() << "Failed to seek sound with id " << soundId << ", sound does not exist"
+                                         << std::endl;
+        return std::nullopt;
     }
     void Audio::data_callback(ma_device *device, void *output, [[maybe_unused]] const void *input,
                               std::uint32_t frameCount)
@@ -247,7 +266,7 @@ namespace Soundux::Objects
         auto readFrames = ma_decoder_read_pcm_frames(decoder, output, frameCount);
         auto sound = Globals::gAudio.getSound(device);
 
-        if (sound && sound->seekTo != 0)
+        if (sound && sound->shouldSeek)
         {
             ma_decoder_seek_to_pcm_frame(decoder, sound->seekTo);
             Globals::gAudio.onSoundSeeked(device, sound->seekTo);
