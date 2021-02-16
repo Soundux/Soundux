@@ -1,20 +1,25 @@
 #include "ui.hpp"
 #include "../core/global/globals.hpp"
+#include <cstdint>
 #include <fancy.hpp>
 #include <filesystem>
 #include <nfd.hpp>
+#include <optional>
 
 namespace Soundux::Objects
 {
     void Window::setup()
     {
         NFD::Init();
+        Globals::gHotKeys.init();
     }
     Window::~Window()
     {
         NFD::Quit();
+        Globals::gHotKeys.stop();
+        // TODO(curve): Save config
     }
-    std::vector<Sound> Window::getTabSounds(const Tab &tab) const
+    std::vector<Sound> Window::refreshTabSounds(const Tab &tab) const
     {
         std::vector<Sound> rtn;
         for (const auto &entry : std::filesystem::directory_iterator(tab.path))
@@ -60,9 +65,12 @@ namespace Soundux::Objects
             rtn.push_back(sound);
         }
 
+        std::sort(rtn.begin(), rtn.end(),
+                  [](const auto &first, const auto &second) { return first.modifiedDate > second.modifiedDate; });
+
         return rtn;
     }
-    void Window::addTab()
+    std::optional<Tab> Window::addTab() // NOLINT
     {
         nfdnchar_t *outpath = {};
         auto result = NFD::PickFolder(outpath, nullptr);
@@ -75,15 +83,73 @@ namespace Soundux::Objects
             {
                 Tab tab;
                 tab.path = path;
-                tab.sounds = getTabSounds(tab);
+                tab.sounds = refreshTabSounds(tab);
                 tab.name = std::filesystem::path(path).filename();
 
-                Globals::gData.addTab(std::move(tab));
+                tab = Globals::gData.addTab(std::move(tab));
+
+                return tab;
             }
-            else
+            Fancy::fancy.logTime().failure() << "Selected Folder does not exist!" << std::endl;
+        }
+        return std::nullopt;
+    }
+    std::optional<PlayingSound> Window::playSound(const std::uint32_t &id)
+    {
+        auto sound = Globals::gData.getSound(id);
+        if (sound)
+        {
+            // TODO(curve): PlayingDevice
+            auto playingSound = Globals::gAudio.play(*sound);
+            if (playingSound)
             {
-                Fancy::fancy.logTime().failure() << "Selected Folder does not exist!" << std::endl;
+                return *playingSound;
             }
         }
+        return std::nullopt;
+    }
+    std::optional<PlayingSound> Window::pauseSound(const std::uint32_t &id)
+    {
+        auto playingSound = Globals::gAudio.pause(id);
+        if (playingSound)
+        {
+            return *playingSound;
+        }
+        return std::nullopt;
+    }
+    std::optional<PlayingSound> Window::resumeSound(const std::uint32_t &id)
+    {
+        auto playingSound = Globals::gAudio.resume(id);
+        if (playingSound)
+        {
+            return *playingSound;
+        }
+        return std::nullopt;
+    }
+    std::optional<PlayingSound> Window::seekSound(const std::uint32_t &id, std::uint64_t seekTo)
+    {
+        auto playingSound = Globals::gAudio.seek(id, seekTo);
+        if (playingSound)
+        {
+            return *playingSound;
+        }
+        return std::nullopt;
+    }
+    void Window::stopSound(const std::uint32_t &id)
+    {
+        Globals::gAudio.stop(id);
+    }
+    void Window::stopSounds()
+    {
+        Globals::gAudio.stopAll();
+    }
+    void Window::changeSettings(const Settings &settings)
+    {
+        Globals::gSettings = settings;
+        // TODO(curve): Override existing Config Properties
+    }
+    void Window::onHotKeyReceived([[maybe_unused]] const std::vector<std::string> &keys)
+    {
+        Globals::gHotKeys.shouldNotify(false);
     }
 } // namespace Soundux::Objects
