@@ -54,6 +54,7 @@ namespace Soundux
             Tab addTab(Tab);
             void removeTabById(const std::uint32_t &);
 
+            std::optional<Tab> getTab(const std::uint32_t &) const;
             std::optional<std::reference_wrapper<Sound>> getSound(const std::uint32_t &);
         };
     } // namespace Objects

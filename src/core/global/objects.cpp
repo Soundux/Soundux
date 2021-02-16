@@ -57,6 +57,16 @@ namespace Soundux::Objects
     {
         return tabs;
     }
+    std::optional<Tab> Data::getTab(const std::uint32_t &id) const
+    {
+        if (tabs.size() > id)
+        {
+            return tabs.at(id);
+        }
+
+        Fancy::fancy.logTime().warning() << "Tried to access non existant tab " << id << std::endl;
+        return std::nullopt;
+    }
     std::optional<std::reference_wrapper<Sound>> Data::getSound(const std::uint32_t &id)
     {
         std::shared_lock lock(Globals::gSoundsMutex);
