@@ -31,6 +31,9 @@ namespace Soundux
             std::uint64_t seekTo = 0;
             std::uint64_t length = 0;
             std::uint64_t readFrames = 0;
+            std::uint64_t sampleRate = 0;
+
+            std::uint64_t buffer = 0;
 
             AudioDevice device;
             std::uint32_t id;

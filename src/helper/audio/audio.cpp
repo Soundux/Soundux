@@ -73,7 +73,6 @@ namespace Soundux::Objects
         {
             ma_device_uninit(device);
             ma_decoder_uninit(decoder);
-            // TODO(curve): Call some sort of on finished
             Fancy::fancy.logTime().warning() << "Failed to play sound " << sound.path << std::endl;
 
             return std::nullopt;
@@ -84,6 +83,7 @@ namespace Soundux::Objects
         pSound.rawDevice = device;
         pSound.rawDecoder = decoder;
         pSound.length = length_in_pcm_frames;
+        pSound.sampleRate = config.sampleRate;
         pSound.lengthInSeconds = static_cast<int>(pSound.length / config.sampleRate);
         pSound.id = ++playingSoundIdCounter;
 
@@ -110,8 +110,10 @@ namespace Soundux::Objects
         for (const auto &sound : playingSounds)
         {
             auto *decoder = static_cast<ma_decoder *>(sound.second.rawDevice->pUserData);
+            lock.unlock();
             ma_device_uninit(sound.second.rawDevice);
             ma_decoder_uninit(decoder);
+            lock.lock();
 
             if (Globals::gGui)
                 Globals::gGui->onSoundFinished(sound.second);
@@ -127,9 +129,10 @@ namespace Soundux::Objects
         if (sound != playingSounds.end())
         {
             auto *decoder = reinterpret_cast<ma_decoder *>(sound->second.rawDevice->pUserData);
-
+            lock.unlock();
             ma_device_uninit(sound->second.rawDevice);
             ma_decoder_uninit(decoder);
+            lock.lock();
 
             if (Globals::gGui)
                 Globals::gGui->onSoundFinished(sound->second);
@@ -210,7 +213,7 @@ namespace Soundux::Objects
     }
     std::optional<PlayingSound> Audio::getSound(ma_device *device)
     {
-        std::shared_lock lock(deviceMutex);
+        std::shared_lock lock(soundsMutex);
         if (playingSounds.find(device) != playingSounds.end())
         {
             return playingSounds.at(device);
@@ -225,6 +228,13 @@ namespace Soundux::Objects
         {
             auto &sound = playingSounds.at(device);
             sound.readFrames += frames;
+            sound.buffer += frames;
+
+            if (sound.buffer > (sound.sampleRate / 2))
+            {
+                Globals::gGui->onSoundProgressed(sound);
+                sound.buffer = 0;
+            }
         }
     }
     void Audio::onSoundSeeked(ma_device *device, std::uint64_t frame)
