@@ -56,6 +56,7 @@ namespace Soundux::Objects
 
         auto *device = new ma_device;
         auto config = ma_device_config_init(ma_device_type_playback);
+        auto length_in_pcm_frames = ma_decoder_get_length_in_pcm_frames(decoder);
 
         config.pUserData = decoder;
         config.dataCallback = data_callback;
@@ -82,7 +83,7 @@ namespace Soundux::Objects
         pSound.sound = sound;
         pSound.rawDevice = device;
         pSound.rawDecoder = decoder;
-        pSound.length = ma_decoder_get_length_in_pcm_frames(decoder);
+        pSound.length = length_in_pcm_frames;
         pSound.lengthInSeconds = static_cast<int>(pSound.length / config.sampleRate);
         pSound.id = ++playingSoundIdCounter;
 
