@@ -199,8 +199,10 @@ namespace Soundux::Objects
         if (playingSounds.find(device) != playingSounds.end())
         {
             auto &sound = playingSounds.at(device);
+            lock.unlock();
             ma_device_uninit(sound.rawDevice);
             ma_decoder_uninit(sound.rawDecoder);
+            lock.lock();
 
             Globals::gGui->onSoundFinished(sound);
 
@@ -232,6 +234,9 @@ namespace Soundux::Objects
 
             if (sound.buffer > (sound.sampleRate / 2))
             {
+                sound.readInSeconds = static_cast<std::uint64_t>(
+                    (static_cast<double>(sound.readFrames) / static_cast<double>(sound.length)) *
+                    static_cast<double>(sound.lengthInSeconds));
                 Globals::gGui->onSoundProgressed(sound);
                 sound.buffer = 0;
             }
