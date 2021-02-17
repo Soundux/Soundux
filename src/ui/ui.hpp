@@ -2,6 +2,7 @@
 #include "../core/global/objects.hpp"
 #include "../helper/audio/audio.hpp"
 #include <cstdint>
+#include <queue>
 #include <string>
 
 namespace Soundux
@@ -11,6 +12,10 @@ namespace Soundux
         class Window
         {
           protected:
+            std::shared_mutex eventMutex;
+            std::queue<std::function<void()>> eventQueue;
+            virtual void progressEvents();
+
             virtual void stopSounds();
             virtual void stopSound(const std::uint32_t &);
             virtual std::optional<PlayingSound> playSound(const std::uint32_t &);
@@ -35,11 +40,11 @@ namespace Soundux
             virtual void mainLoop() = 0;
 
             virtual void onSoundPlayed(const PlayingSound &) = 0;
-            virtual void onSoundPaused(const PlayingSound &) = 0;
-            virtual void onSoundSeeked(const PlayingSound &) = 0;
-            virtual void onSoundResumed(const PlayingSound &) = 0;
             virtual void onSoundFinished(const PlayingSound &) = 0;
+            virtual void onSoundProgressed(const PlayingSound &) = 0;
             virtual void onHotKeyReceived(const std::vector<std::string> &);
+
+            virtual void onEvent(const std::function<void()> &);
         };
     } // namespace Objects
 } // namespace Soundux

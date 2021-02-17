@@ -152,4 +152,30 @@ namespace Soundux::Objects
     {
         Globals::gHotKeys.shouldNotify(false);
     }
+    void Window::onEvent(const std::function<void()> &function)
+    {
+        std::unique_lock lock(eventMutex);
+        eventQueue.push(function);
+    }
+    void Window::progressEvents()
+    {
+        std::shared_lock lock(eventMutex);
+        if (!eventQueue.empty())
+        {
+            lock.unlock();
+            {
+                std::unique_lock uLock(eventMutex);
+                while (!eventQueue.empty())
+                {
+                    auto front = std::move(eventQueue.front());
+                    eventQueue.pop();
+
+                    uLock.unlock();
+                    front();
+                    uLock.lock();
+                }
+            }
+            lock.lock();
+        }
+    }
 } // namespace Soundux::Objects
