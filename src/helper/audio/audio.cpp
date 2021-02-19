@@ -84,7 +84,8 @@ namespace Soundux::Objects
         pSound.rawDecoder = decoder;
         pSound.length = length_in_pcm_frames;
         pSound.sampleRate = config.sampleRate;
-        pSound.lengthInSeconds = static_cast<int>(pSound.length / config.sampleRate);
+        pSound.lengthInMs = static_cast<std::uint64_t>(static_cast<double>(pSound.length) /
+                                                       static_cast<double>(config.sampleRate) * 1000);
         pSound.id = ++playingSoundIdCounter;
 
         if (playbackDevice)
@@ -114,13 +115,10 @@ namespace Soundux::Objects
             ma_device_uninit(sound.second.rawDevice);
             ma_decoder_uninit(decoder);
             lock.lock();
-
-            if (Globals::gGui)
-                Globals::gGui->onSoundFinished(sound.second);
         }
         playingSounds.clear();
     }
-    void Audio::stop(const std::uint32_t &soundId)
+    bool Audio::stop(const std::uint32_t &soundId)
     {
         std::unique_lock lock(soundsMutex);
         auto sound = std::find_if(playingSounds.begin(), playingSounds.end(),
@@ -134,16 +132,13 @@ namespace Soundux::Objects
             ma_decoder_uninit(decoder);
             lock.lock();
 
-            if (Globals::gGui)
-                Globals::gGui->onSoundFinished(sound->second);
-
             playingSounds.erase(sound);
+            return true;
         }
-        else
-        {
-            Fancy::fancy.logTime().failure()
-                << "Failed to stop sound with id " << soundId << ", sound does not exist" << std::endl;
-        }
+
+        Fancy::fancy.logTime().failure() << "Failed to stop sound with id " << soundId << ", sound does not exist"
+                                         << std::endl;
+        return false;
     }
     std::optional<PlayingSound> Audio::pause(const std::uint32_t &soundId)
     {
@@ -155,9 +150,13 @@ namespace Soundux::Objects
         {
             auto *decoder = reinterpret_cast<ma_decoder *>(sound->second.rawDevice->pUserData);
 
-            ma_device_stop(sound->second.rawDevice);
-            sound->second.paused = true;
-
+            if (!sound->second.paused)
+            {
+                lock.unlock();
+                ma_device_stop(sound->second.rawDevice);
+                lock.lock();
+                sound->second.paused = true;
+            }
             return sound->second;
         }
 
@@ -175,9 +174,11 @@ namespace Soundux::Objects
         {
             auto *decoder = reinterpret_cast<ma_decoder *>(sound->second.rawDevice->pUserData);
 
-            ma_device_start(sound->second.rawDevice);
-            sound->second.paused = false;
-
+            if (sound->second.paused)
+            {
+                ma_device_start(sound->second.rawDevice);
+                sound->second.paused = false;
+            }
             return sound->second;
         }
         Fancy::fancy.logTime().failure() << "Failed to resume sound with id " << soundId << ", sound does not exist"
@@ -213,7 +214,7 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().failure() << "Sound finished but is not playing?" << std::endl;
         }
     }
-    std::optional<PlayingSound> Audio::getSound(ma_device *device)
+    std::optional<PlayingSound> Audio::getPlayingSound(ma_device *device)
     {
         std::shared_lock lock(soundsMutex);
         if (playingSounds.find(device) != playingSounds.end())
@@ -234,9 +235,9 @@ namespace Soundux::Objects
 
             if (sound.buffer > (sound.sampleRate / 2))
             {
-                sound.readInSeconds = static_cast<std::uint64_t>(
+                sound.readInMs = static_cast<std::uint64_t>(
                     (static_cast<double>(sound.readFrames) / static_cast<double>(sound.length)) *
-                    static_cast<double>(sound.lengthInSeconds));
+                    static_cast<double>(sound.lengthInMs));
                 Globals::gGui->onSoundProgressed(sound);
                 sound.buffer = 0;
             }
@@ -247,8 +248,12 @@ namespace Soundux::Objects
         std::unique_lock lock(soundsMutex);
         if (playingSounds.find(device) != playingSounds.end())
         {
-            playingSounds.at(device).shouldSeek = false;
-            playingSounds.at(device).readFrames = frame;
+            auto &sound = playingSounds.at(device);
+            sound.shouldSeek = false;
+            sound.readFrames = frame;
+            sound.readInMs =
+                static_cast<std::uint64_t>((static_cast<double>(frame) / static_cast<double>(sound.length)) *
+                                           static_cast<double>(sound.lengthInMs));
         }
     }
     std::optional<PlayingSound> Audio::seek(const std::uint32_t &soundId, std::uint64_t position)
@@ -258,10 +263,18 @@ namespace Soundux::Objects
                                   [soundId](const auto &sound) { return sound.second.id == soundId; });
         if (sound != playingSounds.end())
         {
-            sound->second.seekTo = position;
+            sound->second.seekTo = static_cast<std::uint64_t>(
+                (static_cast<double>(position) / static_cast<double>(sound->second.lengthInMs)) *
+                static_cast<double>(sound->second.length));
             sound->second.shouldSeek = true;
 
-            return sound->second;
+            auto rtn = sound->second;
+            rtn.readFrames = rtn.seekTo;
+            rtn.readInMs =
+                static_cast<std::uint64_t>((static_cast<double>(rtn.seekTo) / static_cast<double>(rtn.length)) *
+                                           static_cast<double>(rtn.lengthInMs));
+
+            return rtn;
         }
         Fancy::fancy.logTime().failure() << "Failed to seek sound with id " << soundId << ", sound does not exist"
                                          << std::endl;
@@ -278,7 +291,7 @@ namespace Soundux::Objects
 
         device->masterVolumeFactor = Globals::gAudio.getVolume(device->playback.name);
         auto readFrames = ma_decoder_read_pcm_frames(decoder, output, frameCount);
-        auto sound = Globals::gAudio.getSound(device);
+        auto sound = Globals::gAudio.getPlayingSound(device);
 
         if (sound && sound->shouldSeek)
         {
