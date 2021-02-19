@@ -15,7 +15,6 @@ namespace Soundux::Objects
 
         for (auto &sound : tabs.back().sounds)
         {
-            sound.id = soundIdCounter++;
             Globals::gSounds.insert({sound.id, sound});
         }
 
@@ -33,6 +32,11 @@ namespace Soundux::Objects
             }
 
             tabs.erase(tabs.begin() + index);
+
+            for (int i = 0; tabs.size() > i; i++)
+            {
+                tabs.at(i).id = i;
+            }
         }
         else
         {
@@ -45,8 +49,11 @@ namespace Soundux::Objects
         std::unique_lock lock(Globals::gSoundsMutex);
 
         Globals::gSounds.clear();
-        for (auto &tab : tabs)
+        for (int i = 0; tabs.size() > i; i++)
         {
+            auto &tab = tabs.at(i);
+            tab.id = i;
+
             for (auto &sound : tab.sounds)
             {
                 Globals::gSounds.insert({sound.id, sound});
@@ -77,6 +84,30 @@ namespace Soundux::Objects
         }
 
         Fancy::fancy.logTime().warning() << "Tried to access non existant sound " << id << std::endl;
+        return std::nullopt;
+    }
+    std::optional<Tab> Data::setTab(const std::uint32_t &id, const Tab &tab)
+    {
+        if (tabs.size() > id)
+        {
+            auto &realTab = tabs.at(id);
+
+            std::unique_lock lock(Globals::gSoundsMutex);
+            for (const auto &sound : realTab.sounds)
+            {
+                Globals::gSounds.erase(sound.id);
+            }
+
+            realTab = tab;
+
+            for (auto &sound : realTab.sounds)
+            {
+                Globals::gSounds.insert({sound.id, sound});
+            }
+            return realTab;
+        }
+
+        Fancy::fancy.logTime().warning() << "Tried to access non existant Tab " << id << std::endl;
         return std::nullopt;
     }
 } // namespace Soundux::Objects
