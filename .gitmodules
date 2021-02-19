@@ -4,9 +4,6 @@
 [submodule "lib/miniaudio"]
 	path = lib/miniaudio
 	url = https://github.com/mackron/miniaudio
-[submodule "lib/subprocess"]
-	path = lib/subprocess
-	url = https://github.com/benman64/subprocess
 [submodule "lib/fancypp"]
 	path = lib/fancypp
 	url = https://github.com/Curve/fancypp
