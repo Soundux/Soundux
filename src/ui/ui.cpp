@@ -52,8 +52,9 @@ namespace Soundux::Objects
                 Fancy::fancy.logTime().warning() << "Failed to read lastWriteTime of " << file << std::endl;
             }
 
-            sound.name = file.filename().u8string();
+            sound.name = file.stem().u8string();
             sound.path = file.u8string();
+            sound.id = ++Globals::gData.soundIdCounter;
 
             if (auto oldSound = std::find_if(tab.sounds.begin(), tab.sounds.end(),
                                              [&sound](const auto &item) { return item.path == sound.path; });
@@ -135,13 +136,18 @@ namespace Soundux::Objects
         }
         return std::nullopt;
     }
-    void Window::stopSound(const std::uint32_t &id)
+    std::vector<Tab> Window::removeTab(const std::uint32_t &id)
     {
-        Globals::gAudio.stop(id);
+        Globals::gData.removeTabById(id);
+        return Globals::gData.getTabs();
+    }
+    bool Window::stopSound(const std::uint32_t &id)
+    {
+        return Globals::gAudio.stop(id);
     }
     void Window::stopSounds()
     {
-        Globals::gAudio.stopAll();
+        Globals::gQueue.push_unique(0, []() { Globals::gAudio.stopAll(); });
     }
     void Window::changeSettings(const Settings &settings)
     {
@@ -156,26 +162,32 @@ namespace Soundux::Objects
     {
         std::unique_lock lock(eventMutex);
         eventQueue.push(function);
+        lock.unlock();
+
+        shouldCheck = true;
     }
     void Window::progressEvents()
     {
-        std::shared_lock lock(eventMutex);
-        if (!eventQueue.empty())
+        if (shouldCheck)
         {
-            lock.unlock();
+            std::shared_lock lock(eventMutex);
+            if (!eventQueue.empty())
             {
-                std::unique_lock uLock(eventMutex);
-                while (!eventQueue.empty())
+                lock.unlock();
                 {
-                    auto front = std::move(eventQueue.front());
-                    eventQueue.pop();
+                    std::unique_lock uLock(eventMutex);
+                    while (!eventQueue.empty())
+                    {
+                        auto front = std::move(eventQueue.front());
+                        eventQueue.pop();
 
-                    uLock.unlock();
-                    front();
-                    uLock.lock();
+                        uLock.unlock();
+                        front();
+                        uLock.lock();
+                    }
                 }
+                lock.lock();
             }
-            lock.lock();
         }
     }
 } // namespace Soundux::Objects

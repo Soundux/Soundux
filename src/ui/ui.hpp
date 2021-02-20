@@ -13,11 +13,13 @@ namespace Soundux
         {
           protected:
             std::shared_mutex eventMutex;
+            std::atomic<bool> shouldCheck = false;
             std::queue<std::function<void()>> eventQueue;
             virtual void progressEvents();
 
             virtual void stopSounds();
-            virtual void stopSound(const std::uint32_t &);
+            virtual bool stopSound(const std::uint32_t &);
+            virtual std::vector<Tab> removeTab(const std::uint32_t &);
             virtual std::optional<PlayingSound> playSound(const std::uint32_t &);
             virtual std::optional<PlayingSound> pauseSound(const std::uint32_t &);
             virtual std::optional<PlayingSound> resumeSound(const std::uint32_t &);
