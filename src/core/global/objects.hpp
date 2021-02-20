@@ -1,9 +1,13 @@
 #pragma once
 #include <functional>
 #include <map>
-#include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
+
+namespace nlohmann
+{
+    template <typename, typename> class adl_serializer;
+} // namespace nlohmann
 
 namespace Soundux
 {
@@ -42,7 +46,7 @@ namespace Soundux
         };
         class Data
         {
-            friend class nlohmann::adl_serializer<Data>;
+            template <typename A, typename B> friend class nlohmann::adl_serializer;
 
           private:
             std::vector<Tab> tabs;
