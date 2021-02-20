@@ -110,4 +110,33 @@ namespace Soundux::Objects
         Fancy::fancy.logTime().warning() << "Tried to access non existant Tab " << id << std::endl;
         return std::nullopt;
     }
+    Data &Data::operator=(const Data &other)
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        tabs = other.tabs;
+        width = other.width;
+        height = other.height;
+        output = other.output;
+        soundIdCounter = other.soundIdCounter;
+
+        std::unique_lock lock(Globals::gSoundsMutex);
+        Globals::gSounds.clear();
+
+        for (int i = 0; tabs.size() > i; i++)
+        {
+            auto &tab = tabs.at(i);
+            tab.id = i;
+
+            for (auto &sound : tab.sounds)
+            {
+                Globals::gSounds.insert({sound.id, sound});
+            }
+        }
+
+        return *this;
+    }
 } // namespace Soundux::Objects

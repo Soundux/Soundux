@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <map>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
 
@@ -37,15 +38,18 @@ namespace Soundux
             bool allowOverlapping;
             bool tabHotkeysOnly;
             bool darkTheme;
+            bool gridView;
         };
         class Data
         {
+            friend class nlohmann::adl_serializer<Data>;
+
           private:
             std::vector<Tab> tabs;
 
           public:
-            int width, height;
             std::string output; // TODO(curve): Make use of `output`
+            int width = 1280, height = 720;
             std::uint32_t soundIdCounter = 0;
 
             std::vector<Tab> getTabs() const;
@@ -57,6 +61,8 @@ namespace Soundux
 
             std::optional<Tab> getTab(const std::uint32_t &) const;
             std::optional<std::reference_wrapper<Sound>> getSound(const std::uint32_t &);
+
+            Data &operator=(const Data &other);
         };
     } // namespace Objects
 } // namespace Soundux
