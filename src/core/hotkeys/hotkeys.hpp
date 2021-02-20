@@ -18,7 +18,6 @@ namespace Soundux
 
           private:
             void listen();
-            std::string getKeyName(const int &);
 
           public:
             void init();
@@ -27,6 +26,7 @@ namespace Soundux
 
             void onKeyUp(int);
             void onKeyDown(int);
+            std::string getKeyName(const int &);
         };
     } // namespace Objects
 } // namespace Soundux
