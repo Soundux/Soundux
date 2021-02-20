@@ -57,7 +57,7 @@ namespace Soundux::Objects
 
         while (!kill)
         {
-            if (notify && XPending(display))
+            if (XPending(display) != 0)
             {
                 XEvent event;
                 XNextEvent(display, &event);
@@ -73,7 +73,7 @@ namespace Soundux::Objects
                     {
                         onKeyDown(key);
                     }
-                    else
+                    else if (cookie->evtype == XI_RawKeyRelease)
                     {
                         onKeyUp(key);
                     }
