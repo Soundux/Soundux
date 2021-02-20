@@ -1,4 +1,7 @@
 #include "config.hpp"
+#include "../../helper/json/bindings.hpp"
+#include "fancy.hpp"
+#include "lib/json/single_include/nlohmann/json.hpp"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -31,20 +34,20 @@ namespace Soundux::Objects
         {
             if (!std::filesystem::exists(path))
             {
-                std::filesystem::create_directories(path.substr(0, path.find_last_of('/')));
+                std::filesystem::path configFile(path);
+                std::filesystem::create_directories(configFile.parent_path());
             }
-
             std::ofstream configFile(path);
-            // TODO(Curve): Write config
+            configFile << nlohmann::json(*this).dump();
             configFile.close();
         }
         catch (const std::exception &e)
         {
-            std::cerr << "Failed to write config: " << e.what() << std::endl;
+            Fancy::fancy.logTime().failure() << "Failed to write config: " << e.what() << std::endl;
         }
         catch (...)
         {
-            std::cerr << "Failed to write config" << std::endl;
+            Fancy::fancy.logTime().failure() << "Failed to write config" << std::endl;
         }
     }
     void Config::load()
@@ -53,21 +56,42 @@ namespace Soundux::Objects
         {
             if (!std::filesystem::exists(path))
             {
-                std::cerr << "Config not found" << std::endl;
+                Fancy::fancy.logTime().warning() << "Config not found" << std::endl;
                 return;
             }
 
             std::fstream configFile(path);
-            // TODO(curve): Read / Parse config file
+            std::string content((std::istreambuf_iterator<char>(configFile)), std::istreambuf_iterator<char>());
+            auto json = nlohmann::json::parse(content, nullptr, false);
+            if (json.is_discarded())
+            {
+                Fancy::fancy.logTime().failure() << "Config seems corrupted" << std::endl;
+            }
+            else
+            {
+                try
+                {
+                    auto conf = json.get<Config>();
+                    *this = conf;
+                }
+                catch (...)
+                {
+                    Fancy::fancy.logTime().warning()
+                        << "Found possibly old config format, moving old config..." << std::endl;
+
+                    std::filesystem::path configFile(path);
+                    std::filesystem::rename(path, configFile.parent_path() / "soundux_config_old.json");
+                }
+            }
             configFile.close();
         }
         catch (const std::exception &e)
         {
-            std::cerr << "Failed to read config: " << e.what() << std::endl;
+            Fancy::fancy.logTime().warning() << "Failed to read config: " << e.what() << std::endl;
         }
         catch (...)
         {
-            std::cerr << "Failed to read config" << std::endl;
+            Fancy::fancy.logTime().warning() << "Failed to read config" << std::endl;
         }
     }
 } // namespace Soundux::Objects

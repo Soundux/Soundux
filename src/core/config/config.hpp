@@ -13,8 +13,8 @@ namespace Soundux
             Data data;
             Settings settings;
 
-            static void save();
-            static void load();
+            void save();
+            void load();
             static const std::string path;
         };
     } // namespace Objects
