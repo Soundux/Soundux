@@ -20,14 +20,9 @@ namespace Soundux
         }
         void Hotkeys::onKeyUp([[maybe_unused]] int key)
         {
-            if (notify)
+            if (notify && !pressedKeys.empty())
             {
-                std::vector<std::string> keys;
-                for (const auto &pressedKey : pressedKeys)
-                {
-                    keys.push_back(getKeyName(pressedKey));
-                }
-                Globals::gGui->onHotKeyReceived(keys);
+                Globals::gGui->onHotKeyReceived(pressedKeys);
             }
             pressedKeys.clear();
         }
