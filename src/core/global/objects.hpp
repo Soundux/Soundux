@@ -39,10 +39,10 @@ namespace Soundux
             // TODO(curve): Adjust deviceSettings & Audio::Devices when UI changes some settings
             std::vector<AudioDevice> deviceSettings;
             std::vector<int> stopHotkey;
-            bool allowOverlapping;
-            bool tabHotkeysOnly;
-            bool darkTheme;
-            bool gridView;
+            bool allowOverlapping = true;
+            bool tabHotkeysOnly = false;
+            bool darkTheme = true;
+            bool gridView = false;
         };
         class Data
         {
@@ -52,7 +52,6 @@ namespace Soundux
             std::vector<Tab> tabs;
 
           public:
-            std::string output; // TODO(curve): Make use of `output`
             int width = 1280, height = 720;
             std::uint32_t soundIdCounter = 0;
 
