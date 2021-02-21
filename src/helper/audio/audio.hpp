@@ -3,7 +3,6 @@
 
 #include <atomic>
 #include <cstdint>
-#include <functional>
 #include <map>
 #include <memory>
 #include <miniaudio.h>
@@ -36,6 +35,29 @@ namespace Soundux
             {
                 return driver == "protocol-native.c" && resampleMethod != "peaks";
             }
+        };
+        struct PulsePlaybackStream
+        {
+            std::uint32_t id;
+            std::string sink;
+            std::string name;
+            std::string driver;
+
+            operator bool() const
+            {
+                return driver == "protocol-native.c";
+            }
+        };
+        struct PulseData
+        {
+            std::uint32_t sinkMonitorId;
+            std::uint32_t nullSinkModuleId;
+            std::uint32_t loopbackModuleId;
+            std::string pulseDefaultSource;
+
+            std::uint32_t passthroughModuleId;
+            std::uint32_t passthroughLoopbackSinkModuleId;
+            std::uint32_t passthroughLoopbackMonitorModuleId;
         };
 #endif
         struct PlayingSound
@@ -72,18 +94,20 @@ namespace Soundux
             static void data_callback(ma_device *device, void *output, const void *input, std::uint32_t frameCount);
 
 #if defined(__linux__)
-            void setupSink();
-            void deleteSink() const;
+            void setupPulse();
+            void unloadPulse() const;
+            void unloadLeftOverModules();
             void fetchDefaultPulseSource();
 
-            std::uint32_t sinkMonitorId;
-            std::uint32_t nullSinkModuleId;
-            std::uint32_t loopbackModuleId;
-            std::string pulseDefaultSource;
+            PulseData pulseData;
             std::optional<PulseRecordingStream> currentApplication;
+            std::optional<PulsePlaybackStream> currentApplicationPassthrough;
 
             std::shared_mutex recordingStreamMutex;
             std::map<std::string, PulseRecordingStream> recordingStreams;
+
+            std::shared_mutex playbackStreamMutex;
+            std::map<std::string, PulsePlaybackStream> playbackStreams;
 #endif
 
             void onFinished(ma_device *);
@@ -98,6 +122,7 @@ namespace Soundux
             bool stop(const std::uint32_t &);
             std::optional<PlayingSound> pause(const std::uint32_t &);
             std::optional<PlayingSound> resume(const std::uint32_t &);
+            std::optional<PlayingSound> repeat(const std::uint32_t &, bool);
             std::optional<PlayingSound> seek(const std::uint32_t &, std::uint64_t);
             std::optional<PlayingSound> play(const Objects::Sound &, const std::optional<AudioDevice> & = std::nullopt,
                                              bool = false);
@@ -110,14 +135,19 @@ namespace Soundux
 
 #if defined(__linux__)
             AudioDevice *sinkAudioDevice;
-            void refreshRecordingStreams();
             void moveBackCurrentApplication();
-            void revertDefaultSourceToOriginal();
             void setDefaultSourceToSoundboardSink();
-            void moveApplicationToSinkMonitor(const PulseRecordingStream &);
+            void revertDefaultSourceToOriginal() const;
+            bool moveApplicationToSinkMonitor(const std::string &);
 
+            void refreshRecordingStreams();
             std::vector<PulseRecordingStream> getRecordingStreams();
-            std::optional<PulseRecordingStream> getRecordingStream(const std::string &);
+
+            void refreshPlaybackStreams();
+            std::vector<PulsePlaybackStream> getPlaybackStreams();
+
+            void moveBackApplicationFromPassthrough();
+            std::optional<PulsePlaybackStream> moveApplicationToApplicationPassthrough(const std::string &);
 #endif
 
             Audio();
