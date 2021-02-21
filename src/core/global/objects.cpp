@@ -120,7 +120,6 @@ namespace Soundux::Objects
         tabs = other.tabs;
         width = other.width;
         height = other.height;
-        output = other.output;
         soundIdCounter = other.soundIdCounter;
 
         std::unique_lock lock(Globals::gSoundsMutex);
