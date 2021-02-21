@@ -17,7 +17,6 @@ namespace Soundux::Objects
     {
         NFD::Quit();
         Globals::gHotKeys.stop();
-        // TODO(curve): Save config
     }
     std::vector<Sound> Window::refreshTabSounds(const Tab &tab) const
     {
@@ -52,8 +51,8 @@ namespace Soundux::Objects
                 Fancy::fancy.logTime().warning() << "Failed to read lastWriteTime of " << file << std::endl;
             }
 
-            sound.name = file.stem().u8string();
             sound.path = file.u8string();
+            sound.name = file.stem().u8string();
             sound.id = ++Globals::gData.soundIdCounter;
 
             if (auto oldSound = std::find_if(tab.sounds.begin(), tab.sounds.end(),
@@ -95,33 +94,88 @@ namespace Soundux::Objects
         }
         return std::nullopt;
     }
-    std::optional<PlayingSound> Window::playSound(const std::uint32_t &id)
+#if defined(__linux__)
+    std::optional<PlayingSound> Window::playSound(const std::uint32_t &id, const std::string &applicationName)
     {
         auto sound = Globals::gData.getSound(id);
-        if (sound)
+        auto application = Globals::gAudio.getRecordingStream(applicationName);
+
+        if (sound && application)
         {
-            // TODO(curve): PlayingDevice
             auto playingSound = Globals::gAudio.play(*sound);
-            if (playingSound)
+            Globals::gAudio.moveApplicationToSinkMonitor(*application);
+            auto remotePlayingSound = Globals::gAudio.play(*sound, *Globals::gAudio.sinkAudioDevice, true);
+
+            if (playingSound && remotePlayingSound)
             {
+                std::unique_lock lock(groupedSoundsMutex);
+                groupedSounds.insert({playingSound->id, remotePlayingSound->id});
                 return *playingSound;
             }
+
+            if (playingSound)
+                stopSound(playingSound->id);
+            if (remotePlayingSound)
+                stopSound(remotePlayingSound->id);
         }
         return std::nullopt;
     }
+#else
+    std::optional<PlayingSound> Window::playSound(const std::uint32_t &id, const std::string &deviceName)
+    {
+        auto sound = Globals::gData.getSound(id);
+        auto device = Globals::gAudio.getAudioDevice(deviceName);
+
+        if (sound && device)
+        {
+            auto playingSound = Globals::gAudio.play(*sound);
+            auto remotePlayingSound = Globals::gAudio.play(*sound, *device, true);
+
+            if (playingSound && remotePlayingSound)
+            {
+                return *playingSound;
+            }
+
+            if (playingSound)
+                stopSound(playingSound->id);
+            if (remotePlayingSound)
+                stopSound(remotePlayingSound->id);
+        }
+        return std::nullopt;
+    }
+#endif
     std::optional<PlayingSound> Window::pauseSound(const std::uint32_t &id)
     {
+        std::shared_lock lock(groupedSoundsMutex);
+        if (groupedSounds.find(id) == groupedSounds.end())
+        {
+            Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
+            return std::nullopt;
+        }
+
         auto playingSound = Globals::gAudio.pause(id);
-        if (playingSound)
+        auto remotePlayingSound = Globals::gAudio.pause(groupedSounds.at(id));
+
+        if (playingSound && remotePlayingSound)
         {
             return *playingSound;
         }
+
         return std::nullopt;
     }
     std::optional<PlayingSound> Window::resumeSound(const std::uint32_t &id)
     {
+        std::shared_lock lock(groupedSoundsMutex);
+        if (groupedSounds.find(id) == groupedSounds.end())
+        {
+            Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
+            return std::nullopt;
+        }
+
         auto playingSound = Globals::gAudio.resume(id);
-        if (playingSound)
+        auto remotePlayingSound = Globals::gAudio.resume(groupedSounds.at(id));
+
+        if (playingSound && remotePlayingSound)
         {
             return *playingSound;
         }
@@ -129,8 +183,16 @@ namespace Soundux::Objects
     }
     std::optional<PlayingSound> Window::seekSound(const std::uint32_t &id, std::uint64_t seekTo)
     {
+        std::shared_lock lock(groupedSoundsMutex);
+        if (groupedSounds.find(id) == groupedSounds.end())
+        {
+            Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
+            return std::nullopt;
+        }
+
         auto playingSound = Globals::gAudio.seek(id, seekTo);
-        if (playingSound)
+        auto remotePlayingSound = Globals::gAudio.seek(groupedSounds.at(id), seekTo);
+        if (playingSound && remotePlayingSound)
         {
             return *playingSound;
         }
@@ -143,18 +205,30 @@ namespace Soundux::Objects
     }
     bool Window::stopSound(const std::uint32_t &id)
     {
-        return Globals::gAudio.stop(id);
+        std::shared_lock lock(groupedSoundsMutex);
+        if (groupedSounds.find(id) == groupedSounds.end())
+        {
+            Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
+            return false;
+        }
+
+        auto status = Globals::gAudio.stop(id);
+        auto remoteStatus = Globals::gAudio.stop(groupedSounds.at(id));
+
+        return status && remoteStatus;
     }
     void Window::stopSounds()
     {
         Globals::gQueue.push_unique(0, []() { Globals::gAudio.stopAll(); });
+#if defined(__linux__)
+        Globals::gAudio.moveBackCurrentApplication();
+#endif
     }
     void Window::changeSettings(const Settings &settings)
     {
         Globals::gSettings = settings;
-        // TODO(curve): Override existing Config Properties
     }
-    void Window::onHotKeyReceived([[maybe_unused]] const std::vector<std::string> &keys)
+    void Window::onHotKeyReceived([[maybe_unused]] const std::vector<int> &keys)
     {
         Globals::gHotKeys.shouldNotify(false);
     }
@@ -188,6 +262,54 @@ namespace Soundux::Objects
                 }
                 lock.lock();
             }
+        }
+    }
+    std::optional<Tab> Window::refreshTab(const std::uint32_t &id)
+    {
+        auto tab = Globals::gData.getTab(id);
+        if (tab)
+        {
+            tab->sounds = refreshTabSounds(*tab);
+            auto newTab = Globals::gData.setTab(id, *tab);
+            if (newTab)
+            {
+                return newTab;
+            }
+        }
+        return std::nullopt;
+    }
+#if defined(__linux__)
+    std::vector<PulseRecordingStream> Window::refreshOutput()
+    {
+        Globals::gAudio.refreshRecordingStreams();
+        return Globals::gAudio.getRecordingStreams();
+    }
+    std::vector<PulseRecordingStream> Window::getOutput()
+    {
+        return Globals::gAudio.getRecordingStreams();
+    }
+#else
+    std::vector<AudioDevice> Window::refreshOutput()
+    {
+        Globals::gAudio.refreshAudioDevices();
+        return Globals::gAudio.getAudioDevices();
+    }
+    std::vector<AudioDevice> Window::getOutput()
+    {
+        return Globals::gAudio.getAudioDevices();
+    }
+#endif
+    void Window::onSoundFinished(const PlayingSound &sound)
+    {
+        std::unique_lock lock(groupedSoundsMutex);
+        if (groupedSounds.find(sound.id) != groupedSounds.end())
+        {
+            groupedSounds.erase(sound.id);
+        }
+
+        if (Globals::gAudio.getPlayingSounds().size() == 1)
+        {
+            Globals::gAudio.moveBackCurrentApplication();
         }
     }
 } // namespace Soundux::Objects

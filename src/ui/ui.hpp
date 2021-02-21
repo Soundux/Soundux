@@ -12,6 +12,9 @@ namespace Soundux
         class Window
         {
           protected:
+            std::shared_mutex groupedSoundsMutex;
+            std::map<std::uint32_t, std::uint32_t> groupedSounds;
+
             std::shared_mutex eventMutex;
             std::atomic<bool> shouldCheck = false;
             std::queue<std::function<void()>> eventQueue;
@@ -20,10 +23,11 @@ namespace Soundux
             virtual void stopSounds();
             virtual bool stopSound(const std::uint32_t &);
             virtual std::vector<Tab> removeTab(const std::uint32_t &);
-            virtual std::optional<PlayingSound> playSound(const std::uint32_t &);
+            virtual std::optional<Tab> refreshTab(const std::uint32_t &);
             virtual std::optional<PlayingSound> pauseSound(const std::uint32_t &);
             virtual std::optional<PlayingSound> resumeSound(const std::uint32_t &);
             virtual std::optional<PlayingSound> seekSound(const std::uint32_t &, std::uint64_t);
+            virtual std::optional<PlayingSound> playSound(const std::uint32_t &, const std::string &);
 
             virtual void changeSettings(const Settings &);
 
@@ -36,15 +40,23 @@ namespace Soundux
             virtual std::optional<Tab> addTab();
             virtual std::vector<Sound> refreshTabSounds(const Tab &) const;
 
+#if defined(__linux__)
+            virtual std::vector<PulseRecordingStream> getOutput();
+            virtual std::vector<PulseRecordingStream> refreshOutput();
+#else
+            virtual std::vector<AudioDevice> getOutput();
+            virtual std::vector<AudioDevice> refreshOutput();
+#endif
+
           public:
             ~Window();
             virtual void setup();
             virtual void mainLoop() = 0;
 
             virtual void onSoundPlayed(const PlayingSound &) = 0;
-            virtual void onSoundFinished(const PlayingSound &) = 0;
+            virtual void onSoundFinished(const PlayingSound &);
             virtual void onSoundProgressed(const PlayingSound &) = 0;
-            virtual void onHotKeyReceived(const std::vector<std::string> &);
+            virtual void onHotKeyReceived(const std::vector<int> &);
 
             virtual void onEvent(const std::function<void()> &);
         };
