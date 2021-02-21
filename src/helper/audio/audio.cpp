@@ -12,32 +12,23 @@ namespace Soundux::Objects
 {
     Audio::Audio()
     {
-        auto deviceList = getAudioDevices();
-        std::unique_lock lock(deviceMutex);
-
-        for (const auto &device : deviceList)
-        {
-            devices.insert({device.name, device});
-            if (device.isDefault)
-            {
-                defaultOutputDevice = &devices.at(device.name);
-            }
-        }
-
-        for (const auto &device : Globals::gSettings.deviceSettings)
-        {
-            if (devices.find(device.name) != devices.end())
-            {
-                devices.at(device.name).volume = device.volume;
-            }
-        }
+#if defined(__linux__)
+        refreshRecordingStreams();
+        setupSink();
+#endif
+        refreshAudioDevices();
     }
     Audio::~Audio()
     {
         stopAll();
+#if defined(__linux__)
+        deleteSink();
+        revertDefaultSourceToOriginal();
+#endif
     }
     std::optional<PlayingSound> Audio::play(const Objects::Sound &sound,
-                                            const std::optional<Objects::AudioDevice> &playbackDevice)
+                                            const std::optional<Objects::AudioDevice> &playbackDevice,
+                                            bool shouldNotReport)
     {
         if (!Globals::gSettings.allowOverlapping)
         {
@@ -63,6 +54,14 @@ namespace Soundux::Objects
         config.sampleRate = decoder->outputSampleRate;
         config.playback.format = decoder->outputFormat;
         config.playback.channels = decoder->outputChannels;
+        if (playbackDevice)
+        {
+            config.playback.pDeviceID = &playbackDevice->raw.id;
+        }
+        else
+        {
+            config.playback.pDeviceID = &defaultOutputDevice->raw.id;
+        }
 
         if (ma_device_init(nullptr, &config, device) != MA_SUCCESS)
         {
@@ -84,18 +83,10 @@ namespace Soundux::Objects
         pSound.rawDecoder = decoder;
         pSound.length = length_in_pcm_frames;
         pSound.sampleRate = config.sampleRate;
+        pSound.shouldNotReport = shouldNotReport;
         pSound.lengthInMs = static_cast<std::uint64_t>(static_cast<double>(pSound.length) /
                                                        static_cast<double>(config.sampleRate) * 1000);
         pSound.id = ++playingSoundIdCounter;
-
-        if (playbackDevice)
-        {
-            pSound.device = *playbackDevice;
-        }
-        else
-        {
-            pSound.device = *defaultOutputDevice;
-        }
 
         std::unique_lock lock(soundsMutex);
         playingSounds.insert({device, pSound});
@@ -110,10 +101,9 @@ namespace Soundux::Objects
         std::unique_lock lock(soundsMutex);
         for (const auto &sound : playingSounds)
         {
-            auto *decoder = static_cast<ma_decoder *>(sound.second.rawDevice->pUserData);
             lock.unlock();
             ma_device_uninit(sound.second.rawDevice);
-            ma_decoder_uninit(decoder);
+            ma_decoder_uninit(sound.second.rawDecoder);
             lock.lock();
         }
         playingSounds.clear();
@@ -126,10 +116,9 @@ namespace Soundux::Objects
 
         if (sound != playingSounds.end())
         {
-            auto *decoder = reinterpret_cast<ma_decoder *>(sound->second.rawDevice->pUserData);
             lock.unlock();
             ma_device_uninit(sound->second.rawDevice);
-            ma_decoder_uninit(decoder);
+            ma_decoder_uninit(sound->second.rawDecoder);
             lock.lock();
 
             playingSounds.erase(sound);
@@ -148,8 +137,6 @@ namespace Soundux::Objects
 
         if (sound != playingSounds.end())
         {
-            auto *decoder = reinterpret_cast<ma_decoder *>(sound->second.rawDevice->pUserData);
-
             if (!sound->second.paused)
             {
                 lock.unlock();
@@ -172,8 +159,6 @@ namespace Soundux::Objects
 
         if (sound != playingSounds.end())
         {
-            auto *decoder = reinterpret_cast<ma_decoder *>(sound->second.rawDevice->pUserData);
-
             if (sound->second.paused)
             {
                 ma_device_start(sound->second.rawDevice);
@@ -203,9 +188,8 @@ namespace Soundux::Objects
             lock.unlock();
             ma_device_uninit(sound.rawDevice);
             ma_decoder_uninit(sound.rawDecoder);
-            lock.lock();
-
             Globals::gGui->onSoundFinished(sound);
+            lock.lock();
 
             playingSounds.erase(device);
         }
@@ -298,7 +282,7 @@ namespace Soundux::Objects
             ma_decoder_seek_to_pcm_frame(decoder, sound->seekTo);
             Globals::gAudio.onSoundSeeked(device, sound->seekTo);
         }
-        if (readFrames > 0)
+        if (sound && !sound->shouldNotReport && readFrames > 0)
         {
             Globals::gAudio.onSoundProgressed(device, readFrames);
         }
@@ -316,7 +300,7 @@ namespace Soundux::Objects
             }
         }
     }
-    std::vector<AudioDevice> Audio::getAudioDevices()
+    std::vector<AudioDevice> Audio::fetchAudioDevices()
     {
         std::string defaultName;
         {
@@ -333,7 +317,7 @@ namespace Soundux::Objects
 
         if (ma_context_init(nullptr, 0, nullptr, &context) != MA_SUCCESS)
         {
-            std::cerr << "Failed to initialize context" << std::endl;
+            Fancy::fancy.logTime().failure() << "Failed to initialize context" << std::endl;
             return {};
         }
 
@@ -343,7 +327,7 @@ namespace Soundux::Objects
         ma_result result = ma_context_get_devices(&context, &pPlayBackDeviceInfos, &deviceCount, nullptr, nullptr);
         if (result != MA_SUCCESS)
         {
-            std::cerr << "Failed to get playback devices!" << std::endl;
+            Fancy::fancy.logTime().failure() << "Failed to get playback devices!" << std::endl;
             return {};
         }
 
@@ -375,5 +359,55 @@ namespace Soundux::Objects
         }
 
         return rtn;
+    }
+    std::vector<AudioDevice> Audio::getAudioDevices()
+    {
+        std::shared_lock lock(deviceMutex);
+
+        std::vector<AudioDevice> rtn;
+        for (const auto &device : devices)
+        {
+            rtn.push_back(device.second);
+        }
+        return rtn;
+    }
+    std::optional<std::reference_wrapper<AudioDevice>> Audio::getAudioDevice(const std::string &name)
+    {
+        std::shared_lock lock(deviceMutex);
+        if (devices.find(name) != devices.end())
+        {
+            return devices.at(name);
+        }
+        Fancy::fancy.logTime().failure() << "Failed to receive AudioDevice with name " << name
+                                         << ", AudioDevice does not exist" << std::endl;
+        return std::nullopt;
+    }
+    void Audio::refreshAudioDevices()
+    {
+        auto deviceList = fetchAudioDevices();
+        std::unique_lock lock(deviceMutex);
+
+        for (const auto &device : deviceList)
+        {
+            devices.insert({device.name, device});
+            if (device.isDefault)
+            {
+                defaultOutputDevice = &devices.at(device.name);
+            }
+#if defined(__linux__)
+            if (device.name == "soundux_sink")
+            {
+                sinkAudioDevice = &devices.at(device.name);
+            }
+#endif
+        }
+
+        for (const auto &device : Globals::gSettings.deviceSettings)
+        {
+            if (devices.find(device.name) != devices.end())
+            {
+                devices.at(device.name).volume = device.volume;
+            }
+        }
     }
 } // namespace Soundux::Objects
