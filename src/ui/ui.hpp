@@ -26,6 +26,7 @@ namespace Soundux
             virtual std::optional<Tab> refreshTab(const std::uint32_t &);
             virtual std::optional<PlayingSound> pauseSound(const std::uint32_t &);
             virtual std::optional<PlayingSound> resumeSound(const std::uint32_t &);
+            virtual std::optional<PlayingSound> repeatSound(const std::uint32_t &, bool);
             virtual std::optional<PlayingSound> seekSound(const std::uint32_t &, std::uint64_t);
             virtual std::optional<PlayingSound> playSound(const std::uint32_t &, const std::string &);
 
@@ -35,14 +36,18 @@ namespace Soundux
             // virtual void changeTabOrder(...);
             // virtual void changeLocalVolume(const std::uint8_t &);
             // virtual void changeRemoteVolume(const std::uint8_t &);
-            // virtual void changeOutputDevice(const std::uint32_t &);
 
             virtual std::optional<Tab> addTab();
             virtual std::vector<Sound> refreshTabSounds(const Tab &) const;
 
 #if defined(__linux__)
             virtual std::vector<PulseRecordingStream> getOutput();
+            virtual std::vector<PulsePlaybackStream> getPlayback();
             virtual std::vector<PulseRecordingStream> refreshOutput();
+            virtual std::vector<PulsePlaybackStream> refreshPlayback();
+
+            void stopPassthrough();
+            virtual std::optional<PulsePlaybackStream> startPassthrough(const std::string &, const std::string &);
 #else
             virtual std::vector<AudioDevice> getOutput();
             virtual std::vector<AudioDevice> refreshOutput();

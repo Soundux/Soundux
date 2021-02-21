@@ -98,25 +98,25 @@ namespace Soundux::Objects
     std::optional<PlayingSound> Window::playSound(const std::uint32_t &id, const std::string &applicationName)
     {
         auto sound = Globals::gData.getSound(id);
-        auto application = Globals::gAudio.getRecordingStream(applicationName);
-
-        if (sound && application)
+        if (sound)
         {
-            auto playingSound = Globals::gAudio.play(*sound);
-            Globals::gAudio.moveApplicationToSinkMonitor(*application);
-            auto remotePlayingSound = Globals::gAudio.play(*sound, *Globals::gAudio.sinkAudioDevice, true);
-
-            if (playingSound && remotePlayingSound)
+            if (Globals::gAudio.moveApplicationToSinkMonitor(applicationName))
             {
-                std::unique_lock lock(groupedSoundsMutex);
-                groupedSounds.insert({playingSound->id, remotePlayingSound->id});
-                return *playingSound;
-            }
+                auto playingSound = Globals::gAudio.play(*sound);
+                auto remotePlayingSound = Globals::gAudio.play(*sound, *Globals::gAudio.sinkAudioDevice, true);
 
-            if (playingSound)
-                stopSound(playingSound->id);
-            if (remotePlayingSound)
-                stopSound(remotePlayingSound->id);
+                if (playingSound && remotePlayingSound)
+                {
+                    std::unique_lock lock(groupedSoundsMutex);
+                    groupedSounds.insert({playingSound->id, remotePlayingSound->id});
+                    return *playingSound;
+                }
+
+                if (playingSound)
+                    stopSound(playingSound->id);
+                if (remotePlayingSound)
+                    stopSound(remotePlayingSound->id);
+            }
         }
         return std::nullopt;
     }
@@ -198,6 +198,23 @@ namespace Soundux::Objects
         }
         return std::nullopt;
     }
+    std::optional<PlayingSound> Window::repeatSound(const std::uint32_t &id, bool shouldRepeat)
+    {
+        std::shared_lock lock(groupedSoundsMutex);
+        if (groupedSounds.find(id) == groupedSounds.end())
+        {
+            Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
+            return std::nullopt;
+        }
+
+        auto playingSound = Globals::gAudio.repeat(id, shouldRepeat);
+        auto remotePlayingSound = Globals::gAudio.repeat(groupedSounds.at(id), shouldRepeat);
+        if (playingSound && remotePlayingSound)
+        {
+            return *playingSound;
+        }
+        return std::nullopt;
+    }
     std::vector<Tab> Window::removeTab(const std::uint32_t &id)
     {
         Globals::gData.removeTabById(id);
@@ -215,6 +232,11 @@ namespace Soundux::Objects
         auto status = Globals::gAudio.stop(id);
         auto remoteStatus = Globals::gAudio.stop(groupedSounds.at(id));
 
+        if (Globals::gAudio.getPlayingSounds().empty())
+        {
+            Globals::gAudio.moveBackCurrentApplication();
+        }
+
         return status && remoteStatus;
     }
     void Window::stopSounds()
@@ -222,6 +244,7 @@ namespace Soundux::Objects
         Globals::gQueue.push_unique(0, []() { Globals::gAudio.stopAll(); });
 #if defined(__linux__)
         Globals::gAudio.moveBackCurrentApplication();
+        Globals::gAudio.moveBackApplicationFromPassthrough();
 #endif
     }
     void Window::changeSettings(const Settings &settings)
@@ -284,9 +307,34 @@ namespace Soundux::Objects
         Globals::gAudio.refreshRecordingStreams();
         return Globals::gAudio.getRecordingStreams();
     }
+    std::vector<PulsePlaybackStream> Window::refreshPlayback()
+    {
+        Globals::gAudio.refreshPlaybackStreams();
+        return Globals::gAudio.getPlaybackStreams();
+    }
     std::vector<PulseRecordingStream> Window::getOutput()
     {
         return Globals::gAudio.getRecordingStreams();
+    }
+    std::vector<PulsePlaybackStream> Window::getPlayback()
+    {
+        return Globals::gAudio.getPlaybackStreams();
+    }
+    std::optional<PulsePlaybackStream> Window::startPassthrough(const std::string &name, const std::string &output)
+    {
+        if (Globals::gAudio.moveApplicationToSinkMonitor(output))
+        {
+            return Globals::gAudio.moveApplicationToApplicationPassthrough(name);
+        }
+        return std::nullopt;
+    }
+    void Window::stopPassthrough()
+    {
+        if (Globals::gAudio.getPlayingSounds().empty())
+        {
+            Globals::gAudio.moveBackCurrentApplication();
+        }
+        Globals::gAudio.moveBackApplicationFromPassthrough();
     }
 #else
     std::vector<AudioDevice> Window::refreshOutput()
