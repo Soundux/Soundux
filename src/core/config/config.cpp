@@ -1,12 +1,10 @@
 #include "config.hpp"
 #include "../../helper/json/bindings.hpp"
-#include "fancy.hpp"
-#include "lib/json/single_include/nlohmann/json.hpp"
+#include <fancy.hpp>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
+#include <nlohmann/json.hpp>
 #include <string>
-#include <utility>
 namespace Soundux::Objects
 {
     const std::string Config::path = []() -> std::string {
