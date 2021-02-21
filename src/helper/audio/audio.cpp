@@ -2,7 +2,6 @@
 #include "../../core/global/globals.hpp"
 #include "../../ui/ui.hpp"
 #include <fancy.hpp>
-#include <iostream>
 #include <optional>
 
 #define MINIAUDIO_IMPLEMENTATION
@@ -13,8 +12,10 @@ namespace Soundux::Objects
     Audio::Audio()
     {
 #if defined(__linux__)
+        unloadLeftOverModules();
+        refreshPlaybackStreams();
         refreshRecordingStreams();
-        setupSink();
+        setupPulse();
 #endif
         refreshAudioDevices();
     }
@@ -22,7 +23,10 @@ namespace Soundux::Objects
     {
         stopAll();
 #if defined(__linux__)
-        deleteSink();
+        moveBackCurrentApplication();
+        moveBackApplicationFromPassthrough();
+
+        unloadPulse();
         revertDefaultSourceToOriginal();
 #endif
     }
@@ -149,6 +153,22 @@ namespace Soundux::Objects
 
         Fancy::fancy.logTime().failure() << "Failed to pause sound with id " << soundId << ", sound does not exist"
                                          << std::endl;
+        return std::nullopt;
+    }
+    std::optional<PlayingSound> Audio::repeat(const std::uint32_t &soundId, bool shouldRepeat)
+    {
+        std::unique_lock lock(soundsMutex);
+        auto sound = std::find_if(playingSounds.begin(), playingSounds.end(),
+                                  [soundId](const auto &sound) { return sound.second.id == soundId; });
+
+        if (sound != playingSounds.end())
+        {
+            sound->second.repeat = shouldRepeat;
+            return sound->second;
+        }
+
+        Fancy::fancy.logTime().failure() << "Failed to set repeat for sound with id " << soundId
+                                         << ", sound does not exist" << std::endl;
         return std::nullopt;
     }
     std::optional<PlayingSound> Audio::resume(const std::uint32_t &soundId)
