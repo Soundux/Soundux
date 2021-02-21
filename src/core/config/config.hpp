@@ -1,8 +1,6 @@
 #pragma once
 #include "../global/objects.hpp"
-#include <map>
 #include <string>
-#include <vector>
 
 namespace Soundux
 {
