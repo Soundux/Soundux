@@ -72,7 +72,8 @@ namespace Soundux::Objects
                 try
                 {
                     auto conf = json.get<Config>();
-                    *this = conf;
+                    data = conf.data;
+                    settings = conf.settings;
                 }
                 catch (...)
                 {
