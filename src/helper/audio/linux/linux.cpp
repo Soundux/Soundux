@@ -184,6 +184,12 @@ namespace Soundux::Objects
                 {
                     if (stream)
                     {
+                        recordingStreamMutex.lock_shared();
+                        if (recordingStreams.find(stream.name) != recordingStreams.end())
+                        {
+                            stream.source = recordingStreams.at(stream.name).source;
+                        }
+                        recordingStreamMutex.unlock_shared();
                         fetchedStreams.push_back(stream);
                     }
 
@@ -208,12 +214,19 @@ namespace Soundux::Objects
                 }
             }
         }
-        if (stream && std::find(fetchedStreams.begin(), fetchedStreams.end(), stream) == fetchedStreams.end())
+        recordingStreamMutex.lock_shared();
+        if (stream)
         {
+            if (recordingStreams.find(stream.name) != recordingStreams.end())
+            {
+                stream.source = recordingStreams.at(stream.name).source;
+            }
             fetchedStreams.push_back(stream);
         }
+        recordingStreamMutex.unlock_shared();
 
         std::unique_lock lock(recordingStreamMutex);
+        recordingStreams.clear();
         for (const auto &stream : fetchedStreams)
         {
             recordingStreams.insert({stream.name, stream});
@@ -238,6 +251,12 @@ namespace Soundux::Objects
                 {
                     if (stream)
                     {
+                        playbackStreamMutex.lock_shared();
+                        if (playbackStreams.find(stream.name) != playbackStreams.end())
+                        {
+                            stream.sink = playbackStreams.at(stream.name).sink;
+                        }
+                        playbackStreamMutex.unlock_shared();
                         fetchedStreams.push_back(stream);
                     }
 
@@ -258,12 +277,19 @@ namespace Soundux::Objects
                 }
             }
         }
-        if (stream && std::find(fetchedStreams.begin(), fetchedStreams.end(), stream) == fetchedStreams.end())
+        playbackStreamMutex.lock_shared();
+        if (stream)
         {
+            if (playbackStreams.find(stream.name) != playbackStreams.end())
+            {
+                stream.sink = playbackStreams.at(stream.name).sink;
+            }
             fetchedStreams.push_back(stream);
         }
+        playbackStreamMutex.unlock_shared();
 
         std::unique_lock lock(playbackStreamMutex);
+        playbackStreams.clear();
         for (const auto &stream : fetchedStreams)
         {
             playbackStreams.insert({stream.name, stream});

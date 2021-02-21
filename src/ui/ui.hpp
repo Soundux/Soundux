@@ -43,14 +43,11 @@ namespace Soundux
 #if defined(__linux__)
             virtual std::vector<PulseRecordingStream> getOutput();
             virtual std::vector<PulsePlaybackStream> getPlayback();
-            virtual std::vector<PulseRecordingStream> refreshOutput();
-            virtual std::vector<PulsePlaybackStream> refreshPlayback();
 
             void stopPassthrough();
             virtual std::optional<PulsePlaybackStream> startPassthrough(const std::string &, const std::string &);
 #else
             virtual std::vector<AudioDevice> getOutput();
-            virtual std::vector<AudioDevice> refreshOutput();
 #endif
 
           public:

@@ -302,22 +302,14 @@ namespace Soundux::Objects
         return std::nullopt;
     }
 #if defined(__linux__)
-    std::vector<PulseRecordingStream> Window::refreshOutput()
+    std::vector<PulseRecordingStream> Window::getOutput()
     {
         Globals::gAudio.refreshRecordingStreams();
         return Globals::gAudio.getRecordingStreams();
     }
-    std::vector<PulsePlaybackStream> Window::refreshPlayback()
-    {
-        Globals::gAudio.refreshPlaybackStreams();
-        return Globals::gAudio.getPlaybackStreams();
-    }
-    std::vector<PulseRecordingStream> Window::getOutput()
-    {
-        return Globals::gAudio.getRecordingStreams();
-    }
     std::vector<PulsePlaybackStream> Window::getPlayback()
     {
+        Globals::gAudio.refreshPlaybackStreams();
         return Globals::gAudio.getPlaybackStreams();
     }
     std::optional<PulsePlaybackStream> Window::startPassthrough(const std::string &name, const std::string &output)
@@ -337,13 +329,9 @@ namespace Soundux::Objects
         Globals::gAudio.moveBackApplicationFromPassthrough();
     }
 #else
-    std::vector<AudioDevice> Window::refreshOutput()
-    {
-        Globals::gAudio.refreshAudioDevices();
-        return Globals::gAudio.getAudioDevices();
-    }
     std::vector<AudioDevice> Window::getOutput()
     {
+        Globals::gAudio.refreshAudioDevices();
         return Globals::gAudio.getAudioDevices();
     }
 #endif
