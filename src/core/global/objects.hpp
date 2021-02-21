@@ -46,7 +46,7 @@ namespace Soundux
         };
         class Data
         {
-            template <typename A, typename B> friend class nlohmann::adl_serializer;
+            template <typename, typename> friend class nlohmann::adl_serializer;
 
           private:
             std::vector<Tab> tabs;
