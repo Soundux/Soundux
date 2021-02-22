@@ -77,8 +77,8 @@ namespace Soundux
             std::vector<AudioDevice> getAudioDevices();
             std::optional<std::reference_wrapper<AudioDevice>> getAudioDevice(const std::string &);
 
-            Audio();
-            ~Audio();
+            void setup();
+            void destory();
 
 #if defined(__linux__)
             AudioDevice sinkAudioDevice;

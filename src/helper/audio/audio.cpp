@@ -9,11 +9,11 @@
 
 namespace Soundux::Objects
 {
-    Audio::Audio()
+    void Audio::setup()
     {
         refreshAudioDevices();
     }
-    Audio::~Audio()
+    void Audio::destory()
     {
         stopAll();
     }

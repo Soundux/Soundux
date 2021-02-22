@@ -8,6 +8,7 @@ int main()
     {
         Soundux::Globals::gPulse.setup();
     }
+    Soundux::Globals::gAudio.setup();
 #endif
     Soundux::Globals::gConfig.load();
 #if defined(__linux__)
@@ -23,6 +24,7 @@ int main()
     Soundux::Globals::gGui->setup();
     Soundux::Globals::gGui->mainLoop();
 
+    Soundux::Globals::gAudio.destory();
     Soundux::Globals::gPulse.destroy();
 
     Soundux::Globals::gConfig.data = Soundux::Globals::gData;
