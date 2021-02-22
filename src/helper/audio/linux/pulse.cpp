@@ -1,5 +1,5 @@
 #if defined(__linux__)
-#include "../audio.hpp"
+#include "pulse.hpp"
 #include "fancy.hpp"
 #include <optional>
 #include <regex>
@@ -33,34 +33,37 @@ auto splitByNewLine(const std::string &str)
 
 namespace Soundux::Objects
 {
-    void Audio::setupPulse()
+    void Pulse::setup()
     {
+        unloadLeftOverModules();
+        refreshPlaybackStreams();
+        refreshRecordingStreams();
         fetchDefaultPulseSource();
 
         auto moduleId = exec("pactl load-module module-null-sink sink_name=soundux_sink rate=44100 "
                              "sink_properties=device.description=soundux_sink");
         moduleId.erase(std::remove(moduleId.begin(), moduleId.end(), '\n'), moduleId.end());
-        pulseData.nullSinkModuleId = std::stoi(moduleId);
+        data.nullSinkModuleId = std::stoi(moduleId);
 
-        auto loopbackId = exec("pactl load-module module-loopback rate=44100 source=" + pulseData.pulseDefaultSource +
+        auto loopbackId = exec("pactl load-module module-loopback rate=44100 source=" + data.pulseDefaultSource +
                                " sink=soundux_sink"); // NOLINT
         loopbackId.erase(std::remove(loopbackId.begin(), loopbackId.end(), '\n'), loopbackId.end());
-        pulseData.loopbackModuleId = std::stoi(loopbackId);
+        data.loopbackModuleId = std::stoi(loopbackId);
 
         auto passThroughId = exec("pactl load-module module-null-sink sink_name=soundux_sink_passthrough rate=44100 "
                                   "sink_properties=device.description=soundux_sink_passthrough");
         passThroughId.erase(std::remove(passThroughId.begin(), passThroughId.end(), '\n'), passThroughId.end());
-        pulseData.passthroughModuleId = std::stoi(passThroughId);
+        data.passthroughModuleId = std::stoi(passThroughId);
 
         auto passThroughSink = exec("pactl load-module module-loopback latency_msec=1 "
                                     "source=soundux_sink_passthrough.monitor sink=soundux_sink");
         passThroughSink.erase(std::remove(passThroughSink.begin(), passThroughSink.end(), '\n'), passThroughSink.end());
-        pulseData.passthroughLoopbackSinkModuleId = std::stoi(passThroughSink);
+        data.passthroughLoopbackSinkModuleId = std::stoi(passThroughSink);
 
         auto passThroughLoopback = exec("pactl load-module module-loopback source=soundux_sink_passthrough.monitor");
         passThroughLoopback.erase(std::remove(passThroughLoopback.begin(), passThroughLoopback.end(), '\n'),
                                   passThroughLoopback.end());
-        pulseData.passthroughLoopbackMonitorModuleId = std::stoi(passThroughLoopback);
+        data.passthroughLoopbackMonitorModuleId = std::stoi(passThroughLoopback);
 
         static const std::regex sourceRegex(R"rgx((.*#(\d+))$|(Name: (.+)))rgx");
         auto sources = exec("LC_ALL=C pactl list sources");
@@ -78,7 +81,7 @@ namespace Soundux::Objects
 
                 if (match[4].matched && match[4] == "soundux_sink.monitor")
                 {
-                    pulseData.sinkMonitorId = std::stoi(deviceId);
+                    data.sinkMonitorId = std::stoi(deviceId);
                     return;
                 }
             }
@@ -86,18 +89,22 @@ namespace Soundux::Objects
 
         Fancy::fancy.logTime().failure() << "Failed to find monitor of soundux sink!" << std::endl;
     }
-    void Audio::unloadPulse() const
+    Pulse::~Pulse()
     {
-        system(("pactl unload-module " + std::to_string(pulseData.loopbackModuleId)).c_str()); // NOLINT
-        system(("pactl unload-module " + std::to_string(pulseData.nullSinkModuleId)).c_str()); // NOLINT
+        moveBackCurrentApplication();
+        moveBackApplicationFromPassthrough();
+        revertDefaultSourceToOriginal();
 
-        system(("pactl unload-module " + std::to_string(pulseData.passthroughModuleId)).c_str()); // NOLINT
+        system(("pactl unload-module " + std::to_string(data.loopbackModuleId)).c_str()); // NOLINT
+        system(("pactl unload-module " + std::to_string(data.nullSinkModuleId)).c_str()); // NOLINT
+
+        system(("pactl unload-module " + std::to_string(data.passthroughModuleId)).c_str()); // NOLINT
         // NOLINTNEXTLINE
-        system(("pactl unload-module " + std::to_string(pulseData.passthroughLoopbackSinkModuleId)).c_str());
+        system(("pactl unload-module " + std::to_string(data.passthroughLoopbackSinkModuleId)).c_str());
         // NOLINTNEXTLINE
-        system(("pactl unload-module " + std::to_string(pulseData.passthroughLoopbackMonitorModuleId)).c_str());
+        system(("pactl unload-module " + std::to_string(data.passthroughLoopbackMonitorModuleId)).c_str());
     }
-    void Audio::fetchDefaultPulseSource()
+    void Pulse::fetchDefaultPulseSource()
     {
         auto info = exec("LC_ALL=C pactl info");
         static const std::regex defaultDeviceRegex("^Default Source: (.+)$");
@@ -115,18 +122,18 @@ namespace Soundux::Objects
                             << "Default Source is Soundux Sink, this should not happen!" << std::endl;
                         return;
                     }
-                    pulseData.pulseDefaultSource = match[1];
+                    data.pulseDefaultSource = match[1];
                     Fancy::fancy.logTime()
-                        << "Default Pulse Source was saved: " << pulseData.pulseDefaultSource << std::endl;
+                        << "Default Pulse Source was saved: " << data.pulseDefaultSource << std::endl;
                 }
             }
         }
     }
-    void Audio::revertDefaultSourceToOriginal() const
+    void Pulse::revertDefaultSourceToOriginal() const
     {
-        if (!pulseData.pulseDefaultSource.empty())
+        if (!data.pulseDefaultSource.empty())
         {
-            system(("pactl set-default-source " + pulseData.pulseDefaultSource).c_str()); // NOLINT
+            system(("pactl set-default-source " + data.pulseDefaultSource).c_str()); // NOLINT
         }
         else
         {
@@ -134,11 +141,11 @@ namespace Soundux::Objects
                 << "Failed to revert default source, default source was not set!" << std::endl;
         }
     }
-    void Audio::setDefaultSourceToSoundboardSink()
+    void Pulse::setDefaultSourceToSoundboardSink()
     {
         system("pactl set-default-source soundboard_sink.monitor"); // NOLINT
     }
-    bool Audio::moveApplicationToSinkMonitor(const std::string &streamName)
+    bool Pulse::moveApplicationToSinkMonitor(const std::string &streamName)
     {
         moveBackCurrentApplication();
 
@@ -155,7 +162,7 @@ namespace Soundux::Objects
                                          << std::endl;
         return false;
     }
-    void Audio::moveBackCurrentApplication()
+    void Pulse::moveBackCurrentApplication()
     {
         if (currentApplication)
         {
@@ -165,7 +172,7 @@ namespace Soundux::Objects
                        .c_str());
         }
     }
-    void Audio::refreshRecordingStreams()
+    void Pulse::refreshRecordingStreams()
     {
         auto sourceList = exec("LC_ALL=C pactl list source-outputs");
 
@@ -232,7 +239,7 @@ namespace Soundux::Objects
             recordingStreams.insert({stream.name, stream});
         }
     }
-    void Audio::refreshPlaybackStreams()
+    void Pulse::refreshPlaybackStreams()
     {
         auto sourceList = exec("LC_ALL=C pactl list sink-inputs");
 
@@ -295,7 +302,7 @@ namespace Soundux::Objects
             playbackStreams.insert({stream.name, stream});
         }
     }
-    void Audio::unloadLeftOverModules()
+    void Pulse::unloadLeftOverModules()
     {
         auto loadedModules = exec("LC_ALL=C pactl list modules");
         static const std::regex moduleRegex(R"rgx((Module #(\d+))|(Argument: .*(soundux_sink).*))rgx");
@@ -317,7 +324,7 @@ namespace Soundux::Objects
             }
         }
     }
-    std::vector<PulseRecordingStream> Audio::getRecordingStreams()
+    std::vector<PulseRecordingStream> Pulse::getRecordingStreams()
     {
         std::shared_lock lock(recordingStreamMutex);
         std::vector<PulseRecordingStream> rtn;
@@ -327,7 +334,7 @@ namespace Soundux::Objects
         }
         return rtn;
     }
-    std::vector<PulsePlaybackStream> Audio::getPlaybackStreams()
+    std::vector<PulsePlaybackStream> Pulse::getPlaybackStreams()
     {
         std::shared_lock lock(playbackStreamMutex);
         std::vector<PulsePlaybackStream> rtn;
@@ -337,7 +344,7 @@ namespace Soundux::Objects
         }
         return rtn;
     }
-    void Audio::moveBackApplicationFromPassthrough()
+    void Pulse::moveBackApplicationFromPassthrough()
     {
         if (currentApplicationPassthrough)
         {
@@ -347,7 +354,7 @@ namespace Soundux::Objects
                        .c_str());
         }
     }
-    std::optional<PulsePlaybackStream> Audio::moveApplicationToApplicationPassthrough(const std::string &name)
+    std::optional<PulsePlaybackStream> Pulse::moveApplicationToApplicationPassthrough(const std::string &name)
     {
         moveBackApplicationFromPassthrough();
 

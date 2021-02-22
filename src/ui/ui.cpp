@@ -100,7 +100,7 @@ namespace Soundux::Objects
         auto sound = Globals::gData.getSound(id);
         if (sound)
         {
-            if (Globals::gAudio.moveApplicationToSinkMonitor(applicationName))
+            if (Globals::gPulse.moveApplicationToSinkMonitor(applicationName))
             {
                 auto playingSound = Globals::gAudio.play(*sound);
                 auto remotePlayingSound = Globals::gAudio.play(*sound, *Globals::gAudio.sinkAudioDevice, true);
@@ -232,10 +232,12 @@ namespace Soundux::Objects
         auto status = Globals::gAudio.stop(id);
         auto remoteStatus = Globals::gAudio.stop(groupedSounds.at(id));
 
+#if defined(__linux__)
         if (Globals::gAudio.getPlayingSounds().empty())
         {
-            Globals::gAudio.moveBackCurrentApplication();
+            Globals::gPulse.moveBackCurrentApplication();
         }
+#endif
 
         return status && remoteStatus;
     }
@@ -243,8 +245,8 @@ namespace Soundux::Objects
     {
         Globals::gQueue.push_unique(0, []() { Globals::gAudio.stopAll(); });
 #if defined(__linux__)
-        Globals::gAudio.moveBackCurrentApplication();
-        Globals::gAudio.moveBackApplicationFromPassthrough();
+        Globals::gPulse.moveBackCurrentApplication();
+        Globals::gPulse.moveBackApplicationFromPassthrough();
 #endif
     }
     void Window::changeSettings(const Settings &settings)
@@ -304,19 +306,19 @@ namespace Soundux::Objects
 #if defined(__linux__)
     std::vector<PulseRecordingStream> Window::getOutput()
     {
-        Globals::gAudio.refreshRecordingStreams();
-        return Globals::gAudio.getRecordingStreams();
+        Globals::gPulse.refreshRecordingStreams();
+        return Globals::gPulse.getRecordingStreams();
     }
     std::vector<PulsePlaybackStream> Window::getPlayback()
     {
-        Globals::gAudio.refreshPlaybackStreams();
-        return Globals::gAudio.getPlaybackStreams();
+        Globals::gPulse.refreshPlaybackStreams();
+        return Globals::gPulse.getPlaybackStreams();
     }
     std::optional<PulsePlaybackStream> Window::startPassthrough(const std::string &name, const std::string &output)
     {
-        if (Globals::gAudio.moveApplicationToSinkMonitor(output))
+        if (Globals::gPulse.moveApplicationToSinkMonitor(output))
         {
-            return Globals::gAudio.moveApplicationToApplicationPassthrough(name);
+            return Globals::gPulse.moveApplicationToApplicationPassthrough(name);
         }
         return std::nullopt;
     }
@@ -324,9 +326,9 @@ namespace Soundux::Objects
     {
         if (Globals::gAudio.getPlayingSounds().empty())
         {
-            Globals::gAudio.moveBackCurrentApplication();
+            Globals::gPulse.moveBackCurrentApplication();
         }
-        Globals::gAudio.moveBackApplicationFromPassthrough();
+        Globals::gPulse.moveBackApplicationFromPassthrough();
     }
 #else
     std::vector<AudioDevice> Window::getOutput()
@@ -343,9 +345,11 @@ namespace Soundux::Objects
             groupedSounds.erase(sound.id);
         }
 
+#if defined(__linux__)
         if (Globals::gAudio.getPlayingSounds().size() == 1)
         {
-            Globals::gAudio.moveBackCurrentApplication();
+            Globals::gPulse.moveBackCurrentApplication();
         }
+#endif
     }
 } // namespace Soundux::Objects

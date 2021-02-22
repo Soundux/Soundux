@@ -1,5 +1,8 @@
 #pragma once
 #include "../../helper/audio/audio.hpp"
+#if defined(__linux__)
+#include "../../helper/audio/linux/pulse.hpp"
+#endif
 #include "../../helper/threads/processing.hpp"
 #include "../../ui/ui.hpp"
 #include "../config/config.hpp"
@@ -13,6 +16,9 @@ namespace Soundux
     {
         inline Objects::Data gData;
         inline Objects::Audio gAudio;
+#if defined(__linux__)
+        inline Objects::Pulse gPulse;
+#endif
         inline Objects::Config gConfig;
         inline Objects::Hotkeys gHotKeys;
         inline Objects::Settings gSettings;

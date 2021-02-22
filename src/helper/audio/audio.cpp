@@ -12,23 +12,13 @@ namespace Soundux::Objects
     Audio::Audio()
     {
 #if defined(__linux__)
-        unloadLeftOverModules();
-        refreshPlaybackStreams();
-        refreshRecordingStreams();
-        setupPulse();
+        Globals::gPulse.setup();
 #endif
         refreshAudioDevices();
     }
     Audio::~Audio()
     {
         stopAll();
-#if defined(__linux__)
-        moveBackCurrentApplication();
-        moveBackApplicationFromPassthrough();
-
-        unloadPulse();
-        revertDefaultSourceToOriginal();
-#endif
     }
     std::optional<PlayingSound> Audio::play(const Objects::Sound &sound,
                                             const std::optional<Objects::AudioDevice> &playbackDevice,
