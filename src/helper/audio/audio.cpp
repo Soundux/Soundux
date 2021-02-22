@@ -57,7 +57,7 @@ namespace Soundux::Objects
         }
         else
         {
-            config.playback.pDeviceID = &defaultOutputDevice->raw.id;
+            config.playback.pDeviceID = &defaultOutputDevice.raw.id;
         }
 
         if (ma_device_init(nullptr, &config, device) != MA_SUCCESS)
@@ -188,7 +188,11 @@ namespace Soundux::Objects
         std::shared_lock lock(deviceMutex);
         if (devices.find(name) != devices.end())
         {
-            return devices[name].volume;
+            if (devices.at(name).isDefault)
+            {
+                return Globals::gSettings.localVolume;
+            }
+            return Globals::gSettings.remoteVolume;
         }
         return 1.f;
     }
@@ -350,7 +354,6 @@ namespace Soundux::Objects
             auto &rawDevice = pPlayBackDeviceInfos[i];
 
             AudioDevice device;
-            device.volume = 1.f;
             device.raw = rawDevice;
             device.name = rawDevice.name;
             device.isDefault = rawDevice.name == defaultName;
@@ -405,22 +408,14 @@ namespace Soundux::Objects
             devices.insert({device.name, device});
             if (device.isDefault)
             {
-                defaultOutputDevice = &devices.at(device.name);
+                defaultOutputDevice = devices.at(device.name);
             }
 #if defined(__linux__)
             if (device.name == "soundux_sink")
             {
-                sinkAudioDevice = &devices.at(device.name);
+                sinkAudioDevice = devices.at(device.name);
             }
 #endif
-        }
-
-        for (const auto &device : Globals::gSettings.deviceSettings)
-        {
-            if (devices.find(device.name) != devices.end())
-            {
-                devices.at(device.name).volume = device.volume;
-            }
         }
     }
 } // namespace Soundux::Objects
