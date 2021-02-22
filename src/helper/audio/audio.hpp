@@ -20,7 +20,6 @@ namespace Soundux
             ma_device_info raw;
             std::string name;
             bool isDefault;
-            float volume;
         };
         struct PlayingSound
         {
@@ -82,9 +81,9 @@ namespace Soundux
             ~Audio();
 
 #if defined(__linux__)
-            AudioDevice *sinkAudioDevice;
+            AudioDevice sinkAudioDevice;
 #endif
-            AudioDevice *defaultOutputDevice;
+            AudioDevice defaultOutputDevice;
         };
     } // namespace Objects
 } // namespace Soundux
