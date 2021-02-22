@@ -36,13 +36,14 @@ namespace Soundux
 
         struct Settings
         {
-            // TODO(curve): Adjust deviceSettings & Audio::Devices when UI changes some settings
-            std::vector<AudioDevice> deviceSettings;
             std::vector<int> stopHotkey;
             bool allowOverlapping = true;
             bool tabHotkeysOnly = false;
             bool darkTheme = true;
             bool gridView = false;
+
+            float remoteVolume = 1.f;
+            float localVolume = 1.f;
         };
         class Data
         {
