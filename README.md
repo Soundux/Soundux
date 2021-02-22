@@ -24,7 +24,10 @@
 </div>
 
 # Preview
-![Dark Interface](https://raw.githubusercontent.com/Soundux/soundux.github.io/master/src/assets/screenshots/1.png)
+| ![Dark Interface](assets/screenshots/1.png)          | ![Seek/Pause/Stop Pane](assets/screenshots/2.png) |
+| ---------------------------------------------------- | ------------------------------------------------- |
+| ![Application Passthrough](assets/screenshots/3.png) | ![Search Pane](assets/screenshots/5.png)          |
+| ![Grid View](assets/screenshots/6.png)               | ![Light Interface](assets/screenshots/7.png)      |
 
 # Introduction
 Soundux is a cross-platform soundboard that features a simple user interface.
@@ -37,8 +40,10 @@ These are required to run the program
 Please refer to your distro instructions on how to install
 - [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio)
 - Xorg
+- Webkit2gtk
 ## Windows
 - [VB-CABLE](https://vb-audio.com/Cable/) (Our installer automatically installs VB-CABLE)
+- [Webview2 Runtime](https://developer.microsoft.com/de-de/microsoft-edge/webview2/) (Is also shipped with the installer)
 
 # Installation
 
@@ -67,25 +72,17 @@ Download our installer or portable from [the latest release](https://github.com/
 ## Build Dependencies
 
 ### Linux
-This list may not be accurate. Contact me if you find missing dependencies that I can update this list
-- [qt5-base](https://github.com/qt/qtbase) >=5.15
-- [qt5-tools](https://github.com/qt/qt5) >=5.15
-- [qt5-quickcontrols2](https://github.com/qt/qtquickcontrols2) >=5.15
+This list may not be accurate. Contact me if you find missing dependencies so that I can update this list
+- Webkit2gtk
 - X11 client-side development headers
-
-<b>Qt >= 5.15 is strictly required!</b>
 
 #### Ubuntu and derivatives
 ```sh
-sudo apt install git build-essential cmake libx11-dev libqt5x11extras5-dev libxi-dev
+sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-3.0-25
 ```
-Ubuntu does not have Qt 5.15 in its repositories so you need to use their [Online Installer](https://www.qt.io/download-thank-you?hsLang=en) or [compile it from source](https://doc.qt.io/qt-5/build-sources.html#linux-x11)
 
 ### Windows
-*(We highly recommend you to just download the latest release for windows since it has all its dependencies packed with it)*
-
-To compile on windows you'll have to install qt (*make sure the the important qt-paths are in your system-path!*)
-- [Qt](https://www.qt.io/download-thank-you?os=windows)
+- Nuget
 - MSVC
 - CMake
 
