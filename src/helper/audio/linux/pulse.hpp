@@ -39,13 +39,13 @@ namespace Soundux
         struct PulseData
         {
             std::uint32_t sinkMonitorId;
-            std::uint32_t nullSinkModuleId;
-            std::uint32_t loopbackModuleId;
             std::string pulseDefaultSource;
+            std::uint32_t nullSinkModuleId = 0;
+            std::uint32_t loopbackModuleId = 0;
 
-            std::uint32_t passthroughModuleId;
-            std::uint32_t passthroughLoopbackSinkModuleId;
-            std::uint32_t passthroughLoopbackMonitorModuleId;
+            std::uint32_t passthroughModuleId = 0;
+            std::uint32_t passthroughLoopbackSinkModuleId = 0;
+            std::uint32_t passthroughLoopbackMonitorModuleId = 0;
         };
         class Pulse
         {
@@ -53,7 +53,6 @@ namespace Soundux
             void fetchDefaultPulseSource();
 
             PulseData data;
-            bool modulesLoaded = false;
             std::optional<PulseRecordingStream> currentApplication;
             std::optional<PulsePlaybackStream> currentApplicationPassthrough;
 
@@ -64,8 +63,8 @@ namespace Soundux
             std::map<std::string, PulsePlaybackStream> playbackStreams;
 
           public:
-            ~Pulse();
             void setup();
+            void destroy();
 
             void unloadSwitchOnConnect();
             bool isSwitchOnConnectLoaded();

@@ -65,8 +65,6 @@ namespace Soundux::Objects
                                   passThroughLoopback.end());
         data.passthroughLoopbackMonitorModuleId = std::stoi(passThroughLoopback);
 
-        modulesLoaded = true;
-
         static const std::regex sourceRegex(R"rgx((.*#(\d+))$|(Name: (.+)))rgx");
         auto sources = exec("LC_ALL=C pactl list sources");
         std::smatch match;
@@ -91,23 +89,25 @@ namespace Soundux::Objects
 
         Fancy::fancy.logTime().failure() << "Failed to find monitor of soundux sink!" << std::endl;
     }
-    Pulse::~Pulse()
+    void Pulse::destroy()
     {
-        if (modulesLoaded)
-        {
-            moveBackCurrentApplication();
-            moveBackApplicationFromPassthrough();
-            revertDefaultSourceToOriginal();
+        moveBackCurrentApplication();
+        moveBackApplicationFromPassthrough();
+        revertDefaultSourceToOriginal();
 
+        if (data.loopbackModuleId != 0)
             system(("pactl unload-module " + std::to_string(data.loopbackModuleId)).c_str()); // NOLINT
+        if (data.nullSinkModuleId != 0)
             system(("pactl unload-module " + std::to_string(data.nullSinkModuleId)).c_str()); // NOLINT
 
+        if (data.passthroughModuleId != 0)
             system(("pactl unload-module " + std::to_string(data.passthroughModuleId)).c_str()); // NOLINT
+        if (data.passthroughLoopbackSinkModuleId != 0)
             // NOLINTNEXTLINE
             system(("pactl unload-module " + std::to_string(data.passthroughLoopbackSinkModuleId)).c_str());
+        if (data.passthroughLoopbackMonitorModuleId != 0)
             // NOLINTNEXTLINE
             system(("pactl unload-module " + std::to_string(data.passthroughLoopbackMonitorModuleId)).c_str());
-        }
     }
     void Pulse::fetchDefaultPulseSource()
     {
