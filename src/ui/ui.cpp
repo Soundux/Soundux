@@ -251,6 +251,16 @@ namespace Soundux::Objects
     }
     void Window::changeSettings(const Settings &settings)
     {
+#if defined(__linux__)
+        if (!settings.useAsDefaultDevice && Globals::gSettings.useAsDefaultDevice)
+        {
+            Globals::gPulse.revertDefaultSourceToOriginal();
+        }
+        else if (settings.useAsDefaultDevice && !Globals::gSettings.useAsDefaultDevice)
+        {
+            Globals::gPulse.setDefaultSourceToSoundboardSink();
+        }
+#endif
         Globals::gSettings = settings;
     }
     void Window::onHotKeyReceived([[maybe_unused]] const std::vector<int> &keys)

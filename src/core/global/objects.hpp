@@ -37,6 +37,7 @@ namespace Soundux
         struct Settings
         {
             std::vector<int> stopHotkey;
+            bool useAsDefaultDevice = false;
             bool allowOverlapping = true;
             bool tabHotkeysOnly = false;
             bool darkTheme = true;
