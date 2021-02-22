@@ -103,7 +103,7 @@ namespace Soundux::Objects
             if (Globals::gPulse.moveApplicationToSinkMonitor(applicationName))
             {
                 auto playingSound = Globals::gAudio.play(*sound);
-                auto remotePlayingSound = Globals::gAudio.play(*sound, *Globals::gAudio.sinkAudioDevice, true);
+                auto remotePlayingSound = Globals::gAudio.play(*sound, Globals::gAudio.sinkAudioDevice, true);
 
                 if (playingSound && remotePlayingSound)
                 {

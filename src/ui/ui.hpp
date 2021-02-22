@@ -37,8 +37,6 @@ namespace Soundux
 
             // TODO(curve):
             // virtual void changeTabOrder(...);
-            // virtual void changeLocalVolume(const std::uint8_t &);
-            // virtual void changeRemoteVolume(const std::uint8_t &);
 
             virtual std::optional<Tab> addTab();
             virtual std::vector<Sound> refreshTabSounds(const Tab &) const;
