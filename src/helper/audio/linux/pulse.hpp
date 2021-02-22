@@ -66,6 +66,9 @@ namespace Soundux
             void setup();
             ~Pulse();
 
+            void unloadSwitchOnConnect();
+            bool isSwitchOnConnectLoaded();
+
             void moveBackCurrentApplication();
             void setDefaultSourceToSoundboardSink();
             void revertDefaultSourceToOriginal() const;

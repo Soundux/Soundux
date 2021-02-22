@@ -370,5 +370,13 @@ namespace Soundux::Objects
         Fancy::fancy.logTime().failure() << "Failed to find PulsePlaybackStream with name: " << name << std::endl;
         return std::nullopt;
     }
+    bool Pulse::isSwitchOnConnectLoaded()
+    {
+        return (system("pactl list modules | grep module-switch-on-connect > /dev/null") == 0); // NOLINT
+    }
+    void Pulse::unloadSwitchOnConnect()
+    {
+        system("pactl unload-module module-switch-on-connect"); // NOLINT
+    }
 } // namespace Soundux::Objects
 #endif

@@ -12,7 +12,10 @@ namespace Soundux::Objects
     Audio::Audio()
     {
 #if defined(__linux__)
-        Globals::gPulse.setup();
+        if (!Globals::gPulse.isSwitchOnConnectLoaded())
+        {
+            Globals::gPulse.setup();
+        }
 #endif
         refreshAudioDevices();
     }
