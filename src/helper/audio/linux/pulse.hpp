@@ -53,6 +53,7 @@ namespace Soundux
             void fetchDefaultPulseSource();
 
             PulseData data;
+            bool modulesLoaded = false;
             std::optional<PulseRecordingStream> currentApplication;
             std::optional<PulsePlaybackStream> currentApplicationPassthrough;
 
@@ -63,8 +64,8 @@ namespace Soundux
             std::map<std::string, PulsePlaybackStream> playbackStreams;
 
           public:
-            void setup();
             ~Pulse();
+            void setup();
 
             void unloadSwitchOnConnect();
             bool isSwitchOnConnectLoaded();
