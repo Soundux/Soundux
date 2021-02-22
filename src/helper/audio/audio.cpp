@@ -179,6 +179,12 @@ namespace Soundux::Objects
     }
     float Audio::getVolume(const std::string &name)
     {
+#if defined(__linux__)
+        if (name == sinkAudioDevice.name)
+        {
+            return Globals::gSettings.remoteVolume;
+        }
+#endif
         std::shared_lock lock(deviceMutex);
         if (devices.find(name) != devices.end())
         {
