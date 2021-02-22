@@ -1,5 +1,6 @@
 #include "config.hpp"
 #include "../../helper/json/bindings.hpp"
+#include <chrono>
 #include <fancy.hpp>
 #include <filesystem>
 #include <fstream>
@@ -79,7 +80,11 @@ namespace Soundux::Objects
                         << "Found possibly old config format, moving old config..." << std::endl;
 
                     std::filesystem::path configFile(path);
-                    std::filesystem::rename(path, configFile.parent_path() / "soundux_config_old.json");
+                    std::filesystem::rename(
+                        path,
+                        configFile.parent_path() /
+                            ("soundux_config_old_" +
+                             std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) + ".json"));
                 }
             }
             configFile.close();
