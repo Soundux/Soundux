@@ -14,6 +14,8 @@ namespace Soundux
     {
         class Window
         {
+            friend class Hotkeys;
+
           protected:
             std::shared_mutex groupedSoundsMutex;
             std::map<std::uint32_t, std::uint32_t> groupedSounds;
@@ -27,11 +29,11 @@ namespace Soundux
             virtual bool stopSound(const std::uint32_t &);
             virtual std::vector<Tab> removeTab(const std::uint32_t &);
             virtual std::optional<Tab> refreshTab(const std::uint32_t &);
+            virtual std::optional<PlayingSound> playSound(const std::uint32_t &);
             virtual std::optional<PlayingSound> pauseSound(const std::uint32_t &);
             virtual std::optional<PlayingSound> resumeSound(const std::uint32_t &);
             virtual std::optional<PlayingSound> repeatSound(const std::uint32_t &, bool);
             virtual std::optional<PlayingSound> seekSound(const std::uint32_t &, std::uint64_t);
-            virtual std::optional<PlayingSound> playSound(const std::uint32_t &, const std::string &);
 
             virtual void changeSettings(const Settings &);
 
@@ -46,7 +48,7 @@ namespace Soundux
             virtual std::vector<PulsePlaybackStream> getPlayback();
 
             void stopPassthrough();
-            virtual std::optional<PulsePlaybackStream> startPassthrough(const std::string &, const std::string &);
+            virtual std::optional<PulsePlaybackStream> startPassthrough(const std::string &);
 #else
             virtual std::vector<AudioDevice> getOutput();
 #endif

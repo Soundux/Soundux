@@ -42,6 +42,7 @@ namespace Soundux
             bool tabHotkeysOnly = false;
             bool darkTheme = true;
             bool gridView = false;
+            std::string output;
 
             float remoteVolume = 1.f;
             float localVolume = 1.f;

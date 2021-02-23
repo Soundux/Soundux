@@ -95,12 +95,12 @@ namespace Soundux::Objects
         return std::nullopt;
     }
 #if defined(__linux__)
-    std::optional<PlayingSound> Window::playSound(const std::uint32_t &id, const std::string &applicationName)
+    std::optional<PlayingSound> Window::playSound(const std::uint32_t &id)
     {
         auto sound = Globals::gData.getSound(id);
         if (sound)
         {
-            if (Globals::gPulse.moveApplicationToSinkMonitor(applicationName))
+            if (Globals::gPulse.moveApplicationToSinkMonitor(Globals::gSettings.output))
             {
                 auto playingSound = Globals::gAudio.play(*sound);
                 auto remotePlayingSound = Globals::gAudio.play(*sound, Globals::gAudio.sinkAudioDevice, true);
@@ -324,9 +324,9 @@ namespace Soundux::Objects
         Globals::gPulse.refreshPlaybackStreams();
         return Globals::gPulse.getPlaybackStreams();
     }
-    std::optional<PulsePlaybackStream> Window::startPassthrough(const std::string &name, const std::string &output)
+    std::optional<PulsePlaybackStream> Window::startPassthrough(const std::string &name)
     {
-        if (Globals::gPulse.moveApplicationToSinkMonitor(output))
+        if (Globals::gPulse.moveApplicationToSinkMonitor(Globals::gSettings.output))
         {
             return Globals::gPulse.moveApplicationToApplicationPassthrough(name);
         }
