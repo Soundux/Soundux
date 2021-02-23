@@ -29,11 +29,29 @@ namespace Soundux
         void Hotkeys::onKeyDown(int key)
         {
             pressedKeys.push_back(key);
-            if (auto sound = std::find_if(Globals::gSounds.begin(), Globals::gSounds.end(),
-                                          [&](const auto &item) { return item.second.get().hotkeys == pressedKeys; });
-                sound != Globals::gSounds.end())
+            if (Globals::gSettings.tabHotkeysOnly)
             {
-                Globals::gGui->playSound(sound->first);
+                auto tab = Globals::gData.getTab(Globals::gSettings.selectedTab);
+                if (tab)
+                {
+                    auto sound = std::find_if(tab->sounds.begin(), tab->sounds.end(),
+                                              [&](auto &item) { return item.hotkeys == pressedKeys; });
+                    if (sound != tab->sounds.end())
+                    {
+                        Globals::gGui->playSound(sound->id);
+                    }
+                }
+            }
+            else
+            {
+                std::shared_lock lock(Globals::gSoundsMutex);
+                if (auto sound =
+                        std::find_if(Globals::gSounds.begin(), Globals::gSounds.end(),
+                                     [&](const auto &item) { return item.second.get().hotkeys == pressedKeys; });
+                    sound != Globals::gSounds.end())
+                {
+                    Globals::gGui->playSound(sound->first);
+                }
             }
         }
     } // namespace Objects
