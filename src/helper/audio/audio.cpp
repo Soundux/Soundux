@@ -21,11 +21,6 @@ namespace Soundux::Objects
                                             const std::optional<Objects::AudioDevice> &playbackDevice,
                                             bool shouldNotReport)
     {
-        if (!Globals::gSettings.allowOverlapping)
-        {
-            stopAll();
-        }
-
         auto *decoder = new ma_decoder;
         auto res = ma_decoder_init_file(sound.path.c_str(), nullptr, decoder);
 
@@ -79,9 +74,9 @@ namespace Soundux::Objects
                                                        static_cast<double>(config.sampleRate) * 1000);
         pSound.id = ++playingSoundIdCounter;
 
-        std::unique_lock lock(soundsMutex);
+        soundsMutex.lock();
         playingSounds.insert({device, pSound});
-        lock.unlock();
+        soundsMutex.unlock();
 
         Globals::gGui->onSoundPlayed(pSound);
 
@@ -358,7 +353,7 @@ namespace Soundux::Objects
             device.name = rawDevice.name;
             device.isDefault = rawDevice.name == defaultName;
 
-            playBackDevices.push_back(device);
+            playBackDevices.emplace_back(device);
         }
 
         ma_context_uninit(&context);
@@ -371,7 +366,7 @@ namespace Soundux::Objects
         std::vector<PlayingSound> rtn;
         for (const auto &sound : playingSounds)
         {
-            rtn.push_back(sound.second);
+            rtn.emplace_back(sound.second);
         }
 
         return rtn;
@@ -383,7 +378,7 @@ namespace Soundux::Objects
         std::vector<AudioDevice> rtn;
         for (const auto &device : devices)
         {
-            rtn.push_back(device.second);
+            rtn.emplace_back(device.second);
         }
         return rtn;
     }

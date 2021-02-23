@@ -28,7 +28,7 @@ namespace Soundux
         }
         void Hotkeys::onKeyDown(int key)
         {
-            pressedKeys.push_back(key);
+            pressedKeys.emplace_back(key);
             if (Globals::gSettings.tabHotkeysOnly)
             {
                 auto tab = Globals::gData.getTab(Globals::gSettings.selectedTab);

@@ -26,7 +26,7 @@ auto splitByNewLine(const std::string &str)
     std::stringstream ss(str);
     for (std::string line; std::getline(ss, line, '\n');)
     {
-        result.push_back(line);
+        result.emplace_back(line);
     }
     return result;
 };
@@ -202,7 +202,7 @@ namespace Soundux::Objects
                             stream.source = recordingStreams.at(stream.name).source;
                         }
                         recordingStreamMutex.unlock_shared();
-                        fetchedStreams.push_back(stream);
+                        fetchedStreams.emplace_back(stream);
                     }
 
                     stream = {};
@@ -233,7 +233,7 @@ namespace Soundux::Objects
             {
                 stream.source = recordingStreams.at(stream.name).source;
             }
-            fetchedStreams.push_back(stream);
+            fetchedStreams.emplace_back(stream);
         }
         recordingStreamMutex.unlock_shared();
 
@@ -269,7 +269,7 @@ namespace Soundux::Objects
                             stream.sink = playbackStreams.at(stream.name).sink;
                         }
                         playbackStreamMutex.unlock_shared();
-                        fetchedStreams.push_back(stream);
+                        fetchedStreams.emplace_back(stream);
                     }
 
                     stream = {};
@@ -296,7 +296,7 @@ namespace Soundux::Objects
             {
                 stream.sink = playbackStreams.at(stream.name).sink;
             }
-            fetchedStreams.push_back(stream);
+            fetchedStreams.emplace_back(stream);
         }
         playbackStreamMutex.unlock_shared();
 
@@ -335,7 +335,7 @@ namespace Soundux::Objects
         std::vector<PulseRecordingStream> rtn;
         for (const auto &stream : recordingStreams)
         {
-            rtn.push_back(stream.second);
+            rtn.emplace_back(stream.second);
         }
         return rtn;
     }
@@ -345,7 +345,7 @@ namespace Soundux::Objects
         std::vector<PulsePlaybackStream> rtn;
         for (const auto &stream : playbackStreams)
         {
-            rtn.push_back(stream.second);
+            rtn.emplace_back(stream.second);
         }
         return rtn;
     }

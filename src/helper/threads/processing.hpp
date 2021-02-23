@@ -63,7 +63,7 @@ namespace Soundux
             void push(const std::function<void()> &item)
             {
                 std::unique_lock lock(queueMutex);
-                queue.push({nullptr, item});
+                queue.emplace({nullptr, item});
                 lock.unlock();
                 cv.notify_one();
             }
@@ -80,7 +80,7 @@ namespace Soundux
                 std::unique_lock lock(queueMutex);
                 std::unique_lock lock_(unhandledMutex);
 
-                unhandled.push_back(identifier);
+                unhandled.emplace_back(identifier);
 
                 queue.push({nullptr, item, identifier});
                 lock.unlock();
@@ -90,7 +90,7 @@ namespace Soundux
             {
                 std::unique_lock lock(queueMutex);
                 auto status = std::make_shared<std::atomic<bool>>();
-                queue.push({status, item});
+                queue.emplace({status, item});
                 lock.unlock();
                 cv.notify_one();
 

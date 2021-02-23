@@ -10,7 +10,7 @@ namespace Soundux::Objects
     Tab Data::addTab(Tab tab)
     {
         tab.id = tabs.size();
-        tabs.push_back(tab);
+        tabs.emplace_back(tab);
         std::unique_lock lock(Globals::gSoundsMutex);
 
         for (auto &sound : tabs.back().sounds)

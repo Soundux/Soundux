@@ -62,7 +62,7 @@ namespace Soundux::Objects
                 sound.hotkeys = oldSound->hotkeys;
             }
 
-            rtn.push_back(sound);
+            rtn.emplace_back(sound);
         }
 
         std::sort(rtn.begin(), rtn.end(),
@@ -102,6 +102,10 @@ namespace Soundux::Objects
         {
             if (Globals::gPulse.moveApplicationToSinkMonitor(Globals::gSettings.output))
             {
+                if (!Globals::gSettings.allowOverlapping)
+                {
+                    Globals::gAudio.stopAll();
+                }
                 auto playingSound = Globals::gAudio.play(*sound);
                 auto remotePlayingSound = Globals::gAudio.play(*sound, Globals::gAudio.sinkAudioDevice, true);
 
@@ -121,13 +125,17 @@ namespace Soundux::Objects
         return std::nullopt;
     }
 #else
-    std::optional<PlayingSound> Window::playSound(const std::uint32_t &id, const std::string &deviceName)
+    std::optional<PlayingSound> Window::playSound(const std::uint32_t &id)
     {
         auto sound = Globals::gData.getSound(id);
-        auto device = Globals::gAudio.getAudioDevice(deviceName);
+        auto device = Globals::gAudio.getAudioDevice(Globals::gSettings.output);
 
         if (sound && device)
         {
+            if (!Globals::gSettings.allowOverlapping)
+            {
+                Globals::gAudio.stopAll();
+            }
             auto playingSound = Globals::gAudio.play(*sound);
             auto remotePlayingSound = Globals::gAudio.play(*sound, *device, true);
 
@@ -270,7 +278,7 @@ namespace Soundux::Objects
     void Window::onEvent(const std::function<void()> &function)
     {
         std::unique_lock lock(eventMutex);
-        eventQueue.push(function);
+        eventQueue.emplace(function);
         lock.unlock();
 
         shouldCheck = true;
