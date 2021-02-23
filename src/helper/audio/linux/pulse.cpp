@@ -148,7 +148,7 @@ namespace Soundux::Objects
     }
     void Pulse::setDefaultSourceToSoundboardSink()
     {
-        system("pactl set-default-source soundboard_sink.monitor"); // NOLINT
+        system("pactl set-default-source soundux_sink.monitor"); // NOLINT
     }
     bool Pulse::moveApplicationToSinkMonitor(const std::string &streamName)
     {
