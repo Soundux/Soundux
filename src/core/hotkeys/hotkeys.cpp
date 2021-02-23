@@ -29,6 +29,12 @@ namespace Soundux
         void Hotkeys::onKeyDown(int key)
         {
             pressedKeys.push_back(key);
+            if (auto sound = std::find_if(Globals::gSounds.begin(), Globals::gSounds.end(),
+                                          [&](const auto &item) { return item.second.get().hotkeys == pressedKeys; });
+                sound != Globals::gSounds.end())
+            {
+                Globals::gGui->playSound(sound->first);
+            }
         }
     } // namespace Objects
 } // namespace Soundux
