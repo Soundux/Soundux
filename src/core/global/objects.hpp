@@ -38,6 +38,7 @@ namespace Soundux
         {
             std::vector<int> stopHotkey;
             bool useAsDefaultDevice = false;
+            std::uint32_t selectedTab = 0;
             bool allowOverlapping = true;
             bool tabHotkeysOnly = false;
             bool darkTheme = true;
