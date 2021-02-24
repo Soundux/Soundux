@@ -1,4 +1,5 @@
 #if defined(_WIN32)
+#include "../../global/globals.hpp"
 #include "../hotkeys.hpp"
 #include <Windows.h>
 #include <chrono>
@@ -14,13 +15,13 @@ namespace Soundux::Objects
         {
             if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
             {
-                auto info = reinterpret_cast<PKBDLLHOOKSTRUCT>(lParam);
-                onKeyDown(info->vkCode);
+                auto *info = reinterpret_cast<PKBDLLHOOKSTRUCT>(lParam);
+                Globals::gHotKeys.onKeyDown(info->vkCode);
             }
             else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
             {
-                auto info = reinterpret_cast<PKBDLLHOOKSTRUCT>(lParam);
-                onKeyUp(info->vkCode);
+                auto *info = reinterpret_cast<PKBDLLHOOKSTRUCT>(lParam);
+                Globals::gHotKeys.onKeyUp(info->vkCode);
             }
         }
         return CallNextHookEx(oKeyBoardProc, nCode, wParam, lParam);
@@ -28,14 +29,14 @@ namespace Soundux::Objects
 
     void Hotkeys::listen()
     {
-        oKeyBoardProc = SetWindowsHookEx(WH_KEYBOARD_LL, keyBoardProc, NULL, NULL);
+        oKeyBoardProc = SetWindowsHookEx(WH_KEYBOARD_LL, keyBoardProc, nullptr, NULL);
 
         MSG message;
         while (!kill)
         {
             if (notify)
             {
-                PeekMessage(&message, 0, 0, 0, PM_REMOVE);
+                PeekMessage(&message, nullptr, 0, 0, PM_REMOVE);
                 TranslateMessage(&message);
                 DispatchMessage(&message);
             }

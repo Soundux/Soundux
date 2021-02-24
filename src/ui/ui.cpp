@@ -6,6 +6,11 @@
 #include <nfd.hpp>
 #include <optional>
 
+#if defined(_WIN32)
+#include <codecvt>
+#include <locale>
+#endif
+
 namespace Soundux::Objects
 {
     void Window::setup()
@@ -76,7 +81,12 @@ namespace Soundux::Objects
         auto result = NFD::PickFolder(outpath, nullptr);
         if (result == NFD_OKAY)
         {
+#if defined(_WIN32)
+            std::wstring wpath(outpath);
+            std::string path = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(wpath.c_str()); // NOLINT
+#else
             std::string path(outpath);
+#endif
             NFD_FreePathN(outpath);
 
             if (std::filesystem::exists(path))
@@ -84,7 +94,7 @@ namespace Soundux::Objects
                 Tab tab;
                 tab.path = path;
                 tab.sounds = refreshTabSounds(tab);
-                tab.name = std::filesystem::path(path).filename();
+                tab.name = std::filesystem::path(path).filename().u8string();
 
                 tab = Globals::gData.addTab(std::move(tab));
 

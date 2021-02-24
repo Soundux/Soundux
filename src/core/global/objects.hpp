@@ -1,12 +1,13 @@
 #pragma once
 #include <functional>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
 namespace nlohmann
 {
-    template <typename, typename> class adl_serializer;
+    template <typename, typename> struct adl_serializer;
 } // namespace nlohmann
 
 namespace Soundux
@@ -50,7 +51,7 @@ namespace Soundux
         };
         class Data
         {
-            template <typename, typename> friend class nlohmann::adl_serializer;
+            template <typename, typename> friend struct nlohmann::adl_serializer;
 
           private:
             std::vector<Tab> tabs;
