@@ -2,6 +2,7 @@
   <p>
     <img src="assets/logo.gif" height="200"/>
     <br>
+    <h6>A cross-platform soundboard 🔊</h6>
     <br>
     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/Soundux/soundux?style=flat-square">
     <img alt="GitHub issues" src="https://img.shields.io/github/issues/Soundux/soundux?style=flat-square">
