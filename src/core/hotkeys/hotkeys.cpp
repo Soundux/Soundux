@@ -43,7 +43,11 @@ namespace Soundux
                                               [&](auto &item) { return item.hotkeys == pressedKeys; });
                     if (sound != tab->sounds.end())
                     {
-                        Globals::gGui->playSound(sound->id);
+                        auto pSound = Globals::gGui->playSound(sound->id);
+                        if (pSound)
+                        {
+                            Globals::gGui->onSoundPlayed(*pSound);
+                        }
                     }
                 }
             }
@@ -55,7 +59,11 @@ namespace Soundux
                                      [&](const auto &item) { return item.second.get().hotkeys == pressedKeys; });
                     sound != Globals::gSounds.end())
                 {
-                    Globals::gGui->playSound(sound->first);
+                    auto pSound = Globals::gGui->playSound(sound->first);
+                    if (pSound)
+                    {
+                        Globals::gGui->onSoundPlayed(*pSound);
+                    }
                 }
             }
         }
