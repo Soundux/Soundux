@@ -207,7 +207,7 @@ namespace Soundux::Objects
         }
         else
         {
-            Fancy::fancy.logTime().failure() << "Sound finished but is not playing?" << std::endl;
+            Fancy::fancy.logTime().warning() << "Sound finished but is not playing" << std::endl;
         }
     }
     std::optional<PlayingSound> Audio::getPlayingSound(ma_device *device)
@@ -288,27 +288,29 @@ namespace Soundux::Objects
         device->masterVolumeFactor = Globals::gAudio.getVolume(device->playback.name);
         auto readFrames = ma_decoder_read_pcm_frames(decoder, output, frameCount);
         auto sound = Globals::gAudio.getPlayingSound(device);
-
-        if (sound && sound->shouldSeek)
+        if (sound)
         {
-            ma_decoder_seek_to_pcm_frame(decoder, sound->seekTo);
-            Globals::gAudio.onSoundSeeked(device, sound->seekTo);
-        }
-        if (sound && !sound->shouldNotReport && readFrames > 0)
-        {
-            Globals::gAudio.onSoundProgressed(device, readFrames);
-        }
-
-        if (readFrames <= 0)
-        {
-            if (sound && sound->repeat)
+            if (sound->shouldSeek)
             {
-                ma_decoder_seek_to_pcm_frame(decoder, 0);
+                ma_decoder_seek_to_pcm_frame(decoder, sound->seekTo);
+                Globals::gAudio.onSoundSeeked(device, sound->seekTo);
             }
-            else
+            if (!sound->shouldNotReport && readFrames > 0)
             {
-                Globals::gQueue.push_unique(reinterpret_cast<std::uintptr_t>(device),
-                                            [&device] { Globals::gAudio.onFinished(device); });
+                Globals::gAudio.onSoundProgressed(device, readFrames);
+            }
+
+            if (readFrames <= 0)
+            {
+                if (sound->repeat)
+                {
+                    ma_decoder_seek_to_pcm_frame(decoder, 0);
+                }
+                else
+                {
+                    Globals::gQueue.push_unique(reinterpret_cast<std::uintptr_t>(device),
+                                                [device] { Globals::gAudio.onFinished(device); });
+                }
             }
         }
     }
