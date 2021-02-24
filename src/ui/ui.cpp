@@ -246,9 +246,11 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
             return false;
         }
+        auto remoteId = groupedSounds.at(id);
+        lock.unlock();
 
         auto status = Globals::gAudio.stop(id);
-        auto remoteStatus = Globals::gAudio.stop(groupedSounds.at(id));
+        auto remoteStatus = Globals::gAudio.stop(remoteId);
 
 #if defined(__linux__)
         if (Globals::gAudio.getPlayingSounds().empty())
