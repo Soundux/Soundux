@@ -78,8 +78,6 @@ namespace Soundux::Objects
         playingSounds.insert({device, pSound});
         soundsMutex.unlock();
 
-        Globals::gGui->onSoundPlayed(pSound);
-
         return pSound;
     }
     void Audio::stopAll()
