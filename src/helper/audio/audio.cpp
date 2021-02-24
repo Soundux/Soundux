@@ -106,6 +106,7 @@ namespace Soundux::Objects
             lock.unlock();
             ma_device_uninit(sound->second.rawDevice);
             ma_decoder_uninit(sound->second.rawDecoder);
+            Globals::gGui->onSoundFinished(sound->second);
             lock.lock();
 
             playingSounds.erase(sound);
