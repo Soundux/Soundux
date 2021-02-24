@@ -1,6 +1,12 @@
-![Soundux](https://socialify.git.ci/Soundux/Soundux/image?description=1&issues=1&logo=https%3A%2F%2Fraw.githubusercontent.com%2FSoundux%2FSoundux%2Fmaster%2Ficon.png&pattern=Plus&pulls=1&stargazers=1&theme=Dark)
 <div align="center">
   <p>
+    <img src="assets/logo.gif" height="200"/>
+    <br>
+    <br>
+    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/Soundux/soundux?style=flat-square">
+    <img alt="GitHub issues" src="https://img.shields.io/github/issues/Soundux/soundux?style=flat-square">
+    <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr-raw/Soundux/soundux?label=pulls&style=flat-square">
+    <br>
     <a href="https://github.com/Soundux/Soundux/releases">
       <img src="https://img.shields.io/github/release/Soundux/Soundux.svg?style=flat-square" alt="Latest Stable Release" />
     </a>
