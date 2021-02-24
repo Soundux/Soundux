@@ -29,6 +29,11 @@ namespace Soundux
         void Hotkeys::onKeyDown(int key)
         {
             pressedKeys.emplace_back(key);
+            if (pressedKeys == Globals::gSettings.stopHotkey)
+            {
+                Globals::gGui->stopSounds();
+                return;
+            }
             if (Globals::gSettings.tabHotkeysOnly)
             {
                 auto tab = Globals::gData.getTab(Globals::gSettings.selectedTab);

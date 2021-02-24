@@ -331,6 +331,29 @@ namespace Soundux::Objects
         }
         return std::nullopt;
     }
+    std::optional<Sound> Window::setHotkey(const std::uint32_t &id, const std::vector<int> &hotkeys)
+    {
+        auto sound = Globals::gData.getSound(id);
+        if (sound)
+        {
+            sound->get().hotkeys = hotkeys;
+            return sound->get();
+        }
+        return std::nullopt;
+    }
+    std::string Window::getHotkeySequence(const std::vector<int> &hotkeys)
+    {
+        std::string rtn;
+        for (const auto &key : hotkeys)
+        {
+            rtn += Globals::gHotKeys.getKeyName(key) + " + ";
+        }
+        if (!rtn.empty())
+        {
+            return rtn.substr(0, rtn.length() - 3);
+        }
+        return "";
+    }
 #if defined(__linux__)
     std::vector<PulseRecordingStream> Window::getOutput()
     {
