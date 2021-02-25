@@ -101,6 +101,7 @@ namespace Soundux::Objects
                 return tab;
             }
             Fancy::fancy.logTime().failure() << "Selected Folder does not exist!" << std::endl;
+            onError(ErrorCode::FolderDoesNotExist);
         }
         return std::nullopt;
     }
@@ -131,7 +132,15 @@ namespace Soundux::Objects
                 if (remotePlayingSound)
                     stopSound(remotePlayingSound->id);
             }
+            else
+            {
+                Fancy::fancy.logTime().failure() << "Failed to move Application '" << Globals::gSettings.output
+                                                 << "' to soundux sink for sound " << id << std::endl;
+                onError(ErrorCode::FailedToMoveToSink);
+            }
         }
+        Fancy::fancy.logTime().failure() << "Failed to play sound " << id << std::endl;
+        onError(ErrorCode::FailedToPlay);
         return std::nullopt;
     }
 #else
@@ -159,6 +168,8 @@ namespace Soundux::Objects
             if (remotePlayingSound)
                 stopSound(remotePlayingSound->id);
         }
+        Fancy::fancy.logTime().failure() << "Failed to play sound " << id << std::endl;
+        onError(ErrorCode::FailedToPlay);
         return std::nullopt;
     }
 #endif
@@ -179,6 +190,8 @@ namespace Soundux::Objects
             return *playingSound;
         }
 
+        Fancy::fancy.logTime().failure() << "Failed to pause sound " << id << std::endl;
+        onError(ErrorCode::FailedToPause);
         return std::nullopt;
     }
     std::optional<PlayingSound> Window::resumeSound(const std::uint32_t &id)
@@ -197,6 +210,9 @@ namespace Soundux::Objects
         {
             return *playingSound;
         }
+
+        Fancy::fancy.logTime().failure() << "Failed to resume sound " << id << std::endl;
+        onError(ErrorCode::FailedToResume);
         return std::nullopt;
     }
     std::optional<PlayingSound> Window::seekSound(const std::uint32_t &id, std::uint64_t seekTo)
@@ -214,6 +230,9 @@ namespace Soundux::Objects
         {
             return *playingSound;
         }
+
+        Fancy::fancy.logTime().failure() << "Failed to seek sound " << id << " to " << seekTo << std::endl;
+        onError(ErrorCode::FailedToSeek);
         return std::nullopt;
     }
     std::optional<PlayingSound> Window::repeatSound(const std::uint32_t &id, bool shouldRepeat)
@@ -231,6 +250,10 @@ namespace Soundux::Objects
         {
             return *playingSound;
         }
+
+        Fancy::fancy.logTime().failure() << "Failed to set repeatstate of sound " << id << " to " << shouldRepeat
+                                         << std::endl;
+        onError(ErrorCode::FailedToRepeat);
         return std::nullopt;
     }
     std::vector<Tab> Window::removeTab(const std::uint32_t &id)
@@ -331,6 +354,8 @@ namespace Soundux::Objects
                 return newTab;
             }
         }
+        Fancy::fancy.logTime().failure() << "Failed to refresh tab " << id << " tab does not exist" << std::endl;
+        onError(ErrorCode::TabDoesNotExist);
         return std::nullopt;
     }
     std::optional<Sound> Window::setHotkey(const std::uint32_t &id, const std::vector<int> &hotkeys)
@@ -341,6 +366,9 @@ namespace Soundux::Objects
             sound->get().hotkeys = hotkeys;
             return sound->get();
         }
+        Fancy::fancy.logTime().failure() << "Failed to set hotkey for sound " << id << ", sound does not exist"
+                                         << std::endl;
+        onError(ErrorCode::FaildToSetHotkey);
         return std::nullopt;
     }
     std::string Window::getHotkeySequence(const std::vector<int> &hotkeys)
@@ -364,6 +392,8 @@ namespace Soundux::Objects
         {
             return Globals::gPulse.moveApplicationToApplicationPassthrough(name);
         }
+        Fancy::fancy.logTime().failure() << "Failed to start passthrough for application: " << name << std::endl;
+        onError(ErrorCode::FailedToStartPassthrough);
         return std::nullopt;
     }
     void Window::stopPassthrough()

@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <functional>
 #include <map>
 #include <optional>
@@ -15,6 +16,21 @@ namespace Soundux
     namespace Objects
     {
         struct AudioDevice;
+
+        enum class ErrorCode : std::uint8_t
+        {
+            FailedToPlay,
+            FailedToSeek,
+            FailedToPause,
+            FailedToRepeat,
+            FailedToResume,
+            FailedToMoveToSink,
+            SoundNotFound,
+            FolderDoesNotExist,
+            TabDoesNotExist,
+            FaildToSetHotkey,
+            FailedToStartPassthrough,
+        };
 
         struct Sound
         {

@@ -61,6 +61,7 @@ namespace Soundux
             virtual void setup();
             virtual void mainLoop() = 0;
 
+            virtual void onError(const ErrorCode &) = 0;
             virtual void onSoundPlayed(const PlayingSound &) = 0;
             virtual void onSoundFinished(const PlayingSound &);
             virtual void onSoundProgressed(const PlayingSound &) = 0;
