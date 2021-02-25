@@ -18,13 +18,14 @@ namespace Soundux
         {
             notify = status;
         }
-        void Hotkeys::onKeyUp([[maybe_unused]] int key)
+        void Hotkeys::onKeyUp(int key)
         {
             if (notify && !pressedKeys.empty())
             {
                 Globals::gGui->onHotKeyReceived(pressedKeys);
+                pressedKeys.clear();
             }
-            pressedKeys.clear();
+            pressedKeys.erase(std::remove(pressedKeys.begin(), pressedKeys.end(), key));
         }
         void Hotkeys::onKeyDown(int key)
         {
@@ -66,6 +67,19 @@ namespace Soundux
                     }
                 }
             }
+        }
+        std::string Hotkeys::getKeySequence(const std::vector<int> &keys)
+        {
+            std::string rtn;
+            for (const auto &key : keys)
+            {
+                rtn += getKeyName(key) + " + ";
+            }
+            if (!rtn.empty())
+            {
+                return rtn.substr(0, rtn.length() - 3);
+            }
+            return "";
         }
     } // namespace Objects
 } // namespace Soundux
