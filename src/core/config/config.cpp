@@ -39,6 +39,7 @@ namespace Soundux::Objects
             std::ofstream configFile(path);
             configFile << nlohmann::json(*this).dump();
             configFile.close();
+            Fancy::fancy.logTime().success() << "Config written" << std::endl;
         }
         catch (const std::exception &e)
         {
@@ -73,6 +74,7 @@ namespace Soundux::Objects
                     auto conf = json.get<Config>();
                     data = conf.data;
                     settings = conf.settings;
+                    Fancy::fancy.logTime().success() << "Config read" << std::endl;
                 }
                 catch (...)
                 {
