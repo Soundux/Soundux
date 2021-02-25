@@ -345,16 +345,7 @@ namespace Soundux::Objects
     }
     std::string Window::getHotkeySequence(const std::vector<int> &hotkeys)
     {
-        std::string rtn;
-        for (const auto &key : hotkeys)
-        {
-            rtn += Globals::gHotKeys.getKeyName(key) + " + ";
-        }
-        if (!rtn.empty())
-        {
-            return rtn.substr(0, rtn.length() - 3);
-        }
-        return "";
+        return Globals::gHotKeys.getKeySequence(hotkeys);
     }
 #if defined(__linux__)
     std::vector<PulseRecordingStream> Window::getOutput()
