@@ -25,7 +25,12 @@ namespace Soundux
                 Globals::gGui->onHotKeyReceived(pressedKeys);
                 pressedKeys.clear();
             }
-            pressedKeys.erase(std::remove(pressedKeys.begin(), pressedKeys.end(), key));
+            else
+            {
+                pressedKeys.erase(std::remove_if(pressedKeys.begin(), pressedKeys.end(),
+                                                 [key](const auto &item) { return key == item; }),
+                                  pressedKeys.end());
+            }
         }
         void Hotkeys::onKeyDown(int key)
         {
