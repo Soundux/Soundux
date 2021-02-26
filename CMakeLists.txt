@@ -31,6 +31,31 @@ add_subdirectory(src/ui/impl/webview/lib/webview)
 add_subdirectory(lib/nativefiledialog-extended)
 target_link_libraries(soundux PUBLIC webview nfd)
 
+# [[ Build Frontend ]]
+if (MSVC)
+execute_process(COMMAND cmd /c yarn
+                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
+                OUTPUT_QUIET
+                ERROR_QUIET)
+execute_process(COMMAND cmd /c yarn build
+                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
+                OUTPUT_QUIET
+                ERROR_QUIET)
+file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/dist" 
+    DESTINATION "${CMAKE_SOURCE_DIR}/build/")
+else()
+execute_process(COMMAND yarn
+                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
+                OUTPUT_QUIET
+                ERROR_QUIET)
+execute_process(COMMAND yarn build
+                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
+                OUTPUT_QUIET
+                ERROR_QUIET)
+file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/dist" 
+    DESTINATION "${CMAKE_SOURCE_DIR}/build/")
+endif()
+
 target_compile_features(soundux PRIVATE cxx_std_17)
 set_target_properties(soundux PROPERTIES CMAKE_CXX_STANDARD 17)
 set_target_properties(soundux PROPERTIES CMAKE_CXX_EXTENSIONS Off)
