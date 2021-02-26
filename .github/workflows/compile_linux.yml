@@ -1,0 +1,28 @@
+on:
+    push:
+        branches: [ development ]
+        paths-ignore:
+        - '**/README.md'
+        - '**/codeql-analysis-python.yml'
+    pull_request:
+        branches: [ development ]
+
+name: Build on Linux
+jobs:
+    build-linux:
+        runs-on: ubuntu-20.04
+        strategy:
+          fail-fast: false
+          matrix:
+            language: [ 'cpp' ]
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+              with:
+                submodules: recursive
+            - name: Install build dependencies
+              run: 'sudo apt-get install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev'
+            
+            - name: Compile
+              run: 'mkdir build && cd build && cmake .. && cmake --build . --config Release'
