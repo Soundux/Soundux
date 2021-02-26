@@ -57,6 +57,10 @@ namespace Soundux::Objects
             }
 
             sound.path = file.u8string();
+#if defined(_WIN32)
+            std::transform(sound.path.begin(), sound.path.end(), sound.path.begin(),
+                           [](char c) { return c == '\\' ? '/' : c; });
+#endif
             sound.name = file.stem().u8string();
             sound.id = ++Globals::gData.soundIdCounter;
 
@@ -84,6 +88,7 @@ namespace Soundux::Objects
 #if defined(_WIN32)
             std::wstring wpath(outpath);
             std::string path = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(wpath.c_str()); // NOLINT
+            std::transform(path.begin(), path.end(), path.begin(), [](char c) { return c == '\\' ? '/' : c; });
 #else
             std::string path(outpath);
 #endif
@@ -160,6 +165,8 @@ namespace Soundux::Objects
 
             if (playingSound && remotePlayingSound)
             {
+                std::unique_lock lock(groupedSoundsMutex);
+                groupedSounds.insert({playingSound->id, remotePlayingSound->id});
                 return *playingSound;
             }
 
