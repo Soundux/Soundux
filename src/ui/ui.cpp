@@ -285,7 +285,12 @@ namespace Soundux::Objects
 #if defined(__linux__)
         if (Globals::gAudio.getPlayingSounds().empty())
         {
-            Globals::gPulse.moveBackCurrentApplication();
+            if (!Globals::gPulse.moveBackCurrentApplication())
+            {
+                Fancy::fancy.logTime().failure()
+                    << "Failed to move back current application, sound: " << id << std::endl;
+                onError(ErrorCode::FailedToMoveBack);
+            }
         }
 #endif
 
@@ -295,8 +300,16 @@ namespace Soundux::Objects
     {
         Globals::gQueue.push_unique(0, []() { Globals::gAudio.stopAll(); });
 #if defined(__linux__)
-        Globals::gPulse.moveBackCurrentApplication();
-        Globals::gPulse.moveBackApplicationFromPassthrough();
+        if (!Globals::gPulse.moveBackCurrentApplication())
+        {
+            Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
+            onError(ErrorCode::FailedToMoveBack);
+        }
+        if (!Globals::gPulse.moveBackApplicationFromPassthrough())
+        {
+            Fancy::fancy.logTime().failure() << "Failed to move back current passthrough application" << std::endl;
+            onError(ErrorCode::FailedToMoveBackPassthrough);
+        }
 #endif
     }
     void Window::changeSettings(const Settings &settings)
@@ -304,11 +317,19 @@ namespace Soundux::Objects
 #if defined(__linux__)
         if (!settings.useAsDefaultDevice && Globals::gSettings.useAsDefaultDevice)
         {
-            Globals::gPulse.revertDefaultSourceToOriginal();
+            if (!Globals::gPulse.revertDefaultSourceToOriginal())
+            {
+                Fancy::fancy.logTime().failure() << "Failed to move back default source" << std::endl;
+                onError(ErrorCode::FailedToRevertDefaultSource);
+            }
         }
         else if (settings.useAsDefaultDevice && !Globals::gSettings.useAsDefaultDevice)
         {
-            Globals::gPulse.setDefaultSourceToSoundboardSink();
+            if (!Globals::gPulse.setDefaultSourceToSoundboardSink())
+            {
+                Fancy::fancy.logTime().failure() << "Failed to set default source" << std::endl;
+                onError(ErrorCode::FailedToSetDefaultSource);
+            }
         }
 #endif
         Globals::gSettings = settings;
@@ -407,9 +428,17 @@ namespace Soundux::Objects
     {
         if (Globals::gAudio.getPlayingSounds().empty())
         {
-            Globals::gPulse.moveBackCurrentApplication();
+            if (!Globals::gPulse.moveBackCurrentApplication())
+            {
+                Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
+                onError(ErrorCode::FailedToMoveBack);
+            }
         }
-        Globals::gPulse.moveBackApplicationFromPassthrough();
+        if (!Globals::gPulse.moveBackApplicationFromPassthrough())
+        {
+            Fancy::fancy.logTime().failure() << "Failed to move back current passthrough application" << std::endl;
+            onError(ErrorCode::FailedToMoveBackPassthrough);
+        }
     }
 #else
     std::vector<AudioDevice> Window::getOutput()
@@ -429,7 +458,11 @@ namespace Soundux::Objects
 #if defined(__linux__)
         if (Globals::gAudio.getPlayingSounds().size() == 1)
         {
-            Globals::gPulse.moveBackCurrentApplication();
+            if (!Globals::gPulse.moveBackCurrentApplication())
+            {
+                Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
+                onError(ErrorCode::FailedToMoveBack);
+            }
         }
 #endif
     }

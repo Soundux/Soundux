@@ -30,6 +30,10 @@ namespace Soundux
             TabDoesNotExist,
             FaildToSetHotkey,
             FailedToStartPassthrough,
+            FailedToMoveBack,
+            FailedToMoveBackPassthrough,
+            FailedToRevertDefaultSource,
+            FailedToSetDefaultSource,
         };
 
         struct Sound

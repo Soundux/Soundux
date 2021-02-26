@@ -69,9 +69,9 @@ namespace Soundux
             void unloadSwitchOnConnect();
             bool isSwitchOnConnectLoaded();
 
-            void moveBackCurrentApplication();
-            void setDefaultSourceToSoundboardSink();
-            void revertDefaultSourceToOriginal() const;
+            bool moveBackCurrentApplication();
+            bool setDefaultSourceToSoundboardSink();
+            bool revertDefaultSourceToOriginal() const;
             bool moveApplicationToSinkMonitor(const std::string &);
 
             void refreshRecordingStreams();
@@ -80,7 +80,7 @@ namespace Soundux
             void refreshPlaybackStreams();
             std::vector<PulsePlaybackStream> getPlaybackStreams();
 
-            void moveBackApplicationFromPassthrough();
+            bool moveBackApplicationFromPassthrough();
             std::optional<PulsePlaybackStream> moveApplicationToApplicationPassthrough(const std::string &);
         };
     } // namespace Objects

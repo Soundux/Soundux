@@ -134,21 +134,26 @@ namespace Soundux::Objects
             }
         }
     }
-    void Pulse::revertDefaultSourceToOriginal() const
+    bool Pulse::revertDefaultSourceToOriginal() const
     {
         if (!data.pulseDefaultSource.empty())
         {
-            system(("pactl set-default-source " + data.pulseDefaultSource).c_str()); // NOLINT
+            if (system(("pactl set-default-source " + data.pulseDefaultSource + " &>/dev/null").c_str()) != 0) // NOLINT
+            {
+                return false;
+            }
         }
         else
         {
             Fancy::fancy.logTime().failure()
                 << "Failed to revert default source, default source was not set!" << std::endl;
+            return false;
         }
+        return true;
     }
-    void Pulse::setDefaultSourceToSoundboardSink()
+    bool Pulse::setDefaultSourceToSoundboardSink()
     {
-        system("pactl set-default-source soundux_sink.monitor"); // NOLINT
+        return system("pactl set-default-source soundux_sink.monitor &>/dev/null") == 0; // NOLINT
     }
     bool Pulse::moveApplicationToSinkMonitor(const std::string &streamName)
     {
@@ -160,22 +165,24 @@ namespace Soundux::Objects
             auto &stream = recordingStreams.at(streamName);
             currentApplication = stream;
             // NOLINTNEXTLINE
-            system(("pactl move-source-output " + std::to_string(stream.id) + " soundux_sink.monitor").c_str());
-            return true;
+            return system(
+                       ("pactl move-source-output " + std::to_string(stream.id) + " soundux_sink.monitor &>/dev/null")
+                           .c_str()) == 0;
         }
         Fancy::fancy.logTime().failure() << "Failed to find PulseRecordingStream with name: " << streamName
                                          << std::endl;
         return false;
     }
-    void Pulse::moveBackCurrentApplication()
+    bool Pulse::moveBackCurrentApplication()
     {
         if (currentApplication)
         {
             // NOLINTNEXTLINE
-            system(("pactl move-source-output " + std::to_string(currentApplication->id) + " " +
-                    currentApplication->source)
-                       .c_str());
+            return system(("pactl move-source-output " + std::to_string(currentApplication->id) + " " +
+                           currentApplication->source + " &>/dev/null")
+                              .c_str()) == 0;
         }
+        return true; //* Not having anything to moveback should count as a failure
     }
     void Pulse::refreshRecordingStreams()
     {
@@ -349,15 +356,16 @@ namespace Soundux::Objects
         }
         return rtn;
     }
-    void Pulse::moveBackApplicationFromPassthrough()
+    bool Pulse::moveBackApplicationFromPassthrough()
     {
         if (currentApplicationPassthrough)
         {
             // NOLINTNEXTLINE
-            system(("pactl move-sink-input " + std::to_string(currentApplicationPassthrough->id) + " " +
-                    currentApplicationPassthrough->sink)
-                       .c_str());
+            return system(("pactl move-sink-input " + std::to_string(currentApplicationPassthrough->id) + " " +
+                           currentApplicationPassthrough->sink + " &>/dev/null")
+                              .c_str()) == 0;
         }
+        return true;
     }
     std::optional<PulsePlaybackStream> Pulse::moveApplicationToApplicationPassthrough(const std::string &name)
     {
@@ -369,7 +377,8 @@ namespace Soundux::Objects
             auto &stream = playbackStreams.at(name);
             currentApplicationPassthrough = stream;
             // NOLINTNEXTLINE
-            system(("pactl move-sink-input " + std::to_string(stream.id) + " soundux_sink_passthrough").c_str());
+            system(("pactl move-sink-input " + std::to_string(stream.id) + " soundux_sink_passthrough &>/dev/null")
+                       .c_str());
             return *currentApplicationPassthrough;
         }
         Fancy::fancy.logTime().failure() << "Failed to find PulsePlaybackStream with name: " << name << std::endl;
@@ -377,11 +386,11 @@ namespace Soundux::Objects
     }
     bool Pulse::isSwitchOnConnectLoaded()
     {
-        return (system("pactl list modules | grep module-switch-on-connect > /dev/null") == 0); // NOLINT
+        return (system("pactl list modules | grep module-switch-on-connect &>/dev/null") == 0); // NOLINT
     }
     void Pulse::unloadSwitchOnConnect()
     {
-        system("pactl unload-module module-switch-on-connect"); // NOLINT
+        system("pactl unload-module module-switch-on-connect &>/dev/null"); // NOLINT
     }
 } // namespace Soundux::Objects
 #endif
