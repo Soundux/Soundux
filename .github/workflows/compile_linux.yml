@@ -21,7 +21,6 @@ jobs:
               with:
                 submodules: recursive
             - name: Install build dependencies
-              run: 'sudo apt-get install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev npm yarnpkg'
-            
+              run: 'sudo apt-get install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev npm'   
             - name: Compile
               run: 'mkdir build && cd build && cmake .. && cmake --build . --config Release'
