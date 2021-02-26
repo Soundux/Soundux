@@ -83,9 +83,9 @@ This list may not be accurate. Contact me if you find missing dependencies so th
 - Webkit2gtk
 - X11 client-side development headers
 
-#### Ubuntu and derivatives
+#### Debian/Ubuntu and derivatives
 ```sh
-sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-3.0-25
+sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev
 ```
 
 ### Windows
