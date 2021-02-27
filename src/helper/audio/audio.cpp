@@ -7,6 +7,21 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
 
+#if defined(_WIN32)
+#include <stringapiset.h>
+std::wstring widen(const std::string &s)
+{
+    int wsz = MultiByteToWideChar(65001, 0, s.c_str(), -1, nullptr, 0);
+    if (!wsz)
+        return std::wstring();
+
+    std::wstring out(wsz, 0);
+    MultiByteToWideChar(65001, 0, s.c_str(), -1, &out[0], wsz);
+    out.resize(wsz - 1);
+    return out;
+}
+#endif
+
 namespace Soundux::Objects
 {
     void Audio::setup()
@@ -22,8 +37,11 @@ namespace Soundux::Objects
                                             bool shouldNotReport)
     {
         auto *decoder = new ma_decoder;
+#if defined(_WIN32)
+        auto res = ma_decoder_init_file_w(widen(sound.path).c_str(), nullptr, decoder);
+#else
         auto res = ma_decoder_init_file(sound.path.c_str(), nullptr, decoder);
-
+#endif
         if (res != MA_SUCCESS)
         {
             Fancy::fancy.logTime().logTime().failure()

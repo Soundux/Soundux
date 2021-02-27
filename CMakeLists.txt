@@ -24,7 +24,7 @@ include_directories(${X11_INCLUDE_DIR})
 target_link_libraries(soundux PRIVATE ${X11_LIBRARIES} ${X11_Xinput_LIB})
 endif()
 if (WIN32)
-target_compile_definitions(soundux PRIVATE "-D_CRT_SECURE_NO_WARNINGS=1 -D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1")
+target_compile_definitions(soundux PRIVATE _CRT_SECURE_NO_WARNINGS=1 _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1 _UNICODE=1)
 endif()
 
 add_subdirectory(src/ui/impl/webview/lib/webview)
