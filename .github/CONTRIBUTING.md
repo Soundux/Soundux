@@ -9,7 +9,7 @@ Contributions are welcome! Here's how you can help:
 
 ## Translations
 
-1. [Fork the frontend](https://github.com/Soundux/soundux-ui/fork) the repository and [clone](https://help.github.com/articles/cloning-a-repository/) your fork.
+1. [Fork the frontend](https://github.com/Soundux/soundux-ui/fork) and [clone](https://help.github.com/articles/cloning-a-repository/) your fork.
 2. Start translating!
     - Add a translation file in `/src/locales/`
     - Add the corresponding translations for your language
