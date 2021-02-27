@@ -34,15 +34,14 @@ namespace Soundux::Objects
         MSG message;
         while (!kill)
         {
-            if (notify)
+            if (PeekMessage(&message, nullptr, 0, 0, PM_REMOVE) != 0)
             {
-                PeekMessage(&message, nullptr, 0, 0, PM_REMOVE);
                 TranslateMessage(&message);
                 DispatchMessage(&message);
             }
             else
             {
-                std::this_thread::sleep_for(100ms);
+                std::this_thread::sleep_for(50ms);
             }
         }
 
