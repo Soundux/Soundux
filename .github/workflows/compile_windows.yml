@@ -26,3 +26,8 @@ jobs:
                 submodules: recursive
             - name: Compile
               run: 'mkdir build && cd build && cmake .. && cmake --build . --config Release'
+            - name: Upload Artifact
+              uses: actions/upload-artifact@v2.2.2
+              with:
+                name: Artifact
+                path: build
