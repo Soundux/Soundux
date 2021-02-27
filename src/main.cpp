@@ -3,7 +3,11 @@
 #include <InstanceGuard.hpp>
 #include <fancy.hpp>
 
+#if defined(_WIN32)
+int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+#else
 int main()
+#endif
 {
     InstanceGuard::InstanceGuard guard("soundux-guard");
     if (guard.IsAnotherInstanceRunning())

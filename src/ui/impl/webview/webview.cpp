@@ -18,8 +18,6 @@ namespace Soundux::Objects
     {
         Window::setup();
 #ifdef _WIN32
-        ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
-
         char rawPath[MAX_PATH];
         auto executablePath = GetModuleFileNameA(nullptr, rawPath, MAX_PATH);
 
