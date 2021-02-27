@@ -158,6 +158,7 @@ namespace Soundux::Objects
     bool Pulse::moveApplicationToSinkMonitor(const std::string &streamName)
     {
         moveBackCurrentApplication();
+        refreshRecordingStreams();
 
         std::shared_lock lock(recordingStreamMutex);
         if (recordingStreams.find(streamName) != recordingStreams.end())
