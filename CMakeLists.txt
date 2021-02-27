@@ -13,6 +13,7 @@ add_executable(soundux ${src})
 target_include_directories(soundux PRIVATE "lib/miniaudio")
 target_include_directories(soundux PRIVATE "lib/fancypp/include")
 target_include_directories(soundux PRIVATE "lib/json/single_include")
+target_include_directories(soundux PRIVATE "lib/InstanceGuard/Source")
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -29,7 +30,8 @@ endif()
 
 add_subdirectory(src/ui/impl/webview/lib/webview)
 add_subdirectory(lib/nativefiledialog-extended)
-target_link_libraries(soundux PUBLIC webview nfd)
+add_subdirectory(lib/InstanceGuard/Source)
+target_link_libraries(soundux PUBLIC webview nfd InstanceGuard)
 
 # [[ Build Frontend ]]
 if (MSVC)

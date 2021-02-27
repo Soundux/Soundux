@@ -1,8 +1,17 @@
 #include "core/global/globals.hpp"
 #include "ui/impl/webview/webview.hpp"
+#include <InstanceGuard.hpp>
+#include <fancy.hpp>
 
 int main()
 {
+    InstanceGuard::InstanceGuard guard("soundux-guard");
+    if (guard.IsAnotherInstanceRunning())
+    {
+        Fancy::fancy.logTime().failure() << "Another Instance is already running!" << std::endl;
+        std::terminate();
+    }
+
 #if defined(__linux__)
     if (!Soundux::Globals::gPulse.isSwitchOnConnectLoaded())
     {
