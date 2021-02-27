@@ -35,23 +35,19 @@ target_link_libraries(soundux PUBLIC webview nfd)
 if (MSVC)
 execute_process(COMMAND cmd /c yarn
                 WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
-                OUTPUT_QUIET
-                ERROR_QUIET)
+                OUTPUT_QUIET)
 execute_process(COMMAND cmd /c yarn build
                 WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
-                OUTPUT_QUIET
-                ERROR_QUIET)
+                OUTPUT_QUIET)
 file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/dist" 
     DESTINATION "${CMAKE_SOURCE_DIR}/build/")
 else()
 execute_process(COMMAND yarn
                 WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
-                OUTPUT_QUIET
-                ERROR_QUIET)
+                OUTPUT_QUIET)
 execute_process(COMMAND yarn build
                 WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
-                OUTPUT_QUIET
-                ERROR_QUIET)
+                OUTPUT_QUIET)
 file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/dist" 
     DESTINATION "${CMAKE_SOURCE_DIR}/build/")
 endif()
