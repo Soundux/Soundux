@@ -8,7 +8,11 @@ file(GLOB src
     "src/*/*/*/*.cpp"
 )
 
+if (WIN32)
+add_executable(soundux WIN32 ${src})
+else()
 add_executable(soundux ${src})
+endif()
 
 target_include_directories(soundux PRIVATE "lib/miniaudio")
 target_include_directories(soundux PRIVATE "lib/fancypp/include")
