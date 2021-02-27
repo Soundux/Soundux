@@ -1,0 +1,28 @@
+on:
+    push:
+        branches: [ development ]
+        paths-ignore:
+        - '**/README.md'
+    pull_request:
+        branches: [ development ]
+
+name: Build on Windows
+jobs:
+    build-windows:
+        runs-on: windows-latest
+        strategy:
+          fail-fast: false
+          matrix:
+            language: [ 'cpp' ]
+
+        steps:
+            - name: Setup Node.js environment
+              uses: actions/setup-node@v2.1.5
+            - name: Setup NuGet.exe for use with actions
+              uses: NuGet/setup-nuget@v1.0.5
+            - name: Checkout
+              uses: actions/checkout@v2
+              with:
+                submodules: recursive
+            - name: Compile
+              run: 'mkdir build && cd build && cmake .. && cmake --build . --config Release'
