@@ -46,7 +46,7 @@ execute_process(COMMAND cmd /c yarn build
                 WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
                 OUTPUT_QUIET)
 file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/dist" 
-    DESTINATION "${CMAKE_SOURCE_DIR}/build/")
+    DESTINATION "${CMAKE_SOURCE_DIR}/build/Release/")
 else()
 execute_process(COMMAND yarn
                 WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
