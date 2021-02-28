@@ -39,10 +39,6 @@ namespace Soundux::Objects
                 TranslateMessage(&message);
                 DispatchMessage(&message);
             }
-            else
-            {
-                std::this_thread::sleep_for(50ms);
-            }
         }
 
         UnhookWindowsHookEx(oKeyBoardProc);
