@@ -65,6 +65,9 @@ namespace Soundux::Objects
                                   passThroughLoopback.end());
         data.passthroughLoopbackMonitorModuleId = std::stoi(passThroughLoopback);
 
+        refreshPlaybackStreams(true);
+        refreshRecordingStreams(true);
+
         static const std::regex sourceRegex(R"rgx((.*#(\d+))$|(Name: (.+)))rgx");
         auto sources = exec("LC_ALL=C pactl list sources");
         std::smatch match;
@@ -185,7 +188,7 @@ namespace Soundux::Objects
         }
         return true; //* Not having anything to moveback should count as a failure
     }
-    void Pulse::refreshRecordingStreams()
+    void Pulse::refreshRecordingStreams(const bool &fix)
     {
         auto sourceList = exec("LC_ALL=C pactl list source-outputs");
 
@@ -208,6 +211,12 @@ namespace Soundux::Objects
                         if (recordingStreams.find(stream.name) != recordingStreams.end())
                         {
                             stream.source = recordingStreams.at(stream.name).source;
+                            if (fix)
+                            {
+                                // NOLINTNEXTLINE
+                                system(("pactl move-source-output " + std::to_string(stream.id) + " " + stream.source)
+                                           .c_str());
+                            }
                         }
                         recordingStreamMutex.unlock_shared();
                         fetchedStreams.emplace_back(stream);
@@ -252,7 +261,7 @@ namespace Soundux::Objects
             recordingStreams.insert({stream.name, stream});
         }
     }
-    void Pulse::refreshPlaybackStreams()
+    void Pulse::refreshPlaybackStreams(const bool &fix)
     {
         auto sourceList = exec("LC_ALL=C pactl list sink-inputs");
 
@@ -275,6 +284,13 @@ namespace Soundux::Objects
                         if (playbackStreams.find(stream.name) != playbackStreams.end())
                         {
                             stream.sink = playbackStreams.at(stream.name).sink;
+                            if (fix)
+                            {
+                                // NOLINTNEXTLINE
+                                system(("pactl move-sink-input " + std::to_string(stream.id) + " " + stream.sink +
+                                        " &>/dev/null")
+                                           .c_str());
+                            }
                         }
                         playbackStreamMutex.unlock_shared();
                         fetchedStreams.emplace_back(stream);
@@ -392,6 +408,10 @@ namespace Soundux::Objects
     void Pulse::unloadSwitchOnConnect()
     {
         system("pactl unload-module module-switch-on-connect &>/dev/null"); // NOLINT
+    }
+    bool Pulse::currentlyPassingthrough()
+    {
+        return currentApplicationPassthrough.has_value();
     }
 } // namespace Soundux::Objects
 #endif

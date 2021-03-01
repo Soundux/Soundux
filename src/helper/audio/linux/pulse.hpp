@@ -49,6 +49,7 @@ namespace Soundux
         };
         class Pulse
         {
+            void fixLeftOvers();
             void unloadLeftOverModules();
             void fetchDefaultPulseSource();
 
@@ -74,12 +75,13 @@ namespace Soundux
             bool revertDefaultSourceToOriginal() const;
             bool moveApplicationToSinkMonitor(const std::string &);
 
-            void refreshRecordingStreams();
+            void refreshRecordingStreams(const bool &fix = false);
             std::vector<PulseRecordingStream> getRecordingStreams();
 
-            void refreshPlaybackStreams();
+            void refreshPlaybackStreams(const bool &fix = false);
             std::vector<PulsePlaybackStream> getPlaybackStreams();
 
+            bool currentlyPassingthrough();
             bool moveBackApplicationFromPassthrough();
             std::optional<PulsePlaybackStream> moveApplicationToApplicationPassthrough(const std::string &);
         };
