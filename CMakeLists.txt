@@ -39,23 +39,11 @@ target_link_libraries(soundux PUBLIC webview nfd InstanceGuard)
 
 # [[ Build Frontend ]]
 if (MSVC)
-execute_process(COMMAND cmd /c yarn
-                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
-                OUTPUT_QUIET)
-execute_process(COMMAND cmd /c yarn build
-                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
-                OUTPUT_QUIET)
-file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/dist" 
-    DESTINATION "${CMAKE_SOURCE_DIR}/build/Release/")
+file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/" 
+    DESTINATION "${CMAKE_SOURCE_DIR}/build/Release/dist")
 else()
-execute_process(COMMAND yarn
-                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
-                OUTPUT_QUIET)
-execute_process(COMMAND yarn build
-                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/"
-                OUTPUT_QUIET)
-file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/dist" 
-    DESTINATION "${CMAKE_SOURCE_DIR}/build/")
+file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/" 
+    DESTINATION "${CMAKE_SOURCE_DIR}/build/dist")
 endif()
 
 target_compile_features(soundux PRIVATE cxx_std_17)

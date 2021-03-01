@@ -13,9 +13,9 @@
 [submodule "lib/nativefiledialog-extended"]
 	path = lib/nativefiledialog-extended
 	url = https://github.com/btzy/nativefiledialog-extended/
-[submodule "src/ui/impl/webview/lib/soundux-ui"]
-	path = src/ui/impl/webview/lib/soundux-ui
-	url = https://github.com/Soundux/soundux-ui
 [submodule "lib/InstanceGuard"]
 	path = lib/InstanceGuard
 	url = https://github.com/Grandbrain/InstanceGuard
+[submodule "src/ui/impl/webview/lib/soundux-ui"]
+	path = src/ui/impl/webview/lib/soundux-ui
+	url = https://github.com/Soundux/soundux-ui/
