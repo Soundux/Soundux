@@ -47,7 +47,6 @@ namespace Soundux
         };
         struct Tab
         {
-            // TODO(curve) will be used later to move tabs
             std::uint32_t id; //* Equal to index
             std::string name;
             std::string path;

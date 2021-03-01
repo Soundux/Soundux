@@ -40,11 +40,9 @@ namespace Soundux
 
             virtual void changeSettings(const Settings &);
 
-            // TODO(curve):
-            // virtual void changeTabOrder(...);
-
             virtual std::optional<Tab> addTab();
             virtual std::vector<Sound> refreshTabSounds(const Tab &) const;
+            virtual std::vector<Tab> changeTabOrder(const std::vector<int> &);
 
 #if defined(__linux__)
             virtual std::vector<PulseRecordingStream> getOutput();

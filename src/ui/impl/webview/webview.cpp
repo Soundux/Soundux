@@ -178,6 +178,13 @@ namespace Soundux::Objects
             },
             true);
         webview->addCallback(
+            "moveTabs",
+            [this]([[maybe_unused]] auto &wv, const auto &param) -> std::string {
+                std::vector<int> newTabOrder = nlohmann::json::parse("[" + param[0] + "]");
+                return nlohmann::json(changeTabOrder(newTabOrder)).dump();
+            },
+            true);
+        webview->addCallback(
             "isLinux",
             [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
 #if defined(__linux__)

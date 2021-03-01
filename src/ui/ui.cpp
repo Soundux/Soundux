@@ -409,6 +409,18 @@ namespace Soundux::Objects
     {
         return Globals::gHotKeys.getKeySequence(hotkeys);
     }
+    std::vector<Tab> Window::changeTabOrder(const std::vector<int> &newOrder)
+    {
+        std::vector<Tab> newTabs;
+        newTabs.reserve(newOrder.size());
+
+        for (auto tabId : newOrder)
+        {
+            newTabs.emplace_back(*Globals::gData.getTab(tabId));
+        }
+        Globals::gData.setTabs(newTabs);
+        return Globals::gData.getTabs();
+    }
 #if defined(__linux__)
     std::vector<PulseRecordingStream> Window::getOutput()
     {
