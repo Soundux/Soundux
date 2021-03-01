@@ -9,3 +9,7 @@ updates:
       directory: '/lib'
       schedule:
           interval: 'daily'
+    - package-ecosystem: 'gitsubmodule'
+      directory: '/src/ui/impl/webview/lib'
+      schedule:
+          interval: 'daily'

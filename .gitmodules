@@ -4,6 +4,19 @@
 [submodule "lib/miniaudio"]
 	path = lib/miniaudio
 	url = https://github.com/mackron/miniaudio
-[submodule "lib/materialdesignicons"]
-	path = lib/materialdesignicons
-	url = https://github.com/Templarian/MaterialDesign-Webfont
+[submodule "lib/fancypp"]
+	path = lib/fancypp
+	url = https://github.com/Curve/fancypp
+[submodule "src/ui/impl/webview/lib/webview"]
+	path = src/ui/impl/webview/lib/webview
+	url = https://github.com/Soundux/webview
+[submodule "lib/nativefiledialog-extended"]
+	path = lib/nativefiledialog-extended
+	url = https://github.com/btzy/nativefiledialog-extended/
+[submodule "lib/InstanceGuard"]
+	path = lib/InstanceGuard
+	url = https://github.com/Grandbrain/InstanceGuard
+[submodule "src/ui/impl/webview/lib/soundux-ui"]
+	path = src/ui/impl/webview/lib/soundux-ui
+	url = https://github.com/Soundux/soundux-ui/
+	branch = build

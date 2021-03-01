@@ -1,21 +1,19 @@
 on:
     push:
-        branches: [master]
+        branches: [ master ]
         paths-ignore:
             - "**/README.md"
-            - "**/docs/**"
-            - "**/release_windows.yml"
+            - "**/compile_windows.yml"
             - '**/compile_linux.yml'
-            - '**/codeql-analysis-python.yml'
     pull_request:
-        branches: [master]
+        branches: [ master ]
 
 name: Build Flatpak
 jobs:
     flatpak-builder:
         runs-on: ubuntu-20.04
         container:
-            image: bilelmoussaoui/flatpak-github-actions:kde-5.15
+            image: bilelmoussaoui/flatpak-github-actions:gnome-3.38
             options: --privileged
 
         steps:
@@ -23,4 +21,4 @@ jobs:
             - uses: bilelmoussaoui/flatpak-github-actions@v2
               with:
                   bundle: "soundux.flatpak"
-                  manifest-path: "io.github.Soundux.yml"
+                  manifest-path: "assets/flatpak/io.github.Soundux.yml"
