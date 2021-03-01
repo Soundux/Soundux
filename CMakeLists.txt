@@ -6,6 +6,7 @@ file(GLOB src
     "src/*/*.cpp"
     "src/*/*/*.cpp"
     "src/*/*/*/*.cpp"
+    "src/*/*/*/*/*.cpp"
 )
 
 if (WIN32)

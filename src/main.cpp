@@ -1,4 +1,5 @@
 #include "core/global/globals.hpp"
+#include "helper/exceptions/crashhandler.hpp"
 #include "ui/impl/webview/webview.hpp"
 #include <InstanceGuard.hpp>
 #include <fancy.hpp>
@@ -9,11 +10,20 @@ int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 int main()
 #endif
 {
+#if defined(_WIN32)
+    DWORD lMode;
+    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleMode(hStdout, &lMode);
+    SetConsoleMode(hStdout, lMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
+#endif
+
+    CrashHandler::init();
+
     InstanceGuard::InstanceGuard guard("soundux-guard");
     if (guard.IsAnotherInstanceRunning())
     {
         Fancy::fancy.logTime().failure() << "Another Instance is already running!" << std::endl;
-        std::terminate();
+        return 1;
     }
 
 #if defined(__linux__)
