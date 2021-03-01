@@ -28,7 +28,7 @@ namespace Soundux
             SoundNotFound,
             FolderDoesNotExist,
             TabDoesNotExist,
-            FaildToSetHotkey,
+            FailedToSetHotkey,
             FailedToStartPassthrough,
             FailedToMoveBack,
             FailedToMoveBackPassthrough,
