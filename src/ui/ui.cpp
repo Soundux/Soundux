@@ -17,6 +17,11 @@ namespace Soundux::Objects
     {
         NFD::Init();
         Globals::gHotKeys.init();
+        for (auto &tab : Globals::gData.getTabs())
+        {
+            tab.sounds = refreshTabSounds(tab);
+            Globals::gData.setTab(tab.id, tab);
+        }
     }
     Window::~Window()
     {
@@ -142,6 +147,7 @@ namespace Soundux::Objects
                 Fancy::fancy.logTime().failure() << "Failed to move Application '" << Globals::gSettings.output
                                                  << "' to soundux sink for sound " << id << std::endl;
                 onError(ErrorCode::FailedToMoveToSink);
+                return std::nullopt;
             }
         }
         Fancy::fancy.logTime().failure() << "Failed to play sound " << id << std::endl;
@@ -396,7 +402,7 @@ namespace Soundux::Objects
         }
         Fancy::fancy.logTime().failure() << "Failed to set hotkey for sound " << id << ", sound does not exist"
                                          << std::endl;
-        onError(ErrorCode::FaildToSetHotkey);
+        onError(ErrorCode::FailedToSetHotkey);
         return std::nullopt;
     }
     std::string Window::getHotkeySequence(const std::vector<int> &hotkeys)
@@ -456,7 +462,7 @@ namespace Soundux::Objects
         }
 
 #if defined(__linux__)
-        if (Globals::gAudio.getPlayingSounds().size() == 1)
+        if (Globals::gAudio.getPlayingSounds().size() == 1 && !Globals::gPulse.currentlyPassingthrough())
         {
             if (!Globals::gPulse.moveBackCurrentApplication())
             {
