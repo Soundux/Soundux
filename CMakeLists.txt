@@ -33,9 +33,9 @@ if (WIN32)
 target_compile_definitions(soundux PRIVATE _CRT_SECURE_NO_WARNINGS=1 _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1 _UNICODE=1)
 endif()
 
-add_subdirectory(src/ui/impl/webview/lib/webview)
-add_subdirectory(lib/nativefiledialog-extended)
-add_subdirectory(lib/InstanceGuard/Source)
+add_subdirectory(src/ui/impl/webview/lib/webview EXCLUDE_FROM_ALL)
+add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
+add_subdirectory(lib/InstanceGuard/Source EXCLUDE_FROM_ALL)
 target_link_libraries(soundux PUBLIC webview nfd InstanceGuard)
 
 # [[ Build Frontend ]]
