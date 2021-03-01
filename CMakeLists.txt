@@ -54,3 +54,6 @@ set_target_properties(soundux PROPERTIES CMAKE_CXX_STANDARD_REQUIRED On)
 
 set_target_properties(soundux PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(soundux PROPERTIES PROJECT_NAME ${PROJECT_NAME})
+
+install(TARGETS soundux DESTINATION bin)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/build/dist" DESTINATION bin)

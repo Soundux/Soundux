@@ -19,3 +19,4 @@
 [submodule "src/ui/impl/webview/lib/soundux-ui"]
 	path = src/ui/impl/webview/lib/soundux-ui
 	url = https://github.com/Soundux/soundux-ui/
+	branch = build
