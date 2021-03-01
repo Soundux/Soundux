@@ -1,0 +1,24 @@
+on:
+    push:
+        branches: [ master ]
+        paths-ignore:
+            - "**/README.md"
+            - "**/compile_windows.yml"
+            - '**/compile_linux.yml'
+    pull_request:
+        branches: [ master ]
+
+name: Build Flatpak
+jobs:
+    flatpak-builder:
+        runs-on: ubuntu-20.04
+        container:
+            image: bilelmoussaoui/flatpak-github-actions:gnome-3.38
+            options: --privileged
+
+        steps:
+            - uses: actions/checkout@v2
+            - uses: bilelmoussaoui/flatpak-github-actions@v2
+              with:
+                  bundle: "soundux.flatpak"
+                  manifest-path: "assets/flatpak/io.github.Soundux.yml"
