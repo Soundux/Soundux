@@ -45,7 +45,10 @@ namespace Soundux::Objects
                     }
                 }
 
-                if (file.extension() != ".mp3" && file.extension() != ".wav" && file.extension() != ".flac")
+                auto extension = file.extension().u8string();
+                std::transform(extension.begin(), extension.end(), extension.begin(),
+                               [](char c) { return std::tolower(c); });
+                if (extension != ".mp3" && extension != ".wav" && extension != ".flac")
                 {
                     continue;
                 }
