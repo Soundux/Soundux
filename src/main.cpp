@@ -5,6 +5,7 @@
 #include <fancy.hpp>
 
 #if defined(_WIN32)
+#include "../assets/icon.h"
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 #else
 int main()
@@ -45,6 +46,11 @@ int main()
 
     Soundux::Globals::gGui = std::make_unique<Soundux::Objects::WebView>();
     Soundux::Globals::gGui->setup();
+#if defined(_WIN32)
+    HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1));
+    SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+    SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+#endif
     Soundux::Globals::gGui->mainLoop();
 
     Soundux::Globals::gAudio.destory();

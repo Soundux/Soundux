@@ -10,7 +10,7 @@ file(GLOB src
 )
 
 if (WIN32)
-add_executable(soundux WIN32 ${src})
+add_executable(soundux WIN32 ${src} "assets/icon.rc")
 else()
 add_executable(soundux ${src})
 endif()
