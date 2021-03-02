@@ -39,7 +39,7 @@ namespace Soundux::Objects
         if (std::getenv("SOUNDUX_DEBUG") != nullptr) // NOLINT
         {
             Fancy::fancy.logTime() << "Using path: " << path << std::endl;
-            Fancy::fancy.logTime() << "Initializing UI" << path << std::endl;
+            Fancy::fancy.logTime() << "Initializing UI" << std::endl;
         }
 
         if (!webview->init())
