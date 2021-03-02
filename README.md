@@ -38,7 +38,7 @@
 
 # Introduction
 Soundux is a cross-platform soundboard that features a simple user interface.
-With Soundux you can play audio to a specific application on linux and to your vb-audio-cable sink on windows.
+With Soundux you can play audio to a specific application on Linux and to your VB-CABLE sink on Windows.
 
 # Runtime Dependencies
 These are required to run the program
