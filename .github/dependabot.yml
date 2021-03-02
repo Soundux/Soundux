@@ -6,10 +6,6 @@ updates:
           interval: 'daily'
       open-pull-requests-limit: 15
     - package-ecosystem: 'gitsubmodule'
-      directory: '/lib'
-      schedule:
-          interval: 'daily'
-    - package-ecosystem: 'gitsubmodule'
-      directory: '/src/ui/impl/webview/lib'
+      directory: '.'
       schedule:
           interval: 'daily'
