@@ -83,6 +83,8 @@ Download our installer or portable from [the latest release](https://github.com/
 This list may not be accurate. Contact me if you find missing dependencies so that I can update this list
 - Webkit2gtk
 - X11 client-side development headers
+- G++ >= 9
+  - Some distros still have G++ versions < 9 in their repos, using them will result in a build failure (for more information refer to [#71](https://github.com/Soundux/Soundux/issues/71)).
 
 #### Debian/Ubuntu and derivatives
 ```sh
