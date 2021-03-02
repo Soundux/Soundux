@@ -30,59 +30,65 @@ namespace Soundux::Objects
     }
     std::vector<Sound> Window::refreshTabSounds(const Tab &tab) const
     {
-        std::vector<Sound> rtn;
-        for (const auto &entry : std::filesystem::directory_iterator(tab.path))
+        if (std::filesystem::exists(tab.path))
         {
-            std::filesystem::path file = entry;
-            if (entry.is_symlink())
+            std::vector<Sound> rtn;
+            for (const auto &entry : std::filesystem::directory_iterator(tab.path))
             {
-                file = std::filesystem::read_symlink(entry);
-                if (file.has_relative_path())
+                std::filesystem::path file = entry;
+                if (entry.is_symlink())
                 {
-                    file = std::filesystem::canonical(tab.path / file);
+                    file = std::filesystem::read_symlink(entry);
+                    if (file.has_relative_path())
+                    {
+                        file = std::filesystem::canonical(tab.path / file);
+                    }
                 }
-            }
 
-            if (file.extension() != ".mp3" && file.extension() != ".wav" && file.extension() != ".flac")
-            {
-                continue;
-            }
+                if (file.extension() != ".mp3" && file.extension() != ".wav" && file.extension() != ".flac")
+                {
+                    continue;
+                }
 
-            Sound sound;
+                Sound sound;
 
-            std::error_code ec;
-            auto writeTime = std::filesystem::last_write_time(file, ec);
-            if (!ec)
-            {
-                sound.modifiedDate = writeTime.time_since_epoch().count();
-            }
-            else
-            {
-                Fancy::fancy.logTime().warning() << "Failed to read lastWriteTime of " << file << std::endl;
-            }
+                std::error_code ec;
+                auto writeTime = std::filesystem::last_write_time(file, ec);
+                if (!ec)
+                {
+                    sound.modifiedDate = writeTime.time_since_epoch().count();
+                }
+                else
+                {
+                    Fancy::fancy.logTime().warning() << "Failed to read lastWriteTime of " << file << std::endl;
+                }
 
-            sound.path = file.u8string();
+                sound.path = file.u8string();
 #if defined(_WIN32)
-            std::transform(sound.path.begin(), sound.path.end(), sound.path.begin(),
-                           [](char c) { return c == '\\' ? '/' : c; });
+                std::transform(sound.path.begin(), sound.path.end(), sound.path.begin(),
+                               [](char c) { return c == '\\' ? '/' : c; });
 #endif
-            sound.name = file.stem().u8string();
-            sound.id = ++Globals::gData.soundIdCounter;
+                sound.name = file.stem().u8string();
+                sound.id = ++Globals::gData.soundIdCounter;
 
-            if (auto oldSound = std::find_if(tab.sounds.begin(), tab.sounds.end(),
-                                             [&sound](const auto &item) { return item.path == sound.path; });
-                oldSound != tab.sounds.end())
-            {
-                sound.hotkeys = oldSound->hotkeys;
+                if (auto oldSound = std::find_if(tab.sounds.begin(), tab.sounds.end(),
+                                                 [&sound](const auto &item) { return item.path == sound.path; });
+                    oldSound != tab.sounds.end())
+                {
+                    sound.hotkeys = oldSound->hotkeys;
+                }
+
+                rtn.emplace_back(sound);
             }
 
-            rtn.emplace_back(sound);
+            std::sort(rtn.begin(), rtn.end(),
+                      [](const auto &first, const auto &second) { return first.modifiedDate > second.modifiedDate; });
+
+            return rtn;
         }
 
-        std::sort(rtn.begin(), rtn.end(),
-                  [](const auto &first, const auto &second) { return first.modifiedDate > second.modifiedDate; });
-
-        return rtn;
+        Fancy::fancy.logTime().warning() << "Path " >> tab.path << " does not exist" << std::endl;
+        return {};
     }
     std::optional<Tab> Window::addTab() // NOLINT
     {
