@@ -10,6 +10,11 @@ int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 int main()
 #endif
 {
+    if (std::getenv("SOUNDUX_DEBUG") != nullptr) // NOLINT
+    {
+        Fancy::fancy.logTime().success() << "Enabling debug features" << std::endl;
+    }
+
 #if defined(_WIN32)
     DWORD lMode;
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);

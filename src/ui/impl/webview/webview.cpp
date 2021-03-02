@@ -27,7 +27,8 @@ namespace Soundux::Objects
         auto path = std::filesystem::canonical("/proc/self/exe").parent_path() / "dist" / "index.html";
 #endif
         webview = std::make_unique<wv::WebView>(Globals::gData.width, Globals::gData.height, true, "Soundux",
-                                                "file://" + path.string());
+                                                "file://" + path.string(), true,
+                                                std::getenv("SOUNDUX_DEBUG") != nullptr); // NOLINT
         if (!webview->init())
         {
             Fancy::fancy.logTime().failure() << "Failed to create UI" << std::endl;
