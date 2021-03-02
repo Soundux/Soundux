@@ -200,9 +200,11 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
             return std::nullopt;
         }
+        auto remoteSoundId = groupedSounds.at(id);
+        lock.unlock();
 
         auto playingSound = Globals::gAudio.pause(id);
-        auto remotePlayingSound = Globals::gAudio.pause(groupedSounds.at(id));
+        auto remotePlayingSound = Globals::gAudio.pause(remoteSoundId);
 
         if (playingSound && remotePlayingSound)
         {
@@ -221,9 +223,11 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
             return std::nullopt;
         }
+        auto remoteSoundId = groupedSounds.at(id);
+        lock.unlock();
 
         auto playingSound = Globals::gAudio.resume(id);
-        auto remotePlayingSound = Globals::gAudio.resume(groupedSounds.at(id));
+        auto remotePlayingSound = Globals::gAudio.resume(remoteSoundId);
 
         if (playingSound && remotePlayingSound)
         {
@@ -242,9 +246,11 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
             return std::nullopt;
         }
+        auto remoteSoundId = groupedSounds.at(id);
+        lock.unlock();
 
         auto playingSound = Globals::gAudio.seek(id, seekTo);
-        auto remotePlayingSound = Globals::gAudio.seek(groupedSounds.at(id), seekTo);
+        auto remotePlayingSound = Globals::gAudio.seek(remoteSoundId, seekTo);
         if (playingSound && remotePlayingSound)
         {
             return *playingSound;
@@ -262,9 +268,11 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
             return std::nullopt;
         }
+        auto remoteSoundId = groupedSounds.at(id);
+        lock.unlock();
 
         auto playingSound = Globals::gAudio.repeat(id, shouldRepeat);
-        auto remotePlayingSound = Globals::gAudio.repeat(groupedSounds.at(id), shouldRepeat);
+        auto remotePlayingSound = Globals::gAudio.repeat(remoteSoundId, shouldRepeat);
         if (playingSound && remotePlayingSound)
         {
             return *playingSound;
@@ -478,6 +486,7 @@ namespace Soundux::Objects
         {
             groupedSounds.erase(sound.id);
         }
+        lock.unlock();
 
 #if defined(__linux__)
         if (Globals::gAudio.getPlayingSounds().size() == 1 && !Globals::gPulse.currentlyPassingthrough())
