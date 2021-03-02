@@ -5,6 +5,7 @@
 #include <fancy.hpp>
 
 #if defined(_WIN32)
+#include "../assets/icon.h"
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 #else
 int main()
@@ -16,10 +17,16 @@ int main()
     }
 
 #if defined(_WIN32)
-    DWORD lMode;
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleMode(hStdout, &lMode);
-    SetConsoleMode(hStdout, lMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
+    if (std::getenv("SOUNDUX_DEBUG"))
+    {
+        AllocConsole();
+        freopen_s((FILE **)stdout, "CONOUT$", "w", stdout);
+
+        DWORD lMode;
+        HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+        GetConsoleMode(hStdout, &lMode);
+        SetConsoleMode(hStdout, lMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
+    }
 #endif
 
     CrashHandler::init();
@@ -50,6 +57,11 @@ int main()
 
     Soundux::Globals::gGui = std::make_unique<Soundux::Objects::WebView>();
     Soundux::Globals::gGui->setup();
+#if defined(_WIN32)
+    HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1));
+    SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+    SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+#endif
     Soundux::Globals::gGui->mainLoop();
 
     Soundux::Globals::gAudio.destory();
