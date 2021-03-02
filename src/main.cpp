@@ -11,16 +11,13 @@ int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 int main()
 #endif
 {
-    if (std::getenv("SOUNDUX_DEBUG") != nullptr) // NOLINT
-    {
-        Fancy::fancy.logTime().success() << "Enabling debug features" << std::endl;
-    }
-
 #if defined(_WIN32)
     if (std::getenv("SOUNDUX_DEBUG"))
     {
         AllocConsole();
-        freopen_s((FILE **)stdout, "CONOUT$", "w", stdout);
+        freopen_s(&((FILE **)stdin, "CONIN$", "r", stdin);
+        freopen_s(((FILE **)stderr, "CONOUT$", "w", stderr);
+        freopen_s(((FILE **)stdout, "CONOUT$", "w", stdout);
 
         DWORD lMode;
         HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -28,6 +25,10 @@ int main()
         SetConsoleMode(hStdout, lMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
     }
 #endif
+    if (std::getenv("SOUNDUX_DEBUG") != nullptr) // NOLINT
+    {
+        Fancy::fancy.logTime().success() << "Enabling debug features" << std::endl;
+    }
 
     CrashHandler::init();
 
