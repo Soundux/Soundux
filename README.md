@@ -51,7 +51,7 @@ Please refer to your distro instructions on how to install
 - Webkit2gtk
 ## Windows
 - [VB-CABLE](https://vb-audio.com/Cable/) (Our installer automatically installs VB-CABLE)
-- [Webview2 Runtime](https://developer.microsoft.com/de-de/microsoft-edge/webview2/) (Is also shipped with the installer)
+- [Webview2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) (Is also shipped with the installer)
 
 # Installation
 
@@ -83,6 +83,8 @@ Download our installer or portable from [the latest release](https://github.com/
 This list may not be accurate. Contact me if you find missing dependencies so that I can update this list
 - Webkit2gtk
 - X11 client-side development headers
+- G++ >= 9
+  - Some distros still have G++ versions < 9 in their repos, using them will result in a build failure (for more information refer to [#71](https://github.com/Soundux/Soundux/issues/71)).
 
 #### Debian/Ubuntu and derivatives
 ```sh
