@@ -46,7 +46,7 @@ namespace Soundux::Objects
         data.nullSinkModuleId = std::stoi(moduleId);
 
         auto loopbackId = exec("pactl load-module module-loopback rate=44100 source=" + data.pulseDefaultSource +
-                               " sink=soundux_sink"); // NOLINT
+                               " sink=soundux_sink sink_dont_move=true"); // NOLINT
         loopbackId.erase(std::remove(loopbackId.begin(), loopbackId.end(), '\n'), loopbackId.end());
         data.loopbackModuleId = std::stoi(loopbackId);
 
