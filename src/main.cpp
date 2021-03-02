@@ -15,9 +15,9 @@ int main()
     if (std::getenv("SOUNDUX_DEBUG"))
     {
         AllocConsole();
-        freopen_s(&((FILE **)stdin, "CONIN$", "r", stdin);
-        freopen_s(((FILE **)stderr, "CONOUT$", "w", stderr);
-        freopen_s(((FILE **)stdout, "CONOUT$", "w", stdout);
+        freopen_s((FILE **)stdin, "CONIN$", "r", stdin);
+        freopen_s((FILE **)stderr, "CONOUT$", "w", stderr);
+        freopen_s((FILE **)stdout, "CONOUT$", "w", stdout);
 
         DWORD lMode;
         HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
