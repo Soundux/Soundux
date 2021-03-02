@@ -17,6 +17,12 @@ namespace Soundux::Objects
     void WebView::setup()
     {
         Window::setup();
+
+        if (std::getenv("SOUNDUX_DEBUG") != nullptr) // NOLINT
+        {
+            Fancy::fancy.logTime() << "Creating WebView" << std::endl;
+        }
+
 #ifdef _WIN32
         char rawPath[MAX_PATH];
         auto executablePath = GetModuleFileNameA(nullptr, rawPath, MAX_PATH);
@@ -29,6 +35,13 @@ namespace Soundux::Objects
         webview = std::make_unique<wv::WebView>(Globals::gData.width, Globals::gData.height, true, "Soundux",
                                                 "file://" + path.string(), true,
                                                 std::getenv("SOUNDUX_DEBUG") != nullptr); // NOLINT
+
+        if (std::getenv("SOUNDUX_DEBUG") != nullptr) // NOLINT
+        {
+            Fancy::fancy.logTime() << "Using path: " << path << std::endl;
+            Fancy::fancy.logTime() << "Initializing UI" << path << std::endl;
+        }
+
         if (!webview->init())
         {
             Fancy::fancy.logTime().failure() << "Failed to create UI" << std::endl;
