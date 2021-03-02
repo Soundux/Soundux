@@ -329,6 +329,7 @@ namespace Soundux::Objects
                 if (sound->repeat)
                 {
                     ma_decoder_seek_to_pcm_frame(decoder, 0);
+                    Globals::gAudio.onSoundSeeked(device, 0);
                 }
                 else
                 {
