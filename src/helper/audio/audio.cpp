@@ -144,7 +144,10 @@ namespace Soundux::Objects
             if (!sound->second.paused)
             {
                 lock.unlock();
-                ma_device_stop(sound->second.rawDevice);
+                if (ma_device_get_state(sound->second.rawDevice) == MA_STATE_STARTED)
+                {
+                    ma_device_stop(sound->second.rawDevice);
+                }
                 lock.lock();
                 sound->second.paused = true;
             }
@@ -181,7 +184,10 @@ namespace Soundux::Objects
         {
             if (sound->second.paused)
             {
-                ma_device_start(sound->second.rawDevice);
+                if (ma_device_get_state(sound->second.rawDevice) == MA_STATE_STOPPED)
+                {
+                    ma_device_start(sound->second.rawDevice);
+                }
                 sound->second.paused = false;
             }
             return sound->second;
