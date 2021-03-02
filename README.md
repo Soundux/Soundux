@@ -51,7 +51,7 @@ Please refer to your distro instructions on how to install
 - Webkit2gtk
 ## Windows
 - [VB-CABLE](https://vb-audio.com/Cable/) (Our installer automatically installs VB-CABLE)
-- [Webview2 Runtime](https://developer.microsoft.com/de-de/microsoft-edge/webview2/) (Is also shipped with the installer)
+- [Webview2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) (Is also shipped with the installer)
 
 # Installation
 
