@@ -35,21 +35,31 @@ namespace Soundux::Objects
         }
 
         webview->addCallback(
-            "getPlayingSounds",
-            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
-                return nlohmann::json(Globals::gAudio.getPlayingSounds()).dump();
-            },
-            true);
-        webview->addCallback(
             "getSettings",
             [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
                 return nlohmann::json(Globals::gSettings).dump();
             },
             true);
         webview->addCallback(
+            "isLinux",
+            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
+#if defined(__linux__)
+                return "true";
+#else
+                return "false";
+#endif
+            },
+            true);
+        webview->addCallback(
             "getData",
             [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
                 return nlohmann::json(Globals::gData).dump();
+            },
+            true);
+        webview->addCallback(
+            "getPlayingSounds",
+            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
+                return nlohmann::json(Globals::gAudio.getPlayingSounds()).dump();
             },
             true);
         webview->addCallback(
@@ -183,16 +193,6 @@ namespace Soundux::Objects
             [this]([[maybe_unused]] auto &wv, const auto &param) -> std::string {
                 std::vector<int> newTabOrder = nlohmann::json::parse("[" + param[0] + "]");
                 return nlohmann::json(changeTabOrder(newTabOrder)).dump();
-            },
-            true);
-        webview->addCallback(
-            "isLinux",
-            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
-#if defined(__linux__)
-                return "true";
-#else
-                return "false";
-#endif
             },
             true);
 
