@@ -31,10 +31,11 @@
 </div>
 
 # Preview
-| ![Dark Interface](assets/screenshots/1.png)          | ![Seek/Pause/Stop Pane](assets/screenshots/2.png) |
-| ---------------------------------------------------- | ------------------------------------------------- |
-| ![Application Passthrough](assets/screenshots/3.png) | ![Search Pane](assets/screenshots/5.png)          |
-| ![Grid View](assets/screenshots/6.png)               | ![Light Interface](assets/screenshots/7.png)      |
+| ![Dark Interface](assets/screenshots/1.png)  | ![Seek/Pause/Stop Pane](assets/screenshots/2.png)      |
+| -------------------------------------------- | ------------------------------------------------------ |
+| ![Settings](assets/screenshots/3.png)        | ![Grid View](assets/screenshots/4.png)                 |
+| ![Search Pane](assets/screenshots/5.png)     | ![Application Passthrough](assets/screenshots/6.png)   |
+| ![Light Interface](assets/screenshots/7.png) | ![Light Interface Grid View](assets/screenshots/8.png) |
 
 # Introduction
 Soundux is a cross-platform soundboard that features a simple user interface.
