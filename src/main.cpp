@@ -12,10 +12,16 @@ int main()
 #endif
 {
 #if defined(_WIN32)
-    DWORD lMode;
-    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleMode(hStdout, &lMode);
-    SetConsoleMode(hStdout, lMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
+    if (std::getenv("SOUNDUX_DEBUG"))
+    {
+        AllocConsole();
+        freopen_s((FILE **)stdout, "CONOUT$", "w", stdout);
+
+        DWORD lMode;
+        HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+        GetConsoleMode(hStdout, &lMode);
+        SetConsoleMode(hStdout, lMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
+    }
 #endif
 
     CrashHandler::init();
