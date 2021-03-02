@@ -6,6 +6,7 @@
 #include <fancy.hpp>
 #include <filesystem>
 #include <nlohmann/json.hpp>
+#include <regex>
 
 #ifdef _WIN32
 #include <shellapi.h>
@@ -66,7 +67,14 @@ namespace Soundux::Objects
         webview->addCallback(
             "getData",
             [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
-                return nlohmann::json(Globals::gData).dump();
+                std::string dataDump = nlohmann::json(Globals::gData).dump();
+#if defined(_WIN32)
+                dataDump = std::regex_replace(dataDump, std::regex(R"rgx(\\)rgx"), R"(\\)");
+#else
+                dataDump = std::regex_replace(dataDump, std::regex(R"rgx(\\")rgx"), R"(\\\")");
+#endif
+
+                return dataDump;
             },
             true);
         webview->addCallback(
