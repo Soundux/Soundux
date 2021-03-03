@@ -48,16 +48,6 @@ jobs:
               with:
                   args: install sed -y
 
-            - name: Install 7zip
-              uses: crazy-max/ghaction-chocolatey@v1
-              with:
-                  args: install 7zip -y
-
-            - name: Install Wget
-              uses: crazy-max/ghaction-chocolatey@v1
-              with:
-                  args: install wget -y
-
             - name: Run Sed
               run: '&"${Env:ProgramData}\chocolatey\bin\sed.exe" -i ''s%\$PATH%D:\\a\\Soundux\\Soundux%'' deployment/innosetup/Soundux.iss'
 
