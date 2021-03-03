@@ -105,7 +105,9 @@ begin
         Result := False;
       end;
     finally
-      UnZip(ExpandConstant('{tmp}') + '\VBCABLE_Driver_Pack43.zip', ExpandConstant('{tmp}'))
+      if (Result) then begin    
+        UnZip(ExpandConstant('{tmp}') + '\VBCABLE_Driver_Pack43.zip', ExpandConstant('{tmp}'))
+      end;
       DownloadPage.Hide;
     end;
   end else
@@ -118,5 +120,5 @@ Filename: "{tmp}\VBCABLE_Setup_x64.exe"; WorkingDir: "{tmp}"; Flags: 64bit; Desc
 Filename: "{app}\{#MyAppExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"
 
 [Components]
-Name: "MicrosoftEdgeWebView2Runtime"; Description: "Install Microsoft Edge WebView2 Runtime (mandatory)"; Types: full; Flags: fixed
+Name: "MicrosoftEdgeWebView2Runtime"; Description: "Install Microsoft Edge WebView2 Runtime (mandatory)"; Types: custom full compact; Flags: fixed
 Name: "VBCable"; Description: "Install VBCable (recommended)"; Types: full
