@@ -9,11 +9,21 @@ Contributions are welcome! Here's how you can help:
 
 ## Translations
 
+## via Weblate (prefered)
+
+1. Visit [our Weblate repository](https://weblate.soundux.rocks/projects/soundux/frontend/)
+2. Login via GitHub
+3. Start translating!
+    - If you are adding a translation which language or territory specific version doesn't exist yet click on **Start new translation**
+    - If there already is a translation for your language and you want to correct a string just on the language and make your change
+
+## via PR
+
 1. [Fork the frontend](https://github.com/Soundux/soundux-ui/fork) and [clone](https://help.github.com/articles/cloning-a-repository/) your fork.
 2. Start translating!
     - Add a translation file in `/src/locales/`
-    - If you are adding a translation which language doesn't exist yet, name your translation `[COUNTRY_CODE].js`
-    - If there already is a translation for your language and you want to add a territory specific one, name your translation `[COUNTRY_CODE]-[TERRITORY].js` so that it plays nicely with the [Implicit fallback](https://kazupon.github.io/vue-i18n/guide/fallback.html#implicit-fallback-using-locales)
+    - If you are adding a translation which language doesn't exist yet, name your translation `[COUNTRY_CODE].json`
+    - If there already is a translation for your language and you want to add a territory specific one, name your translation `[COUNTRY_CODE]-[TERRITORY].json` so that it plays nicely with the [Implicit fallback](https://kazupon.github.io/vue-i18n/guide/fallback.html#implicit-fallback-using-locales)
     - Replace `[COUNTRY_CODE]` with your corresponding code. [See the list here](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (Use column `639-1`)
     - Replace `[TERRITORY]` with your corresponding territory code. [See the list here](https://en.wikipedia.org/wiki/ISO_3166-1#Officially_assigned_code_elements) (Use column `Alpha-2 code`)
     - Add the corresponding translations for your language
