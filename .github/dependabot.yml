@@ -1,11 +1,11 @@
 version: 2
 updates:
-    - package-ecosystem: 'github-actions'
-      directory: '/'
+    - package-ecosystem: "github-actions"
+      directory: "/"
       schedule:
-          interval: 'daily'
+          interval: "daily"
       open-pull-requests-limit: 15
-    - package-ecosystem: 'gitsubmodule'
-      directory: '.'
+    - package-ecosystem: "gitsubmodule"
+      directory: "."
       schedule:
-          interval: 'daily'
+          interval: "daily"
