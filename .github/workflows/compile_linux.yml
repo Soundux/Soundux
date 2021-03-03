@@ -1,26 +1,30 @@
 on:
     push:
-        branches: [ master ]
+        branches: [master]
         paths-ignore:
-        - '**/README.md'
+            - "**/README.md"
+            - "**/compile_windows.yml"
+            - "**/build_flatpak.yml"
     pull_request:
-        branches: [ master ]
+        branches: [master]
 
 name: Build on Linux
 jobs:
     build-linux:
         runs-on: ubuntu-20.04
         strategy:
-          fail-fast: false
-          matrix:
-            language: [ 'cpp' ]
+            fail-fast: false
+            matrix:
+                language: ["cpp"]
 
         steps:
             - name: Checkout
               uses: actions/checkout@v2
               with:
-                submodules: recursive
+                  submodules: recursive
+
             - name: Install build dependencies
-              run: 'sudo apt-get install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev npm'   
+              run: "sudo apt-get install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev npm"
+
             - name: Compile
-              run: 'mkdir build && cd build && cmake .. && cmake --build . --config Release'
+              run: "mkdir build && cd build && cmake .. && cmake --build . --config Release"

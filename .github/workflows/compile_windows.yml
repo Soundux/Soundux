@@ -1,19 +1,21 @@
 on:
     push:
-        branches: [ master ]
+        branches: [master]
         paths-ignore:
-        - '**/README.md'
+            - "**/README.md"
+            - "**/compile_linux.yml"
+            - "**/build_flatpak.yml"
     pull_request:
-        branches: [ master ]
+        branches: [master]
 
 name: Build on Windows
 jobs:
     build-windows:
         runs-on: windows-latest
         strategy:
-          fail-fast: false
-          matrix:
-            language: [ 'cpp' ]
+            fail-fast: false
+            matrix:
+                language: ["cpp"]
 
         steps:
             - name: Setup Node.js environment
@@ -25,42 +27,42 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v2
               with:
-                submodules: recursive
+                  submodules: recursive
 
             - name: Compile
-              run: 'mkdir build && cd build && cmake .. && cmake --build . --config Release'
+              run: "mkdir build && cd build && cmake .. && cmake --build . --config Release"
 
             - name: Upload Build Artifact
               uses: actions/upload-artifact@v2.2.2
               with:
-                name: Release
-                path: build
+                  name: Release
+                  path: build
 
-            - name: Install InnoSetup  
+            - name: Install InnoSetup
               uses: crazy-max/ghaction-chocolatey@v1
-              with: 
-                args: install innosetup -y
+              with:
+                  args: install innosetup -y
 
-            - name: Install Sed  
+            - name: Install Sed
               uses: crazy-max/ghaction-chocolatey@v1
-              with: 
-                args: install sed -y
+              with:
+                  args: install sed -y
 
-            - name: Install 7zip  
+            - name: Install 7zip
               uses: crazy-max/ghaction-chocolatey@v1
-              with: 
-                args: install 7zip -y
+              with:
+                  args: install 7zip -y
 
-            - name: Install Wget  
+            - name: Install Wget
               uses: crazy-max/ghaction-chocolatey@v1
-              with: 
-                args: install wget -y
+              with:
+                  args: install wget -y
 
             - name: Run Sed
               run: '&"${Env:ProgramData}\chocolatey\bin\sed.exe" -i ''s%\$PATH%D:\\a\\Soundux\\Soundux%'' deployment/innosetup/Soundux.iss'
 
             - name: Run InnoSetup
-              run: '&"${Env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" src/innosetup/Soundux.iss'
+              run: '&"${Env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" deployment/innosetup/Soundux.iss'
 
             - name: Upload Installer Artifact
               uses: actions/upload-artifact@v2.2.2

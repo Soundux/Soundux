@@ -1,12 +1,12 @@
 on:
     push:
-        branches: [ master ]
+        branches: [master]
         paths-ignore:
             - "**/README.md"
             - "**/compile_windows.yml"
-            - '**/compile_linux.yml'
+            - "**/compile_linux.yml"
     pull_request:
-        branches: [ master ]
+        branches: [master]
 
 name: Build Flatpak
 jobs:
