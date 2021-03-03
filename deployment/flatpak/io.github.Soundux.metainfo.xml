@@ -5,7 +5,7 @@
   <launchable type="desktop-id">io.github.Soundux.desktop</launchable>
   <name>Soundux</name>
   <developer_name>Soundux</developer_name>
-  <summary>A cross-platform soundboard in QtQuick</summary>
+  <summary>A cross-platform soundboard</summary>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-only</project_license>
   <url type="homepage">https://soundux.rocks/</url>
@@ -24,6 +24,8 @@
       <li>Sound search (can also be opened with CTRL + F)</li>
       <li>Sound hotkeys</li>
       <li>Stop button and hotkey</li>
+      <li>App Passthrough (can also be opened with CTRL + G)</li>
+      <li>Media Controls</li>
     </ul>
   </description>
   <categories>
@@ -33,22 +35,35 @@
   <screenshots>
     <screenshot type="default">
       <caption>Dark Interface</caption>
-      <image>https://raw.githubusercontent.com/Soundux/soundux.github.io/master/src/assets/screenshots/1.png</image>
+      <image>https://raw.githubusercontent.com/Soundux/Soundux/master/assets/screenshots/1.png</image>
     </screenshot>
     <screenshot>
       <caption>Dark Settings</caption>
-      <image>https://raw.githubusercontent.com/Soundux/soundux.github.io/master/src/assets/screenshots/2.png</image>
+      <image>https://raw.githubusercontent.com/Soundux/Soundux/master/assets/screenshots/3.png</image>
     </screenshot>
     <screenshot>
       <caption>Light Interface</caption>
-      <image>https://raw.githubusercontent.com/Soundux/soundux.github.io/master/src/assets/screenshots/3.png</image>
+      <image>https://raw.githubusercontent.com/Soundux/Soundux/master/assets/screenshots/7.png</image>
     </screenshot>
     <screenshot>
-      <caption>Light Settings</caption>
-      <image>https://raw.githubusercontent.com/Soundux/soundux.github.io/master/src/assets/screenshots/4.png</image>
+      <caption>Light Grid View</caption>
+      <image>https://raw.githubusercontent.com/Soundux/Soundux/master/assets/screenshots/8.png</image>
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.2" date="2021-03-03">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2</url>
+      <description>
+        <ul>
+          <li>New UI</li>
+          <li>Grid View</li>
+          <li>Media Controls</li>
+          <li>Internationalization</li>
+          <li>Application pass-through</li>
+          <li>General fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.6" date="2021-02-06">
       <url>https://github.com/Soundux/Soundux/releases/tag/0.1.6</url>
       <description>
