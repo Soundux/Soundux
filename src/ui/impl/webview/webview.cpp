@@ -33,7 +33,7 @@ namespace Soundux::Objects
         auto path = std::filesystem::canonical("/proc/self/exe").parent_path() / "dist" / "index.html";
 #endif
         webview = std::make_unique<wv::WebView>(Globals::gData.width, Globals::gData.height, true, "Soundux",
-                                                "file://" + path.string(), true,
+                                                "about:blank", true,
                                                 std::getenv("SOUNDUX_DEBUG") != nullptr); // NOLINT
 
         if (std::getenv("SOUNDUX_DEBUG") != nullptr) // NOLINT
@@ -279,6 +279,8 @@ namespace Soundux::Objects
             Globals::gData.width = width;
             Globals::gData.height = height;
         });
+
+        webview->navigate("file://" + path.string());
     }
     void WebView::mainLoop()
     {
