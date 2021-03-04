@@ -55,7 +55,7 @@ namespace Soundux
 #endif
 
           public:
-            ~Window();
+            virtual ~Window();
             virtual void setup();
             virtual void mainLoop() = 0;
 
