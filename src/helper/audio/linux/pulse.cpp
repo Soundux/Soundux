@@ -99,18 +99,44 @@ namespace Soundux::Objects
         revertDefaultSourceToOriginal();
 
         if (data.loopbackModuleId != 0)
-            system(("pactl unload-module " + std::to_string(data.loopbackModuleId)).c_str()); // NOLINT
+        {
+            if (system(("pactl unload-module " + std::to_string(data.loopbackModuleId)).c_str()) != 0) // NOLINT
+            {
+                Fancy::fancy.logTime().warning() << "Could not unload loopback module" << std::endl;
+            }
+        }
         if (data.nullSinkModuleId != 0)
-            system(("pactl unload-module " + std::to_string(data.nullSinkModuleId)).c_str()); // NOLINT
-
+        {
+            // NOLINTNEXTLINE
+            if (system(("pactl unload-module " + std::to_string(data.nullSinkModuleId)).c_str()) != 0)
+            {
+                Fancy::fancy.logTime().warning() << "Could not unload nullsink module" << std::endl;
+            }
+        }
         if (data.passthroughModuleId != 0)
-            system(("pactl unload-module " + std::to_string(data.passthroughModuleId)).c_str()); // NOLINT
+        {
+            // NOLINTNEXTLINE
+            if (system(("pactl unload-module " + std::to_string(data.passthroughModuleId)).c_str()) != 0)
+            {
+                Fancy::fancy.logTime().warning() << "Could not unload passthrough module" << std::endl;
+            }
+        }
         if (data.passthroughLoopbackSinkModuleId != 0)
+        {
             // NOLINTNEXTLINE
-            system(("pactl unload-module " + std::to_string(data.passthroughLoopbackSinkModuleId)).c_str());
+            if (system(("pactl unload-module " + std::to_string(data.passthroughLoopbackSinkModuleId)).c_str()) != 0)
+            {
+                Fancy::fancy.logTime().warning() << "Could not unload passtrhough loopback module" << std::endl;
+            }
+        }
         if (data.passthroughLoopbackMonitorModuleId != 0)
+        {
             // NOLINTNEXTLINE
-            system(("pactl unload-module " + std::to_string(data.passthroughLoopbackMonitorModuleId)).c_str());
+            if (system(("pactl unload-module " + std::to_string(data.passthroughLoopbackMonitorModuleId)).c_str()) != 0)
+            {
+                Fancy::fancy.logTime().warning() << "Could not unload passtrhough monitor module" << std::endl;
+            }
+        }
     }
     void Pulse::fetchDefaultPulseSource()
     {
@@ -209,12 +235,19 @@ namespace Soundux::Objects
                         recordingStreamMutex.lock_shared();
                         if (recordingStreams.find(stream.name) != recordingStreams.end())
                         {
-                            stream.source = recordingStreams.at(stream.name).source;
-                            if (fix)
+                            if (fix && stream.source != recordingStreams.at(stream.name).source)
                             {
+                                stream.source = recordingStreams.at(stream.name).source;
+
                                 // NOLINTNEXTLINE
-                                system(("pactl move-source-output " + std::to_string(stream.id) + " " + stream.source)
-                                           .c_str());
+                                if (system(
+                                        ("pactl move-source-output " + std::to_string(stream.id) + " " + stream.source)
+                                            .c_str()) == 0)
+                                {
+                                    Fancy::fancy.logTime().success()
+                                        << "Recovered " << stream.name
+                                        << " from left over module to original source: " << stream.source << std::endl;
+                                }
                             }
                         }
                         recordingStreamMutex.unlock_shared();
@@ -282,13 +315,19 @@ namespace Soundux::Objects
                         playbackStreamMutex.lock_shared();
                         if (playbackStreams.find(stream.name) != playbackStreams.end())
                         {
-                            stream.sink = playbackStreams.at(stream.name).sink;
-                            if (fix)
+                            if (fix && stream.sink != playbackStreams.at(stream.name).sink)
                             {
+                                stream.sink = playbackStreams.at(stream.name).sink;
+
                                 // NOLINTNEXTLINE
-                                system(("pactl move-sink-input " + std::to_string(stream.id) + " " + stream.sink +
-                                        " >/dev/null")
-                                           .c_str());
+                                if (system(("pactl move-sink-input " + std::to_string(stream.id) + " " + stream.sink +
+                                            " >/dev/null")
+                                               .c_str()) == 0)
+                                {
+                                    Fancy::fancy.logTime().success()
+                                        << "Recovered " + stream.name << " from left over sink to original sink "
+                                        << stream.sink << std::endl;
+                                }
                             }
                         }
                         playbackStreamMutex.unlock_shared();
@@ -347,7 +386,11 @@ namespace Soundux::Objects
                 }
                 else if (match[4].matched)
                 {
-                    system(("pactl unload-module " + currentModuleId).c_str()); // NOLINT
+                    if (system(("pactl unload-module " + currentModuleId).c_str()) == 0) // NOLINT
+                    {
+                        Fancy::fancy.logTime().success()
+                            << "Unloaded left over module " << currentModuleId << std::endl;
+                    }
                 }
             }
         }
@@ -393,8 +436,12 @@ namespace Soundux::Objects
             auto &stream = playbackStreams.at(name);
             currentApplicationPassthrough = stream;
             // NOLINTNEXTLINE
-            system(("pactl move-sink-input " + std::to_string(stream.id) + " soundux_sink_passthrough >/dev/null")
-                       .c_str());
+            if (system(("pactl move-sink-input " + std::to_string(stream.id) + " soundux_sink_passthrough >/dev/null")
+                           .c_str()) != 0)
+            {
+                Fancy::fancy.logTime().failure()
+                    << "Failed to move application " << name << " to passthrough" << std::endl;
+            }
             return *currentApplicationPassthrough;
         }
         Fancy::fancy.logTime().failure() << "Failed to find PulsePlaybackStream with name: " << name << std::endl;
@@ -406,7 +453,10 @@ namespace Soundux::Objects
     }
     void Pulse::unloadSwitchOnConnect()
     {
-        system("pactl unload-module module-switch-on-connect >/dev/null"); // NOLINT
+        if (system("pactl unload-module module-switch-on-connect >/dev/null") != 0) // NOLINT
+        {
+            Fancy::fancy.logTime().warning() << "Failed to unload module-switch-on-connect" << std::endl;
+        }
     }
     bool Pulse::currentlyPassingthrough()
     {
