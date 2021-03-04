@@ -33,7 +33,7 @@ namespace Soundux::Objects
 
             tabs.erase(tabs.begin() + index);
 
-            for (int i = 0; tabs.size() > i; i++)
+            for (std::size_t i = 0; tabs.size() > i; i++)
             {
                 tabs.at(i).id = i;
             }
@@ -49,7 +49,7 @@ namespace Soundux::Objects
         std::unique_lock lock(Globals::gSoundsMutex);
 
         Globals::gSounds.clear();
-        for (int i = 0; tabs.size() > i; i++)
+        for (std::size_t i = 0; tabs.size() > i; i++)
         {
             auto &tab = tabs.at(i);
             tab.id = i;
@@ -125,7 +125,7 @@ namespace Soundux::Objects
         std::unique_lock lock(Globals::gSoundsMutex);
         Globals::gSounds.clear();
 
-        for (int i = 0; tabs.size() > i; i++)
+        for (std::size_t i = 0; tabs.size() > i; i++)
         {
             auto &tab = tabs.at(i);
             tab.id = i;
