@@ -11,14 +11,16 @@ file(GLOB src
 
 if (WIN32)
     add_executable(soundux WIN32 ${src} "assets/icon.rc")
+    target_compile_options(soundux PRIVATE /W4)
 else()
     add_executable(soundux ${src})
+    target_compile_options(soundux PRIVATE -Wall -Wextra -pedantic -Wno-reorder -Wno-deprecated-copy)
 endif()
 
-target_include_directories(soundux PRIVATE "lib/miniaudio")
-target_include_directories(soundux PRIVATE "lib/fancypp/include")
-target_include_directories(soundux PRIVATE "lib/json/single_include")
-target_include_directories(soundux PRIVATE "lib/InstanceGuard/Source")
+target_include_directories(soundux SYSTEM PRIVATE "lib/miniaudio")
+target_include_directories(soundux SYSTEM PRIVATE "lib/fancypp/include")
+target_include_directories(soundux SYSTEM PRIVATE "lib/json/single_include")
+target_include_directories(soundux SYSTEM PRIVATE "lib/InstanceGuard/Source")
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
