@@ -49,13 +49,13 @@ namespace Soundux::Objects
 
         webview->addCallback(
             "getSettings",
-            []([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
+            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
                 return nlohmann::json(Globals::gSettings).dump();
             },
             true);
         webview->addCallback(
             "isLinux",
-            []([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
+            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
 #if defined(__linux__)
                 return "true";
 #else
@@ -65,14 +65,14 @@ namespace Soundux::Objects
             true);
         webview->addCallback(
             "getData",
-            []([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
+            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
                 std::string dataDump = nlohmann::json(Globals::gData).dump();
                 return dataDump;
             },
             true);
         webview->addCallback(
             "getPlayingSounds",
-            []([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
+            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
                 return nlohmann::json(Globals::gAudio.getPlayingSounds()).dump();
             },
             true);
@@ -148,7 +148,7 @@ namespace Soundux::Objects
             changeSettings(j.get<Settings>());
             return "";
         });
-        webview->addCallback("requestHotkey", []([[maybe_unused]] auto &wv, const auto &param) -> std::string {
+        webview->addCallback("requestHotkey", [this]([[maybe_unused]] auto &wv, const auto &param) -> std::string {
             if (param[0] == "false")
             {
                 Globals::gHotKeys.shouldNotify(false);
