@@ -29,7 +29,7 @@ auto splitByNewLine(const std::string &str)
         result.emplace_back(line);
     }
     return result;
-};
+}
 
 namespace Soundux::Objects
 {
