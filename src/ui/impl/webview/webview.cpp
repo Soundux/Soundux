@@ -49,13 +49,13 @@ namespace Soundux::Objects
 
         webview->addCallback(
             "getSettings",
-            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
+            []([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
                 return nlohmann::json(Globals::gSettings).dump();
             },
             true);
         webview->addCallback(
             "isLinux",
-            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
+            []([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
 #if defined(__linux__)
                 return "true";
 #else
@@ -65,14 +65,14 @@ namespace Soundux::Objects
             true);
         webview->addCallback(
             "getData",
-            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
+            []([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
                 std::string dataDump = nlohmann::json(Globals::gData).dump();
                 return dataDump;
             },
             true);
         webview->addCallback(
             "getPlayingSounds",
-            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
+            []([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
                 return nlohmann::json(Globals::gAudio.getPlayingSounds()).dump();
             },
             true);
@@ -148,7 +148,7 @@ namespace Soundux::Objects
             changeSettings(j.get<Settings>());
             return "";
         });
-        webview->addCallback("requestHotkey", [this]([[maybe_unused]] auto &wv, const auto &param) -> std::string {
+        webview->addCallback("requestHotkey", []([[maybe_unused]] auto &wv, const auto &param) -> std::string {
             if (param[0] == "false")
             {
                 Globals::gHotKeys.shouldNotify(false);
@@ -226,7 +226,7 @@ namespace Soundux::Objects
 // TODO(curve): Mac
 #endif
 #else
-        webview->addCallback("openUrl", [this]([[maybe_unused]] auto &wv, const auto &param) -> std::string {
+        webview->addCallback("openUrl", []([[maybe_unused]] auto &wv, const auto &param) -> std::string {
             system(("xdg-open \"" + param[0] + "\"").c_str());
             return "";
         });
@@ -260,12 +260,12 @@ namespace Soundux::Objects
                              });
         webview->addCallback(
             "isSwitchOnConnectLoaded",
-            [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
+            []([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
                 return Globals::gPulse.isSwitchOnConnectLoaded() ? "true" : "false";
             },
             true);
         webview->addCallback("unloadSwitchOnConnect",
-                             [this]([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
+                             []([[maybe_unused]] auto &wv, [[maybe_unused]] const auto &param) -> std::string {
                                  if (Globals::gPulse.isSwitchOnConnectLoaded())
                                  {
                                      Globals::gPulse.unloadSwitchOnConnect();
@@ -275,7 +275,7 @@ namespace Soundux::Objects
                              });
 #endif
 
-        webview->setResizeCallback([this](int width, int height) {
+        webview->setResizeCallback([](int width, int height) {
             Globals::gData.width = width;
             Globals::gData.height = height;
         });
