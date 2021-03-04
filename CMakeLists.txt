@@ -14,7 +14,7 @@ if (WIN32)
     target_compile_options(soundux PRIVATE /W4)
 else()
     add_executable(soundux ${src})
-    target_compile_options(soundux PRIVATE -Wall -Wextra -pedantic -Wno-reorder -Wno-deprecated-copy)
+    target_compile_options(soundux PRIVATE -Wall -Wextra -Werror -pedantic -Wno-unused-lambda-capture)
 endif()
 
 target_include_directories(soundux SYSTEM PRIVATE "lib/miniaudio")
