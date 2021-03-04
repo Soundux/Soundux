@@ -89,6 +89,8 @@ namespace Soundux
             std::optional<Tab> getTab(const std::uint32_t &) const;
             std::optional<std::reference_wrapper<Sound>> getSound(const std::uint32_t &);
 
+            Data() = default;
+            Data(const Data &) = default;
             Data &operator=(const Data &other);
         };
     } // namespace Objects
