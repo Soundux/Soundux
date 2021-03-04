@@ -42,11 +42,11 @@ target_link_libraries(soundux PUBLIC webview nfd InstanceGuard)
 
 # [[ Build Frontend ]]
 if (MSVC)
-file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/" 
-    DESTINATION "${CMAKE_SOURCE_DIR}/build/Release/dist")
+    file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/" 
+        DESTINATION "${CMAKE_SOURCE_DIR}/build/Release/dist")
 else()
-file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/" 
-    DESTINATION "${CMAKE_SOURCE_DIR}/build/dist")
+    file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/" 
+        DESTINATION "${CMAKE_SOURCE_DIR}/build/dist")
 endif()
 
 target_compile_features(soundux PRIVATE cxx_std_17)
