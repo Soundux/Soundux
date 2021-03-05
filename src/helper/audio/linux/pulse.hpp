@@ -52,6 +52,7 @@ namespace Soundux
             void fixLeftOvers();
             void unloadLeftOverModules();
             void fetchDefaultPulseSource();
+            bool setModuleId(const std::string &, std::uint32_t &);
 
             PulseData data;
             std::optional<PulseRecordingStream> currentApplication;
