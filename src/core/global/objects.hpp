@@ -90,8 +90,8 @@ namespace Soundux
             std::optional<std::reference_wrapper<Sound>> getSound(const std::uint32_t &);
 
             Data() = default;
+            void set(const Data &other);
             Data(const Data &) = default;
-            Data &operator=(const Data &other);
         };
     } // namespace Objects
 } // namespace Soundux

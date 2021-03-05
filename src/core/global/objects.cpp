@@ -110,13 +110,8 @@ namespace Soundux::Objects
         Fancy::fancy.logTime().warning() << "Tried to access non existant Tab " << id << std::endl;
         return std::nullopt;
     }
-    Data &Data::operator=(const Data &other)
+    void Data::set(const Data &other)
     {
-        if (this == &other)
-        {
-            return *this;
-        }
-
         tabs = other.tabs;
         width = other.width;
         height = other.height;
@@ -135,7 +130,5 @@ namespace Soundux::Objects
                 Globals::gSounds.insert({sound.id, sound});
             }
         }
-
-        return *this;
     }
 } // namespace Soundux::Objects

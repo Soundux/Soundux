@@ -72,7 +72,7 @@ namespace Soundux::Objects
                 try
                 {
                     auto conf = json.get<Config>();
-                    data = conf.data;
+                    data.set(conf.data);
                     settings = conf.settings;
                     Fancy::fancy.logTime().success() << "Config read" << std::endl;
                 }
