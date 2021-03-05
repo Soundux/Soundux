@@ -1,6 +1,6 @@
 #pragma once
 #include "../../ui.hpp"
-#include "lib/webview/webview.hpp"
+#include <webview.hpp>
 
 namespace Soundux
 {
@@ -9,7 +9,7 @@ namespace Soundux
         class WebView : public Window
         {
           private:
-            std::unique_ptr<wv::WebView> webview;
+            SounduxWebView webview;
 
           public:
             void setup() override;

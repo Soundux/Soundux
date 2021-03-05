@@ -18,10 +18,9 @@ namespace Soundux::Objects
     {
         Window::setup();
 
-        webview.setup();
+        webview.setup(Soundux::Globals::gData.width, Soundux::Globals::gData.height);
         webview.setTitle("Soundux");
         webview.enableDevTools(true); // NOLINT
-        webview.setSize(Soundux::Globals::gData.width, Soundux::Globals::gData.height);
 
 #ifdef _WIN32
         char rawPath[MAX_PATH];
