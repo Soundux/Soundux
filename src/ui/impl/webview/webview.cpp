@@ -20,7 +20,7 @@ namespace Soundux::Objects
 
         webview.setup(Soundux::Globals::gData.width, Soundux::Globals::gData.height);
         webview.setTitle("Soundux");
-        webview.enableDevTools(true); // NOLINT
+        webview.enableDevTools(std::getenv("SOUNDUX_DEBUG") != nullptr); // NOLINT
 
 #ifdef _WIN32
         char rawPath[MAX_PATH];
