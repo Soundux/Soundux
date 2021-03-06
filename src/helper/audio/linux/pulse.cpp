@@ -540,6 +540,7 @@ namespace Soundux::Objects
         {
             Fancy::fancy.logTime().warning() << "Failed to unload module-switch-on-connect" << std::endl;
         }
+        setup();
     }
     bool Pulse::currentlyPassingthrough()
     {
