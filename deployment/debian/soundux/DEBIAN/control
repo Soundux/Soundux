@@ -4,6 +4,6 @@ Section: custom
 Priority: optional
 Architecture: all
 Essential: no
-Depends: libwebkit2gtk-4.0-37
+Depends: libgtk-3-0, libwebkit2gtk-4.0-37, libx11-6
 Maintainer: info@soundux.rocks
 Description: A cross-platform soundboard
