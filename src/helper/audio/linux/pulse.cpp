@@ -1,6 +1,7 @@
 #if defined(__linux__)
 #include "pulse.hpp"
 #include "fancy.hpp"
+#include <mutex>
 #include <optional>
 #include <regex>
 #include <sstream>
@@ -186,7 +187,7 @@ namespace Soundux::Objects
         std::string info;
         if (exec("LC_ALL=C pactl info", info))
         {
-            static const std::regex defaultDeviceRegex("^Default Source: (.+)$");
+            static const std::regex defaultDeviceRegex("^Default Source: (.+)|Server Name: (.*)$");
 
             std::smatch match;
             for (const auto &line : splitByNewLine(info))
@@ -204,6 +205,16 @@ namespace Soundux::Objects
                         data.pulseDefaultSource = match[1];
                         Fancy::fancy.logTime()
                             << "Default Pulse Source was saved: " << data.pulseDefaultSource << std::endl;
+                    }
+                    if (match[2].matched)
+                    {
+                        if (match[2].str().find("PipeWire") != std::string::npos)
+                        {
+                            Fancy::fancy.logTime().warning() << "Detected PipeWire, it will probably take a lot of "
+                                                                "time until the UI loads because loading " >>
+                                "module-looback"
+                                    << " will result in a timeout" << std::endl;
+                        }
                     }
                 }
             }
