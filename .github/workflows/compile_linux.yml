@@ -28,3 +28,12 @@ jobs:
 
             - name: Compile
               run: "mkdir build && cd build && cmake .. && cmake --build . --config Release"
+
+            - name: Build debian package
+              run: "cd build && make install DESTDIR=../deployment/debian/soundux && cd ../deployment/debian && dpkg-deb --build soundux"
+
+            - name: Upload deb package
+              uses: actions/upload-artifact@v2.2.2
+              with:
+                  name: Deb package
+                  path: deployment/debian/soundux.deb
