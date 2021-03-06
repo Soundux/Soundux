@@ -85,6 +85,11 @@ namespace Soundux::Objects
         webview.addCallback("unloadSwitchOnConnect", [this]() { Globals::gPulse.unloadSwitchOnConnect(); });
 #endif
 
+        webview.setResizeCallback([](int width, int height) {
+            Globals::gData.width = width;
+            Globals::gData.height = height;
+        });
+
         webview.navigate("file://" + path.string());
     }
     void WebView::mainLoop()
