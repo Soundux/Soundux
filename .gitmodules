@@ -7,9 +7,6 @@
 [submodule "lib/fancypp"]
 	path = lib/fancypp
 	url = https://github.com/Curve/fancypp
-[submodule "src/ui/impl/webview/lib/webview"]
-	path = src/ui/impl/webview/lib/webview
-	url = https://github.com/Soundux/webview
 [submodule "lib/nativefiledialog-extended"]
 	path = lib/nativefiledialog-extended
 	url = https://github.com/btzy/nativefiledialog-extended/
@@ -20,3 +17,6 @@
 	path = src/ui/impl/webview/lib/soundux-ui
 	url = https://github.com/Soundux/soundux-ui/
 	branch = build
+[submodule "src/ui/impl/webview/lib/webviewpp"]
+	path = src/ui/impl/webview/lib/webviewpp
+	url = https://github.com/Soundux/webviewpp
