@@ -178,16 +178,16 @@ namespace Soundux::Objects
         auto sound = Globals::gData.getSound(id);
         auto device = Globals::gAudio.getAudioDevice(Globals::gSettings.output);
 
+        if (sound && (Globals::gSettings.output.empty() || (device && device->get().isDefault)))
+        {
+            if (!Globals::gSettings.allowOverlapping)
+            {
+                Globals::gAudio.stopAll();
+            }
+            return Globals::gAudio.play(*sound);
+        }
         if (sound && device)
         {
-            if (device->get().isDefault)
-            {
-                if (!Globals::gSettings.allowOverlapping)
-                {
-                    Globals::gAudio.stopAll();
-                }
-                return Globals::gAudio.play(*sound);
-            }
             if (!Globals::gSettings.allowOverlapping)
             {
                 Globals::gAudio.stopAll();
