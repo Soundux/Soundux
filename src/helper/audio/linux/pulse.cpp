@@ -1,6 +1,6 @@
 #if defined(__linux__)
 #include "pulse.hpp"
-#include "fancy.hpp"
+#include <fancy.hpp>
 #include <mutex>
 #include <optional>
 #include <regex>
