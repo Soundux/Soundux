@@ -51,6 +51,15 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.2.1" date="2021-03-07">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2.1</url>
+      <description>
+        <ul>
+          <li>Play sounds without output application</li>
+          <li>Bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2" date="2021-03-03">
       <url>https://github.com/Soundux/Soundux/releases/tag/0.2</url>
       <description>

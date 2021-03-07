@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(soundux VERSION 0.2 DESCRIPTION "")
+project(soundux VERSION 0.2.1 DESCRIPTION "")
 
 file(GLOB src
     "src/*.cpp"
