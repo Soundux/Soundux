@@ -130,6 +130,15 @@ namespace Soundux::Objects
         auto sound = Globals::gData.getSound(id);
         if (sound)
         {
+            if (Globals::gSettings.output.empty())
+            {
+                if (!Globals::gSettings.allowOverlapping)
+                {
+                    Globals::gAudio.stopAll();
+                }
+
+                return Globals::gAudio.play(*sound);
+            }
             if (Globals::gPulse.moveApplicationToSinkMonitor(Globals::gSettings.output))
             {
                 if (!Globals::gSettings.allowOverlapping)
@@ -171,6 +180,14 @@ namespace Soundux::Objects
 
         if (sound && device)
         {
+            if (device->get().isDefault)
+            {
+                if (!Globals::gSettings.allowOverlapping)
+                {
+                    Globals::gAudio.stopAll();
+                }
+                return Globals::gAudio.play(*sound);
+            }
             if (!Globals::gSettings.allowOverlapping)
             {
                 Globals::gAudio.stopAll();
