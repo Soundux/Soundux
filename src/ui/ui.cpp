@@ -215,85 +215,123 @@ namespace Soundux::Objects
     std::optional<PlayingSound> Window::pauseSound(const std::uint32_t &id)
     {
         std::shared_lock lock(groupedSoundsMutex);
+        std::optional<std::uint32_t> remoteSoundId;
         if (groupedSounds.find(id) == groupedSounds.end())
         {
-            Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
-            return std::nullopt;
+            if (!Globals::gSettings.output.empty())
+            {
+                Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
+            }
         }
-        auto remoteSoundId = groupedSounds.at(id);
+        else
+        {
+            remoteSoundId = groupedSounds.at(id);
+        }
         lock.unlock();
 
         auto playingSound = Globals::gAudio.pause(id);
-        auto remotePlayingSound = Globals::gAudio.pause(remoteSoundId);
+        if (remoteSoundId)
+        {
+            Globals::gAudio.pause(*remoteSoundId);
+        }
 
-        if (playingSound && remotePlayingSound)
+        if (playingSound)
         {
             return *playingSound;
         }
 
-        Fancy::fancy.logTime().failure() << "Failed to pause sound " << id << std::endl;
+        Fancy::fancy.logTime().warning() << "Failed to pause sound " << id << std::endl;
         onError(ErrorCode::FailedToPause);
         return std::nullopt;
     }
     std::optional<PlayingSound> Window::resumeSound(const std::uint32_t &id)
     {
         std::shared_lock lock(groupedSoundsMutex);
+        std::optional<std::uint32_t> remoteSoundId;
         if (groupedSounds.find(id) == groupedSounds.end())
         {
-            Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
-            return std::nullopt;
+            if (!Globals::gSettings.output.empty())
+            {
+                Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
+            }
         }
-        auto remoteSoundId = groupedSounds.at(id);
+        else
+        {
+            remoteSoundId = groupedSounds.at(id);
+        }
         lock.unlock();
 
         auto playingSound = Globals::gAudio.resume(id);
-        auto remotePlayingSound = Globals::gAudio.resume(remoteSoundId);
+        if (remoteSoundId)
+        {
+            Globals::gAudio.resume(*remoteSoundId);
+        }
 
-        if (playingSound && remotePlayingSound)
+        if (playingSound)
         {
             return *playingSound;
         }
 
-        Fancy::fancy.logTime().failure() << "Failed to resume sound " << id << std::endl;
+        Fancy::fancy.logTime().warning() << "Failed to resume sound " << id << std::endl;
         onError(ErrorCode::FailedToResume);
         return std::nullopt;
     }
     std::optional<PlayingSound> Window::seekSound(const std::uint32_t &id, std::uint64_t seekTo)
     {
         std::shared_lock lock(groupedSoundsMutex);
+        std::optional<std::uint32_t> remoteSoundId;
         if (groupedSounds.find(id) == groupedSounds.end())
         {
-            Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
-            return std::nullopt;
+            if (!Globals::gSettings.output.empty())
+            {
+                Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
+            }
         }
-        auto remoteSoundId = groupedSounds.at(id);
+        else
+        {
+            remoteSoundId = groupedSounds.at(id);
+        }
         lock.unlock();
 
         auto playingSound = Globals::gAudio.seek(id, seekTo);
-        auto remotePlayingSound = Globals::gAudio.seek(remoteSoundId, seekTo);
-        if (playingSound && remotePlayingSound)
+        if (remoteSoundId)
+        {
+            Globals::gAudio.seek(*remoteSoundId, seekTo);
+        }
+
+        if (playingSound)
         {
             return *playingSound;
         }
 
-        Fancy::fancy.logTime().failure() << "Failed to seek sound " << id << " to " << seekTo << std::endl;
+        Fancy::fancy.logTime().warning() << "Failed to seek sound " << id << " to " << seekTo << std::endl;
         onError(ErrorCode::FailedToSeek);
         return std::nullopt;
     }
     std::optional<PlayingSound> Window::repeatSound(const std::uint32_t &id, bool shouldRepeat)
     {
         std::shared_lock lock(groupedSoundsMutex);
+        std::optional<std::uint32_t> remoteSoundId;
         if (groupedSounds.find(id) == groupedSounds.end())
         {
-            Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
-            return std::nullopt;
+            if (!Globals::gSettings.output.empty())
+            {
+                Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
+            }
         }
-        auto remoteSoundId = groupedSounds.at(id);
+        else
+        {
+            remoteSoundId = groupedSounds.at(id);
+        }
         lock.unlock();
 
         auto playingSound = Globals::gAudio.repeat(id, shouldRepeat);
-        auto remotePlayingSound = Globals::gAudio.repeat(remoteSoundId, shouldRepeat);
-        if (playingSound && remotePlayingSound)
+        if (remoteSoundId)
+        {
+            Globals::gAudio.repeat(*remoteSoundId, shouldRepeat);
+        }
+
+        if (playingSound)
         {
             return *playingSound;
         }
@@ -311,16 +349,25 @@ namespace Soundux::Objects
     bool Window::stopSound(const std::uint32_t &id)
     {
         std::shared_lock lock(groupedSoundsMutex);
+        std::optional<std::uint32_t> remoteSoundId;
         if (groupedSounds.find(id) == groupedSounds.end())
         {
-            Fancy::fancy.logTime().failure() << "Failed to find remoteSound of sound " << id << std::endl;
-            return false;
+            if (!Globals::gSettings.output.empty())
+            {
+                Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
+            }
         }
-        auto remoteId = groupedSounds.at(id);
+        else
+        {
+            remoteSoundId = groupedSounds.at(id);
+        }
         lock.unlock();
 
         auto status = Globals::gAudio.stop(id);
-        auto remoteStatus = Globals::gAudio.stop(remoteId);
+        if (remoteSoundId)
+        {
+            Globals::gAudio.stop(*remoteSoundId);
+        }
 
 #if defined(__linux__)
         if (Globals::gAudio.getPlayingSounds().empty())
@@ -334,7 +381,7 @@ namespace Soundux::Objects
         }
 #endif
 
-        return status && remoteStatus;
+        return status;
     }
     void Window::stopSounds()
     {
