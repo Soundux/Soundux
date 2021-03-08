@@ -119,7 +119,7 @@ namespace Soundux::Objects
 
                 return tab;
             }
-            Fancy::fancy.logTime().failure() << "Selected Folder does not exist!" << std::endl;
+            Fancy::fancy.logTime().warning() << "Selected Folder does not exist!" << std::endl;
             onError(ErrorCode::FolderDoesNotExist);
         }
         return std::nullopt;
@@ -336,7 +336,7 @@ namespace Soundux::Objects
             return *playingSound;
         }
 
-        Fancy::fancy.logTime().failure() << "Failed to set repeatstate of sound " << id << " to " << shouldRepeat
+        Fancy::fancy.logTime().failure() << "Failed to set repeat-state of sound " << id << " to " << shouldRepeat
                                          << std::endl;
         onError(ErrorCode::FailedToRepeat);
         return std::nullopt;

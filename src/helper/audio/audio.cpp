@@ -129,7 +129,7 @@ namespace Soundux::Objects
             return true;
         }
 
-        Fancy::fancy.logTime().failure() << "Failed to stop sound with id " << soundId << ", sound does not exist"
+        Fancy::fancy.logTime().warning() << "Failed to stop sound with id " << soundId << ", sound does not exist"
                                          << std::endl;
         return false;
     }
@@ -154,7 +154,7 @@ namespace Soundux::Objects
             return sound->second;
         }
 
-        Fancy::fancy.logTime().failure() << "Failed to pause sound with id " << soundId << ", sound does not exist"
+        Fancy::fancy.logTime().warning() << "Failed to pause sound with id " << soundId << ", sound does not exist"
                                          << std::endl;
         return std::nullopt;
     }
@@ -170,7 +170,7 @@ namespace Soundux::Objects
             return sound->second;
         }
 
-        Fancy::fancy.logTime().failure() << "Failed to set repeat for sound with id " << soundId
+        Fancy::fancy.logTime().warning() << "Failed to set repeat for sound with id " << soundId
                                          << ", sound does not exist" << std::endl;
         return std::nullopt;
     }
@@ -192,7 +192,7 @@ namespace Soundux::Objects
             }
             return sound->second;
         }
-        Fancy::fancy.logTime().failure() << "Failed to resume sound with id " << soundId << ", sound does not exist"
+        Fancy::fancy.logTime().warning() << "Failed to resume sound with id " << soundId << ", sound does not exist"
                                          << std::endl;
         return std::nullopt;
     }
@@ -296,7 +296,7 @@ namespace Soundux::Objects
 
             return rtn;
         }
-        Fancy::fancy.logTime().failure() << "Failed to seek sound with id " << soundId << ", sound does not exist"
+        Fancy::fancy.logTime().warning() << "Failed to seek sound with id " << soundId << ", sound does not exist"
                                          << std::endl;
         return std::nullopt;
     }
@@ -416,7 +416,7 @@ namespace Soundux::Objects
         {
             return devices.at(name);
         }
-        Fancy::fancy.logTime().failure() << "Failed to receive AudioDevice with name " << name
+        Fancy::fancy.logTime().warning() << "Failed to receive AudioDevice with name " << name
                                          << ", AudioDevice does not exist" << std::endl;
         return std::nullopt;
     }

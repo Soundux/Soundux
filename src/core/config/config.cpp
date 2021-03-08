@@ -43,7 +43,7 @@ namespace Soundux::Objects
         }
         catch (const std::exception &e)
         {
-            Fancy::fancy.logTime().failure() << "Failed to write config: " << e.what() << std::endl;
+            Fancy::fancy.logTime().failure() << "Failed to write config: " >> e.what() << std::endl;
         }
         catch (...)
         {
