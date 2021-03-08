@@ -72,8 +72,8 @@ namespace Soundux
             bool isSwitchOnConnectLoaded();
 
             bool moveBackCurrentApplication();
+            bool revertDefaultSourceToOriginal();
             bool setDefaultSourceToSoundboardSink();
-            bool revertDefaultSourceToOriginal() const;
             bool moveApplicationToSinkMonitor(const std::string &);
 
             void refreshRecordingStreams(const bool &fix = false);

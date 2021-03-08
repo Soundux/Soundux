@@ -224,10 +224,24 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().failure() << "Failed to get default pulse sources" << std::endl;
         }
     }
-    bool Pulse::revertDefaultSourceToOriginal() const
+    bool Pulse::revertDefaultSourceToOriginal()
     {
         if (!data.pulseDefaultSource.empty())
         {
+            if (system(("pactl unload-module " + std::to_string(data.loopbackModuleId)).c_str()) != 0) // NOLINT
+            {
+                Fancy::fancy.logTime().warning() << "Could not unload loopback module" << std::endl;
+                return false;
+            }
+
+            if (!setModuleId("pactl load-module module-loopback rate=44100 source=" + data.pulseDefaultSource +
+                                 " sink=soundux_sink sink_dont_move=true",
+                             data.loopbackModuleId))
+            {
+                Fancy::fancy.logTime().failure() << "Failed to re-create moveable loopback" << std::endl;
+                return false;
+            }
+
             if (system(("pactl set-default-source " + data.pulseDefaultSource + " >/dev/null").c_str()) != 0) // NOLINT
             {
                 return false;
@@ -243,34 +257,54 @@ namespace Soundux::Objects
     }
     bool Pulse::setDefaultSourceToSoundboardSink()
     {
+        if (system(("pactl unload-module " + std::to_string(data.loopbackModuleId)).c_str()) != 0) // NOLINT
+        {
+            Fancy::fancy.logTime().warning() << "Could not unload loopback module" << std::endl;
+            return false;
+        }
+        if (!setModuleId("pactl load-module module-loopback rate=44100 source=" + data.pulseDefaultSource +
+                             " sink=soundux_sink",
+                         data.loopbackModuleId))
+        {
+            Fancy::fancy.logTime().failure() << "Failed to re-create moveable loopback" << std::endl;
+            return false;
+        }
+
         return system("pactl set-default-source soundux_sink.monitor >/dev/null") == 0; // NOLINT
     }
     bool Pulse::moveApplicationToSinkMonitor(const std::string &streamName)
     {
-        moveBackCurrentApplication();
-        refreshRecordingStreams();
-
-        std::shared_lock lock(recordingStreamMutex);
-        if (recordingStreams.find(streamName) != recordingStreams.end())
+        if (!currentApplication || (currentApplication && currentApplication->name != streamName))
         {
-            auto &stream = recordingStreams.at(streamName);
-            currentApplication = stream;
-            // NOLINTNEXTLINE
-            return system(("pactl move-source-output " + std::to_string(stream.id) + " soundux_sink.monitor >/dev/null")
-                              .c_str()) == 0;
+            moveBackCurrentApplication();
+            refreshRecordingStreams();
+
+            std::shared_lock lock(recordingStreamMutex);
+            if (recordingStreams.find(streamName) != recordingStreams.end())
+            {
+                auto &stream = recordingStreams.at(streamName);
+                currentApplication = stream;
+                // NOLINTNEXTLINE
+                return system(("pactl move-source-output " + std::to_string(stream.id) +
+                               " soundux_sink.monitor >/dev/null")
+                                  .c_str()) == 0;
+            }
+            Fancy::fancy.logTime().failure()
+                << "Failed to find PulseRecordingStream with name: " << streamName << std::endl;
+            return false;
         }
-        Fancy::fancy.logTime().failure() << "Failed to find PulseRecordingStream with name: " << streamName
-                                         << std::endl;
-        return false;
+        return true;
     }
     bool Pulse::moveBackCurrentApplication()
     {
         if (currentApplication)
         {
             // NOLINTNEXTLINE
-            return system(("pactl move-source-output " + std::to_string(currentApplication->id) + " " +
-                           currentApplication->source + " >/dev/null")
-                              .c_str()) == 0;
+            auto success = system(("pactl move-source-output " + std::to_string(currentApplication->id) + " " +
+                                   currentApplication->source + " >/dev/null")
+                                      .c_str()) == 0;
+            currentApplication = std::nullopt;
+            return success;
         }
         return true; //* Not having anything to moveback should count as a failure
     }

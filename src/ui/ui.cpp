@@ -130,7 +130,7 @@ namespace Soundux::Objects
         auto sound = Globals::gData.getSound(id);
         if (sound)
         {
-            if (Globals::gSettings.output.empty())
+            if (Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
             {
                 if (!Globals::gSettings.allowOverlapping)
                 {
@@ -139,7 +139,8 @@ namespace Soundux::Objects
 
                 return Globals::gAudio.play(*sound);
             }
-            if (Globals::gPulse.moveApplicationToSinkMonitor(Globals::gSettings.output))
+            if (Globals::gSettings.useAsDefaultDevice ||
+                Globals::gPulse.moveApplicationToSinkMonitor(Globals::gSettings.output))
             {
                 if (!Globals::gSettings.allowOverlapping)
                 {
@@ -218,7 +219,7 @@ namespace Soundux::Objects
         std::optional<std::uint32_t> remoteSoundId;
         if (groupedSounds.find(id) == groupedSounds.end())
         {
-            if (!Globals::gSettings.output.empty())
+            if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
             {
                 Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
             }
@@ -250,7 +251,7 @@ namespace Soundux::Objects
         std::optional<std::uint32_t> remoteSoundId;
         if (groupedSounds.find(id) == groupedSounds.end())
         {
-            if (!Globals::gSettings.output.empty())
+            if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
             {
                 Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
             }
@@ -282,7 +283,7 @@ namespace Soundux::Objects
         std::optional<std::uint32_t> remoteSoundId;
         if (groupedSounds.find(id) == groupedSounds.end())
         {
-            if (!Globals::gSettings.output.empty())
+            if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
             {
                 Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
             }
@@ -314,7 +315,7 @@ namespace Soundux::Objects
         std::optional<std::uint32_t> remoteSoundId;
         if (groupedSounds.find(id) == groupedSounds.end())
         {
-            if (!Globals::gSettings.output.empty())
+            if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
             {
                 Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
             }
@@ -352,7 +353,7 @@ namespace Soundux::Objects
         std::optional<std::uint32_t> remoteSoundId;
         if (groupedSounds.find(id) == groupedSounds.end())
         {
-            if (!Globals::gSettings.output.empty())
+            if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
             {
                 Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
             }
@@ -370,7 +371,7 @@ namespace Soundux::Objects
         }
 
 #if defined(__linux__)
-        if (Globals::gAudio.getPlayingSounds().empty())
+        if (Globals::gAudio.getPlayingSounds().empty() && !Globals::gSettings.useAsDefaultDevice)
         {
             if (!Globals::gPulse.moveBackCurrentApplication())
             {
@@ -412,6 +413,12 @@ namespace Soundux::Objects
         }
         else if (settings.useAsDefaultDevice && !Globals::gSettings.useAsDefaultDevice)
         {
+            Globals::gSettings.output = "";
+            if (!Globals::gPulse.moveBackCurrentApplication())
+            {
+                Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
+                onError(ErrorCode::FailedToMoveBack);
+            }
             if (!Globals::gPulse.setDefaultSourceToSoundboardSink())
             {
                 Fancy::fancy.logTime().failure() << "Failed to set default source" << std::endl;
