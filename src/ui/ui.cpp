@@ -517,7 +517,14 @@ namespace Soundux::Objects
     {
         if (Globals::gPulse.moveApplicationToSinkMonitor(Globals::gSettings.output))
         {
-            return Globals::gPulse.moveApplicationToApplicationPassthrough(name);
+            auto passthroughStream = Globals::gPulse.moveApplicationToApplicationPassthrough(name);
+            if (!passthroughStream)
+            {
+                Fancy::fancy.logTime().failure()
+                    << "Failed to move application: " << name << " to passthrough" << std::endl;
+                onError(ErrorCode::FailedToStartPassthrough);
+            }
+            return passthroughStream;
         }
         Fancy::fancy.logTime().failure() << "Failed to start passthrough for application: " << name << std::endl;
         onError(ErrorCode::FailedToStartPassthrough);
