@@ -7,10 +7,6 @@ assignees: ''
 
 ---
 
-**Affected part of the program**
-- [ ] Frontend <i>(e.g Something in the UI is not behaving correctly)</i>
-- [ ] Backend <i>(e.g Crashes, Problems with Audio-Playback)</i>
-
 **Describe the bug**
 A clear and concise description of what the bug is.
 
