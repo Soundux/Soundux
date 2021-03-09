@@ -425,6 +425,18 @@ namespace Soundux::Objects
                 onError(ErrorCode::FailedToSetDefaultSource);
             }
         }
+        if (settings.output != Globals::gSettings.output)
+        {
+            if (!Globals::gPulse.moveBackCurrentApplication())
+            {
+                Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
+                onError(ErrorCode::FailedToMoveBack);
+            }
+            if (!settings.output.empty())
+            {
+                Globals::gPulse.moveApplicationToSinkMonitor(settings.output);
+            }
+        }
 #endif
         Globals::gSettings = settings;
     }
