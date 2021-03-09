@@ -475,11 +475,12 @@ namespace Soundux::Objects
             playbackStreams.clear();
             for (auto stream : fetchedStreams)
             {
+                auto key = stream.name;
                 if (playbackStreams.count(stream.name) > 0)
                 {
                     stream.name += " (" + std::to_string(playbackStreams.count(stream.name)) + ")";
                 }
-                playbackStreams.insert({stream.name, stream});
+                playbackStreams.insert({key, stream});
             }
         }
         else
