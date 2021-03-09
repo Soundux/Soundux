@@ -61,6 +61,9 @@ namespace Soundux::Objects
         webview.addCallback("removeTab", [this](std::uint32_t id) { return removeTab(id); });
         webview.addCallback("refreshTab", [this](std::uint32_t id) { return refreshTab(id); });
         webview.addCallback("moveTabs", [this](const std::vector<int> &newOrder) { return changeTabOrder(newOrder); });
+        webview.addCallback("markFavourite",
+                            [this](const std::uint32_t &id, bool favourite) { return markFavourite(id, favourite); });
+        webview.addCallback("getFavourites", [this] { return getFavourites(); });
 
 #if !defined(__linux__)
         webview.addCallback("getOutput", [this]() { return getOutput(); });

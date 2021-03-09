@@ -14,6 +14,7 @@ namespace nlohmann
                   Soundux::Globals::gHotKeys.getKeySequence(obj.hotkeys)}, //* For frontend and config readability
                  {"id", obj.id},
                  {"path", obj.path},
+                 {"isFavourite", obj.isFavourite},
                  {"modifiedDate", obj.modifiedDate}};
         }
         static void from_json(const json &j, Soundux::Objects::Sound &obj)
@@ -23,6 +24,10 @@ namespace nlohmann
             j.at("id").get_to(obj.id);
             j.at("path").get_to(obj.path);
             j.at("modifiedDate").get_to(obj.modifiedDate);
+            if (j.find("isFavourite") != j.end())
+            {
+                j.at("isFavourite").get_to(obj.isFavourite);
+            }
         }
     };
     template <> struct adl_serializer<Soundux::Objects::AudioDevice>
