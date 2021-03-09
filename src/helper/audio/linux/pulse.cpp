@@ -386,8 +386,12 @@ namespace Soundux::Objects
 
             std::unique_lock lock(recordingStreamMutex);
             recordingStreams.clear();
-            for (const auto &stream : fetchedStreams)
+            for (auto stream : fetchedStreams)
             {
+                if (recordingStreams.count(stream.name) > 0)
+                {
+                    stream.name += " (" + std::to_string(recordingStreams.count(stream.name)) + ")";
+                }
                 recordingStreams.insert({stream.name, stream});
             }
         }
@@ -469,8 +473,12 @@ namespace Soundux::Objects
 
             std::unique_lock lock(playbackStreamMutex);
             playbackStreams.clear();
-            for (const auto &stream : fetchedStreams)
+            for (auto stream : fetchedStreams)
             {
+                if (playbackStreams.count(stream.name) > 0)
+                {
+                    stream.name += " (" + std::to_string(playbackStreams.count(stream.name)) + ")";
+                }
                 playbackStreams.insert({stream.name, stream});
             }
         }
