@@ -1,3 +1,4 @@
+#include <string>
 #if defined(__linux__)
 #include "pulse.hpp"
 #include <fancy.hpp>
@@ -475,12 +476,17 @@ namespace Soundux::Objects
             playbackStreams.clear();
             for (auto stream : fetchedStreams)
             {
-                auto key = stream.name;
-                if (playbackStreams.count(stream.name) > 0)
+                // TODO(curve): Improve this
+                std::size_t counter = 0;
+                auto name = stream.name;
+
+                while (playbackStreams.find(stream.name) != playbackStreams.end())
                 {
-                    stream.name += " (" + std::to_string(playbackStreams.count(stream.name)) + ")";
+                    stream.name = name + " (" + std::to_string(counter) + ")";
+                    counter++;
                 }
-                playbackStreams.insert({key, stream});
+
+                playbackStreams.insert({stream.name, stream});
             }
         }
         else
