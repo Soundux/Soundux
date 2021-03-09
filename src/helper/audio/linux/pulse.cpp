@@ -303,7 +303,7 @@ namespace Soundux::Objects
             auto success = system(("pactl move-source-output " + std::to_string(currentApplication->id) + " " +
                                    currentApplication->source + " >/dev/null")
                                       .c_str()) == 0;
-            currentApplication = std::nullopt;
+            currentApplication.reset();
             return success;
         }
         return true; //* Not having anything to moveback should count as a failure
@@ -545,9 +545,11 @@ namespace Soundux::Objects
         if (currentApplicationPassthrough)
         {
             // NOLINTNEXTLINE
-            return system(("pactl move-sink-input " + std::to_string(currentApplicationPassthrough->id) + " " +
-                           currentApplicationPassthrough->sink + " >/dev/null")
-                              .c_str()) == 0;
+            auto success = system(("pactl move-sink-input " + std::to_string(currentApplicationPassthrough->id) + " " +
+                                   currentApplicationPassthrough->sink + " >/dev/null")
+                                      .c_str()) == 0;
+            currentApplicationPassthrough.reset();
+            return success;
         }
         return true;
     }
