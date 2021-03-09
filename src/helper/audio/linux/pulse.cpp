@@ -477,7 +477,7 @@ namespace Soundux::Objects
             for (auto stream : fetchedStreams)
             {
                 // TODO(curve): Improve this
-                std::size_t counter = 0;
+                std::size_t counter = 1;
                 auto name = stream.name;
 
                 while (playbackStreams.find(stream.name) != playbackStreams.end())
