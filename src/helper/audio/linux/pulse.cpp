@@ -419,7 +419,7 @@ namespace Soundux::Objects
                 {
                     if (match[2].matched)
                     {
-                        if (stream)
+                        if (stream && stream.name != "soundux")
                         {
                             playbackStreamMutex.lock_shared();
                             if (playbackStreams.find(stream.name) != playbackStreams.end())
@@ -461,7 +461,7 @@ namespace Soundux::Objects
                 }
             }
             playbackStreamMutex.lock_shared();
-            if (stream)
+            if (stream && stream.name != "soundux")
             {
                 if (playbackStreams.find(stream.name) != playbackStreams.end())
                 {
