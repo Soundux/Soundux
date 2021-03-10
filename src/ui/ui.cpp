@@ -30,6 +30,7 @@ namespace Soundux::Objects
     }
     std::vector<Sound> Window::refreshTabSounds(const Tab &tab) const
     {
+        // TODO(curve): Improve this fuckery
         if (std::filesystem::exists(tab.path))
         {
             std::vector<Sound> rtn;
@@ -72,13 +73,19 @@ namespace Soundux::Objects
                                [](char c) { return c == '\\' ? '/' : c; });
 #endif
                 sound.name = file.stem().u8string();
-                sound.id = ++Globals::gData.soundIdCounter;
 
-                if (auto oldSound = std::find_if(tab.sounds.begin(), tab.sounds.end(),
-                                                 [&sound](const auto &item) { return item.path == sound.path; });
-                    oldSound != tab.sounds.end())
+                auto oldSound = std::find_if(tab.sounds.begin(), tab.sounds.end(),
+                                             [&sound](const auto &item) { return item.path == sound.path; });
+
+                if (oldSound != tab.sounds.end())
                 {
+                    sound.id = oldSound->id;
                     sound.hotkeys = oldSound->hotkeys;
+                    sound.isFavorite = oldSound->isFavorite;
+                }
+                else
+                {
+                    sound.id = ++Globals::gData.soundIdCounter;
                 }
 
                 rtn.emplace_back(sound);
