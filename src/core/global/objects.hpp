@@ -41,7 +41,7 @@ namespace Soundux
             std::uint32_t id;
             std::string name;
             std::string path;
-            bool isFavourite;
+            bool isFavorite = false;
 
             std::vector<int> hotkeys;
             std::uint64_t modifiedDate;

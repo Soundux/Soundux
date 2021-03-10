@@ -17,7 +17,7 @@ namespace Soundux::Objects
         for (auto &sound : tabs.back().sounds)
         {
             Globals::gSounds.insert({sound.id, sound});
-            if (sound.isFavourite)
+            if (sound.isFavorite)
             {
                 Globals::gFavourites.insert({sound.id, sound});
             }
@@ -35,7 +35,7 @@ namespace Soundux::Objects
             for (auto &sound : tab.sounds)
             {
                 Globals::gSounds.erase(sound.id);
-                if (sound.isFavourite)
+                if (sound.isFavorite)
                 {
                     Globals::gFavourites.erase(sound.id);
                 }
@@ -69,7 +69,7 @@ namespace Soundux::Objects
             for (auto &sound : tab.sounds)
             {
                 Globals::gSounds.insert({sound.id, sound});
-                if (sound.isFavourite)
+                if (sound.isFavorite)
                 {
                     Globals::gFavourites.insert({sound.id, sound});
                 }
@@ -113,7 +113,7 @@ namespace Soundux::Objects
             for (const auto &sound : realTab.sounds)
             {
                 Globals::gSounds.erase(sound.id);
-                if (sound.isFavourite)
+                if (sound.isFavorite)
                 {
                     Globals::gFavourites.erase(sound.id);
                 }
@@ -124,7 +124,7 @@ namespace Soundux::Objects
             for (auto &sound : realTab.sounds)
             {
                 Globals::gSounds.insert({sound.id, sound});
-                if (sound.isFavourite)
+                if (sound.isFavorite)
                 {
                     Globals::gFavourites.insert({sound.id, sound});
                 }
@@ -155,7 +155,7 @@ namespace Soundux::Objects
             for (auto &sound : tab.sounds)
             {
                 Globals::gSounds.insert({sound.id, sound});
-                if (sound.isFavourite)
+                if (sound.isFavorite)
                 {
                     Globals::gFavourites.insert({sound.id, sound});
                 }
@@ -170,7 +170,7 @@ namespace Soundux::Objects
             return std::nullopt;
         }
 
-        sound->get().isFavourite = favourite;
+        sound->get().isFavorite = favourite;
         if (favourite)
         {
             std::unique_lock lock(Globals::gFavouritesMutex);
