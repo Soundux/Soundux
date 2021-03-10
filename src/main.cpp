@@ -53,7 +53,7 @@ int main()
         Soundux::Globals::gPulse.setDefaultSourceToSoundboardSink();
     }
 #endif
-    Soundux::Globals::gData = Soundux::Globals::gConfig.data;
+    Soundux::Globals::gData.set(Soundux::Globals::gConfig.data);
     Soundux::Globals::gSettings = Soundux::Globals::gConfig.settings;
 
     Soundux::Globals::gGui = std::make_unique<Soundux::Objects::WebView>();
