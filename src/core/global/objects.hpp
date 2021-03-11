@@ -93,9 +93,8 @@ namespace Soundux
             std::vector<Sound> getFavorites();
             std::optional<Sound> markFavorite(const std::uint32_t &, bool);
 
-            Data() = default;
             void set(const Data &other);
-            Data(const Data &) = default;
+            Data &operator=(const Data &other) = delete;
         };
     } // namespace Objects
 } // namespace Soundux

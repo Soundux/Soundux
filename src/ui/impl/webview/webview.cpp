@@ -6,6 +6,7 @@
 #include <fancy.hpp>
 #include <filesystem>
 #include <nlohmann/json.hpp>
+#include <optional>
 
 #ifdef _WIN32
 #include <shellapi.h>
@@ -41,7 +42,7 @@ namespace Soundux::Objects
 #endif
         });
         webview.addCallback("addTab", [this]() { return (addTab()); });
-        webview.addCallback("getData", []() { return Globals::gData; });
+        webview.addCallback("getTabs", []() { return Globals::gData.getTabs(); });
         webview.addCallback("getPlayingSounds", []() { return Globals::gAudio.getPlayingSounds(); });
         webview.addCallback("playSound", [this](std::uint32_t id) { return playSound(id); });
         webview.addCallback("stopSound", [this](std::uint32_t id) { return stopSound(id); });
@@ -80,7 +81,7 @@ namespace Soundux::Objects
                 Fancy::fancy.logTime().warning() << "Failed to open url " << url << std::endl;
             }
         });
-        webview.addCallback("getOutput", [this]() { return getOutput(); });
+        webview.addCallback("getOutputs", [this]() { return getOutputs(); });
         webview.addCallback("getPlayback", [this]() { return getPlayback(); });
         webview.addCallback("startPassthrough", [this](const std::string &app) { return startPassthrough(app); });
         webview.addCallback("stopPassthrough", [this]() { stopPassthrough(); });

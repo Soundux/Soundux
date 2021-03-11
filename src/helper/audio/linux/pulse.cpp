@@ -1,4 +1,3 @@
-#include <string>
 #if defined(__linux__)
 #include "pulse.hpp"
 #include <fancy.hpp>
@@ -6,6 +5,7 @@
 #include <optional>
 #include <regex>
 #include <sstream>
+#include <string>
 
 bool exec(const std::string &command, std::string &result)
 {
@@ -69,9 +69,10 @@ namespace Soundux::Objects
     void Pulse::setup()
     {
         unloadLeftOverModules();
-        refreshPlaybackStreams();
-        refreshRecordingStreams();
         fetchDefaultPulseSource();
+
+        auto originalPlabackStreams = getPlaybackStreams();
+        auto originalRecordingStreams = getRecordingStreams();
 
         if (!setModuleId("pactl load-module module-null-sink sink_name=soundux_sink rate=44100 "
                          "sink_properties=device.description=soundux_sink",
@@ -103,8 +104,8 @@ namespace Soundux::Objects
             return;
         }
 
-        refreshPlaybackStreams(true);
-        refreshRecordingStreams(true);
+        fixPlaybackStreams(originalPlabackStreams);
+        fixRecordingStreams(originalRecordingStreams);
 
         static const std::regex sourceRegex(R"rgx((.*#(\d+))$|(Name: (.+)))rgx");
         std::string sources;
@@ -139,8 +140,8 @@ namespace Soundux::Objects
     }
     void Pulse::destroy()
     {
-        moveBackCurrentApplication();
-        moveBackApplicationFromPassthrough();
+        moveBackCurrentApplications();
+        moveBackApplicationsFromPassthrough();
         revertDefaultSourceToOriginal();
 
         if (data.loopbackModuleId != 0)
@@ -225,6 +226,45 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().failure() << "Failed to get default pulse sources" << std::endl;
         }
     }
+    void Pulse::fixRecordingStreams(const std::vector<PulseRecordingStream> &oldStreams)
+    {
+        auto current = getRecordingStreams();
+        for (const auto &app : current)
+        {
+            auto item = std::find_if(std::begin(oldStreams), std::end(oldStreams),
+                                     [&app](const auto &stream) { return stream.id == app.id; });
+            if (item != std::end(oldStreams) && item->source != app.source)
+            {
+                // NOLINTNEXTLINE
+                if (system(("pactl move-source-output " + std::to_string(item->id) + " " + item->source).c_str()) == 0)
+                {
+                    Fancy::fancy.logTime().success()
+                        << "Recovered " << item->name << " from left over module to original source: " << item->source
+                        << std::endl;
+                }
+            }
+        }
+    }
+    void Pulse::fixPlaybackStreams(const std::vector<PulsePlaybackStream> &oldStreams)
+    {
+        auto current = getPlaybackStreams();
+        for (const auto &app : current)
+        {
+            auto item = std::find_if(std::begin(oldStreams), std::end(oldStreams),
+                                     [&app](const auto &stream) { return stream.id == app.id; });
+            if (item != std::end(oldStreams) && item->sink != app.sink)
+            {
+                // NOLINTNEXTLINE
+                if (system(("pactl move-sink-input " + std::to_string(item->id) + " " + item->sink + " >/dev/null")
+                               .c_str()) == 0)
+                {
+                    Fancy::fancy.logTime().success()
+                        << "Recovered " + item->name << " from left over sink to original sink " << item->sink
+                        << std::endl;
+                }
+            }
+        }
+    }
     bool Pulse::revertDefaultSourceToOriginal()
     {
         if (!data.pulseDefaultSource.empty())
@@ -273,226 +313,56 @@ namespace Soundux::Objects
 
         return system("pactl set-default-source soundux_sink.monitor >/dev/null") == 0; // NOLINT
     }
-    bool Pulse::moveApplicationToSinkMonitor(const std::string &streamName)
+    bool Pulse::moveApplicationsToSinkMonitor(const std::string &streamName)
     {
-        if (!currentApplication || (currentApplication && currentApplication->name != streamName))
+        auto applications = getRecordingStreams();
+        if (currentApplications && currentApplications->first != streamName)
         {
-            moveBackCurrentApplication();
-            refreshRecordingStreams();
+            moveBackCurrentApplications();
+        }
 
-            std::shared_lock lock(recordingStreamMutex);
-            if (recordingStreams.find(streamName) != recordingStreams.end())
+        std::vector<PulseRecordingStream> movedStreams;
+
+        for (const auto &app : applications)
+        {
+            if (app.name == streamName)
             {
-                auto &stream = recordingStreams.at(streamName);
-                currentApplication = stream;
                 // NOLINTNEXTLINE
-                return system(("pactl move-source-output " + std::to_string(stream.id) +
-                               " soundux_sink.monitor >/dev/null")
-                                  .c_str()) == 0;
+                if (system(("pactl move-source-output " + std::to_string(app.id) + " soundux_sink.monitor >/dev/null")
+                               .c_str()) == 0)
+                {
+                    movedStreams.emplace_back(app);
+                }
             }
+        }
+
+        if (movedStreams.empty())
+        {
             Fancy::fancy.logTime().failure()
-                << "Failed to find PulseRecordingStream with name: " << streamName << std::endl;
+                << "Failed to find any PulseRecordingStream with name: " << streamName << std::endl;
             return false;
         }
+
+        currentApplications = std::make_pair(streamName, movedStreams);
         return true;
     }
-    bool Pulse::moveBackCurrentApplication()
+    bool Pulse::moveBackCurrentApplications()
     {
-        if (currentApplication)
+        bool success = true;
+        if (currentApplications)
         {
-            // NOLINTNEXTLINE
-            auto success = system(("pactl move-source-output " + std::to_string(currentApplication->id) + " " +
-                                   currentApplication->source + " >/dev/null")
-                                      .c_str()) == 0;
-            currentApplication.reset();
-            return success;
+            for (const auto &app : currentApplications->second)
+            {
+                // NOLINTNEXTLINE
+                if (system(("pactl move-source-output " + std::to_string(app.id) + " " + app.source + " >/dev/null")
+                               .c_str()) != 0)
+                {
+                    success = false;
+                }
+            }
+            currentApplications.reset();
         }
-        return true; //* Not having anything to moveback should count as a failure
-    }
-    void Pulse::refreshRecordingStreams(const bool &fix)
-    {
-        std::string sourceList;
-        if (exec("LC_ALL=C pactl list source-outputs", sourceList))
-        {
-
-            std::vector<PulseRecordingStream> fetchedStreams;
-            static const auto recordingStreamRegex = std::regex(
-                R"rgx((.*#(\d+))|(Driver: (.+))|(Source: (\d+))|(.*process.*binary.* = "(.+)")|(Resample method: (.+)))rgx");
-
-            PulseRecordingStream stream;
-            std::smatch match;
-
-            for (const auto &line : splitByNewLine(sourceList))
-            {
-                if (std::regex_search(line, match, recordingStreamRegex))
-                {
-                    if (match[2].matched)
-                    {
-                        if (stream)
-                        {
-                            recordingStreamMutex.lock_shared();
-                            if (recordingStreams.find(stream.name) != recordingStreams.end())
-                            {
-                                if (fix && stream.source != recordingStreams.at(stream.name).source)
-                                {
-                                    stream.source = recordingStreams.at(stream.name).source;
-
-                                    // NOLINTNEXTLINE
-                                    if (system(("pactl move-source-output " + std::to_string(stream.id) + " " +
-                                                stream.source)
-                                                   .c_str()) == 0)
-                                    {
-                                        Fancy::fancy.logTime().success()
-                                            << "Recovered " << stream.name
-                                            << " from left over module to original source: " << stream.source
-                                            << std::endl;
-                                    }
-                                }
-                            }
-                            recordingStreamMutex.unlock_shared();
-                            fetchedStreams.emplace_back(stream);
-                        }
-
-                        stream = {};
-                        stream.id = std::stoi(match[2]);
-                    }
-                    else if (match[4].matched)
-                    {
-                        stream.driver = match[4];
-                    }
-                    else if (match[6].matched)
-                    {
-                        stream.source = match[6];
-                    }
-                    else if (match[8].matched)
-                    {
-                        stream.name = match[8];
-                    }
-                    else if (match[10].matched)
-                    {
-                        stream.resampleMethod = match[10];
-                    }
-                }
-            }
-            recordingStreamMutex.lock_shared();
-            if (stream)
-            {
-                if (recordingStreams.find(stream.name) != recordingStreams.end())
-                {
-                    stream.source = recordingStreams.at(stream.name).source;
-                }
-                fetchedStreams.emplace_back(stream);
-            }
-            recordingStreamMutex.unlock_shared();
-
-            std::unique_lock lock(recordingStreamMutex);
-            recordingStreams.clear();
-            for (auto stream : fetchedStreams)
-            {
-                if (recordingStreams.count(stream.name) > 0)
-                {
-                    stream.name += " (" + std::to_string(recordingStreams.count(stream.name)) + ")";
-                }
-                recordingStreams.insert({stream.name, stream});
-            }
-        }
-        else
-        {
-            Fancy::fancy.logTime() << "Failed to get recording streams" << std::endl;
-        }
-    }
-    void Pulse::refreshPlaybackStreams(const bool &fix)
-    {
-        std::string sourceList;
-        if (exec("LC_ALL=C pactl list sink-inputs", sourceList))
-        {
-
-            std::vector<PulsePlaybackStream> fetchedStreams;
-            static const auto playbackStreamRegex =
-                std::regex(R"rgx((.*#(\d+))|(Driver: (.+))|(Sink: (\d+))|(.*application\.name.* = "(.+)"))rgx");
-
-            PulsePlaybackStream stream;
-            std::smatch match;
-
-            for (const auto &line : splitByNewLine(sourceList))
-            {
-                if (std::regex_search(line, match, playbackStreamRegex))
-                {
-                    if (match[2].matched)
-                    {
-                        if (stream && stream.name != "soundux")
-                        {
-                            playbackStreamMutex.lock_shared();
-                            if (playbackStreams.find(stream.name) != playbackStreams.end())
-                            {
-                                if (fix && stream.sink != playbackStreams.at(stream.name).sink)
-                                {
-                                    stream.sink = playbackStreams.at(stream.name).sink;
-
-                                    // NOLINTNEXTLINE
-                                    if (system(("pactl move-sink-input " + std::to_string(stream.id) + " " +
-                                                stream.sink + " >/dev/null")
-                                                   .c_str()) == 0)
-                                    {
-                                        Fancy::fancy.logTime().success()
-                                            << "Recovered " + stream.name << " from left over sink to original sink "
-                                            << stream.sink << std::endl;
-                                    }
-                                }
-                            }
-                            playbackStreamMutex.unlock_shared();
-                            fetchedStreams.emplace_back(stream);
-                        }
-
-                        stream = {};
-                        stream.id = std::stoi(match[2]);
-                    }
-                    else if (match[4].matched)
-                    {
-                        stream.driver = match[4];
-                    }
-                    else if (match[6].matched)
-                    {
-                        stream.sink = match[6];
-                    }
-                    else if (match[8].matched)
-                    {
-                        stream.name = match[8];
-                    }
-                }
-            }
-            playbackStreamMutex.lock_shared();
-            if (stream && stream.name != "soundux")
-            {
-                if (playbackStreams.find(stream.name) != playbackStreams.end())
-                {
-                    stream.sink = playbackStreams.at(stream.name).sink;
-                }
-                fetchedStreams.emplace_back(stream);
-            }
-            playbackStreamMutex.unlock_shared();
-
-            std::unique_lock lock(playbackStreamMutex);
-            playbackStreams.clear();
-            for (auto stream : fetchedStreams)
-            {
-                // TODO(curve): Improve this
-                std::size_t counter = 1;
-                auto name = stream.name;
-
-                while (playbackStreams.find(stream.name) != playbackStreams.end())
-                {
-                    stream.name = name + " (" + std::to_string(counter) + ")";
-                    counter++;
-                }
-
-                playbackStreams.insert({stream.name, stream});
-            }
-        }
-        else
-        {
-            Fancy::fancy.logTime().failure() << "Failed to get playback streams" << std::endl;
-        }
+        return success; //* Not having anything to moveback should count as a failure
     }
     void Pulse::unloadLeftOverModules()
     {
@@ -529,57 +399,160 @@ namespace Soundux::Objects
     }
     std::vector<PulseRecordingStream> Pulse::getRecordingStreams()
     {
-        std::shared_lock lock(recordingStreamMutex);
-        std::vector<PulseRecordingStream> rtn;
-        for (const auto &stream : recordingStreams)
+        std::string sourceList;
+        if (exec("LC_ALL=C pactl list source-outputs", sourceList))
         {
-            rtn.emplace_back(stream.second);
+            std::vector<PulseRecordingStream> fetchedStreams;
+            static const auto recordingStreamRegex = std::regex(
+                R"rgx((.*#(\d+))|(Driver: (.+))|(Source: (\d+))|(.*process.*binary.* = "(.+)")|(Resample method: (.+)))rgx");
+
+            PulseRecordingStream stream;
+            std::smatch match;
+
+            for (const auto &line : splitByNewLine(sourceList))
+            {
+                if (std::regex_search(line, match, recordingStreamRegex))
+                {
+                    if (match[2].matched)
+                    {
+                        if (stream)
+                        {
+                            fetchedStreams.emplace_back(stream);
+                        }
+
+                        stream = {};
+                        stream.id = std::stoi(match[2]);
+                    }
+                    else if (match[4].matched)
+                    {
+                        stream.driver = match[4];
+                    }
+                    else if (match[6].matched)
+                    {
+                        stream.source = match[6];
+                    }
+                    else if (match[8].matched)
+                    {
+                        stream.name = match[8];
+                    }
+                    else if (match[10].matched)
+                    {
+                        stream.resampleMethod = match[10];
+                    }
+                }
+            }
+            if (stream)
+            {
+                fetchedStreams.emplace_back(stream);
+            }
+            return fetchedStreams;
         }
-        return rtn;
+        Fancy::fancy.logTime() << "Failed to get recording streams" << std::endl;
+        return {};
     }
     std::vector<PulsePlaybackStream> Pulse::getPlaybackStreams()
     {
-        std::shared_lock lock(playbackStreamMutex);
-        std::vector<PulsePlaybackStream> rtn;
-        for (const auto &stream : playbackStreams)
+        std::string sourceList;
+        if (exec("LC_ALL=C pactl list sink-inputs", sourceList))
         {
-            rtn.emplace_back(stream.second);
-        }
-        return rtn;
-    }
-    bool Pulse::moveBackApplicationFromPassthrough()
-    {
-        if (currentApplicationPassthrough)
-        {
-            // NOLINTNEXTLINE
-            auto success = system(("pactl move-sink-input " + std::to_string(currentApplicationPassthrough->id) + " " +
-                                   currentApplicationPassthrough->sink + " >/dev/null")
-                                      .c_str()) == 0;
-            currentApplicationPassthrough.reset();
-            return success;
-        }
-        return true;
-    }
-    std::optional<PulsePlaybackStream> Pulse::moveApplicationToApplicationPassthrough(const std::string &name)
-    {
-        moveBackApplicationFromPassthrough();
 
-        std::shared_lock lock(playbackStreamMutex);
-        if (playbackStreams.find(name) != playbackStreams.end())
-        {
-            auto &stream = playbackStreams.at(name);
-            currentApplicationPassthrough = stream;
-            // NOLINTNEXTLINE
-            if (system(("pactl move-sink-input " + std::to_string(stream.id) + " soundux_sink_passthrough >/dev/null")
-                           .c_str()) != 0)
+            std::vector<PulsePlaybackStream> fetchedStreams;
+            static const auto playbackStreamRegex =
+                std::regex(R"rgx((.*#(\d+))|(Driver: (.+))|(Sink: (\d+))|(.*application\.name.* = "(.+)"))rgx");
+
+            PulsePlaybackStream stream;
+            std::smatch match;
+
+            for (const auto &line : splitByNewLine(sourceList))
             {
-                Fancy::fancy.logTime().failure()
-                    << "Failed to move application " << name << " to passthrough" << std::endl;
+                if (std::regex_search(line, match, playbackStreamRegex))
+                {
+                    if (match[2].matched)
+                    {
+                        if (stream && stream.name != "soundux")
+                        {
+                            fetchedStreams.emplace_back(stream);
+                        }
+
+                        stream = {};
+                        stream.id = std::stoi(match[2]);
+                    }
+                    else if (match[4].matched)
+                    {
+                        stream.driver = match[4];
+                    }
+                    else if (match[6].matched)
+                    {
+                        stream.sink = match[6];
+                    }
+                    else if (match[8].matched)
+                    {
+                        stream.name = match[8];
+                    }
+                }
             }
-            return *currentApplicationPassthrough;
+            if (stream && stream.name != "soundux")
+            {
+                fetchedStreams.emplace_back(stream);
+            }
+
+            return fetchedStreams;
         }
-        Fancy::fancy.logTime().failure() << "Failed to find PulsePlaybackStream with name: " << name << std::endl;
-        return std::nullopt;
+        Fancy::fancy.logTime().failure() << "Failed to get playback streams" << std::endl;
+        return {};
+    }
+    bool Pulse::moveBackApplicationsFromPassthrough()
+    {
+        bool success = true;
+        if (currentApplicationPassthroughs)
+        {
+            for (const auto &app : currentApplicationPassthroughs->second)
+            {
+                // clang-format off
+                // NOLINTNEXTLINE
+                if (system(("pactl move-sink-input " + std::to_string(app.id) + " " + app.sink + " >/dev/null").c_str()) != 0)
+                {
+                    success = false;
+                }
+                // clang-format on
+            }
+            currentApplicationPassthroughs.reset();
+        }
+
+        return success;
+    }
+    bool Pulse::moveApplicationToApplicationPassthrough(const std::string &name)
+    {
+        moveBackApplicationsFromPassthrough();
+
+        auto apps = getPlaybackStreams();
+        std::vector<PulsePlaybackStream> movedStreams;
+
+        for (const auto &app : apps)
+        {
+            if (app.name == name)
+            {
+                // NOLINTNEXTLINE
+                if (system(("pactl move-sink-input " + std::to_string(app.id) + " soundux_sink_passthrough >/dev/null")
+                               .c_str()) == 0)
+                {
+                    movedStreams.emplace_back(app);
+                }
+                else
+                {
+                    Fancy::fancy.logTime().warning()
+                        << "Failed to move application " << name << " to passthrough" << std::endl;
+                }
+            }
+        }
+
+        if (!movedStreams.empty())
+        {
+            currentApplicationPassthroughs = std::make_pair(name, movedStreams);
+            return true;
+        }
+
+        return false;
     }
     bool Pulse::isSwitchOnConnectLoaded()
     {
@@ -595,7 +568,7 @@ namespace Soundux::Objects
     }
     bool Pulse::currentlyPassingthrough()
     {
-        return currentApplicationPassthrough.has_value();
+        return currentApplicationPassthroughs.has_value();
     }
 } // namespace Soundux::Objects
 #endif

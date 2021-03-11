@@ -55,14 +55,8 @@ namespace Soundux
             bool setModuleId(const std::string &, std::uint32_t &);
 
             PulseData data;
-            std::optional<PulseRecordingStream> currentApplication;
-            std::optional<PulsePlaybackStream> currentApplicationPassthrough;
-
-            std::shared_mutex recordingStreamMutex;
-            std::map<std::string, PulseRecordingStream> recordingStreams;
-
-            std::shared_mutex playbackStreamMutex;
-            std::map<std::string, PulsePlaybackStream> playbackStreams;
+            std::optional<std::pair<std::string, std::vector<PulseRecordingStream>>> currentApplications;
+            std::optional<std::pair<std::string, std::vector<PulsePlaybackStream>>> currentApplicationPassthroughs;
 
           public:
             void setup();
@@ -71,20 +65,20 @@ namespace Soundux
             void unloadSwitchOnConnect();
             bool isSwitchOnConnectLoaded();
 
-            bool moveBackCurrentApplication();
+            bool moveBackCurrentApplications();
             bool revertDefaultSourceToOriginal();
             bool setDefaultSourceToSoundboardSink();
-            bool moveApplicationToSinkMonitor(const std::string &);
+            bool moveApplicationsToSinkMonitor(const std::string &);
 
-            void refreshRecordingStreams(const bool &fix = false);
             std::vector<PulseRecordingStream> getRecordingStreams();
+            void fixRecordingStreams(const std::vector<PulseRecordingStream> &);
 
-            void refreshPlaybackStreams(const bool &fix = false);
             std::vector<PulsePlaybackStream> getPlaybackStreams();
+            void fixPlaybackStreams(const std::vector<PulsePlaybackStream> &);
 
             bool currentlyPassingthrough();
-            bool moveBackApplicationFromPassthrough();
-            std::optional<PulsePlaybackStream> moveApplicationToApplicationPassthrough(const std::string &);
+            bool moveBackApplicationsFromPassthrough();
+            bool moveApplicationToApplicationPassthrough(const std::string &);
         };
     } // namespace Objects
 } // namespace Soundux

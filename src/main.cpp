@@ -69,7 +69,7 @@ int main()
 #if defined(__linux__)
     Soundux::Globals::gPulse.destroy();
 #endif
-    Soundux::Globals::gConfig.data = Soundux::Globals::gData;
+    Soundux::Globals::gConfig.data.set(Soundux::Globals::gData);
     Soundux::Globals::gConfig.settings = Soundux::Globals::gSettings;
     Soundux::Globals::gConfig.save();
 

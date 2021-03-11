@@ -48,11 +48,11 @@ namespace Soundux
             virtual std::vector<Tab> changeTabOrder(const std::vector<int> &);
 
 #if defined(__linux__)
-            virtual std::vector<PulseRecordingStream> getOutput();
+            virtual std::vector<PulseRecordingStream> getOutputs();
             virtual std::vector<PulsePlaybackStream> getPlayback();
 
             void stopPassthrough();
-            virtual std::optional<PulsePlaybackStream> startPassthrough(const std::string &);
+            virtual bool startPassthrough(const std::string &);
 #else
             virtual std::vector<AudioDevice> getOutput();
 #endif
