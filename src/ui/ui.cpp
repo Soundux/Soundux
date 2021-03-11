@@ -530,10 +530,37 @@ namespace Soundux::Objects
 #if defined(__linux__)
     std::vector<PulseRecordingStream> Window::getOutputs()
     {
-        return Globals::gPulse.getRecordingStreams();
+        //* The frontend only uses the stream name and should only show multiple streams that belong to one application
+        //* once. The backend (gPulse.getRecordingStreams()) will work with multiple instances, so we need to filter out
+        //* duplicates here.
+        auto streams = Globals::gPulse.getRecordingStreams();
+        std::vector<PulseRecordingStream> uniqueStreams;
+        for (const auto &stream : streams)
+        {
+            auto item = std::find_if(std::begin(streams), std::end(streams),
+                                     [&](const auto &_stream) { return stream.name == _stream.name; });
+            if (item == std::end(streams))
+            {
+                uniqueStreams.emplace_back(stream);
+            }
+        }
+        return uniqueStreams;
     }
     std::vector<PulsePlaybackStream> Window::getPlayback()
     {
+        auto streams = Globals::gPulse.getPlaybackStreams();
+        std::vector<PulsePlaybackStream> uniqueStreams;
+        for (const auto &stream : streams)
+        {
+            auto item = std::find_if(std::begin(streams), std::end(streams),
+                                     [&](const auto &_stream) { return stream.name == _stream.name; });
+            if (item == std::end(streams))
+            {
+                uniqueStreams.emplace_back(stream);
+            }
+        }
+        return uniqueStreams;
+
         return Globals::gPulse.getPlaybackStreams();
     }
     bool Window::startPassthrough(const std::string &name)
