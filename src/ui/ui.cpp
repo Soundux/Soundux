@@ -537,9 +537,9 @@ namespace Soundux::Objects
         std::vector<PulseRecordingStream> uniqueStreams;
         for (const auto &stream : streams)
         {
-            auto item = std::find_if(std::begin(streams), std::end(streams),
+            auto item = std::find_if(std::begin(uniqueStreams), std::end(uniqueStreams),
                                      [&](const auto &_stream) { return stream.name == _stream.name; });
-            if (item == std::end(streams))
+            if (item == std::end(uniqueStreams))
             {
                 uniqueStreams.emplace_back(stream);
             }
@@ -552,9 +552,9 @@ namespace Soundux::Objects
         std::vector<PulsePlaybackStream> uniqueStreams;
         for (const auto &stream : streams)
         {
-            auto item = std::find_if(std::begin(streams), std::end(streams),
+            auto item = std::find_if(std::begin(uniqueStreams), std::end(uniqueStreams),
                                      [&](const auto &_stream) { return stream.name == _stream.name; });
-            if (item == std::end(streams))
+            if (item == std::end(uniqueStreams))
             {
                 uniqueStreams.emplace_back(stream);
             }
