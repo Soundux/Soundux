@@ -102,6 +102,12 @@ namespace Soundux::Objects
 
         return str;
     }
+
+    void Hotkeys::stop()
+    {
+        kill = true;
+        listener.join();
+    }
 } // namespace Soundux::Objects
 
 #endif

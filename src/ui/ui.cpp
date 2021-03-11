@@ -598,7 +598,7 @@ namespace Soundux::Objects
         }
     }
 #else
-    std::vector<AudioDevice> Window::getOutput()
+    std::vector<AudioDevice> Window::getOutputs()
     {
         Globals::gAudio.refreshAudioDevices();
         return Globals::gAudio.getAudioDevices();

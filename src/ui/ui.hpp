@@ -54,7 +54,7 @@ namespace Soundux
             void stopPassthrough();
             virtual bool startPassthrough(const std::string &);
 #else
-            virtual std::vector<AudioDevice> getOutput();
+            virtual std::vector<AudioDevice> getOutputs();
 #endif
 
           public:

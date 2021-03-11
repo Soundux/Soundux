@@ -67,7 +67,7 @@ namespace Soundux::Objects
         webview.addCallback("getFavorites", [this] { return getFavourites(); });
 
 #if !defined(__linux__)
-        webview.addCallback("getOutput", [this]() { return getOutput(); });
+        webview.addCallback("getOutputs", [this]() { return getOutputs(); });
 #endif
 #if defined(_WIN32)
         webview.addCallback("openUrl", [](const std::string &url) {
