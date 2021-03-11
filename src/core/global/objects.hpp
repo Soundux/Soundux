@@ -90,8 +90,8 @@ namespace Soundux
             std::optional<Tab> getTab(const std::uint32_t &) const;
             std::optional<std::reference_wrapper<Sound>> getSound(const std::uint32_t &);
 
-            std::vector<Sound> getFavourites();
-            std::optional<Sound> markFavourite(const std::uint32_t &, bool);
+            std::vector<Sound> getFavorites();
+            std::optional<Sound> markFavorite(const std::uint32_t &, bool);
 
             Data() = default;
             void set(const Data &other);

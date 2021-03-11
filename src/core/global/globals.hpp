@@ -27,8 +27,8 @@ namespace Soundux
 
         /* Allows for fast & easy sound access, is populated on start up */
         inline std::shared_mutex gSoundsMutex;
-        inline std::shared_mutex gFavouritesMutex;
+        inline std::shared_mutex gFavoritesMutex;
         inline std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>> gSounds;
-        inline std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>> gFavourites;
+        inline std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>> gFavorites;
     } // namespace Globals
 } // namespace Soundux

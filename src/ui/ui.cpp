@@ -601,10 +601,10 @@ namespace Soundux::Objects
     }
     std::vector<Sound> Window::getFavourites()
     {
-        return Globals::gData.getFavourites();
+        return Globals::gData.getFavorites();
     }
     std::optional<Sound> Window::markFavourite(const std::uint32_t &id, bool favourite)
     {
-        return Globals::gData.markFavourite(id, favourite);
+        return Globals::gData.markFavorite(id, favourite);
     }
 } // namespace Soundux::Objects
