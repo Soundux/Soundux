@@ -29,19 +29,26 @@ namespace Soundux::Objects
 
     void Hotkeys::listen()
     {
-        oKeyBoardProc = SetWindowsHookEx(WH_KEYBOARD_LL, keyBoardProc, nullptr, NULL);
+        oKeyBoardProc = SetWindowsHookEx(WH_KEYBOARD_LL, keyBoardProc, GetModuleHandle(nullptr), NULL);
 
         MSG message;
-        while (!kill)
+        while (!GetMessage(&message, NULL, NULL, NULL))
         {
-            if (PeekMessage(&message, nullptr, 0, 0, PM_REMOVE) != 0)
+            if (kill)
             {
-                TranslateMessage(&message);
-                DispatchMessage(&message);
+                return;
             }
+            TranslateMessage(&message);
+            DispatchMessage(&message);
         }
+    }
 
+    void Hotkeys::stop()
+    {
+        kill = true;
         UnhookWindowsHookEx(oKeyBoardProc);
+        PostThreadMessage(GetThreadId(listener.native_handle()), WM_QUIT, 0, 0);
+        listener.join();
     }
 
     std::string Hotkeys::getKeyName(const int &key)

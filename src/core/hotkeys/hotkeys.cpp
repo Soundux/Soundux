@@ -9,11 +9,6 @@ namespace Soundux
         {
             listener = std::thread([this] { listen(); });
         }
-        void Hotkeys::stop()
-        {
-            kill = true;
-            listener.join();
-        }
         void Hotkeys::shouldNotify(bool status)
         {
             notify = status;
