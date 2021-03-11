@@ -50,7 +50,7 @@ namespace Soundux::Objects
         }
         else
         {
-            Fancy::fancy.logTime().warning() << "Tried to remove non existant tab" << std::endl;
+            Fancy::fancy.logTime().warning() << "Tried to remove non existent tab" << std::endl;
         }
     }
     void Data::setTabs(const std::vector<Tab> &newTabs)
@@ -87,7 +87,7 @@ namespace Soundux::Objects
             return tabs.at(id);
         }
 
-        Fancy::fancy.logTime().warning() << "Tried to access non existant tab " << id << std::endl;
+        Fancy::fancy.logTime().warning() << "Tried to access non existent tab " << id << std::endl;
         return std::nullopt;
     }
     std::optional<std::reference_wrapper<Sound>> Data::getSound(const std::uint32_t &id)
@@ -99,7 +99,7 @@ namespace Soundux::Objects
             return Globals::gSounds.at(id);
         }
 
-        Fancy::fancy.logTime().warning() << "Tried to access non existant sound " << id << std::endl;
+        Fancy::fancy.logTime().warning() << "Tried to access non existent sound " << id << std::endl;
         return std::nullopt;
     }
     std::optional<Tab> Data::setTab(const std::uint32_t &id, const Tab &tab)
@@ -132,7 +132,7 @@ namespace Soundux::Objects
             return realTab;
         }
 
-        Fancy::fancy.logTime().warning() << "Tried to access non existant Tab " << id << std::endl;
+        Fancy::fancy.logTime().warning() << "Tried to access non existent Tab " << id << std::endl;
         return std::nullopt;
     }
     void Data::set(const Data &other)
