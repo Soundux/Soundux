@@ -81,7 +81,7 @@ namespace Soundux::Objects
             return;
         }
         if (!setModuleId("pactl load-module module-loopback rate=44100 source=" + data.pulseDefaultSource +
-                             " sink=soundux_sink sink_dont_move=true",
+                             " sink=soundux_sink sink_dont_move=true source_dont_move=true",
                          data.loopbackModuleId))
         {
             return;
@@ -93,13 +93,14 @@ namespace Soundux::Objects
             return;
         }
         if (!setModuleId("pactl load-module module-loopback latency_msec=1 "
-                         "source=soundux_sink_passthrough.monitor sink=soundux_sink",
+                         "source=soundux_sink_passthrough.monitor sink=soundux_sink source_dont_move=true",
                          data.passthroughLoopbackSinkModuleId))
         {
             return;
         }
-        if (!setModuleId("pactl load-module module-loopback source=soundux_sink_passthrough.monitor",
-                         data.passthroughLoopbackMonitorModuleId))
+        if (!setModuleId(
+                "pactl load-module module-loopback source=soundux_sink_passthrough.monitor source_dont_move=true",
+                data.passthroughLoopbackMonitorModuleId))
         {
             return;
         }
@@ -165,22 +166,6 @@ namespace Soundux::Objects
             if (system(("pactl unload-module " + std::to_string(data.passthroughModuleId)).c_str()) != 0)
             {
                 Fancy::fancy.logTime().warning() << "Could not unload passthrough module" << std::endl;
-            }
-        }
-        if (data.passthroughLoopbackSinkModuleId != 0)
-        {
-            // NOLINTNEXTLINE
-            if (system(("pactl unload-module " + std::to_string(data.passthroughLoopbackSinkModuleId)).c_str()) != 0)
-            {
-                Fancy::fancy.logTime().warning() << "Could not unload passtrhough loopback module" << std::endl;
-            }
-        }
-        if (data.passthroughLoopbackMonitorModuleId != 0)
-        {
-            // NOLINTNEXTLINE
-            if (system(("pactl unload-module " + std::to_string(data.passthroughLoopbackMonitorModuleId)).c_str()) != 0)
-            {
-                Fancy::fancy.logTime().warning() << "Could not unload passtrhough monitor module" << std::endl;
             }
         }
     }
