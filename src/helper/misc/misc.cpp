@@ -1,4 +1,5 @@
 #include "misc.hpp"
+#include <array>
 #include <sstream>
 
 #if defined(_WIN32)
