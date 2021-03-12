@@ -1,42 +1,17 @@
 #if defined(__linux__)
 #include "pulse.hpp"
+#include "../../misc/misc.hpp"
 #include <fancy.hpp>
 #include <mutex>
 #include <optional>
 #include <regex>
-#include <sstream>
 #include <string>
-
-bool exec(const std::string &command, std::string &result)
-{
-    result.clear();
-
-    std::array<char, 128> buffer;
-    auto *pipe = popen(command.c_str(), "r");
-    if (!pipe)
-    {
-        throw std::runtime_error("popen failed");
-    }
-    while (fgets(buffer.data(), buffer.size(), pipe) != nullptr)
-    {
-        result += buffer.data();
-    }
-
-    return pclose(pipe) == 0;
-}
-auto splitByNewLine(const std::string &str)
-{
-    std::vector<std::string> result;
-    std::stringstream ss(str);
-    for (std::string line; std::getline(ss, line, '\n');)
-    {
-        result.emplace_back(line);
-    }
-    return result;
-}
 
 namespace Soundux::Objects
 {
+    using Soundux::Helpers::exec;
+    using Soundux::Helpers::splitByNewLine;
+
     bool Pulse::setModuleId(const std::string &command, std::uint32_t &id)
     {
         static const std::regex idRegex(R"((\d+))");

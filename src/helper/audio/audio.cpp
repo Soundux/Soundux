@@ -1,29 +1,19 @@
 #include "audio.hpp"
 #include "../../core/global/globals.hpp"
 #include "../../ui/ui.hpp"
+#include "../misc/misc.hpp"
 #include <fancy.hpp>
 #include <optional>
 
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
 
-#if defined(_WIN32)
-#include <stringapiset.h>
-std::wstring widen(const std::string &s)
-{
-    int wsz = MultiByteToWideChar(65001, 0, s.c_str(), -1, nullptr, 0);
-    if (!wsz)
-        return std::wstring();
-
-    std::wstring out(wsz, 0);
-    MultiByteToWideChar(65001, 0, s.c_str(), -1, &out[0], wsz);
-    out.resize(wsz - 1);
-    return out;
-}
-#endif
-
 namespace Soundux::Objects
 {
+#if defined(_WIN32)
+    using Soundux::Helpers::widen;
+#endif
+
     void Audio::setup()
     {
         refreshAudioDevices();
