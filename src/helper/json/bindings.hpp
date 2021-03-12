@@ -75,6 +75,7 @@ namespace nlohmann
                  {"darkTheme", obj.darkTheme},
                  {"stopHotkey", obj.stopHotkey},
                  {"selectedTab", obj.selectedTab},
+                 {"launchPadMode", obj.launchPadMode},
                  {"tabHotkeysOnly", obj.tabHotkeysOnly},
                  {"remoteVolume", obj.remoteVolume},
                  {"useAsDefaultDevice", obj.useAsDefaultDevice},
@@ -92,6 +93,10 @@ namespace nlohmann
             j.at("remoteVolume").get_to(obj.remoteVolume);
             j.at("tabHotkeysOnly").get_to(obj.tabHotkeysOnly);
             j.at("useAsDefaultDevice").get_to(obj.useAsDefaultDevice);
+            if (j.find("launchPadMode") != j.end())
+            {
+                j.at("launchPadMode").get_to(obj.launchPadMode);
+            }
         }
     };
     template <> struct adl_serializer<Soundux::Objects::Tab>
