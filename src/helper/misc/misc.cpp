@@ -1,6 +1,11 @@
 #include "misc.hpp"
 #include <sstream>
 
+#if defined(_WIN32)
+#include <Windows.h>
+#include <stringapiset.h>
+#endif
+
 namespace Soundux::Helpers
 {
     std::vector<std::string> splitByNewLine(const std::string &str)
@@ -26,6 +31,7 @@ namespace Soundux::Helpers
         return out;
     }
 #endif
+#if defined(__linux__)
     bool exec(const std::string &command, std::string &result)
     {
         result.clear();
@@ -43,4 +49,5 @@ namespace Soundux::Helpers
 
         return pclose(pipe) == 0;
     }
+#endif
 } // namespace Soundux::Helpers

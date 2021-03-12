@@ -1,11 +1,6 @@
 #pragma once
-#include <array>
 #include <string>
 #include <vector>
-
-#if defined(_WIN32)
-#include <stringapiset.h>
-#endif
 
 namespace Soundux
 {

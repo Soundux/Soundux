@@ -3,7 +3,6 @@
 #include "../../ui/ui.hpp"
 #include "../misc/misc.hpp"
 #include <fancy.hpp>
-#include <optional>
 
 #define MINIAUDIO_IMPLEMENTATION
 #include <miniaudio.h>
