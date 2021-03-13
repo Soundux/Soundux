@@ -1,0 +1,25 @@
+{
+  "projectName": "Soundux",
+  "projectOwner": "Soundux",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "MrKingMichael",
+      "name": "Michael",
+      "avatar_url": "https://avatars.githubusercontent.com/u/30067605?v=4",
+      "profile": "https://github.com/MrKingMichael",
+      "contributions": [
+        "bug",
+        "ideas"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
