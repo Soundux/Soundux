@@ -63,6 +63,7 @@ namespace Soundux
             bool allowOverlapping = true;
             bool tabHotkeysOnly = false;
             bool launchPadMode = false;
+            bool singleClick = false;
             bool darkTheme = true;
             bool gridView = false;
             std::string output;
