@@ -30,41 +30,41 @@
   </p>
 </div>
 
-# Preview
+# 👀 Preview
 | ![Dark Interface](assets/screenshots/1.png)  | ![Seek/Pause/Stop Pane](assets/screenshots/2.png)      |
 | -------------------------------------------- | ------------------------------------------------------ |
 | ![Settings](assets/screenshots/3.png)        | ![Grid View](assets/screenshots/4.png)                 |
 | ![Search Pane](assets/screenshots/5.png)     | ![Application Passthrough](assets/screenshots/6.png)   |
 | ![Light Interface](assets/screenshots/7.png) | ![Light Interface Grid View](assets/screenshots/8.png) |
 
-# Introduction
+# 👋 Introduction
 Soundux is a cross-platform soundboard that features a simple user interface.
 With Soundux you can play audio to a specific application on Linux and to your VB-CABLE sink on Windows.
 
-# Runtime Dependencies
+# 🏃 Runtime Dependencies
 These are required to run the program
 
-## Linux
+## 🐧 Linux
 Please refer to your distro instructions on how to install
 - [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio)
 - Xorg
 - Webkit2gtk
-## Windows
+## 🪟 Windows
 - [VB-CABLE](https://vb-audio.com/Cable/) (Our installer automatically installs VB-CABLE)
 - [Webview2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) (Is also shipped with the installer)
 
-# Installation
+# 📥 Installation
 
-## Linux
+## 🐧 Linux
 
-### Arch Linux and derivatives
+### ❤️ Arch Linux and derivatives
 You can install our package with your AUR helper of choice which will automatically compile and install the latest release version
 ```sh
 yay -S soundux
 ```
 We also provide a `soundux-git` package which compiles from the master branch
 
-### Other distros
+### 📜 Other distros
 You can grab the latest release from Flathub
 
 <a
@@ -72,31 +72,31 @@ You can grab the latest release from Flathub
 width='240' alt='Download on Flathub' 
 src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 
-## Windows
+## 🪟 Windows
 Download our installer or portable from [the latest release](https://github.com/Soundux/Soundux/releases/latest)
 
-# Compilation
+# 🪛 Compilation
 
-## Build Dependencies
+## 🔗 Build Dependencies
 
-### Linux
+### 🐧 Linux
 This list may not be accurate. Contact me if you find missing dependencies so that I can update this list
 - Webkit2gtk
 - X11 client-side development headers
 - G++ >= 9
   - Some distros still have G++ versions < 9 in their repos, using them will result in a build failure (for more information refer to [#71](https://github.com/Soundux/Soundux/issues/71)).
 
-#### Debian/Ubuntu and derivatives
+#### 📜 Debian/Ubuntu and derivatives
 ```sh
 sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev
 ```
 
-### Windows
+### 🪟 Windows
 - Nuget
 - MSVC
 - CMake
 
-## Build
+## 👷 Build
 Clone the repository
 ```sh
 git clone https://github.com/Soundux/Soundux.git
@@ -115,22 +115,22 @@ To start the program
 ./soundux # .\soundux.exe on Windows
 ```
 
-## Install
+## 🖥️ Install
 
-### Linux
+### 🐧 Linux
 ```sh
 sudo make install
 ```
 Automated Installation is currently not finished and will only install the binary. It will be fully functional in the future. (You may look into my [arch package](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=soundux-git) and figure it out for your distro)
 
-# Why _Soundux_?
+# 📝 Why _Soundux_?
 
 The project started as a **Sound**board for Lin**ux**
 
-# License
+# 🗒️ License
 The code is licensed under [GPLv3](LICENSE)
 
-## Contributors ✨
+## ✨ Contributors
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
