@@ -2,7 +2,7 @@ app-id: io.github.Soundux
 runtime: org.gnome.Platform
 runtime-version: "3.38"
 sdk: org.gnome.Sdk
-command: soundux
+command: /opt/soundux/soundux
 finish-args:
   - --device=all
   - --socket=pulseaudio
