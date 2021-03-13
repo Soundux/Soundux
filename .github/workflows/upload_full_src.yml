@@ -1,0 +1,32 @@
+on:
+    push:
+        branches: [master]
+        paths-ignore:
+            - "**/README.md"
+            - "**/compile_linux.yml"
+            - "**/compile_windows.yml"
+            - "**/build_flatpak.yml"
+            - "**/.all-contributorsrc"
+    pull_request:
+        branches: [master]
+
+name: Upload source with submodules
+jobs:
+    build-linux:
+        runs-on: ubuntu-20.04
+        strategy:
+            fail-fast: false
+            matrix:
+                language: ["cpp"]
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+              with:
+                  submodules: recursive
+
+            - name: Upload 
+              uses: actions/upload-artifact@v2.2.2
+              with:
+                  name: Source
+                  path: .
