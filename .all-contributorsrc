@@ -66,6 +66,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "bendem",
+      "name": "bendem",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2681677?v=4",
+      "profile": "https://bendem.be/",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7
