@@ -75,6 +75,16 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "edgarogh",
+      "name": "Edgar Onghena",
+      "avatar_url": "https://avatars.githubusercontent.com/u/46636609?v=4",
+      "profile": "https://edgar.bzh/",
+      "contributions": [
+        "bug",
+        "research"
+      ]
     }
   ],
   "contributorsPerLine": 7
