@@ -5,6 +5,7 @@ on:
             - "**/README.md"
             - "**/compile_windows.yml"
             - "**/compile_linux.yml"
+            - "**/.all-contributorsrc"
     pull_request:
         branches: [master]
 

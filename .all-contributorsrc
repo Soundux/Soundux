@@ -6,10 +6,52 @@
   "files": [
     "README.md"
   ],
-  "imageSize": 100,
+  "imageSize": 50,
   "commit": true,
   "commitConvention": "none",
   "contributors": [
+      {
+      "login": "Curve",
+      "name": "Noah",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37805707?v=4",
+      "profile": "https://github.com/Curve",
+      "contributions": [
+        "bug",
+        "business",
+        "code",
+        "design",
+        "ideas",
+        "infra",
+        "maintenance",
+        "platform",
+        "projectManagement",
+        "question",
+        "review",
+        "test"
+      ]
+    },
+    {
+      "login": "D3SOX",
+      "name": "Nico",
+      "avatar_url": "https://avatars.githubusercontent.com/u/24937357?v=4",
+      "profile": "https://github.com/D3SOX",
+      "contributions": [
+        "bug",
+        "business",
+        "code",
+        "design",
+        "ideas",
+        "infra",
+        "maintenance",
+        "platform",
+        "projectManagement",
+        "question",
+        "review",
+        "test",
+        "translation",
+        "a11y"
+      ]
+    },
     {
       "login": "MrKingMichael",
       "name": "Michael",
@@ -103,48 +145,6 @@
       "profile": "https://belmoussaoui.com/",
       "contributions": [
         "platform"
-      ]
-    },
-    {
-      "login": "Curve",
-      "name": "Noah",
-      "avatar_url": "https://avatars.githubusercontent.com/u/37805707?v=4",
-      "profile": "https://github.com/Curve",
-      "contributions": [
-        "bug",
-        "business",
-        "code",
-        "design",
-        "ideas",
-        "infra",
-        "maintenance",
-        "platform",
-        "projectManagement",
-        "question",
-        "review",
-        "test"
-      ]
-    },
-    {
-      "login": "D3SOX",
-      "name": "Nico",
-      "avatar_url": "https://avatars.githubusercontent.com/u/24937357?v=4",
-      "profile": "https://github.com/D3SOX",
-      "contributions": [
-        "bug",
-        "business",
-        "code",
-        "design",
-        "ideas",
-        "infra",
-        "maintenance",
-        "platform",
-        "projectManagement",
-        "question",
-        "review",
-        "test",
-        "translation",
-        "a11y"
       ]
     }
   ],

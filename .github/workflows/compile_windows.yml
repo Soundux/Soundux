@@ -5,6 +5,7 @@ on:
             - "**/README.md"
             - "**/compile_linux.yml"
             - "**/build_flatpak.yml"
+            - "**/.all-contributorsrc"
     pull_request:
         branches: [master]
 
