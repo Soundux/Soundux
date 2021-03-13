@@ -39,6 +39,15 @@
         "ideas",
         "bug"
       ]
+    },
+    {
+      "login": "fubka",
+      "name": "fubka",
+      "avatar_url": "https://avatars.githubusercontent.com/u/44064746?v=4",
+      "profile": "https://github.com/fubka",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7
