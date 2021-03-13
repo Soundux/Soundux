@@ -121,7 +121,6 @@ To start the program
 ```sh
 sudo make install
 ```
-Automated Installation is currently not finished and will only install the binary. It will be fully functional in the future. (You may look into my [arch package](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=soundux-git) and figure it out for your distro)
 
 # 📝 Why _Soundux_?
 
