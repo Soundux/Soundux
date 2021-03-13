@@ -12,6 +12,7 @@ modules:
   - name: soundux
     buildsystem: cmake-ninja
     config-opts:
+      - -DINSTALL_USR=ON
       - -DCMAKE_BUILD_TYPE=Release
     sources:
       - type: git
