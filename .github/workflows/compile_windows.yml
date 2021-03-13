@@ -6,6 +6,7 @@ on:
             - "**/compile_linux.yml"
             - "**/build_flatpak.yml"
             - "**/.all-contributorsrc"
+            - "**/upload_full_src.yml"
     pull_request:
         branches: [master]
 

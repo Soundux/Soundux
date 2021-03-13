@@ -6,6 +6,7 @@ on:
             - "**/compile_windows.yml"
             - "**/compile_linux.yml"
             - "**/.all-contributorsrc"
+            - "**/upload_full_src.yml"
     pull_request:
         branches: [master]
 
