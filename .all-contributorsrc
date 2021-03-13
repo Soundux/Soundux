@@ -104,6 +104,26 @@
       "contributions": [
         "platform"
       ]
+    },
+    {
+      "login": "Curve",
+      "name": "Noah",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37805707?v=4",
+      "profile": "https://github.com/Curve",
+      "contributions": [
+        "bug",
+        "business",
+        "code",
+        "design",
+        "ideas",
+        "infra",
+        "maintenance",
+        "platform",
+        "projectManagement",
+        "question",
+        "review",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7
