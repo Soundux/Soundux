@@ -85,6 +85,15 @@
         "bug",
         "research"
       ]
+    },
+    {
+      "login": "moggesmith10",
+      "name": "moggesmith10",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33375517?v=4",
+      "profile": "https://github.com/moggesmith10",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7
