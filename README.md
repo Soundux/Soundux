@@ -129,7 +129,7 @@ The project started as a **Sound**board for Lin**ux**
 # 🗒️ License
 The code is licensed under [GPLv3](LICENSE)
 
-## ✨ Contributors
+# ✨ Contributors
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
