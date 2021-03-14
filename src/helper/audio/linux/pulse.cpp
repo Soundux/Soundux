@@ -80,6 +80,18 @@ namespace Soundux::Objects
             return;
         }
 
+        // NOLINTNEXTLINE
+        if (system("pactl set-sink-mute soundux_sink false") != 0)
+        {
+            Fancy::fancy.logTime().warning() << "Failed to set mute state of soundux_sink" << std::endl;
+        }
+
+        // NOLINTNEXTLINE
+        if (system("pactl set-sink-mute soundux_sink_passthrough false") != 0)
+        {
+            Fancy::fancy.logTime().warning() << "Failed to set mute state of soundux_sink_passthrough" << std::endl;
+        }
+
         fixPlaybackStreams(originalPlabackStreams);
         fixRecordingStreams(originalRecordingStreams);
 
