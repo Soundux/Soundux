@@ -142,7 +142,7 @@ namespace Soundux::Objects
             }
             if (Globals::gSettings.muteDuringPlayback)
             {
-                Globals::gPulse.muteDefaultInput(true);
+                Globals::gPulse.muteLoopback(true);
             }
 
             if (Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
@@ -622,7 +622,7 @@ namespace Soundux::Objects
         {
             if (Globals::gSettings.muteDuringPlayback)
             {
-                Globals::gPulse.muteDefaultInput(false);
+                Globals::gPulse.muteLoopback(false);
             }
             if (!Globals::gPulse.currentlyPassingthrough())
             {

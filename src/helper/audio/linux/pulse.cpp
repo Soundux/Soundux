@@ -82,37 +82,6 @@ namespace Soundux::Objects
 
         fixPlaybackStreams(originalPlabackStreams);
         fixRecordingStreams(originalRecordingStreams);
-
-        static const std::regex sourceRegex(R"rgx((.*#(\d+))$|(Name: (.+)))rgx");
-        std::string sources;
-        if (exec("LC_ALL=C pactl list sources", sources))
-        {
-            std::smatch match;
-
-            std::string deviceId;
-            for (const auto &line : splitByNewLine(sources))
-            {
-                if (std::regex_search(line, match, sourceRegex))
-                {
-                    if (match[2].matched)
-                    {
-                        deviceId = match[2];
-                    }
-
-                    if (match[4].matched && match[4] == "soundux_sink.monitor")
-                    {
-                        data.sinkMonitorId = std::stoi(deviceId);
-                        return;
-                    }
-                }
-            }
-
-            Fancy::fancy.logTime().failure() << "Failed to find monitor of soundux sink!" << std::endl;
-        }
-        else
-        {
-            Fancy::fancy.logTime().failure() << "Failed to get sources" << std::endl;
-        }
     }
     void Pulse::destroy()
     {
@@ -415,7 +384,6 @@ namespace Soundux::Objects
         std::string sourceList;
         if (exec("LC_ALL=C pactl list sink-inputs", sourceList))
         {
-
             std::vector<PulsePlaybackStream> fetchedStreams;
             static const auto playbackStreamRegex =
                 std::regex(R"rgx((.*#(\d+))|(Driver: (.+))|(Sink: (\d+))|(.*application\.name.* = "(.+)"))rgx");
@@ -460,6 +428,37 @@ namespace Soundux::Objects
         }
         Fancy::fancy.logTime().failure() << "Failed to get playback streams" << std::endl;
         return {};
+    }
+    void Pulse::fetchLoopbackInputId()
+    {
+        std::string sourceList;
+        if (exec("LC_ALL=C pactl list sink-inputs", sourceList))
+        {
+            static const auto inputIdRegex = std::regex(R"rgx((.*#(\d+))|(Owner Module: (\d+)))rgx");
+            std::uint32_t id = 0;
+            std::smatch match;
+
+            for (const auto &line : splitByNewLine(sourceList))
+            {
+                if (std::regex_search(line, match, inputIdRegex))
+                {
+                    if (match[2].matched)
+                    {
+                        id = std::stoi(match[2]);
+                    }
+                    else if (match[4].matched)
+                    {
+                        std::uint32_t ownerId = std::stoi(match[4]);
+                        if (ownerId == data.loopbackModuleId)
+                        {
+                            data.loopbackSinkInputId = id;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        Fancy::fancy.logTime().warning() << "Failed to get loopbackSinkInputId" << std::endl;
     }
     bool Pulse::moveBackApplicationsFromPassthrough()
     {
@@ -530,14 +529,22 @@ namespace Soundux::Objects
     {
         return currentApplicationPassthroughs.has_value();
     }
-    void Pulse::muteDefaultInput(bool state) const
+    void Pulse::muteLoopback(bool state)
     {
-        // NOLINTNEXTLINE
-        if (system(
-                ("pactl set-source-mute " + data.pulseDefaultSource + " " + (state ? "true" : "false") + " >/dev/null")
-                    .c_str()) != 0)
+        fetchLoopbackInputId();
+        if (data.loopbackSinkInputId != 0)
         {
-            Fancy::fancy.warning() << "Failed to set mute state for default input device" << std::endl;
+            // NOLINTNEXTLINE
+            if (system(("pactl set-sink-input-mute " + std::to_string(data.loopbackSinkInputId) + " " +
+                        (state ? "true" : "false") + " >/dev/null")
+                           .c_str()) != 0)
+            {
+                Fancy::fancy.warning() << "Failed to set mute state for loopback device" << std::endl;
+            }
+        }
+        else
+        {
+            Fancy::fancy.logTime().warning() << "Loopback Sink Input Id is not set! Can't mute loopback" << std::endl;
         }
     }
 } // namespace Soundux::Objects

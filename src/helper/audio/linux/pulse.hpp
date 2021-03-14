@@ -38,10 +38,10 @@ namespace Soundux
         };
         struct PulseData
         {
-            std::uint32_t sinkMonitorId;
             std::string pulseDefaultSource;
             std::uint32_t nullSinkModuleId = 0;
             std::uint32_t loopbackModuleId = 0;
+            std::uint32_t loopbackSinkInputId = 0;
 
             std::uint32_t passthroughModuleId = 0;
             std::uint32_t passthroughLoopbackSinkModuleId = 0;
@@ -49,7 +49,7 @@ namespace Soundux
         };
         class Pulse
         {
-            void fixLeftOvers();
+            void fetchLoopbackInputId();
             void unloadLeftOverModules();
             void fetchDefaultPulseSource();
             bool setModuleId(const std::string &, std::uint32_t &);
@@ -57,6 +57,9 @@ namespace Soundux
             PulseData data;
             std::optional<std::pair<std::string, std::vector<PulseRecordingStream>>> currentApplications;
             std::optional<std::pair<std::string, std::vector<PulsePlaybackStream>>> currentApplicationPassthroughs;
+
+            void fixPlaybackStreams(const std::vector<PulsePlaybackStream> &);
+            void fixRecordingStreams(const std::vector<PulseRecordingStream> &);
 
           public:
             void setup();
@@ -70,17 +73,14 @@ namespace Soundux
             bool setDefaultSourceToSoundboardSink();
             bool moveApplicationsToSinkMonitor(const std::string &);
 
-            std::vector<PulseRecordingStream> getRecordingStreams();
-            void fixRecordingStreams(const std::vector<PulseRecordingStream> &);
-
             std::vector<PulsePlaybackStream> getPlaybackStreams();
-            void fixPlaybackStreams(const std::vector<PulsePlaybackStream> &);
+            std::vector<PulseRecordingStream> getRecordingStreams();
 
             bool currentlyPassingthrough();
             bool moveBackApplicationsFromPassthrough();
             bool moveApplicationToApplicationPassthrough(const std::string &);
 
-            void muteDefaultInput(bool) const;
+            void muteLoopback(bool);
         };
     } // namespace Objects
 } // namespace Soundux
