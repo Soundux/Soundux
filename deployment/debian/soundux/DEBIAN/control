@@ -1,9 +1,24 @@
+Source: soundux
+Section: sound
+Priority: optional
+Maintainer: D3SOX <d3sox@protonmail.com>
+Build-Depends:
+ cmake (>= 3.1~),
+ libx11-dev,
+ libxi-dev,
+ libwebkit2gtk-4.0-dev,
+ dh-make
+Standards-Version: 4.5.0
+Homepage: https://soundux.rocks
+Vcs-Browser: https://github.com/Soundux/Soundux
+Vcs-Git: https://github.com/Soundux/Soundux.git
+
 Package: soundux
 Version: 0.2.1
-Section: custom
-Priority: optional
-Architecture: all
-Essential: no
+Architecture: any
+Maintainer: D3SOX <d3sox@protonmail.com>
 Depends: libgtk-3-0, libwebkit2gtk-4.0-37, libx11-6, pulseaudio, pulseaudio-utils
-Maintainer: info@soundux.rocks
+Section: sound
+Priority: optional
+Homepage: https://soundux.rocks
 Description: A cross-platform soundboard
