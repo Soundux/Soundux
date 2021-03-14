@@ -63,7 +63,9 @@ namespace Soundux
             virtual void mainLoop() = 0;
 
             virtual void onError(const ErrorCode &) = 0;
-            virtual void onSoundPlayed(const PlayingSound &) = 0;
+            virtual void onSoundPlayed(
+                const PlayingSound &) = 0; //* This will be called when a sound is played through a hotkey. PlaySound
+                                           //* will be called before this gets called
             virtual void onSoundFinished(const PlayingSound &);
             virtual void onSoundProgressed(const PlayingSound &) = 0;
             virtual void onHotKeyReceived(const std::vector<int> &);

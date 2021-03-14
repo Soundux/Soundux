@@ -79,6 +79,8 @@ namespace Soundux
             bool currentlyPassingthrough();
             bool moveBackApplicationsFromPassthrough();
             bool moveApplicationToApplicationPassthrough(const std::string &);
+
+            void muteDefaultInput(bool) const;
         };
     } // namespace Objects
 } // namespace Soundux

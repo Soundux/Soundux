@@ -79,6 +79,7 @@ namespace nlohmann
                  {"launchPadMode", obj.launchPadMode},
                  {"tabHotkeysOnly", obj.tabHotkeysOnly},
                  {"remoteVolume", obj.remoteVolume},
+                 {"muteDuringPlayback", obj.muteDuringPlayback},
                  {"useAsDefaultDevice", obj.useAsDefaultDevice},
                  {"localVolume", obj.localVolume}};
         }
@@ -101,6 +102,10 @@ namespace nlohmann
             if (j.find("singleClick") != j.end())
             {
                 j.at("singleClick").get_to(obj.singleClick);
+            }
+            if (j.find("muteDuringPlayback") != j.end())
+            {
+                j.at("muteDuringPlayback").get_to(obj.muteDuringPlayback);
             }
         }
     };

@@ -530,5 +530,15 @@ namespace Soundux::Objects
     {
         return currentApplicationPassthroughs.has_value();
     }
+    void Pulse::muteDefaultInput(bool state) const
+    {
+        // NOLINTNEXTLINE
+        if (system(
+                ("pactl set-source-mute " + data.pulseDefaultSource + " " + (state ? "true" : "false") + " >/dev/null")
+                    .c_str()) != 0)
+        {
+            Fancy::fancy.warning() << "Failed to set mute state for default input device" << std::endl;
+        }
+    }
 } // namespace Soundux::Objects
 #endif
