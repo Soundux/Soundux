@@ -1,9 +1,9 @@
 Package: soundux
 Version: 0.2.1
-Section: custom
-Priority: optional
-Architecture: all
-Essential: no
+Architecture: any
+Maintainer: D3SOX <d3sox@protonmail.com>
 Depends: libgtk-3-0, libwebkit2gtk-4.0-37, libx11-6, pulseaudio, pulseaudio-utils
-Maintainer: info@soundux.rocks
+Section: sound
+Priority: optional
+Homepage: https://soundux.rocks
 Description: A cross-platform soundboard
