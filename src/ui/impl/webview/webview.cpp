@@ -85,8 +85,8 @@ namespace Soundux::Objects
         webview.addCallback("getPlayback", [this]() { return getPlayback(); });
         webview.addCallback("startPassthrough", [this](const std::string &app) { return startPassthrough(app); });
         webview.addCallback("stopPassthrough", [this]() { stopPassthrough(); });
-        webview.addCallback("isSwitchOnConnectLoaded", [this]() { return Globals::gPulse.isSwitchOnConnectLoaded(); });
-        webview.addCallback("unloadSwitchOnConnect", [this]() { Globals::gPulse.unloadSwitchOnConnect(); });
+        webview.addCallback("isSwitchOnConnectLoaded", []() { return Globals::gPulse.isSwitchOnConnectLoaded(); });
+        webview.addCallback("unloadSwitchOnConnect", []() { Globals::gPulse.unloadSwitchOnConnect(); });
 #endif
 
         webview.setResizeCallback([](int width, int height) {

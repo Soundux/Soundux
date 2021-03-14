@@ -176,8 +176,13 @@ namespace Soundux::Objects
                 return std::nullopt;
             }
         }
+        else
+        {
+            Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
+            onError(ErrorCode::SoundNotFound);
+        }
+
         Fancy::fancy.logTime().failure() << "Failed to play sound " << id << std::endl;
-        onError(ErrorCode::FailedToPlay);
         return std::nullopt;
     }
 #else
@@ -214,6 +219,11 @@ namespace Soundux::Objects
                 stopSound(playingSound->id);
             if (remotePlayingSound)
                 stopSound(remotePlayingSound->id);
+        }
+        else if (!sound)
+        {
+            Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
+            onError(ErrorCode::SoundNotFound);
         }
         Fancy::fancy.logTime().failure() << "Failed to play sound " << id << std::endl;
         onError(ErrorCode::FailedToPlay);

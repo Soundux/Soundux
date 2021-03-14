@@ -60,8 +60,8 @@ namespace Soundux::Objects
                 return;
             }
 
-            std::fstream configFile(path);
-            std::string content((std::istreambuf_iterator<char>(configFile)), std::istreambuf_iterator<char>());
+            std::fstream configStream(path);
+            std::string content((std::istreambuf_iterator<char>(configStream)), std::istreambuf_iterator<char>());
             auto json = nlohmann::json::parse(content, nullptr, false);
             if (json.is_discarded())
             {
@@ -89,7 +89,7 @@ namespace Soundux::Objects
                              std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) + ".json"));
                 }
             }
-            configFile.close();
+            configStream.close();
         }
         catch (const std::exception &e)
         {

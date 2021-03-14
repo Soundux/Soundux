@@ -1,6 +1,5 @@
 #include "audio.hpp"
 #include "../../core/global/globals.hpp"
-#include "../../ui/ui.hpp"
 #include "../misc/misc.hpp"
 #include <fancy.hpp>
 
@@ -17,7 +16,7 @@ namespace Soundux::Objects
     {
         refreshAudioDevices();
     }
-    void Audio::destory()
+    void Audio::destroy()
     {
         stopAll();
     }

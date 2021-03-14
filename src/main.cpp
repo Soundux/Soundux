@@ -65,7 +65,7 @@ int main()
 #endif
     Soundux::Globals::gGui->mainLoop();
 
-    Soundux::Globals::gAudio.destory();
+    Soundux::Globals::gAudio.destroy();
 #if defined(__linux__)
     Soundux::Globals::gPulse.destroy();
 #endif

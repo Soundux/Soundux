@@ -78,7 +78,7 @@ namespace Soundux
             std::optional<std::reference_wrapper<AudioDevice>> getAudioDevice(const std::string &);
 
             void setup();
-            void destory();
+            void destroy();
 
 #if defined(__linux__)
             AudioDevice sinkAudioDevice;

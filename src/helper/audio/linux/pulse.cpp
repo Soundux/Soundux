@@ -2,7 +2,6 @@
 #include "pulse.hpp"
 #include "../../misc/misc.hpp"
 #include <fancy.hpp>
-#include <mutex>
 #include <optional>
 #include <regex>
 #include <string>
@@ -46,7 +45,7 @@ namespace Soundux::Objects
         unloadLeftOverModules();
         fetchDefaultPulseSource();
 
-        auto originalPlabackStreams = getPlaybackStreams();
+        auto originalPlaybackStreams = getPlaybackStreams();
         auto originalRecordingStreams = getRecordingStreams();
 
         if (!setModuleId("pactl load-module module-null-sink sink_name=soundux_sink rate=44100 "
@@ -80,7 +79,7 @@ namespace Soundux::Objects
             return;
         }
 
-        fixPlaybackStreams(originalPlabackStreams);
+        fixPlaybackStreams(originalPlaybackStreams);
         fixRecordingStreams(originalRecordingStreams);
     }
     void Pulse::destroy()
@@ -143,7 +142,7 @@ namespace Soundux::Objects
                         {
                             Fancy::fancy.logTime().warning() << "Detected PipeWire, it will probably take a lot of "
                                                                 "time until the UI loads because loading " >>
-                                "module-looback"
+                                "module-loopback"
                                     << " will result in a timeout" << std::endl;
                         }
                     }
@@ -208,7 +207,7 @@ namespace Soundux::Objects
                                  " sink=soundux_sink sink_dont_move=true",
                              data.loopbackModuleId))
             {
-                Fancy::fancy.logTime().failure() << "Failed to re-create moveable loopback" << std::endl;
+                Fancy::fancy.logTime().failure() << "Failed to re-create movable loopback" << std::endl;
                 return false;
             }
 
@@ -236,7 +235,7 @@ namespace Soundux::Objects
                              " sink=soundux_sink",
                          data.loopbackModuleId))
         {
-            Fancy::fancy.logTime().failure() << "Failed to re-create moveable loopback" << std::endl;
+            Fancy::fancy.logTime().failure() << "Failed to re-create movable loopback" << std::endl;
             return false;
         }
 

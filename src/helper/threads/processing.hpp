@@ -86,18 +86,6 @@ namespace Soundux
                 lock.unlock();
                 cv.notify_one();
             }
-            void wait(const std::function<void()> &item)
-            {
-                std::unique_lock lock(queueMutex);
-                auto status = std::make_shared<std::atomic<bool>>();
-                queue.emplace({status, item});
-                lock.unlock();
-                cv.notify_one();
-
-                while (!*status)
-                {
-                }
-            }
 
             ProcessingQueue()
             {

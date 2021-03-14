@@ -1,6 +1,5 @@
 #include "objects.hpp"
 #include "globals.hpp"
-#include <algorithm>
 #include <fancy.hpp>
 #include <functional>
 #include <optional>
