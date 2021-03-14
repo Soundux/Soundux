@@ -92,6 +92,19 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().warning() << "Failed to set mute state of soundux_sink_passthrough" << std::endl;
         }
 
+        // NOLINTNEXTLINE
+        if (system("pactl set-source-mute soundux_sink.monitor false") != 0)
+        {
+            Fancy::fancy.logTime().warning() << "Failed to set mute state of soundux_sink monitor" << std::endl;
+        }
+
+        // NOLINTNEXTLINE
+        if (system("pactl set-source-mute soundux_sink_passthrough.monitor false") != 0)
+        {
+            Fancy::fancy.logTime().warning()
+                << "Failed to set mute state of soundux_sink_passthrough monitor" << std::endl;
+        }
+
         fixPlaybackStreams(originalPlabackStreams);
         fixRecordingStreams(originalRecordingStreams);
 
