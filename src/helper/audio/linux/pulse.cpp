@@ -244,34 +244,34 @@ namespace Soundux::Objects
     bool Pulse::moveApplicationsToSinkMonitor(const std::string &streamName)
     {
         auto applications = getRecordingStreams();
-        if (currentApplications && currentApplications->first != streamName)
+        if (!currentApplications || (currentApplications && currentApplications->first != streamName))
         {
             moveBackCurrentApplications();
-        }
+            std::vector<PulseRecordingStream> movedStreams;
 
-        std::vector<PulseRecordingStream> movedStreams;
-
-        for (const auto &app : applications)
-        {
-            if (app.name == streamName)
+            for (const auto &app : applications)
             {
-                // NOLINTNEXTLINE
-                if (system(("pactl move-source-output " + std::to_string(app.id) + " soundux_sink.monitor >/dev/null")
-                               .c_str()) == 0)
+                if (app.name == streamName)
                 {
-                    movedStreams.emplace_back(app);
+                    // NOLINTNEXTLINE
+                    if (system(
+                            ("pactl move-source-output " + std::to_string(app.id) + " soundux_sink.monitor >/dev/null")
+                                .c_str()) == 0)
+                    {
+                        movedStreams.emplace_back(app);
+                    }
                 }
             }
-        }
 
-        if (movedStreams.empty())
-        {
-            Fancy::fancy.logTime().failure()
-                << "Failed to find any PulseRecordingStream with name: " << streamName << std::endl;
-            return false;
-        }
+            if (movedStreams.empty())
+            {
+                Fancy::fancy.logTime().failure()
+                    << "Failed to find any PulseRecordingStream with name: " << streamName << std::endl;
+                return false;
+            }
 
-        currentApplications = std::make_pair(streamName, movedStreams);
+            currentApplications = std::make_pair(streamName, movedStreams);
+        }
         return true;
     }
     bool Pulse::moveBackCurrentApplications()
@@ -481,7 +481,11 @@ namespace Soundux::Objects
     }
     bool Pulse::moveApplicationToApplicationPassthrough(const std::string &name)
     {
-        moveBackApplicationsFromPassthrough();
+        if (!moveBackApplicationsFromPassthrough())
+        {
+            Fancy::fancy.logTime().warning()
+                << "Failed to move back application: " << currentApplicationPassthroughs->first << std::endl;
+        }
 
         auto apps = getPlaybackStreams();
         std::vector<PulsePlaybackStream> movedStreams;
