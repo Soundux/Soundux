@@ -455,7 +455,7 @@ namespace Soundux::Objects
                 Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
                 onError(ErrorCode::FailedToMoveBack);
             }
-            if (!settings.output.empty())
+            if (!settings.output.empty() && !Globals::gAudio.getPlayingSounds().empty())
             {
                 Globals::gPulse.moveApplicationsToSinkMonitor(settings.output);
             }
