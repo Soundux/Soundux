@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve soundux
+about: Create a report to help us improve Soundux
 title: ''
 labels: bug
 assignees: ''
@@ -17,7 +17,7 @@ Steps to reproduce the behavior:
 4. See error
 
 **Console output** <!-- REQUIRED -->
-<!-- Please specify **the entire** console output up to the point where the problem occurs. You can enable the console on windows by starting Soundux from a terminal where the environment variable SOUNDUX_DEBUG=1 is set -->
+<!-- Please specify **the entire** console output up to the point where the problem occurs. You can enable the console on Windows by starting Soundux from a terminal where the environment variable SOUNDUX_DEBUG=1 is set -->
 ```
 Paste output here
 ```
