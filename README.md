@@ -90,6 +90,10 @@ This list may not be accurate. Contact me if you find missing dependencies so th
 ```sh
 sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev
 ```
+#### 📜 Fedora and derivatives
+```sh
+sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel
+```
 
 ### 🪟 Windows
 - Nuget
