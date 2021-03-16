@@ -60,7 +60,7 @@ namespace Soundux::Objects
                 return;
             }
 
-            std::fstream configStream(path);
+            std::ifstream configStream(path);
             std::string content((std::istreambuf_iterator<char>(configStream)), std::istreambuf_iterator<char>());
             auto json = nlohmann::json::parse(content, nullptr, false);
             if (json.is_discarded())
