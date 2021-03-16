@@ -183,7 +183,7 @@ namespace Soundux::Objects
             if (item != std::end(oldStreams) && item->sink != app.sink)
             {
                 // NOLINTNEXTLINE
-                if (system(("pactl move-sink-input " + std::to_string(item->id) + " " + item->sink + " >/dev/null")
+                if (system(("pactl move-sink-input " + std::to_string(item->id) + " " + item->sink + " >/dev/null 2>&1")
                                .c_str()) == 0)
                 {
                     Fancy::fancy.logTime().success()
@@ -211,7 +211,8 @@ namespace Soundux::Objects
                 return false;
             }
 
-            if (system(("pactl set-default-source " + data.pulseDefaultSource + " >/dev/null").c_str()) != 0) // NOLINT
+            if (system(("pactl set-default-source " + data.pulseDefaultSource + " >/dev/null 2>&1").c_str()) !=
+                0) // NOLINT
             {
                 return false;
             }
@@ -239,7 +240,7 @@ namespace Soundux::Objects
             return false;
         }
 
-        return system("pactl set-default-source soundux_sink.monitor >/dev/null") == 0; // NOLINT
+        return system("pactl set-default-source soundux_sink.monitor >/dev/null 2>&1") == 0; // NOLINT
     }
     bool Pulse::moveApplicationsToSinkMonitor(const std::string &streamName)
     {
@@ -254,9 +255,9 @@ namespace Soundux::Objects
                 if (app.name == streamName)
                 {
                     // NOLINTNEXTLINE
-                    if (system(
-                            ("pactl move-source-output " + std::to_string(app.id) + " soundux_sink.monitor >/dev/null")
-                                .c_str()) == 0)
+                    if (system(("pactl move-source-output " + std::to_string(app.id) +
+                                " soundux_sink.monitor >/dev/null 2>&1")
+                                   .c_str()) == 0)
                     {
                         movedStreams.emplace_back(app);
                     }
@@ -282,8 +283,9 @@ namespace Soundux::Objects
             for (const auto &app : currentApplications->second)
             {
                 // NOLINTNEXTLINE
-                if (system(("pactl move-source-output " + std::to_string(app.id) + " " + app.source + " >/dev/null")
-                               .c_str()) != 0)
+                if (system(
+                        ("pactl move-source-output " + std::to_string(app.id) + " " + app.source + " >/dev/null 2>&1")
+                            .c_str()) != 0)
                 {
                     success = false;
                 }
@@ -311,7 +313,8 @@ namespace Soundux::Objects
                     }
                     else if (match[4].matched)
                     {
-                        if (system(("pactl unload-module " + currentModuleId + " >/dev/null").c_str()) == 0) // NOLINT
+                        if (system(("pactl unload-module " + currentModuleId + " >/dev/null 2>&1").c_str()) ==
+                            0) // NOLINT
                         {
                             Fancy::fancy.logTime().success()
                                 << "Unloaded left over module " << currentModuleId << std::endl;
@@ -473,7 +476,7 @@ namespace Soundux::Objects
             {
                 // clang-format off
                 // NOLINTNEXTLINE
-                if (system(("pactl move-sink-input " + std::to_string(app.id) + " " + app.sink + " >/dev/null").c_str()) != 0)
+                if (system(("pactl move-sink-input " + std::to_string(app.id) + " " + app.sink + " >/dev/null 2>&1").c_str()) != 0)
                 {
                     success = false;
                 }
@@ -500,7 +503,8 @@ namespace Soundux::Objects
             if (app.name == name)
             {
                 // NOLINTNEXTLINE
-                if (system(("pactl move-sink-input " + std::to_string(app.id) + " soundux_sink_passthrough >/dev/null")
+                if (system(("pactl move-sink-input " + std::to_string(app.id) +
+                            " soundux_sink_passthrough >/dev/null 2>&1")
                                .c_str()) == 0)
                 {
                     movedStreams.emplace_back(app);
@@ -523,11 +527,11 @@ namespace Soundux::Objects
     }
     bool Pulse::isSwitchOnConnectLoaded()
     {
-        return (system("pactl list modules | grep module-switch-on-connect >/dev/null") == 0); // NOLINT
+        return (system("pactl list modules | grep module-switch-on-connect >/dev/null 2>&1") == 0); // NOLINT
     }
     void Pulse::unloadSwitchOnConnect()
     {
-        if (system("pactl unload-module module-switch-on-connect >/dev/null") != 0) // NOLINT
+        if (system("pactl unload-module module-switch-on-connect >/dev/null 2>&1") != 0) // NOLINT
         {
             Fancy::fancy.logTime().warning() << "Failed to unload module-switch-on-connect" << std::endl;
         }
@@ -544,7 +548,7 @@ namespace Soundux::Objects
         {
             // NOLINTNEXTLINE
             if (system(("pactl set-sink-input-mute " + std::to_string(data.loopbackSinkInputId) + " " +
-                        (state ? "true" : "false") + " >/dev/null")
+                        (state ? "true" : "false") + " >/dev/null 2>&1 2>&1")
                            .c_str()) != 0)
             {
                 Fancy::fancy.warning() << "Failed to set mute state for loopback device" << std::endl;
