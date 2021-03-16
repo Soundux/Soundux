@@ -311,10 +311,15 @@ namespace Soundux::Objects
                     }
                     else if (match[4].matched)
                     {
-                        if (system(("pactl unload-module " + currentModuleId).c_str()) == 0) // NOLINT
+                        if (system(("pactl unload-module " + currentModuleId + " >/dev/null").c_str()) == 0) // NOLINT
                         {
                             Fancy::fancy.logTime().success()
                                 << "Unloaded left over module " << currentModuleId << std::endl;
+                        }
+                        else
+                        {
+                            Fancy::fancy.logTime().warning() << "Failed to unload module " >>
+                                currentModuleId << " (it is probably already unloaded)" << std::endl;
                         }
                     }
                 }
