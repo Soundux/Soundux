@@ -1,6 +1,7 @@
 #include "webview.hpp"
 #include "../../../core/global/globals.hpp"
 #include "../../../helper/json/bindings.hpp"
+#include "../../../helper/systeminfo/systeminfo.hpp"
 #include <algorithm>
 #include <cstdint>
 #include <fancy.hpp>
@@ -65,6 +66,7 @@ namespace Soundux::Objects
         webview.addCallback("markFavorite",
                             [this](const std::uint32_t &id, bool favourite) { return markFavourite(id, favourite); });
         webview.addCallback("getFavorites", [this] { return getFavourites(); });
+        webview.addCallback("getSystemInfo", []() -> std::string { return SystemInfo::getSummary(); });
 
 #if !defined(__linux__)
         webview.addCallback("getOutputs", [this]() { return getOutputs(); });
