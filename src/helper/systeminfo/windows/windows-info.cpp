@@ -8,8 +8,7 @@ std::string SystemInfo::getSystemInfo()
     OSVERSIONINFOEX info;
     ZeroMemory(&info, sizeof(OSVERSIONINFOEX));
     info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-
-    GetVersionEx(&info);
+    GetVersionEx(reinterpret_cast<LPOSVERSIONINFO>(&info));
 
     return ("Windows: " + std::to_string(info.dwMajorVersion) + "." + std::to_string(info.dwMinorVersion) + "\n");
 }
