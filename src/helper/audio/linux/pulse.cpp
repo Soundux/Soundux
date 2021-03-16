@@ -166,9 +166,15 @@ namespace Soundux::Objects
                 // NOLINTNEXTLINE
                 if (system(("pactl move-source-output " + std::to_string(item->id) + " " + item->source).c_str()) == 0)
                 {
-                    Fancy::fancy.logTime().success()
-                        << "Recovered " << item->name << " from left over module to original source: " << item->source
-                        << std::endl;
+                    Fancy::fancy.logTime().success() << "Recovered " >>
+                        item->name << " from left over module to original source: " >> item->source << std::endl;
+                }
+                else
+                {
+                    Fancy::fancy.logTime().warning() << "Failed to recover " >> app.id >> "(" >>
+                        item->name >> ")"
+                                          << " to its original source: " >>
+                        item->source << std::endl;
                 }
             }
         }
@@ -189,6 +195,13 @@ namespace Soundux::Objects
                     Fancy::fancy.logTime().success()
                         << "Recovered " + item->name << " from left over sink to original sink " << item->sink
                         << std::endl;
+                }
+                else
+                {
+                    Fancy::fancy.logTime().warning() << "Failed to recover " >> app.id >> "(" >>
+                        item->name >> ")"
+                                          << " to its original sink: " >>
+                        item->sink << std::endl;
                 }
             }
         }
@@ -211,9 +224,10 @@ namespace Soundux::Objects
                 return false;
             }
 
-            if (system(("pactl set-default-source " + data.pulseDefaultSource + " >/dev/null 2>&1").c_str()) !=
-                0) // NOLINT
+            // NOLINTNEXTLINE
+            if (system(("pactl set-default-source " + data.pulseDefaultSource + " >/dev/null 2>&1").c_str()) != 0)
             {
+                Fancy::fancy.logTime().failure() << "Failed to set default source to original" << std::endl;
                 return false;
             }
         }
@@ -240,7 +254,13 @@ namespace Soundux::Objects
             return false;
         }
 
-        return system("pactl set-default-source soundux_sink.monitor >/dev/null 2>&1") == 0; // NOLINT
+        // NOLINTNEXTLINE
+        if (system("pactl set-default-source soundux_sink.monitor >/dev/null 2>&1") != 0)
+        {
+            Fancy::fancy.logTime().warning() << "Failed to set default source to soundux_sink.monitor" << std::endl;
+        }
+
+        return true;
     }
     bool Pulse::moveApplicationsToSinkMonitor(const std::string &streamName)
     {
@@ -260,6 +280,11 @@ namespace Soundux::Objects
                                    .c_str()) == 0)
                     {
                         movedStreams.emplace_back(app);
+                    }
+                    else
+                    {
+                        Fancy::fancy.logTime().warning() << "Failed to move " >> app.id << " to soundux_sink.monitor"
+                                                                                        << std::endl;
                     }
                 }
             }
@@ -287,6 +312,8 @@ namespace Soundux::Objects
                         ("pactl move-source-output " + std::to_string(app.id) + " " + app.source + " >/dev/null 2>&1")
                             .c_str()) != 0)
                 {
+                    Fancy::fancy.logTime().warning() << "Failed to move " >> app.id << " back to original source"
+                                                                                    << std::endl;
                     success = false;
                 }
             }
@@ -313,8 +340,8 @@ namespace Soundux::Objects
                     }
                     else if (match[4].matched)
                     {
-                        if (system(("pactl unload-module " + currentModuleId + " >/dev/null 2>&1").c_str()) ==
-                            0) // NOLINT
+                        // NOLINTNEXTLINE
+                        if (system(("pactl unload-module " + currentModuleId + " >/dev/null 2>&1").c_str()) == 0)
                         {
                             Fancy::fancy.logTime().success()
                                 << "Unloaded left over module " << currentModuleId << std::endl;
@@ -478,6 +505,7 @@ namespace Soundux::Objects
                 // NOLINTNEXTLINE
                 if (system(("pactl move-sink-input " + std::to_string(app.id) + " " + app.sink + " >/dev/null 2>&1").c_str()) != 0)
                 {
+                    Fancy::fancy.logTime().warning() << "Failed to move " >> app.id << " back from passthrough" << std::endl;
                     success = false;
                 }
                 // clang-format on
@@ -527,7 +555,14 @@ namespace Soundux::Objects
     }
     bool Pulse::isSwitchOnConnectLoaded()
     {
-        return (system("pactl list modules | grep module-switch-on-connect >/dev/null 2>&1") == 0); // NOLINT
+        // NOLINTNEXTLINE
+        if (system("pactl list modules | grep module-switch-on-connect >/dev/null 2>&1") == 0)
+        {
+            Fancy::fancy.logTime().warning() << "module-switch-on-connect is loaded!" << std::endl;
+            return true;
+        }
+
+        return false;
     }
     void Pulse::unloadSwitchOnConnect()
     {
@@ -535,7 +570,11 @@ namespace Soundux::Objects
         {
             Fancy::fancy.logTime().warning() << "Failed to unload module-switch-on-connect" << std::endl;
         }
-        setup();
+        else
+        {
+            Fancy::fancy.logTime().success() << "Unloaded module-switch-on-connect" << std::endl;
+            setup();
+        }
     }
     bool Pulse::currentlyPassingthrough()
     {

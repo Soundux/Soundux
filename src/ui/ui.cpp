@@ -444,7 +444,6 @@ namespace Soundux::Objects
             }
             if (!Globals::gPulse.setDefaultSourceToSoundboardSink())
             {
-                Fancy::fancy.logTime().failure() << "Failed to set default source" << std::endl;
                 onError(ErrorCode::FailedToSetDefaultSource);
             }
         }
