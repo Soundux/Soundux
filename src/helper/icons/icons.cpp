@@ -18,18 +18,6 @@ namespace Soundux::Objects
     }
     std::optional<std::string> IconFetcher::getIcon(int pid, bool recursive)
     {
-        if (recursive)
-        {
-            auto parentProcess = Helpers::getPpid(pid);
-            if (parentProcess)
-            {
-                auto recursiveResult = getIcon(*parentProcess, false);
-                if (recursiveResult)
-                {
-                    return recursiveResult;
-                }
-            }
-        }
         if (cache.find(pid) != cache.end())
         {
             return cache.at(pid);
@@ -68,6 +56,19 @@ namespace Soundux::Objects
                 }
 
                 return base64;
+            }
+        }
+
+        if (recursive)
+        {
+            auto parentProcess = Helpers::getPpid(pid);
+            if (parentProcess)
+            {
+                auto recursiveResult = getIcon(*parentProcess, false);
+                if (recursiveResult)
+                {
+                    return recursiveResult;
+                }
             }
         }
 
