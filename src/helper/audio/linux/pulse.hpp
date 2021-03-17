@@ -17,6 +17,7 @@ namespace Soundux
             std::string name;
             std::string driver;
             std::string source;
+            std::string application;
             std::string resampleMethod;
 
             operator bool() const
@@ -30,6 +31,7 @@ namespace Soundux
             std::string sink;
             std::string name;
             std::string driver;
+            std::string application;
 
             operator bool() const
             {

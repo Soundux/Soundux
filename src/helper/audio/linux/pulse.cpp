@@ -367,7 +367,7 @@ namespace Soundux::Objects
         {
             std::vector<PulseRecordingStream> fetchedStreams;
             static const auto recordingStreamRegex = std::regex(
-                R"rgx((^.*#(\d+)$)|(Driver: (.+))|(Source: (\d+))|(.*process.*binary.* = "(.+)")|(Resample method: (.+)))rgx");
+                R"rgx((^.*#(\d+)$)|(Driver: (.+))|(Source: (\d+))|(.*process.*binary.* = "(.+)")|(Resample method: (.+)|(.*application.name.* = "(.+)")))rgx");
 
             PulseRecordingStream stream;
             std::smatch match;
@@ -402,6 +402,10 @@ namespace Soundux::Objects
                     {
                         stream.resampleMethod = match[10];
                     }
+                    else if (match[12].matched)
+                    {
+                        stream.application = match[12];
+                    }
                 }
             }
             if (stream)
@@ -419,8 +423,8 @@ namespace Soundux::Objects
         if (exec("LC_ALL=C pactl list sink-inputs", sourceList))
         {
             std::vector<PulsePlaybackStream> fetchedStreams;
-            static const auto playbackStreamRegex =
-                std::regex(R"rgx((.*#(\d+))|(Driver: (.+))|(Sink: (\d+))|(.*application\.name.* = "(.+)"))rgx");
+            static const auto playbackStreamRegex = std::regex(
+                R"rgx((.*#(\d+))|(Driver: (.+))|(Sink: (\d+))|(.*application\.name.* = "(.+)")|(.*process.*binary.* = "(.+)"))rgx");
 
             PulsePlaybackStream stream;
             std::smatch match;
@@ -449,7 +453,11 @@ namespace Soundux::Objects
                     }
                     else if (match[8].matched)
                     {
-                        stream.name = match[8];
+                        stream.application = match[8];
+                    }
+                    else if (match[10].matched)
+                    {
+                        stream.name = match[10];
                     }
                 }
             }

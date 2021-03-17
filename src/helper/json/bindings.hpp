@@ -161,6 +161,7 @@ namespace nlohmann
                  {"name", obj.name},
                  {"driver", obj.driver},
                  {"source", obj.source},
+                 {"application", obj.application},
                  {"resampleMethod", obj.resampleMethod}};
         }
         static void from_json(const json &j, Soundux::Objects::PulseRecordingStream &obj)
@@ -169,6 +170,7 @@ namespace nlohmann
             j.at("name").get_to(obj.name);
             j.at("driver").get_to(obj.driver);
             j.at("source").get_to(obj.source);
+            j.at("application").get_to(obj.application);
             j.at("resampleMethod").get_to(obj.resampleMethod);
         }
     };
@@ -176,7 +178,11 @@ namespace nlohmann
     {
         static void to_json(json &j, const Soundux::Objects::PulsePlaybackStream &obj)
         {
-            j = {{"id", obj.id}, {"name", obj.name}, {"sink", obj.sink}, {"driver", obj.driver}};
+            j = {{"id", obj.id},
+                 {"name", obj.name},
+                 {"sink", obj.sink},
+                 {"driver", obj.driver},
+                 {"application", obj.application}};
         }
         static void from_json(const json &j, Soundux::Objects::PulsePlaybackStream &obj)
         {
@@ -184,6 +190,7 @@ namespace nlohmann
             j.at("name").get_to(obj.name);
             j.at("sink").get_to(obj.sink);
             j.at("driver").get_to(obj.driver);
+            j.at("application").get_to(obj.application);
         }
     };
 #endif
