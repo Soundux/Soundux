@@ -439,7 +439,7 @@ namespace Soundux::Objects
                 {
                     if (match[2].matched)
                     {
-                        if (stream && stream.name != "soundux")
+                        if (stream && stream.application != "soundux")
                         {
                             fetchedStreams.emplace_back(stream);
                         }
@@ -469,7 +469,7 @@ namespace Soundux::Objects
                     }
                 }
             }
-            if (stream && stream.name != "soundux")
+            if (stream && stream.application != "soundux")
             {
                 fetchedStreams.emplace_back(stream);
             }
