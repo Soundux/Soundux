@@ -1,4 +1,4 @@
-#if defined(__linux__)
+#if defined(__linux__) && defined(USE_WNCK)
 #pragma once
 #include <libwnck-3.0/libwnck/libwnck.h>
 #include <map>

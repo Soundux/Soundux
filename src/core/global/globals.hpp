@@ -19,6 +19,8 @@ namespace Soundux
         inline Objects::Audio gAudio;
 #if defined(__linux__)
         inline Objects::Pulse gPulse;
+#endif
+#if defined(USE_WNCK)
         inline Objects::IconFetcher gIcons;
 #endif
         inline Objects::Config gConfig;

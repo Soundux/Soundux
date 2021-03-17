@@ -1,4 +1,4 @@
-#if defined(__linux__)
+#if defined(__linux__) && defined(USE_WNCK)
 #include "icons.hpp"
 #include "../base64/base64.hpp"
 #include "../misc/misc.hpp"
