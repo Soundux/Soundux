@@ -15,8 +15,10 @@ namespace Soundux
         {
             std::uint32_t id;
             std::string name;
+            std::int32_t pid;
             std::string driver;
             std::string source;
+            std::string appIcon;
             std::string application;
             std::string resampleMethod;
 
@@ -30,7 +32,9 @@ namespace Soundux
             std::uint32_t id;
             std::string sink;
             std::string name;
+            std::int32_t pid;
             std::string driver;
+            std::string appIcon;
             std::string application;
 
             operator bool() const

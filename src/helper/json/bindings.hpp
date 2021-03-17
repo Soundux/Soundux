@@ -153,18 +153,22 @@ namespace nlohmann
         static void to_json(json &j, const Soundux::Objects::PulseRecordingStream &obj)
         {
             j = {{"id", obj.id},
+                 {"pid", obj.pid},
                  {"name", obj.name},
                  {"driver", obj.driver},
                  {"source", obj.source},
+                 {"appIcon", obj.appIcon},
                  {"application", obj.application},
                  {"resampleMethod", obj.resampleMethod}};
         }
         static void from_json(const json &j, Soundux::Objects::PulseRecordingStream &obj)
         {
             j.at("id").get_to(obj.id);
+            j.at("pid").get_to(obj.pid);
             j.at("name").get_to(obj.name);
             j.at("driver").get_to(obj.driver);
             j.at("source").get_to(obj.source);
+            j.at("appIcon").get_to(obj.appIcon);
             j.at("application").get_to(obj.application);
             j.at("resampleMethod").get_to(obj.resampleMethod);
         }
@@ -174,17 +178,21 @@ namespace nlohmann
         static void to_json(json &j, const Soundux::Objects::PulsePlaybackStream &obj)
         {
             j = {{"id", obj.id},
+                 {"pid", obj.pid},
                  {"name", obj.name},
                  {"sink", obj.sink},
                  {"driver", obj.driver},
+                 {"appIcon", obj.appIcon},
                  {"application", obj.application}};
         }
         static void from_json(const json &j, Soundux::Objects::PulsePlaybackStream &obj)
         {
             j.at("id").get_to(obj.id);
+            j.at("pid").get_to(obj.pid);
             j.at("name").get_to(obj.name);
             j.at("sink").get_to(obj.sink);
             j.at("driver").get_to(obj.driver);
+            j.at("appIcon").get_to(obj.appIcon);
             j.at("application").get_to(obj.application);
         }
     };

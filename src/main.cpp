@@ -40,6 +40,8 @@ int main()
     }
 
 #if defined(__linux__)
+    Soundux::Globals::gIcons.setup();
+
     if (!Soundux::Globals::gPulse.isSwitchOnConnectLoaded())
     {
         Soundux::Globals::gPulse.setup();

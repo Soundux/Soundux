@@ -1,5 +1,10 @@
 #include "misc.hpp"
 #include <array>
+#include <fancy.hpp>
+#include <filesystem>
+#include <fstream>
+#include <optional>
+#include <regex>
 #include <sstream>
 
 #if defined(_WIN32)
@@ -49,6 +54,38 @@ namespace Soundux::Helpers
         }
 
         return pclose(pipe) == 0;
+    }
+    std::optional<int> getPpid(int pid)
+    {
+        std::filesystem::path path("/proc/" + std::to_string(pid));
+        if (std::filesystem::exists(path))
+        {
+            auto statusFile = path / "status";
+            if (std::filesystem::exists(statusFile) && std::filesystem::is_regular_file(statusFile))
+            {
+                static const std::regex pidRegex(R"(PPid:(\ +|\t)(\d+))");
+                std::ifstream statusStream(statusFile);
+
+                std::string line;
+                std::smatch match;
+                while (std::getline(statusStream, line))
+                {
+                    if (std::regex_search(line, match, pidRegex))
+                    {
+                        if (match[2].matched)
+                        {
+                            return std::stoi(match[2]);
+                        }
+                    }
+                }
+
+                Fancy::fancy.logTime().warning() << "Failed to find ppid of " >> pid << std::endl;
+                return std::nullopt;
+            }
+        }
+
+        Fancy::fancy.logTime().warning() << "Failed to find ppid of " >> pid << ", process does not exist" << std::endl;
+        return std::nullopt;
     }
 #endif
 } // namespace Soundux::Helpers

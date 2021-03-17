@@ -3,6 +3,7 @@
 #if defined(__linux__)
 #include "../../helper/audio/linux/pulse.hpp"
 #endif
+#include "../../helper/icons/icons.hpp"
 #include "../../helper/threads/processing.hpp"
 #include "../../ui/ui.hpp"
 #include "../config/config.hpp"
@@ -18,6 +19,7 @@ namespace Soundux
         inline Objects::Audio gAudio;
 #if defined(__linux__)
         inline Objects::Pulse gPulse;
+        inline Objects::IconFetcher gIcons;
 #endif
         inline Objects::Config gConfig;
         inline Objects::Hotkeys gHotKeys;
