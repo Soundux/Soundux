@@ -24,9 +24,18 @@ jobs:
               uses: actions/checkout@v2
               with:
                   submodules: recursive
+                  path: Soundux
 
-            - name: Upload 
+            - name: Create tarball
+              uses: master-atul/tar-action@v1.0.2
+              with:
+                  command: c
+                  files: |
+                      ./Soundux
+                  outPath: soundux.tar.gz
+
+            - name: Upload
               uses: actions/upload-artifact@v2.2.2
               with:
-                  name: Source
-                  path: .
+                  name: Source tarball
+                  path: soundux.tar.gz
