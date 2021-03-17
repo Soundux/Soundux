@@ -367,7 +367,7 @@ namespace Soundux::Objects
         {
             std::vector<PulseRecordingStream> fetchedStreams;
             static const auto recordingStreamRegex = std::regex(
-                R"rgx((.*#(\d+))|(Driver: (.+))|(Source: (\d+))|(.*process.*binary.* = "(.+)")|(Resample method: (.+)))rgx");
+                R"rgx((^.*#(\d+)$)|(Driver: (.+))|(Source: (\d+))|(.*process.*binary.* = "(.+)")|(Resample method: (.+)))rgx");
 
             PulseRecordingStream stream;
             std::smatch match;
