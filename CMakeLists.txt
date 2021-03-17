@@ -34,12 +34,12 @@ if (UNIX)
     
     find_package(PkgConfig REQUIRED)
 	pkg_check_modules(WNCK libwnck-3.0)
+    target_link_libraries(soundux PRIVATE ${X11_LIBRARIES} ${X11_Xinput_LIB})
     
     if (${WNCK_FOUND})
-        message("wnck found!")
         add_definitions(${WNCK_CFLAGS})
-        include_directories(${WNCK_LIBRARY_DIRS})
-        target_link_libraries(soundux PRIVATE ${X11_LIBRARIES} ${X11_Xinput_LIB} ${WNCK_LIBRARIES})
+        target_link_libraries(soundux PRIVATE ${WNCK_LIBRARIES})
+        target_include_directories(soundux PRIVATE ${WNCK_LIBRARY_DIRS})
         target_compile_definitions(soundux PRIVATE USE_WNCK=1)
     endif()
 
