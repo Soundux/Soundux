@@ -476,7 +476,7 @@ namespace Soundux::Objects
         std::string sourceList;
         if (exec("LC_ALL=C pactl list sink-inputs", sourceList))
         {
-            static const auto inputIdRegex = std::regex(R"rgx((.*#(\d+))|(Owner Module: (\d+)))rgx");
+            static const auto inputIdRegex = std::regex(R"rgx((^.*#(\d+)$)|(Owner Module: (\d+)))rgx");
             std::uint32_t id = 0;
             std::smatch match;
 
