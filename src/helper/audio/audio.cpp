@@ -33,7 +33,8 @@ namespace Soundux::Objects
         if (res != MA_SUCCESS)
         {
             Fancy::fancy.logTime().logTime().failure()
-                << "Failed to create decoder from file: " << sound.path << std::endl;
+                    << "Failed to create decoder from file: " << sound.path << ", error: " >>
+                res << std::endl;
             return std::nullopt;
         }
 
