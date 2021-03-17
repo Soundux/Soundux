@@ -1,5 +1,5 @@
 Name: soundux
-Version: 0.2.2
+Version: 0.2.2_b1
 Release: 1%{?dist}
 Summary: A cross-platform soundboard
 
@@ -7,7 +7,7 @@ Group: Applications/System
 License: GPL
 URL: https://%{name}.rocks
 
-Source0: https://github.com/Soundux/Soundux/releases/download/%{version}/%{soundux}-${version}.tar.gz
+Source0: https://github.com/Soundux/Soundux/releases/download/%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires: git webkit2gtk3-devel ninja-build gtk3-devel libXi-devel clang llvm cmake
 Requires: pulseaudio-utils webkit2gtk3
