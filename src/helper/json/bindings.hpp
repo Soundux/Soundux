@@ -74,7 +74,6 @@ namespace nlohmann
                  {"gridView", obj.gridView},
                  {"darkTheme", obj.darkTheme},
                  {"stopHotkey", obj.stopHotkey},
-                 {"singleClick", obj.singleClick},
                  {"selectedTab", obj.selectedTab},
                  {"launchPadMode", obj.launchPadMode},
                  {"tabHotkeysOnly", obj.tabHotkeysOnly},
@@ -98,10 +97,6 @@ namespace nlohmann
             if (j.find("launchPadMode") != j.end())
             {
                 j.at("launchPadMode").get_to(obj.launchPadMode);
-            }
-            if (j.find("singleClick") != j.end())
-            {
-                j.at("singleClick").get_to(obj.singleClick);
             }
             if (j.find("muteDuringPlayback") != j.end())
             {
