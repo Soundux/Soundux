@@ -55,6 +55,7 @@ namespace Soundux::Objects
                 {
                     Fancy::fancy.logTime().warning() << "Failed to save icon to buffer, error: " << error->message
                                                      << "(" << error->code << ")" << std::endl;
+                    delete[] iconBuff;
                     return std::nullopt;
                 }
 
