@@ -560,6 +560,7 @@ namespace Soundux::Objects
                 uniqueStreams.emplace_back(stream);
             }
         }
+
         return uniqueStreams;
     }
     std::vector<PulsePlaybackStream> Window::getPlayback()
@@ -575,9 +576,8 @@ namespace Soundux::Objects
                 uniqueStreams.emplace_back(stream);
             }
         }
-        return uniqueStreams;
 
-        return Globals::gPulse.getPlaybackStreams();
+        return uniqueStreams;
     }
     bool Window::startPassthrough(const std::string &name)
     {
