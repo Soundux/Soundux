@@ -82,17 +82,18 @@ Download our installer or portable from [the latest release](https://github.com/
 ### 🐧 Linux
 This list may not be accurate. Contact me if you find missing dependencies so that I can update this list
 - Webkit2gtk
+- Libwnck3 (optional, for icon support)
 - X11 client-side development headers
 - G++ >= 9
   - Some distros still have G++ versions < 9 in their repos, using them will result in a build failure (for more information refer to [#71](https://github.com/Soundux/Soundux/issues/71)).
 
 #### 📜 Debian/Ubuntu and derivatives
 ```sh
-sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev
+sudo apt install git build-essential cmake libx11-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev
 ```
 #### 📜 Fedora and derivatives
 ```sh
-sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel
+sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel gtk3-devel libwnck3-devel webkit2gtk3-devel
 ```
 
 ### 🪟 Windows
