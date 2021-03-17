@@ -424,7 +424,7 @@ namespace Soundux::Objects
         {
             std::vector<PulsePlaybackStream> fetchedStreams;
             static const auto playbackStreamRegex = std::regex(
-                R"rgx((.*#(\d+))|(Driver: (.+))|(Sink: (\d+))|(.*application\.name.* = "(.+)")|(.*process.*binary.* = "(.+)"))rgx");
+                R"rgx((^.*#(\d+)$)|(Driver: (.+))|(Sink: (\d+))|(.*application\.name.* = "(.+)")|(.*process.*binary.* = "(.+)"))rgx");
 
             PulsePlaybackStream stream;
             std::smatch match;
