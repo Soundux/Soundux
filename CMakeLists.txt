@@ -50,8 +50,9 @@ endif()
 
 add_subdirectory(src/ui/impl/webview/lib/webviewpp EXCLUDE_FROM_ALL)
 add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
+add_subdirectory(lib/tiny-process-library EXCLUDE_FROM_ALL)
 add_subdirectory(lib/InstanceGuard/Source EXCLUDE_FROM_ALL)
-target_link_libraries(soundux PUBLIC webview nfd InstanceGuard)
+target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library)
 
 # [[ Build Frontend ]]
 if (MSVC)

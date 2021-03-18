@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <optional>
 #include <string>
 #include <vector>
@@ -12,8 +13,8 @@ namespace Soundux
 #endif
 #if defined(__linux__)
         std::optional<int> getPpid(int pid);
-        bool exec(const std::string &command, std::string &result);
 #endif
+        bool exec(const std::string &command, std::string &result);
         std::vector<std::string> splitByNewLine(const std::string &str);
     } // namespace Helpers
 } // namespace Soundux

@@ -1,9 +1,9 @@
 #include "misc.hpp"
-#include <array>
 #include <fancy.hpp>
 #include <filesystem>
 #include <fstream>
 #include <optional>
+#include <process.hpp>
 #include <regex>
 #include <sstream>
 
@@ -24,6 +24,14 @@ namespace Soundux::Helpers
         }
         return result;
     }
+    bool exec(const std::string &command, std::string &result)
+    {
+        result.clear();
+        TinyProcessLib::Process process(
+            command, "", [&](const char *data, std::size_t dataLen) { result += std::string(data, dataLen); });
+
+        return process.get_exit_status() == 0;
+    }
 #if defined(_WIN32)
     std::wstring widen(const std::string &s)
     {
@@ -38,23 +46,6 @@ namespace Soundux::Helpers
     }
 #endif
 #if defined(__linux__)
-    bool exec(const std::string &command, std::string &result)
-    {
-        result.clear();
-
-        std::array<char, 128> buffer;
-        auto *pipe = popen(command.c_str(), "r");
-        if (!pipe)
-        {
-            throw std::runtime_error("popen failed");
-        }
-        while (fgets(buffer.data(), buffer.size(), pipe) != nullptr)
-        {
-            result += buffer.data();
-        }
-
-        return pclose(pipe) == 0;
-    }
     std::optional<int> getPpid(int pid)
     {
         std::filesystem::path path("/proc/" + std::to_string(pid));

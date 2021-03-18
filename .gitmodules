@@ -20,3 +20,6 @@
 [submodule "src/ui/impl/webview/lib/webviewpp"]
 	path = src/ui/impl/webview/lib/webviewpp
 	url = https://github.com/Soundux/webviewpp
+[submodule "lib/tiny-process-library"]
+	path = lib/tiny-process-library
+	url = https://gitlab.com/eidheim/tiny-process-library/
