@@ -68,6 +68,7 @@ namespace Soundux
                                            //* will be called before this gets called
             virtual void onSoundFinished(const PlayingSound &);
             virtual void onSoundProgressed(const PlayingSound &) = 0;
+            virtual void onDownloadProgressed(float, const std::string &) = 0;
             virtual void onHotKeyReceived(const std::vector<int> &);
 
             virtual void onEvent(const std::function<void()> &);

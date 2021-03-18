@@ -52,6 +52,7 @@ int main()
     Soundux::Globals::gAudio.setup();
 #endif
     Soundux::Globals::gConfig.load();
+    Soundux::Globals::gYtdl.setup();
 #if defined(__linux__)
     if (Soundux::Globals::gConfig.settings.useAsDefaultDevice)
     {

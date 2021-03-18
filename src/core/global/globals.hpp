@@ -5,6 +5,7 @@
 #endif
 #include "../../helper/icons/icons.hpp"
 #include "../../helper/threads/processing.hpp"
+#include "../../helper/ytdl/youtube-dl.hpp"
 #include "../../ui/ui.hpp"
 #include "../config/config.hpp"
 #include "../hotkeys/hotkeys.hpp"
@@ -24,6 +25,7 @@ namespace Soundux
         inline Objects::IconFetcher gIcons;
 #endif
         inline Objects::Config gConfig;
+        inline Objects::YoutubeDl gYtdl;
         inline Objects::Hotkeys gHotKeys;
         inline Objects::Settings gSettings;
         inline std::unique_ptr<Objects::Window> gGui;

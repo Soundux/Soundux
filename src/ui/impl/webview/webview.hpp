@@ -20,6 +20,7 @@ namespace Soundux
             void onError(const ErrorCode &error) override;
             void onSoundPlayed(const PlayingSound &sound) override;
             void onSoundProgressed(const PlayingSound &sound) override;
+            void onDownloadProgressed(float progress, const std::string &eta) override;
         };
     } // namespace Objects
 } // namespace Soundux

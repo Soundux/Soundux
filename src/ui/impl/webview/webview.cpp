@@ -2,6 +2,7 @@
 #include "../../../core/global/globals.hpp"
 #include "../../../helper/json/bindings.hpp"
 #include "../../../helper/systeminfo/systeminfo.hpp"
+#include "../../../helper/ytdl/youtube-dl.hpp"
 #include <algorithm>
 #include <cstdint>
 #include <fancy.hpp>
@@ -66,6 +67,9 @@ namespace Soundux::Objects
         webview.addCallback("markFavorite",
                             [this](const std::uint32_t &id, bool favourite) { return markFavourite(id, favourite); });
         webview.addCallback("getFavorites", [this] { return getFavourites(); });
+        webview.addCallback("getYoutubeInfo", [](const std::string &url) { return Globals::gYtdl.getInfo(url); });
+        webview.addCallback("ytdlDownload", [](const std::string &url) { Globals::gYtdl.download(url); });
+        webview.addCallback("stopYtdlDownload", []() { Globals::gYtdl.killDownload(); });
         webview.addCallback("getSystemInfo", []() -> std::string { return SystemInfo::getSummary(); });
 
 #if !defined(__linux__)
@@ -142,6 +146,11 @@ namespace Soundux::Objects
         auto js = "window.updateSound(JSON.parse(`" + soundObj + "`));";
 
         onEvent([js, this]() { webview.runCode(js); });
+    }
+    void WebView::onDownloadProgressed(float progress, const std::string &eta)
+    {
+        auto js = "window.downloadProgressed(" + std::to_string(progress) + ", `" + eta + "`);";
+        onEvent([js, this] { webview.runCode(js); });
     }
     void WebView::onError(const ErrorCode &error)
     {
