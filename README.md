@@ -48,6 +48,7 @@ These are required to run the program
 Please refer to your distro instructions on how to install
 - [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio)
 - Xorg
+- Libwnck3 (required if compiled with Libwnck3, for icon support)
 - Webkit2gtk
 ## 🪟 Windows
 - [VB-CABLE](https://vb-audio.com/Cable/) (Our installer automatically installs VB-CABLE)
