@@ -38,7 +38,7 @@ jobs:
                   args: install openssl -y
 
             - name: Compile
-              run: "mkdir build && cd build && cmake .. && cmake --build . --config Release"
+              run: "mkdir build && cd build && cmake .. -DIS_CI_BUILD=ON && cmake --build . --config Release"
 
             - name: Upload Build Artifact
               uses: actions/upload-artifact@v2.2.2
