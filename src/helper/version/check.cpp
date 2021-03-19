@@ -5,11 +5,6 @@
 
 httplib::Client VersionCheck::client("https://api.github.com");
 
-void VersionCheck::setup()
-{
-    client.enable_server_certificate_verification(false);
-}
-
 bool VersionCheck::isLatest()
 {
     auto githubTags = client.Get("/repos/Soundux/Soundux/tags");
