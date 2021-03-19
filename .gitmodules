@@ -23,3 +23,6 @@
 [submodule "lib/tiny-process-library"]
 	path = lib/tiny-process-library
 	url = https://gitlab.com/eidheim/tiny-process-library/
+[submodule "lib/cpp-httplib"]
+	path = lib/cpp-httplib
+	url = https://github.com/yhirose/cpp-httplib

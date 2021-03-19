@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(soundux VERSION 0.2.1 DESCRIPTION "")
+project(soundux VERSION 0.2.2 DESCRIPTION "")
 
 option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
 
@@ -16,9 +16,10 @@ if (WIN32)
     target_compile_options(soundux PRIVATE /W4)
 else()
     add_executable(soundux ${src})
-    target_compile_options(soundux PRIVATE -Wall -Wextra -Werror -pedantic -Wno-unused-lambda-capture -DWNCK_I_KNOW_THIS_IS_UNSTABLE)
+    target_compile_options(soundux PRIVATE -Wall -Wextra -Werror -pedantic -Wno-unused-lambda-capture)
 endif()
 
+target_compile_definitions(soundux PRIVATE SOUNDUX_VERSION="${PROJECT_VERSION}" WNCK_I_KNOW_THIS_IS_UNSTABLE=1)
 target_include_directories(soundux SYSTEM PRIVATE "lib/miniaudio")
 target_include_directories(soundux SYSTEM PRIVATE "lib/fancypp/include")
 target_include_directories(soundux SYSTEM PRIVATE "lib/json/single_include")
@@ -52,7 +53,11 @@ add_subdirectory(src/ui/impl/webview/lib/webviewpp EXCLUDE_FROM_ALL)
 add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 add_subdirectory(lib/tiny-process-library EXCLUDE_FROM_ALL)
 add_subdirectory(lib/InstanceGuard/Source EXCLUDE_FROM_ALL)
-target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library)
+
+set(HTTPLIB_COMPILE ON)
+add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
+
+target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library httplib)
 
 # [[ Build Frontend ]]
 if (MSVC)

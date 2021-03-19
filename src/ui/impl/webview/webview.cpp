@@ -2,6 +2,7 @@
 #include "../../../core/global/globals.hpp"
 #include "../../../helper/json/bindings.hpp"
 #include "../../../helper/systeminfo/systeminfo.hpp"
+#include "../../../helper/version/check.hpp"
 #include "../../../helper/ytdl/youtube-dl.hpp"
 #include <algorithm>
 #include <cstdint>
@@ -77,6 +78,7 @@ namespace Soundux::Objects
                             [](const std::string &url) { return Globals::gYtdl.download(url); });
         webview.addCallback("stopYoutubeDLDownload", []() { Globals::gYtdl.killDownload(); });
         webview.addCallback("getSystemInfo", []() -> std::string { return SystemInfo::getSummary(); });
+        webview.addCallback("isLatest", []() { return VersionCheck::isLatest(); });
 
 #if !defined(__linux__)
         webview.addCallback("getOutputs", [this]() { return getOutputs(); });
