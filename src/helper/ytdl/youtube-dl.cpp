@@ -23,6 +23,7 @@ namespace Soundux::Objects
     {
         if (!isAvailable)
         {
+            Globals::gGui->onError(ErrorCode::YtdlNotFound);
             return std::nullopt;
         }
 
@@ -32,6 +33,7 @@ namespace Soundux::Objects
         if (std::regex_search(url, match, escapeRegex))
         {
             Fancy::fancy.logTime().warning() << "Url " >> url << " contained illegal characters" << std::endl;
+            Globals::gGui->onError(ErrorCode::YtdlInvalidUrl);
             return std::nullopt;
         }
 
@@ -42,6 +44,7 @@ namespace Soundux::Objects
             if (json.is_discarded())
             {
                 Fancy::fancy.logTime().warning() << "Failed to parse youtube-dl information" << std::endl;
+                Globals::gGui->onError(ErrorCode::YtdlInvalidJson);
                 return std::nullopt;
             }
 
@@ -55,18 +58,22 @@ namespace Soundux::Objects
 
                 return j;
             }
+
             Fancy::fancy.logTime().warning()
                 << "Failed to get required information from youtube-dl output" << std::endl;
+            Globals::gGui->onError(ErrorCode::YtdlBadInformation);
             return std::nullopt;
         }
 
         Fancy::fancy.logTime().warning() << "Failed to get info from youtube-dl" << std::endl;
+        Globals::gGui->onError(ErrorCode::YtdlInformationUnknown);
         return std::nullopt;
     }
     bool YoutubeDl::download(const std::string &url)
     {
         if (!isAvailable)
         {
+            Globals::gGui->onError(ErrorCode::YtdlNotFound);
             return false;
         }
 
@@ -81,6 +88,7 @@ namespace Soundux::Objects
         if (std::regex_search(url, match, escapeRegex))
         {
             Fancy::fancy.logTime().warning() << "Url " >> url << " contained illegal characters" << std::endl;
+            Globals::gGui->onError(ErrorCode::YtdlInvalidUrl);
             return false;
         }
 
@@ -113,6 +121,7 @@ namespace Soundux::Objects
             return true;
         }
 
+        Globals::gGui->onError(ErrorCode::TabDoesNotExist);
         return false;
     }
     void YoutubeDl::killDownload()

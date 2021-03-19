@@ -34,6 +34,11 @@ namespace Soundux
             FailedToMoveBackPassthrough,
             FailedToRevertDefaultSource,
             FailedToSetDefaultSource,
+            YtdlNotFound,
+            YtdlInvalidUrl,
+            YtdlInvalidJson,
+            YtdlBadInformation,
+            YtdlInformationUnknown
         };
 
         struct Sound
