@@ -13,6 +13,7 @@ file(GLOB src
 
 if (WIN32)
     add_executable(soundux WIN32 ${src} "assets/icon.rc")
+    target_compile_definitions(soundux PRIVATE WIN32_LEAN_AND_MEAN=1)
     target_compile_options(soundux PRIVATE /W4)
 else()
     add_executable(soundux ${src})
