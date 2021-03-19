@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(soundux VERSION 0.2.2 DESCRIPTION "")
 
+option(IS_CI_BUILD "Is used for windows ci build" OFF)
 option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
 
 file(GLOB src
@@ -59,6 +60,18 @@ set(HTTPLIB_REQUIRE_OPENSSL ON)
 add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
 
 target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library httplib)
+
+# [[ Copy Openssl dlls ]] - Needed because dlls are not copied to output folder in github action
+if (MSVC)  
+    if (IS_CI_BUILD)
+        find_package(OpenSSL REQUIRED)
+        file(COPY "${OPENSSL_INCLUDE_DIR}/../libcrypto-1_1-x64.dll"
+             DESTINATION "${CMAKE_SOURCE_DIR}/build/Release")
+        file(COPY "${OPENSSL_INCLUDE_DIR}/../libssl-1_1-x64.dll"
+             DESTINATION "${CMAKE_SOURCE_DIR}/build/Release")
+        message("Copied required dlls!")
+    endif()
+endif()
 
 # [[ Build Frontend ]]
 if (MSVC)
