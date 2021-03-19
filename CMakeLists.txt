@@ -13,7 +13,6 @@ file(GLOB src
 
 if (WIN32)
     add_executable(soundux WIN32 ${src} "assets/icon.rc")
-    target_link_libraries(soundux PRIVATE libssl libcrypto)
     target_compile_definitions(soundux PRIVATE WIN32_LEAN_AND_MEAN=1)
     target_compile_options(soundux PRIVATE /W4)
 else()
@@ -21,7 +20,7 @@ else()
     target_compile_options(soundux PRIVATE -Wall -Wextra -Werror -pedantic -Wno-unused-lambda-capture)
 endif()
 
-target_compile_definitions(soundux PRIVATE SOUNDUX_VERSION="${PROJECT_VERSION}" WNCK_I_KNOW_THIS_IS_UNSTABLE=1 CPPHTTPLIB_OPENSSL_SUPPORT=1)
+target_compile_definitions(soundux PRIVATE SOUNDUX_VERSION="${PROJECT_VERSION}" WNCK_I_KNOW_THIS_IS_UNSTABLE=1)
 target_include_directories(soundux SYSTEM PRIVATE "lib/miniaudio")
 target_include_directories(soundux SYSTEM PRIVATE "lib/fancypp/include")
 target_include_directories(soundux SYSTEM PRIVATE "lib/json/single_include")
@@ -57,6 +56,7 @@ add_subdirectory(lib/tiny-process-library EXCLUDE_FROM_ALL)
 add_subdirectory(lib/InstanceGuard/Source EXCLUDE_FROM_ALL)
 
 set(HTTPLIB_COMPILE ON)
+set(HTTPLIB_REQUIRE_OPENSSL ON)
 add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
 
 target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library httplib)
