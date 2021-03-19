@@ -7,6 +7,7 @@ on:
             - "**/build_flatpak.yml"
             - "**/.all-contributorsrc"
             - "**/upload_full_src.yml"
+            - "**/windows_debug.yml"
     pull_request:
         branches: [master]
 
