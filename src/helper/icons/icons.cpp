@@ -35,8 +35,8 @@ namespace Soundux::Objects
             {
                 auto *icon = wnck_window_get_icon(window);
 
-                gsize size = 2048;
-                auto *iconBuff = new gchar[2048];
+                gsize size = 4096;
+                auto *iconBuff = new gchar[size];
 
                 GError *error = nullptr;
                 if (gdk_pixbuf_save_to_buffer(icon, &iconBuff, &size, "png", &error, NULL) != TRUE)
@@ -47,7 +47,7 @@ namespace Soundux::Objects
                     return std::nullopt;
                 }
 
-                auto base64 = base64_encode(reinterpret_cast<const unsigned char *>(iconBuff), 2048, false);
+                auto base64 = base64_encode(reinterpret_cast<const unsigned char *>(iconBuff), size, false);
                 delete[] iconBuff;
 
                 if (cache.find(pid) == cache.end())
