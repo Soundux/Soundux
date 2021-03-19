@@ -28,6 +28,10 @@
       <li>Media Controls</li>
     </ul>
   </description>
+  <icon type="stock">soundux</icon>
+  <launchable type="desktop-id">
+    io.github.Soundux.desktop
+  </launchable>
   <categories>
     <category>AudioVideo</category>
     <category>Audio</category>
