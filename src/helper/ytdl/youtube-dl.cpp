@@ -2,6 +2,7 @@
 #include "../../core/global/globals.hpp"
 #include "../misc/misc.hpp"
 #include <fancy.hpp>
+#include <optional>
 #include <regex>
 
 namespace Soundux::Objects
@@ -10,11 +11,21 @@ namespace Soundux::Objects
 
     void YoutubeDl::setup()
     {
-        // TODO(curve): Download ytdl on windows if it doesn't exist
-        // TODO(curve): Warning on Linux if youtube-dl doesn't exist
+        TinyProcessLib::Process ytdlVersion("youtube-dl --version");
+        isAvailable = ytdlVersion.get_exit_status() == 0;
+
+        if (!isAvailable)
+        {
+            Fancy::fancy.logTime().warning() << "Youtube-Dl is not available!" << std::endl;
+        }
     }
-    std::optional<nlohmann::json> YoutubeDl::getInfo(const std::string &url)
+    std::optional<nlohmann::json> YoutubeDl::getInfo(const std::string &url) const
     {
+        if (!isAvailable)
+        {
+            return std::nullopt;
+        }
+
         std::smatch match;
         static const std::regex escapeRegex(R"rgx(("|'|\\))rgx");
 
@@ -49,12 +60,20 @@ namespace Soundux::Objects
             return std::nullopt;
         }
 
-        Fancy::fancy.logTime().warning() << "Failed to get info from youtube-dl";
+        Fancy::fancy.logTime().warning() << "Failed to get info from youtube-dl" << std::endl;
         return std::nullopt;
     }
-    void YoutubeDl::download(const std::string &url)
+    bool YoutubeDl::download(const std::string &url)
     {
-        killDownload();
+        if (!isAvailable)
+        {
+            return false;
+        }
+
+        if (currentDownload)
+        {
+            killDownload();
+        }
 
         std::smatch match;
         static const std::regex escapeRegex(R"rgx(("|'|\\))rgx");
@@ -62,7 +81,7 @@ namespace Soundux::Objects
         if (std::regex_search(url, match, escapeRegex))
         {
             Fancy::fancy.logTime().warning() << "Url " >> url << " contained illegal characters" << std::endl;
-            return;
+            return false;
         }
 
         auto currentTab = Globals::gData.getTab(Globals::gSettings.selectedTab);
@@ -91,7 +110,10 @@ namespace Soundux::Objects
                                         }
                                     });
             Fancy::fancy.logTime().success() << "Started download of " >> url << std::endl;
+            return true;
         }
+
+        return false;
     }
     void YoutubeDl::killDownload()
     {
@@ -105,9 +127,9 @@ namespace Soundux::Objects
             currentDownload.reset();
             Fancy::fancy.logTime().success() << "Killing download, process exited with " >> status << std::endl;
         }
-        else
-        {
-            Fancy::fancy.warning() << "Not currently downloading!" << std::endl;
-        }
+    }
+    bool YoutubeDl::available() const
+    {
+        return isAvailable;
     }
 } // namespace Soundux::Objects
