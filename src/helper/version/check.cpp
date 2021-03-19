@@ -1,11 +1,12 @@
 #include "check.hpp"
 #include <fancy.hpp>
 #include <json.hpp>
+#include <optional>
 #include <regex>
 
 httplib::Client VersionCheck::client("https://api.github.com");
 
-bool VersionCheck::isLatest()
+std::optional<Soundux::Objects::VersionStatus> VersionCheck::getStatus()
 {
     auto githubTags = client.Get("/repos/Soundux/Soundux/tags");
 
@@ -26,14 +27,7 @@ bool VersionCheck::isLatest()
                 {
                     if (match[1].matched)
                     {
-                        if (match[1] != SOUNDUX_VERSION)
-                        {
-                            Fancy::fancy.logTime().warning() << "Current version is " << SOUNDUX_VERSION
-                                                             << " latest version is " << match[1] << std::endl;
-                            return false;
-                        }
-                        Fancy::fancy.logTime().success() << "You are using the latest version of soundux" << std::endl;
-                        return true;
+                        return Soundux::Objects::VersionStatus{SOUNDUX_VERSION, match[1], match[1] != SOUNDUX_VERSION};
                     }
                     Fancy::fancy.logTime().warning() << "Failed to fetch latest version" << std::endl;
                 }
@@ -56,5 +50,5 @@ bool VersionCheck::isLatest()
     {
         Fancy::fancy.logTime().warning() << "Request failed!" << std::endl;
     }
-    return true;
+    return std::nullopt;
 }

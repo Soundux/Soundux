@@ -78,7 +78,7 @@ namespace Soundux::Objects
                             [](const std::string &url) { return Globals::gYtdl.download(url); });
         webview.addCallback("stopYoutubeDLDownload", []() { Globals::gYtdl.killDownload(); });
         webview.addCallback("getSystemInfo", []() -> std::string { return SystemInfo::getSummary(); });
-        webview.addCallback("isLatest", []() { return VersionCheck::isLatest(); });
+        webview.addCallback("updateCheck", []() { return VersionCheck::getStatus(); });
 
 #if !defined(__linux__)
         webview.addCallback("getOutputs", [this]() { return getOutputs(); });

@@ -1,5 +1,6 @@
 #pragma once
 #include "../../core/global/globals.hpp"
+#include "../../helper/version/check.hpp"
 #include <nlohmann/json.hpp>
 
 namespace nlohmann
@@ -145,6 +146,19 @@ namespace nlohmann
         {
             j.at("data").get_to(obj.data);
             j.at("settings").get_to(obj.settings);
+        }
+    };
+    template <> struct adl_serializer<Soundux::Objects::VersionStatus>
+    {
+        static void to_json(json &j, const Soundux::Objects::VersionStatus &obj)
+        {
+            j = {{"current", obj.current}, {"latest", obj.latest}, {"outdated", obj.outdated}};
+        }
+        static void from_json(const json &j, Soundux::Objects::VersionStatus &obj)
+        {
+            j.at("latest").get_to(obj.latest);
+            j.at("current").get_to(obj.current);
+            j.at("outdated").get_to(obj.outdated);
         }
     };
 #if defined(__linux__)
