@@ -1,14 +1,4 @@
-on:
-    push:
-        branches: [master]
-        paths-ignore:
-            - "**/README.md"
-            - "**/compile_linux.yml"
-            - "**/build_flatpak.yml"
-            - "**/.all-contributorsrc"
-            - "**/upload_full_src.yml"
-    pull_request:
-        branches: [master]
+on: workflow_dispatch
 
 name: Debug on Windows
 jobs:
