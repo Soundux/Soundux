@@ -41,3 +41,4 @@ jobs:
               with:
                 limit-access-to-actor: true
               timeout-minutes: 2
+              continue-on-error: true
