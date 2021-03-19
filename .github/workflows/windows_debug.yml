@@ -1,0 +1,42 @@
+on:
+    push:
+        branches: [master]
+        paths-ignore:
+            - "**/README.md"
+            - "**/compile_linux.yml"
+            - "**/build_flatpak.yml"
+            - "**/.all-contributorsrc"
+            - "**/upload_full_src.yml"
+    pull_request:
+        branches: [master]
+
+name: Debug on Windows
+jobs:
+    debug-windows:
+        runs-on: windows-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                language: ["cpp"]
+
+        steps:
+            - name: Setup Node.js environment
+              uses: actions/setup-node@v2.1.5
+
+            - name: Setup NuGet.exe for use with actions
+              uses: NuGet/setup-nuget@v1.0.5
+
+            - name: Checkout
+              uses: actions/checkout@v2
+              with:
+                  submodules: recursive
+
+            - name: Install OpenSSL
+              uses: crazy-max/ghaction-chocolatey@v1
+              with:
+                  args: install openssl -y
+
+            - name: Setup tmate session
+              uses: mxschmitt/action-tmate@v3
+              with:
+                limit-access-to-actor: true
