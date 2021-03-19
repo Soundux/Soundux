@@ -15,11 +15,11 @@ int main()
     if (std::getenv("SOUNDUX_DEBUG"))
     {
         AllocConsole();
-        freopen_s((FILE **)stdin, "CONIN$", "r", stdin);
-        freopen_s((FILE **)stderr, "CONOUT$", "w", stderr);
-        freopen_s((FILE **)stdout, "CONOUT$", "w", stdout);
+        freopen_s(reinterpret_cast<FILE **>(stdin), "CONIN$", "r", stdin);
+        freopen_s(reinterpret_cast<FILE **>(stderr), "CONOUT$", "w", stderr);
+        freopen_s(reinterpret_cast<FILE **>(stdout), "CONOUT$", "w", stdout);
 
-        DWORD lMode;
+        DWORD lMode = 0;
         HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
         GetConsoleMode(hStdout, &lMode);
         SetConsoleMode(hStdout, lMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
@@ -66,8 +66,8 @@ int main()
     Soundux::Globals::gGui->setup();
 #if defined(_WIN32)
     HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1));
-    SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
-    SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+    SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
+    SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
 #endif
     Soundux::Globals::gGui->mainLoop();
 
