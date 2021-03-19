@@ -68,12 +68,14 @@ namespace Soundux::Objects
         webview.addCallback("markFavorite",
                             [this](const std::uint32_t &id, bool favourite) { return markFavourite(id, favourite); });
         webview.addCallback("getFavorites", [this] { return getFavourites(); });
-        webview.addCallback("getYoutubeInfo", [this](const std::string &url, const JSPromise &promise) {
+        webview.addCallback("isYoutubeDLAvailable", []() { return Globals::gYtdl.available(); });
+        webview.addCallback("getYoutubeDLInfo", [this](const std::string &url, const JSPromise &promise) {
             std::thread fetchInfo([url, promise, this] { webview.resolve(promise, Globals::gYtdl.getInfo(url)); });
             fetchInfo.detach();
         });
-        webview.addCallback("ytdlDownload", [](const std::string &url) { Globals::gYtdl.download(url); });
-        webview.addCallback("stopYtdlDownload", []() { Globals::gYtdl.killDownload(); });
+        webview.addCallback("startYoutubeDLDownload",
+                            [](const std::string &url) { return Globals::gYtdl.download(url); });
+        webview.addCallback("stopYoutubeDLDownload", []() { Globals::gYtdl.killDownload(); });
         webview.addCallback("getSystemInfo", []() -> std::string { return SystemInfo::getSummary(); });
 
 #if !defined(__linux__)
