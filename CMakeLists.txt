@@ -55,7 +55,6 @@ add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 add_subdirectory(lib/tiny-process-library EXCLUDE_FROM_ALL)
 add_subdirectory(lib/InstanceGuard/Source EXCLUDE_FROM_ALL)
 
-set(HTTPLIB_COMPILE ON)
 set(HTTPLIB_REQUIRE_OPENSSL ON)
 add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
 
