@@ -11,7 +11,9 @@ namespace Soundux::Objects
 
     void YoutubeDl::setup()
     {
-        TinyProcessLib::Process ytdlVersion("youtube-dl --version");
+        TinyProcessLib::Process ytdlVersion(
+            "youtube-dl --version", "", [](const char * /**/, std::size_t /**/) { /*Hide stdout*/ },
+            [](const char * /**/, std::size_t /**/) { /* Hide stderr*/ });
         isAvailable = ytdlVersion.get_exit_status() == 0;
 
         if (!isAvailable)
