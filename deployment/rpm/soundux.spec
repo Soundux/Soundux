@@ -43,6 +43,7 @@ ln -s /opt/soundux/soundux %{buildroot}/usr/bin/soundux
 /usr/bin/soundux
 /usr/share/applications/soundux.desktop
 /usr/share/pixmaps/soundux.png
+/usr/share/metainfo/io.github.Soundux.metainfo.xml
 
 
 %changelog
