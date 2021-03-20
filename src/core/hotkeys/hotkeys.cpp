@@ -1,8 +1,22 @@
 #include "hotkeys.hpp"
 #include "../global/globals.hpp"
+#include <cstdint>
 
 namespace Soundux
 {
+    namespace traits
+    {
+        template <typename T> struct is_pair
+        {
+          private:
+            static std::uint8_t test(...);
+            template <typename O>
+            static auto test(O *) -> decltype(std::declval<O>().first, std::declval<O>().second, std::uint16_t{});
+
+          public:
+            static const bool value = sizeof(test(reinterpret_cast<T *>(0))) == sizeof(std::uint16_t);
+        };
+    } // namespace traits
     namespace Objects
     {
         void Hotkeys::init()
@@ -27,6 +41,48 @@ namespace Soundux
                                   pressedKeys.end());
             }
         }
+        template <typename T> std::optional<Sound> getBestMatch(const T &list, const std::vector<int> &pressedKeys)
+        {
+            std::optional<Sound> rtn;
+            for (const auto &_sound : list)
+            {
+                const auto &sound = [&] {
+                    if constexpr (traits::is_pair<std::decay_t<decltype(_sound)>>::value)
+                    {
+                        return _sound.second.get();
+                    }
+                    else
+                    {
+                        return _sound;
+                    }
+                }();
+
+                if (sound.hotkeys.empty())
+                    continue;
+
+                if (sound.hotkeys == pressedKeys)
+                {
+                    rtn = sound;
+                    break;
+                }
+
+                if (pressedKeys.size() > sound.hotkeys.size())
+                {
+                    if (rtn && rtn->hotkeys.size() > sound.hotkeys.size())
+                    {
+                        continue;
+                    }
+
+                    std::size_t diff = pressedKeys.size() - sound.hotkeys.size();
+                    if (std::equal(pressedKeys.begin() + static_cast<int>(diff), pressedKeys.end(),
+                                   sound.hotkeys.begin()))
+                    {
+                        rtn = sound;
+                    }
+                }
+            }
+            return rtn;
+        }
         void Hotkeys::onKeyDown(int key)
         {
             pressedKeys.emplace_back(key);
@@ -35,36 +91,27 @@ namespace Soundux
                 Globals::gGui->stopSounds();
                 return;
             }
+
+            std::optional<Sound> bestMatch;
             if (Globals::gSettings.tabHotkeysOnly)
             {
                 auto tab = Globals::gData.getTab(Globals::gSettings.selectedTab);
                 if (tab)
                 {
-                    auto sound = std::find_if(tab->sounds.begin(), tab->sounds.end(),
-                                              [&](auto &item) { return item.hotkeys == pressedKeys; });
-                    if (sound != tab->sounds.end())
-                    {
-                        auto pSound = Globals::gGui->playSound(sound->id);
-                        if (pSound)
-                        {
-                            Globals::gGui->onSoundPlayed(*pSound);
-                        }
-                    }
+                    bestMatch = getBestMatch(tab->sounds, pressedKeys);
                 }
             }
             else
             {
-                std::shared_lock lock(Globals::gSoundsMutex);
-                if (auto sound =
-                        std::find_if(Globals::gSounds.begin(), Globals::gSounds.end(),
-                                     [&](const auto &item) { return item.second.get().hotkeys == pressedKeys; });
-                    sound != Globals::gSounds.end())
+                bestMatch = getBestMatch(Globals::gSounds, pressedKeys);
+            }
+
+            if (bestMatch)
+            {
+                auto pSound = Globals::gGui->playSound(bestMatch->id);
+                if (pSound)
                 {
-                    auto pSound = Globals::gGui->playSound(sound->first);
-                    if (pSound)
-                    {
-                        Globals::gGui->onSoundPlayed(*pSound);
-                    }
+                    Globals::gGui->onSoundPlayed(*pSound);
                 }
             }
         }
