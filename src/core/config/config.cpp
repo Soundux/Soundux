@@ -4,8 +4,8 @@
 #include <fancy.hpp>
 #include <filesystem>
 #include <fstream>
-#include <nlohmann/json.hpp>
 #include <string>
+
 namespace Soundux::Objects
 {
     const std::string Config::path = []() -> std::string {

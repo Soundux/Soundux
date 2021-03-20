@@ -4,6 +4,7 @@
 #if defined(__linux__)
 #include "../helper/audio/linux/pulse.hpp"
 #endif
+#include <atomic>
 #include <cstdint>
 #include <queue>
 #include <string>

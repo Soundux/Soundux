@@ -4,11 +4,9 @@
 #include "../../../helper/systeminfo/systeminfo.hpp"
 #include "../../../helper/version/check.hpp"
 #include "../../../helper/ytdl/youtube-dl.hpp"
-#include <algorithm>
 #include <cstdint>
 #include <fancy.hpp>
 #include <filesystem>
-#include <nlohmann/json.hpp>
 #include <optional>
 #include <thread>
 

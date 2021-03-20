@@ -1,15 +1,12 @@
 #pragma once
 #include "../../core/global/objects.hpp"
 
-#include <atomic>
 #include <cstdint>
 #include <map>
-#include <memory>
 #include <miniaudio.h>
 #include <optional>
 #include <shared_mutex>
 #include <string>
-#include <thread>
 
 namespace Soundux
 {

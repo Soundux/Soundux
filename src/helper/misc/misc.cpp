@@ -5,7 +5,6 @@
 #include <optional>
 #include <process.hpp>
 #include <regex>
-#include <sstream>
 
 #if defined(_WIN32)
 #include <Windows.h>
