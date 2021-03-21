@@ -29,7 +29,8 @@ namespace Soundux
         }
         void Hotkeys::onKeyUp(int key)
         {
-            if (notify && !pressedKeys.empty())
+            if (notify && !pressedKeys.empty() &&
+                std::find(pressedKeys.begin(), pressedKeys.end(), key) != pressedKeys.end())
             {
                 Globals::gGui->onHotKeyReceived(pressedKeys);
                 pressedKeys.clear();
@@ -40,6 +41,18 @@ namespace Soundux
                                                  [key](const auto &item) { return key == item; }),
                                   pressedKeys.end());
             }
+        }
+        bool isCloseMatch(const std::vector<int> &pressedKeys, const std::vector<int> &keys)
+        {
+            if (pressedKeys.size() > keys.size())
+            {
+                std::size_t diff = pressedKeys.size() - keys.size();
+                if (std::equal(pressedKeys.begin() + static_cast<int>(diff), pressedKeys.end(), keys.begin()))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         template <typename T> std::optional<Sound> getBestMatch(const T &list, const std::vector<int> &pressedKeys)
         {
@@ -66,19 +79,14 @@ namespace Soundux
                     break;
                 }
 
-                if (pressedKeys.size() > sound.hotkeys.size())
+                if (rtn && rtn->hotkeys.size() > sound.hotkeys.size())
                 {
-                    if (rtn && rtn->hotkeys.size() > sound.hotkeys.size())
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    std::size_t diff = pressedKeys.size() - sound.hotkeys.size();
-                    if (std::equal(pressedKeys.begin() + static_cast<int>(diff), pressedKeys.end(),
-                                   sound.hotkeys.begin()))
-                    {
-                        rtn = sound;
-                    }
+                if (isCloseMatch(pressedKeys, sound.hotkeys))
+                {
+                    rtn = sound;
                 }
             }
             return rtn;
@@ -86,7 +94,14 @@ namespace Soundux
         void Hotkeys::onKeyDown(int key)
         {
             pressedKeys.emplace_back(key);
-            if (pressedKeys == Globals::gSettings.stopHotkey)
+
+            if (notify)
+            {
+                return;
+            }
+
+            if (pressedKeys == Globals::gSettings.stopHotkey ||
+                isCloseMatch(pressedKeys, Globals::gSettings.stopHotkey))
             {
                 Globals::gGui->stopSounds();
                 return;
