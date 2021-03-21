@@ -1,5 +1,6 @@
 #if defined(__linux__) && __has_include(<X11/Xlib.h>)
 #include "../hotkeys.hpp"
+#include <X11/X.h>
 #include <X11/XKBlib.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/XI2.h>
@@ -50,6 +51,8 @@ namespace Soundux::Objects
 
         XISetMask(mask.mask, XI_RawKeyPress);
         XISetMask(mask.mask, XI_RawKeyRelease);
+        XISetMask(mask.mask, XI_RawButtonPress);
+        XISetMask(mask.mask, XI_RawButtonRelease);
         XISelectEvents(display, root, &mask, 1);
 
         XSync(display, 0);
@@ -64,16 +67,17 @@ namespace Soundux::Objects
                 auto *cookie = reinterpret_cast<XGenericEventCookie *>(&event.xcookie);
 
                 if (XGetEventData(display, cookie) && cookie->type == GenericEvent && cookie->extension == major_op &&
-                    (cookie->evtype == XI_RawKeyPress || cookie->evtype == XI_RawKeyRelease))
+                    (cookie->evtype == XI_RawKeyPress || cookie->evtype == XI_RawKeyRelease ||
+                     cookie->evtype == XI_RawButtonPress || cookie->evtype == XI_RawButtonRelease))
                 {
                     auto *data = reinterpret_cast<XIRawEvent *>(cookie->data);
                     auto key = data->detail;
 
-                    if (cookie->evtype == XI_RawKeyPress)
+                    if (cookie->evtype == XI_RawKeyPress || cookie->evtype == XI_RawButtonPress)
                     {
                         onKeyDown(key);
                     }
-                    else if (cookie->evtype == XI_RawKeyRelease)
+                    else if (cookie->evtype == XI_RawKeyRelease || cookie->evtype == XI_RawButtonRelease)
                     {
                         onKeyUp(key);
                     }
@@ -88,16 +92,21 @@ namespace Soundux::Objects
 
     std::string Hotkeys::getKeyName(const int &key)
     {
+        // TODO(curve): There is no Keysym for the mouse buttons and I couldn't find any way to get the name for the
+        // mouse buttons so they'll just be named KEY_1 (1 is the Keycode). Maybe someone will be able to help me but I
+        // just can't figure it out
+
         KeySym s = XkbKeycodeToKeysym(display, key, 0, 0);
-        if (NoSymbol == s)
+
+        if (s == NoSymbol)
         {
-            return "Unknown";
+            return "KEY_" + std::to_string(key);
         }
 
         auto *str = XKeysymToString(s);
         if (str == nullptr)
         {
-            return "Unknown";
+            return "KEY_" + std::to_string(key);
         }
 
         return str;
