@@ -3,11 +3,13 @@
 #include "../misc/misc.hpp"
 #include <fancy.hpp>
 #include <optional>
-#include <regex>
 
 namespace Soundux::Objects
 {
     using Helpers::exec;
+
+    const std::regex YoutubeDl::urlRegex(
+        R"(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*))");
 
     void YoutubeDl::setup()
     {
@@ -28,12 +30,9 @@ namespace Soundux::Objects
             return std::nullopt;
         }
 
-        std::smatch match;
-        static const std::regex escapeRegex(R"rgx(("|'|\\))rgx");
-
-        if (std::regex_search(url, match, escapeRegex))
+        if (!std::regex_match(url, urlRegex))
         {
-            Fancy::fancy.logTime().warning() << "Url " >> url << " contained illegal characters" << std::endl;
+            Fancy::fancy.logTime().warning() << "Bad url " >> url << std::endl;
             return std::nullopt;
         }
 
@@ -82,12 +81,9 @@ namespace Soundux::Objects
             killDownload();
         }
 
-        std::smatch match;
-        static const std::regex escapeRegex(R"rgx(("|'|\\))rgx");
-
-        if (std::regex_search(url, match, escapeRegex))
+        if (!std::regex_match(url, urlRegex))
         {
-            Fancy::fancy.logTime().warning() << "Url " >> url << " contained illegal characters" << std::endl;
+            Fancy::fancy.logTime().warning() << "Bad url " >> url << std::endl;
             Globals::gGui->onError(ErrorCode::YtdlInvalidUrl);
             return false;
         }
