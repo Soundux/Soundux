@@ -40,6 +40,12 @@ namespace Soundux
             YtdlInformationUnknown
         };
 
+        enum class SortMode : std::uint8_t
+        {
+            ModifiedDate,
+            Name
+        };
+
         struct Sound
         {
             std::uint32_t id;
@@ -62,6 +68,7 @@ namespace Soundux
         struct Settings
         {
             std::vector<int> stopHotkey;
+            SortMode sortMode = SortMode::ModifiedDate;
             bool useAsDefaultDevice = false;
             bool muteDuringPlayback = false;
             std::uint32_t selectedTab = 0;

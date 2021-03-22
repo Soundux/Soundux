@@ -90,9 +90,6 @@ namespace Soundux::Objects
                 rtn.emplace_back(sound);
             }
 
-            std::sort(rtn.begin(), rtn.end(),
-                      [](const auto &first, const auto &second) { return first.modifiedDate > second.modifiedDate; });
-
             return rtn;
         }
 

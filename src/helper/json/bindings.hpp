@@ -73,6 +73,7 @@ namespace nlohmann
             j = {{"allowOverlapping", obj.allowOverlapping},
                  {"output", obj.output},
                  {"gridView", obj.gridView},
+                 {"sortMode", obj.sortMode},
                  {"darkTheme", obj.darkTheme},
                  {"stopHotkey", obj.stopHotkey},
                  {"selectedTab", obj.selectedTab},
@@ -102,6 +103,10 @@ namespace nlohmann
             if (j.find("muteDuringPlayback") != j.end())
             {
                 j.at("muteDuringPlayback").get_to(obj.muteDuringPlayback);
+            }
+            if (j.find("sortMode") != j.end())
+            {
+                j.at("sortMode").get_to(obj.sortMode);
             }
         }
     };
