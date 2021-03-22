@@ -73,6 +73,9 @@ namespace Soundux::Objects
                     auto *data = reinterpret_cast<XIRawEvent *>(cookie->data);
                     auto key = data->detail;
 
+                    if (key == 1)
+                        continue;
+
                     if (cookie->evtype == XI_RawKeyPress || cookie->evtype == XI_RawButtonPress)
                     {
                         onKeyDown(key);
