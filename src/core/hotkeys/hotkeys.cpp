@@ -25,6 +25,7 @@ namespace Soundux
         }
         void Hotkeys::shouldNotify(bool status)
         {
+            pressedKeys.clear();
             notify = status;
         }
         void Hotkeys::onKeyUp(int key)
