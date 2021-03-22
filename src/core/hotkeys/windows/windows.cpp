@@ -9,6 +9,8 @@ using namespace std::chrono_literals;
 namespace Soundux::Objects
 {
     HHOOK oKeyBoardProc;
+    HHOOK oMouseProc;
+
     LRESULT CALLBACK keyBoardProc(int nCode, WPARAM wParam, LPARAM lParam)
     {
         if (nCode == HC_ACTION)
@@ -27,9 +29,46 @@ namespace Soundux::Objects
         return CallNextHookEx(oKeyBoardProc, nCode, wParam, lParam);
     }
 
+    LRESULT CALLBACK mouseProc(int nCode, WPARAM wParam, LPARAM lParam)
+    {
+        if (nCode == HC_ACTION)
+        {
+            // TODO(curve): How would I tell if XButton1 or XButton2 is pressed? Is there a nicer way to do this?
+
+            switch (wParam)
+            {
+            case WM_LBUTTONUP:
+                Globals::gHotKeys.onKeyUp(VK_LBUTTON);
+                break;
+
+            case WM_LBUTTONDOWN:
+                Globals::gHotKeys.onKeyDown(VK_LBUTTON);
+                break;
+
+            case WM_RBUTTONUP:
+                Globals::gHotKeys.onKeyUp(VK_RBUTTON);
+                break;
+
+            case WM_RBUTTONDOWN:
+                Globals::gHotKeys.onKeyDown(VK_RBUTTON);
+                break;
+
+            case WM_MBUTTONDOWN:
+                Globals::gHotKeys.onKeyDown(VK_MBUTTON);
+                break;
+
+            case WM_MBUTTONUP:
+                Globals::gHotKeys.onKeyUp(VK_MBUTTON);
+                break;
+            }
+        }
+        return CallNextHookEx(oMouseProc, nCode, wParam, lParam);
+    }
+
     void Hotkeys::listen()
     {
         oKeyBoardProc = SetWindowsHookEx(WH_KEYBOARD_LL, keyBoardProc, GetModuleHandle(nullptr), NULL);
+        oMouseProc = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, GetModuleHandle(nullptr), NULL);
 
         MSG message;
         while (!GetMessage(&message, NULL, NULL, NULL))
@@ -46,6 +85,7 @@ namespace Soundux::Objects
     void Hotkeys::stop()
     {
         kill = true;
+        UnhookWindowsHookEx(oMouseProc);
         UnhookWindowsHookEx(oKeyBoardProc);
         PostThreadMessage(GetThreadId(listener.native_handle()), WM_QUIT, 0, 0);
         listener.join();
@@ -79,6 +119,11 @@ namespace Soundux::Objects
             scanCode |= KF_EXTENDED;
         default:
             result = GetKeyNameTextA(scanCode << 16, name, 128);
+        }
+
+        if (result == 0)
+        {
+            return "KEY_" + std::to_string(key);
         }
 
         return name;
