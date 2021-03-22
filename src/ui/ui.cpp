@@ -466,38 +466,6 @@ namespace Soundux::Objects
     {
         Globals::gHotKeys.shouldNotify(false);
     }
-    void Window::onEvent(const std::function<void()> &function)
-    {
-        std::unique_lock lock(eventMutex);
-        eventQueue.emplace(function);
-        lock.unlock();
-
-        shouldCheck = true;
-    }
-    void Window::progressEvents()
-    {
-        if (shouldCheck)
-        {
-            std::shared_lock lock(eventMutex);
-            if (!eventQueue.empty())
-            {
-                lock.unlock();
-                {
-                    std::unique_lock uLock(eventMutex);
-                    while (!eventQueue.empty())
-                    {
-                        auto front = std::move(eventQueue.front());
-                        eventQueue.pop();
-
-                        uLock.unlock();
-                        front();
-                        uLock.lock();
-                    }
-                }
-                lock.lock();
-            }
-        }
-    }
     std::optional<Tab> Window::refreshTab(const std::uint32_t &id)
     {
         auto tab = Globals::gData.getTab(id);

@@ -112,7 +112,6 @@ namespace Soundux::Objects
     {
         while (webview.run())
         {
-            progressEvents();
 #if defined(_WIN32)
             Sleep(20);
 #endif
@@ -129,7 +128,7 @@ namespace Soundux::Objects
         auto js = "window.hotkeyReceived(`" + hotkeySequence.substr(0, hotkeySequence.length() - 3) +
                   "`, JSON.parse(`" + nlohmann::json(keys).dump() + "`));";
 
-        onEvent([js, this]() { webview.runCode(js); });
+        webview.runCodeSafe(js);
     }
     void WebView::onSoundFinished(const PlayingSound &sound)
     {
@@ -137,30 +136,30 @@ namespace Soundux::Objects
         auto soundObj = nlohmann::json(sound).dump();
         auto js = "window.finishSound(JSON.parse(`" + soundObj + "`));";
 
-        onEvent([js, this]() { webview.runCode(js); });
+        webview.runCodeSafe(js);
     }
     void WebView::onSoundPlayed(const PlayingSound &sound)
     {
         auto soundObj = nlohmann::json(sound).dump();
         auto js = "window.onSoundPlayed(JSON.parse(`" + soundObj + "`));";
 
-        onEvent([js, this]() { webview.runCode(js); });
+        webview.runCodeSafe(js);
     }
     void WebView::onSoundProgressed(const PlayingSound &sound)
     {
         auto soundObj = nlohmann::json(sound).dump();
         auto js = "window.updateSound(JSON.parse(`" + soundObj + "`));";
 
-        onEvent([js, this]() { webview.runCode(js); });
+        webview.runCodeSafe(js);
     }
     void WebView::onDownloadProgressed(float progress, const std::string &eta)
     {
         auto js = "window.downloadProgressed(" + std::to_string(progress) + ", `" + eta + "`);";
-        onEvent([js, this] { webview.runCode(js); });
+        webview.runCodeSafe(js);
     }
     void WebView::onError(const ErrorCode &error)
     {
         auto js = "window.onError(" + std::to_string(static_cast<std::uint8_t>(error)) + ");";
-        onEvent([js, this]() { webview.runCode(js); });
+        webview.runCodeSafe(js);
     }
 } // namespace Soundux::Objects
