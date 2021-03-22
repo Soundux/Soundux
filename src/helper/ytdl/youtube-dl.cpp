@@ -120,7 +120,7 @@ namespace Soundux::Objects
                                         }
                                     });
             Fancy::fancy.logTime().success() << "Started download of " >> url << std::endl;
-            return true;
+            return currentDownload->get_exit_status() == 0;
         }
 
         Globals::gGui->onError(ErrorCode::TabDoesNotExist);
