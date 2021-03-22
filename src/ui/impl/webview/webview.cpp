@@ -72,8 +72,10 @@ namespace Soundux::Objects
             std::thread fetchInfo([url, promise, this] { webview.resolve(promise, Globals::gYtdl.getInfo(url)); });
             fetchInfo.detach();
         });
-        webview.addCallback("startYoutubeDLDownload",
-                            [](const std::string &url) { return Globals::gYtdl.download(url); });
+        webview.addCallback("startYoutubeDLDownload", [this](const std::string &url, const JSPromise &promise) {
+            std::thread download([promise, url, this] { webview.resolve(promise, Globals::gYtdl.download(url)); });
+            download.detach();
+        });
         webview.addCallback("stopYoutubeDLDownload", [this](const JSPromise &promise) {
             std::thread killDownload([promise, this] {
                 Globals::gYtdl.killDownload();
