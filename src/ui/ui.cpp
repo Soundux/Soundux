@@ -560,7 +560,8 @@ namespace Soundux::Objects
     }
     bool Window::startPassthrough(const std::string &name)
     {
-        if (Globals::gPulse.moveApplicationsToSinkMonitor(Globals::gSettings.output))
+        if (Globals::gSettings.output.empty() ||
+            Globals::gPulse.moveApplicationsToSinkMonitor(Globals::gSettings.output))
         {
             if (!Globals::gPulse.moveApplicationToApplicationPassthrough(name))
             {
