@@ -37,14 +37,6 @@ namespace Soundux::Objects
 
             switch (wParam)
             {
-            case WM_LBUTTONUP:
-                Globals::gHotKeys.onKeyUp(VK_LBUTTON);
-                break;
-
-            case WM_LBUTTONDOWN:
-                Globals::gHotKeys.onKeyDown(VK_LBUTTON);
-                break;
-
             case WM_RBUTTONUP:
                 Globals::gHotKeys.onKeyUp(VK_RBUTTON);
                 break;
