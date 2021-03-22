@@ -25,7 +25,6 @@ namespace Soundux::Objects
     {
         if (!isAvailable)
         {
-            Globals::gGui->onError(ErrorCode::YtdlNotFound);
             return std::nullopt;
         }
 
@@ -35,7 +34,6 @@ namespace Soundux::Objects
         if (std::regex_search(url, match, escapeRegex))
         {
             Fancy::fancy.logTime().warning() << "Url " >> url << " contained illegal characters" << std::endl;
-            Globals::gGui->onError(ErrorCode::YtdlInvalidUrl);
             return std::nullopt;
         }
 
