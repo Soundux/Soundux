@@ -70,7 +70,7 @@ namespace Soundux
         struct Settings
         {
             std::vector<int> stopHotkey;
-            SortMode sortMode = SortMode::ModifiedDate;
+            SortMode sortMode = SortMode::ModifiedDate_Descending;
             bool useAsDefaultDevice = false;
             bool muteDuringPlayback = false;
             std::uint32_t selectedTab = 0;
