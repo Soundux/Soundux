@@ -82,7 +82,7 @@ namespace Soundux
 
             bool currentlyPassingthrough();
             bool moveBackApplicationsFromPassthrough();
-            bool moveApplicationToApplicationPassthrough(const std::string &);
+            bool moveApplicationsToApplicationPassthrough(const std::string &);
 
             void muteLoopback(bool);
         };

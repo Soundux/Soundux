@@ -531,7 +531,7 @@ namespace Soundux::Objects
 
         return success;
     }
-    bool Pulse::moveApplicationToApplicationPassthrough(const std::string &name)
+    bool Pulse::moveApplicationsToApplicationPassthrough(const std::string &name)
     {
         if (!moveBackApplicationsFromPassthrough())
         {

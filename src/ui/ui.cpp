@@ -563,7 +563,7 @@ namespace Soundux::Objects
         if (Globals::gSettings.output.empty() ||
             Globals::gPulse.moveApplicationsToSinkMonitor(Globals::gSettings.output))
         {
-            if (!Globals::gPulse.moveApplicationToApplicationPassthrough(name))
+            if (!Globals::gPulse.moveApplicationsToApplicationPassthrough(name))
             {
                 Fancy::fancy.logTime().failure()
                     << "Failed to move application: " << name << " to passthrough" << std::endl;
