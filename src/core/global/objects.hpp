@@ -42,8 +42,10 @@ namespace Soundux
 
         enum class SortMode : std::uint8_t
         {
-            ModifiedDate,
-            Name
+            ModifiedDate_Ascending,
+            ModifiedDate_Descending,
+            Alphabetical_Ascending,
+            Alphabetical_Descending,
         };
 
         struct Sound
