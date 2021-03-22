@@ -84,7 +84,10 @@ namespace Soundux::Objects
             killDownload.detach();
         });
         webview.addCallback("getSystemInfo", []() -> std::string { return SystemInfo::getSummary(); });
-        webview.addCallback("updateCheck", []() { return VersionCheck::getStatus(); });
+        webview.addCallback("updateCheck", [this](const JSPromise &promise) {
+            std::thread updateCheck([promise, this] { webview.resolve(promise, VersionCheck::getStatus()); });
+            updateCheck.detach();
+        });
 
 #if !defined(__linux__)
         webview.addCallback("getOutputs", [this]() { return getOutputs(); });
