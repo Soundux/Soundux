@@ -4,9 +4,15 @@
     <br>
     <h6>A cross-platform soundboard 🔊</h6>
     <br>
-    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/Soundux/soundux?style=flat-square">
-    <img alt="GitHub issues" src="https://img.shields.io/github/issues/Soundux/soundux?style=flat-square">
-    <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr-raw/Soundux/soundux?label=pulls&style=flat-square">
+    <a href="https://github.com/Soundux/Soundux/stargazers">
+      <img src="https://img.shields.io/github/stars/Soundux/soundux?style=flat-square" alt="GitHub Repo stars">
+    </a>
+    <a href="https://github.com/Soundux/Soundux/issues">
+      <img src="https://img.shields.io/github/issues/Soundux/soundux?style=flat-square" alt="GitHub issues">
+    </a>
+    <a href="https://github.com/Soundux/Soundux/pulls">
+      <img src="https://img.shields.io/github/issues-pr-raw/Soundux/soundux?label=pulls&style=flat-square" alt="GitHub pull requests">
+    </a>
     <br>
     <a href="https://github.com/Soundux/Soundux/releases">
       <img src="https://img.shields.io/github/release/Soundux/Soundux.svg?style=flat-square" alt="Latest Stable Release" />
