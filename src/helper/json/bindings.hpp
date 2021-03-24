@@ -76,6 +76,7 @@ namespace nlohmann
                  {"sortMode", obj.sortMode},
                  {"darkTheme", obj.darkTheme},
                  {"stopHotkey", obj.stopHotkey},
+                 {"syncVolumes", obj.syncVolumes},
                  {"selectedTab", obj.selectedTab},
                  {"launchPadMode", obj.launchPadMode},
                  {"tabHotkeysOnly", obj.tabHotkeysOnly},
@@ -107,6 +108,10 @@ namespace nlohmann
             if (j.find("sortMode") != j.end())
             {
                 j.at("sortMode").get_to(obj.sortMode);
+            }
+            if (j.find("syncVolumes") != j.end())
+            {
+                j.at("syncVolumes").get_to(obj.syncVolumes);
             }
         }
     };

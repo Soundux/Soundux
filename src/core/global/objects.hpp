@@ -77,12 +77,13 @@ namespace Soundux
             bool allowOverlapping = true;
             bool tabHotkeysOnly = false;
             bool launchPadMode = false;
+            bool syncVolumes = false;
             bool darkTheme = true;
             bool gridView = false;
             std::string output;
 
             float remoteVolume = 1.f;
-            float localVolume = 1.f;
+            float localVolume = 0.5f;
         };
         class Data
         {
