@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(soundux VERSION 0.2.2 DESCRIPTION "")
 
+set(FULL_VERSION_STRING "0.2.2_b2")
 option(IS_CI_BUILD "Is used for windows ci build" OFF)
 option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
 
@@ -41,7 +42,7 @@ else()
     target_compile_options(soundux PRIVATE -Wall -Wextra -Werror -pedantic -Wno-unused-lambda-capture)
 endif()
 
-target_compile_definitions(soundux PRIVATE SOUNDUX_VERSION="${PROJECT_VERSION}" WNCK_I_KNOW_THIS_IS_UNSTABLE=1)
+target_compile_definitions(soundux PRIVATE SOUNDUX_VERSION="${FULL_VERSION_STRING}" WNCK_I_KNOW_THIS_IS_UNSTABLE=1)
 target_include_directories(soundux SYSTEM PRIVATE "lib/miniaudio")
 target_include_directories(soundux SYSTEM PRIVATE "lib/fancypp/include")
 target_include_directories(soundux SYSTEM PRIVATE "lib/json/single_include")
