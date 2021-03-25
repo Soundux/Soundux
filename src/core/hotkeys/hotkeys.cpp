@@ -43,8 +43,11 @@ namespace Soundux
                                   pressedKeys.end());
             }
         }
-        bool isCloseMatch(const std::vector<int> &pressedKeys, const std::vector<int> &keys)
+        bool isCloseMatch(std::vector<int> pressedKeys, std::vector<int> keys)
         {
+            std::sort(keys.begin(), keys.end());
+            std::sort(pressedKeys.begin(), pressedKeys.end());
+
             if (pressedKeys.size() > keys.size())
             {
                 std::size_t diff = pressedKeys.size() - keys.size();
@@ -55,9 +58,11 @@ namespace Soundux
             }
             return false;
         }
-        template <typename T> std::optional<Sound> getBestMatch(const T &list, const std::vector<int> &pressedKeys)
+        template <typename T> std::optional<Sound> getBestMatch(const T &list, std::vector<int> pressedKeys)
         {
             std::optional<Sound> rtn;
+            std::sort(pressedKeys.begin(), pressedKeys.end());
+
             for (const auto &_sound : list)
             {
                 const auto &sound = [&] {
@@ -74,18 +79,21 @@ namespace Soundux
                 if (sound.hotkeys.empty())
                     continue;
 
-                if (sound.hotkeys == pressedKeys)
+                auto sortedKeys = sound.hotkeys;
+                std::sort(sortedKeys.begin(), sortedKeys.end());
+
+                if (sortedKeys == pressedKeys)
                 {
                     rtn = sound;
                     break;
                 }
 
-                if (rtn && rtn->hotkeys.size() > sound.hotkeys.size())
+                if (rtn && rtn->hotkeys.size() > sortedKeys.size())
                 {
                     continue;
                 }
 
-                if (isCloseMatch(pressedKeys, sound.hotkeys))
+                if (isCloseMatch(pressedKeys, sortedKeys))
                 {
                     rtn = sound;
                 }
