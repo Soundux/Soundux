@@ -50,4 +50,5 @@ Checks: "*,\
   -cppcoreguidelines-pro-type-union-access,\
   -readability-static-accessed-through-instance,\
   -cppcoreguidelines-special-member-functions,\
-  -readability-isolate-declaration"
+  -readability-isolate-declaration,\
+  -google-default-arguments"
