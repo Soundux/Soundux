@@ -121,12 +121,7 @@ namespace Soundux::Objects
     }
     void WebView::mainLoop()
     {
-        while (webview.run())
-        {
-#if defined(_WIN32)
-            Sleep(20);
-#endif
-        }
+        webview.run();
         Fancy::fancy.logTime() << "UI exited" << std::endl;
     }
     void WebView::onHotKeyReceived(const std::vector<int> &keys)
