@@ -10,7 +10,7 @@
 	url = https://github.com/Curve/fancypp
 [submodule "lib/nativefiledialog-extended"]
 	path = lib/nativefiledialog-extended
-	url = https://github.com/btzy/nativefiledialog-extended/
+	url = https://github.com/btzy/nativefiledialog-extended
 [submodule "lib/InstanceGuard"]
 	path = lib/InstanceGuard
 	url = https://github.com/Grandbrain/InstanceGuard
@@ -23,7 +23,7 @@
 	url = https://github.com/Soundux/webviewpp
 [submodule "lib/tiny-process-library"]
 	path = lib/tiny-process-library
-	url = https://gitlab.com/eidheim/tiny-process-library/
+	url = https://gitlab.com/eidheim/tiny-process-library.git
 [submodule "lib/cpp-httplib"]
 	path = lib/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib
