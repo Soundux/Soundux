@@ -27,3 +27,6 @@
 [submodule "lib/cpp-httplib"]
 	path = lib/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib
+[submodule "lib/traypp"]
+	path = lib/traypp
+	url = https://github.com/Soundux/traypp
