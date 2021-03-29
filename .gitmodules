@@ -30,3 +30,6 @@
 [submodule "lib/traypp"]
 	path = lib/traypp
 	url = https://github.com/Soundux/traypp
+[submodule "deployment/flatpak/shared-modules"]
+	path = deployment/flatpak/shared-modules
+	url = https://github.com/flathub/shared-modules
