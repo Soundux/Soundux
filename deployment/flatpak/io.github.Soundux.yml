@@ -5,6 +5,7 @@ sdk: org.gnome.Sdk
 command: soundux
 finish-args:
   - --device=all
+  - --share=network
   - --socket=pulseaudio
   - --socket=x11
   - --filesystem=host
@@ -19,3 +20,33 @@ modules:
       - type: git
         url: https://github.com/Soundux/Soundux.git
         branch: master
+  - name: ffmpeg
+    config-opts:
+      - --enable-shared
+      - --disable-static
+      - --disable-doc
+      - --disable-ffplay
+      - --disable-devices
+      - --enable-gnutls
+      - --enable-libmp3lame
+      - --enable-libvorbis
+    sources:
+      - type: archive
+        url: https://www.ffmpeg.org/releases/ffmpeg-4.3.2.tar.xz
+        sha256: 46e4e64f1dd0233cbc0934b9f1c0da676008cad34725113fb7f802cfa84ccddb
+    post-install:
+      - install -Dm644 COPYING.LGPLv3 /app/share/licenses/ffmpeg/COPYING
+    cleanup:
+      - "/share/ffmpeg"
+  - name: youtube-dl
+    no-autogen: true
+    no-make-install: true
+    make-args:
+      - youtube-dl
+      - PYTHON=/usr/bin/python
+    sources:
+      - type: archive
+        url: https://github.com/ytdl-org/youtube-dl/releases/download/2021.03.25/youtube-dl-2021.03.25.tar.gz
+        sha256: a303cfd327938e3f15890099be79958cc17d536d1f985301d5462e487af3485f
+    post-install:
+      - install -Dm0755 -t /app/bin youtube-dl
