@@ -11,6 +11,7 @@
 #include <thread>
 
 #ifdef _WIN32
+#include "../../assets/icon.h"
 #include <shellapi.h>
 #include <windows.h>
 #endif
@@ -30,10 +31,30 @@ namespace Soundux::Objects
         GetModuleFileNameA(nullptr, rawPath, MAX_PATH);
 
         auto path = std::filesystem::canonical(rawPath).parent_path() / "dist" / "index.html";
+        tray = std::make_shared<Tray>("soundux-tray", IDI_ICON1);
 #endif
 #if defined(__linux__)
         auto path = std::filesystem::canonical("/proc/self/exe").parent_path() / "dist" / "index.html";
+        auto iconPath = std::filesystem::canonical("/proc/self/exe").parent_path() / "soundux.png";
+        tray = std::make_shared<Tray>("soundux-tray", iconPath);
 #endif
+
+        tray->addItem(TrayButton("Exit", [this]() {
+            tray->exit();
+            webview.exit();
+        }));
+        auto settings = tray->addItem(TraySubmenu("Settings"));
+        settings->addItems(TraySyncedCheck("Mute during playback", Globals::gSettings.muteDuringPlayback,
+                                           [this](bool state) {
+                                               auto settings = Globals::gSettings;
+                                               settings.muteDuringPlayback = state;
+                                               changeSettings(settings);
+                                           }),
+                           TraySyncedCheck("Tab hotkeys only", Globals::gSettings.tabHotkeysOnly, [this](bool state) {
+                               auto settings = Globals::gSettings;
+                               settings.tabHotkeysOnly = state;
+                               changeSettings(settings);
+                           }));
 
         webview.addCallback("getSettings", []() { return Globals::gSettings; });
         webview.addCallback("isLinux", []() {
@@ -167,5 +188,12 @@ namespace Soundux::Objects
     {
         auto js = "window.onError(" + std::to_string(static_cast<std::uint8_t>(error)) + ");";
         webview.runCodeSafe(js);
+    }
+    void WebView::changeSettings(const Settings &newSettings)
+    {
+        Window::changeSettings(newSettings);
+
+        webview.hideOnClose(newSettings.minimizeToTray);
+        tray->update();
     }
 } // namespace Soundux::Objects

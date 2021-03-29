@@ -75,6 +75,7 @@ namespace Soundux
             bool muteDuringPlayback = false;
             std::uint32_t selectedTab = 0;
             bool allowOverlapping = true;
+            bool minimizeToTray = false;
             bool tabHotkeysOnly = false;
             bool launchPadMode = false;
             bool syncVolumes = false;

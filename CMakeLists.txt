@@ -76,13 +76,15 @@ add_subdirectory(src/ui/impl/webview/lib/webviewpp EXCLUDE_FROM_ALL)
 add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 add_subdirectory(lib/tiny-process-library EXCLUDE_FROM_ALL)
 add_subdirectory(lib/InstanceGuard/Source EXCLUDE_FROM_ALL)
+add_subdirectory(lib/traypp EXCLUDE_FROM_ALL)
 
 set(HTTPLIB_REQUIRE_OPENSSL ON)
 add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
 
-target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library httplib)
+target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library httplib tray)
 
-# [[ Copy Openssl dlls ]] - Needed because dlls are not copied to output folder in github action
+# [[ Copy Openssl dlls ]] 
+#  > Needed because dlls are not copied to output folder in github action
 if (MSVC)  
     if (IS_CI_BUILD)
         find_package(OpenSSL REQUIRED)

@@ -1,5 +1,6 @@
 #pragma once
 #include "../../ui.hpp"
+#include <tray.hpp>
 #include <webview.hpp>
 
 namespace Soundux
@@ -10,6 +11,8 @@ namespace Soundux
         {
           private:
             SounduxWebView webview;
+            std::shared_ptr<Tray> tray;
+            void changeSettings(const Settings &newSettings) override;
 
           public:
             void setup() override;

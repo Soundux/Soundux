@@ -80,6 +80,7 @@ namespace nlohmann
                  {"selectedTab", obj.selectedTab},
                  {"launchPadMode", obj.launchPadMode},
                  {"tabHotkeysOnly", obj.tabHotkeysOnly},
+                 {"minimizeToTray", obj.minimizeToTray},
                  {"remoteVolume", obj.remoteVolume},
                  {"muteDuringPlayback", obj.muteDuringPlayback},
                  {"useAsDefaultDevice", obj.useAsDefaultDevice},
@@ -112,6 +113,10 @@ namespace nlohmann
             if (j.find("syncVolumes") != j.end())
             {
                 j.at("syncVolumes").get_to(obj.syncVolumes);
+            }
+            if (j.find("minimizeToTray") != j.end())
+            {
+                j.at("minimizeToTray").get_to(obj.minimizeToTray);
             }
         }
     };
