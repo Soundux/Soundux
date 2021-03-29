@@ -21,6 +21,8 @@ jobs:
 
         steps:
             - uses: actions/checkout@v2
+              with:
+                  submodules: true
             - uses: bilelmoussaoui/flatpak-github-actions@v2
               with:
                   bundle: "soundux.flatpak"
