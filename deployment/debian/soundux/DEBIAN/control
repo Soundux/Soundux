@@ -2,7 +2,7 @@ Package: soundux
 Version: 0.2.1
 Architecture: all
 Maintainer: D3SOX <d3sox@protonmail.com>
-Depends: libgtk-3-0, libwnck-3-0, libwebkit2gtk-4.0-37, libx11-6, pulseaudio, pulseaudio-utils
+Depends: libgtk-3-0, libwnck-3-0, libappindicator3-1, libwebkit2gtk-4.0-37, libx11-6, pulseaudio, pulseaudio-utils
 Section: sound
 Priority: optional
 Homepage: https://soundux.rocks
