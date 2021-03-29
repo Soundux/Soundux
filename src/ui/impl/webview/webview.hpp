@@ -14,6 +14,16 @@ namespace Soundux
             std::shared_ptr<Tray> tray;
             void changeSettings(const Settings &newSettings) override;
 
+            struct
+            {
+                std::string exit;
+                std::string hide;
+                std::string show;
+                std::string settings;
+                std::string tabHotkeys;
+                std::string muteDuringPlayback;
+            } translations;
+
           public:
             void setup() override;
             void mainLoop() override;

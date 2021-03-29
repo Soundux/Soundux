@@ -39,39 +39,6 @@ namespace Soundux::Objects
         tray = std::make_shared<Tray>("soundux-tray", iconPath);
 #endif
 
-        tray->addItem(TrayButton("Exit", [this]() {
-            tray->exit();
-            webview.exit();
-        }));
-        tray->addItem(TrayButton("Hide", [this]() {
-            static bool isShown = true;
-            if (isShown)
-            {
-                webview.hide();
-                isShown = false;
-                tray->getChildren().at(1)->setName("Show");
-            }
-            else
-            {
-                webview.show();
-                isShown = true;
-                tray->getChildren().at(1)->setName("Hide");
-            }
-        }));
-
-        auto settings = tray->addItem(TraySubmenu("Settings"));
-        settings->addItems(TraySyncedCheck("Mute during playback", Globals::gSettings.muteDuringPlayback,
-                                           [this](bool state) {
-                                               auto settings = Globals::gSettings;
-                                               settings.muteDuringPlayback = state;
-                                               changeSettings(settings);
-                                           }),
-                           TraySyncedCheck("Tab hotkeys only", Globals::gSettings.tabHotkeysOnly, [this](bool state) {
-                               auto settings = Globals::gSettings;
-                               settings.tabHotkeysOnly = state;
-                               changeSettings(settings);
-                           }));
-
         webview.addCallback("getSettings", []() { return Globals::gSettings; });
         webview.addCallback("isLinux", []() {
 #if defined(__linux__)
@@ -152,6 +119,68 @@ namespace Soundux::Objects
         webview.setResizeCallback([](int width, int height) {
             Globals::gData.width = width;
             Globals::gData.height = height;
+        });
+        webview.setNavigateCallback([this]([[maybe_unused]] const std::string &url) {
+            webview.callJS<std::string>("window.getTranslation", "settings.title")
+                ->then([this](const std::string &result) {
+                    translations.settings = result;
+                    tray->update();
+                });
+            webview.callJS<std::string>("window.getTranslation", "settings.tabHotkeysOnly")
+                ->then([this](const std::string &result) {
+                    translations.tabHotkeys = result;
+                    tray->update();
+                });
+            webview.callJS<std::string>("window.getTranslation", "settings.muteDuringPlayback")
+                ->then([this](const std::string &result) {
+                    translations.muteDuringPlayback = result;
+                    tray->update();
+                });
+            webview.callJS<std::string>("window.getTranslation", "tray.show")->then([this](const std::string &result) {
+                translations.show = result;
+                tray->update();
+            });
+            webview.callJS<std::string>("window.getTranslation", "tray.hide")->then([this](const std::string &result) {
+                translations.hide = result;
+                tray->update();
+            });
+            webview.callJS<std::string>("window.getTranslation", "tray.exit")->then([this](const std::string &result) {
+                translations.exit = result;
+                tray->update();
+            });
+
+            webview.whenAllReady([&] {
+                tray->addItem(TrayButton(translations.exit, [this]() {
+                    tray->exit();
+                    webview.exit();
+                }));
+                tray->addItem(TrayButton(translations.hide, [this]() {
+                    if (webview.getIsHidden())
+                    {
+                        webview.hide();
+                        tray->getChildren().at(1)->setName(translations.show);
+                    }
+                    else
+                    {
+                        webview.show();
+                        tray->getChildren().at(1)->setName(translations.hide);
+                    }
+                }));
+
+                auto settings = tray->addItem(TraySubmenu(translations.settings));
+                settings->addItems(
+                    TraySyncedCheck(translations.muteDuringPlayback, Globals::gSettings.muteDuringPlayback,
+                                    [this](bool state) {
+                                        auto settings = Globals::gSettings;
+                                        settings.muteDuringPlayback = state;
+                                        changeSettings(settings);
+                                    }),
+                    TraySyncedCheck(translations.tabHotkeys, Globals::gSettings.tabHotkeysOnly, [this](bool state) {
+                        auto settings = Globals::gSettings;
+                        settings.tabHotkeysOnly = state;
+                        changeSettings(settings);
+                    }));
+            });
         });
 
         webview.navigate("file://" + path.string());
