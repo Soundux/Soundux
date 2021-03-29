@@ -43,7 +43,21 @@ namespace Soundux::Objects
             tray->exit();
             webview.exit();
         }));
-        tray->addItem(TrayButton("Show", [this]() { webview.show(); }));
+        tray->addItem(TrayButton("Hide", [this]() {
+            static bool isShown = true;
+            if (isShown)
+            {
+                webview.hide();
+                isShown = false;
+                tray->getChildren().at(1)->setName("Show");
+            }
+            else
+            {
+                webview.show();
+                isShown = true;
+                tray->getChildren().at(1)->setName("Hide");
+            }
+        }));
 
         auto settings = tray->addItem(TraySubmenu("Settings"));
         settings->addItems(TraySyncedCheck("Mute during playback", Globals::gSettings.muteDuringPlayback,
