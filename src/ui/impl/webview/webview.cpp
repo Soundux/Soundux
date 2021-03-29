@@ -115,7 +115,7 @@ namespace Soundux::Objects
         webview.addCallback("isSwitchOnConnectLoaded", []() { return Globals::gPulse.isSwitchOnConnectLoaded(); });
         webview.addCallback("unloadSwitchOnConnect", []() { Globals::gPulse.unloadSwitchOnConnect(); });
 #endif
-
+        webview.setCloseCallback([this]() { tray->getChildren().at(1)->setName(translations.show); });
         webview.setResizeCallback([](int width, int height) {
             Globals::gData.width = width;
             Globals::gData.height = height;
@@ -155,7 +155,7 @@ namespace Soundux::Objects
                     webview.exit();
                 }));
                 tray->addItem(TrayButton(translations.hide, [this]() {
-                    if (webview.getIsHidden())
+                    if (!webview.getIsHidden())
                     {
                         webview.hide();
                         tray->getChildren().at(1)->setName(translations.show);
