@@ -43,6 +43,8 @@ namespace Soundux::Objects
             tray->exit();
             webview.exit();
         }));
+        tray->addItem(TrayButton("Show", [this]() { webview.show(); }));
+
         auto settings = tray->addItem(TraySubmenu("Settings"));
         settings->addItems(TraySyncedCheck("Mute during playback", Globals::gSettings.muteDuringPlayback,
                                            [this](bool state) {
