@@ -9,6 +9,7 @@ finish-args:
   - --socket=x11
   - --filesystem=host
 modules:
+  - "shared-modules/libappindicator/libappindicator-gtk3-introspection-12.10.json"
   - name: soundux
     buildsystem: cmake-ninja
     config-opts:
