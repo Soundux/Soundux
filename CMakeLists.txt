@@ -96,13 +96,16 @@ if (MSVC)
     endif()
 endif()
 
-# [[ Build Frontend ]]
+# [[ Copy required files ]]
+#  > Copies frontend files and icon for tray
 if (MSVC)
     file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/" 
         DESTINATION "${CMAKE_SOURCE_DIR}/build/Release/dist")
 else()
     file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/" 
         DESTINATION "${CMAKE_SOURCE_DIR}/build/dist")
+    file(COPY "${CMAKE_SOURCE_DIR}/assets/soundux.png" 
+         DESTINATION "${CMAKE_SOURCE_DIR}/build")
 endif()
 
 target_compile_features(soundux PRIVATE cxx_std_17)
