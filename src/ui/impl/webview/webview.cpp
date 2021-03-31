@@ -102,7 +102,7 @@ namespace Soundux::Objects
         });
 #endif
 #if defined(__linux__)
-        webview.addCallback("openUrl", [this](const std::string &url) {
+        webview.addCallback("openUrl", [](const std::string &url) {
             if (system(("xdg-open \"" + url + "\"").c_str()) != 0) // NOLINT
             {
                 Fancy::fancy.logTime().warning() << "Failed to open url " << url << std::endl;
