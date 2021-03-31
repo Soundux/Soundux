@@ -1,15 +1,21 @@
 #if defined(_WIN32)
+#include "../../misc/misc.hpp"
 #include "../systeminfo.hpp"
 #include <Windows.h>
 #include <fancy.hpp>
 
 std::string SystemInfo::getSystemInfo()
 {
-    OSVERSIONINFOEX info;
-    ZeroMemory(&info, sizeof(OSVERSIONINFOEX));
-    info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-    GetVersionEx(reinterpret_cast<LPOSVERSIONINFO>(&info));
+    std::string result;
 
-    return ("Windows: " + std::to_string(info.dwMajorVersion) + "." + std::to_string(info.dwMinorVersion) + "\n");
+    if (Soundux::Helpers::exec("cmd /c winver", result))
+    {
+        if (result.empty())
+        {
+            result = "winver failed" << std::endl;
+        }
+    }
+
+    result += "\nSOUNDUX_VERSION: " SOUNDUX_VERSION;
 }
 #endif
