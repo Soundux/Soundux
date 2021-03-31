@@ -27,7 +27,7 @@ jobs:
                   submodules: recursive
 
             - name: Install build dependencies
-              run: "sudo apt-get install git build-essential cmake libx11-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev"
+              run: "sudo apt-get update && sudo apt-get install git build-essential cmake libx11-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev"
 
             - name: Compile
               run: "mkdir build && cd build && cmake .. && cmake --build . --config Release"
