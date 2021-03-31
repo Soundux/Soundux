@@ -12,7 +12,7 @@ std::string SystemInfo::getSystemInfo()
     {
         if (result.empty())
         {
-            result = "winver failed" << std::endl;
+            result = "winver failed\n";
         }
     }
 
