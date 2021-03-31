@@ -3,6 +3,7 @@
 #include "../systeminfo.hpp"
 #include <Windows.h>
 #include <fancy.hpp>
+#include <regex>
 
 std::string SystemInfo::getSystemInfo()
 {
@@ -16,6 +17,7 @@ std::string SystemInfo::getSystemInfo()
         }
     }
 
+    result.erase(std::remove(result.begin(), result.end(), '\r'));
     return result;
 }
 #endif
