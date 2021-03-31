@@ -5,6 +5,7 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
+#include <X11/extensions/XTest.h>
 #include <chrono>
 #include <cstdlib>
 #include <fancy.hpp>
@@ -119,6 +120,22 @@ namespace Soundux::Objects
     {
         kill = true;
         listener.join();
+    }
+
+    void Hotkeys::pressKeys(const std::vector<int> &keys)
+    {
+        for (const auto &key : keys)
+        {
+            XTestFakeKeyEvent(display, key, True, 0);
+        }
+    }
+
+    void Hotkeys::releaseKeys(const std::vector<int> &keys)
+    {
+        for (const auto &key : keys)
+        {
+            XTestFakeKeyEvent(display, key, False, 0);
+        }
     }
 } // namespace Soundux::Objects
 

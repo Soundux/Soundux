@@ -120,5 +120,21 @@ namespace Soundux::Objects
 
         return name;
     }
+
+    void Hotkeys::pressKeys(const std::vector<int> &keys)
+    {
+        for (const auto &key : keys)
+        {
+            keybd_event(key, 0, 0, 0);
+        }
+    }
+
+    void Hotkeys::releaseKeys(const std::vector<int> &keys)
+    {
+        for (const auto &key : keys)
+        {
+            keybd_event(key, 0, KEYEVENTF_KEYUP, 0);
+        }
+    }
 } // namespace Soundux::Objects
 #endif

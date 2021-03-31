@@ -141,6 +141,10 @@ namespace Soundux::Objects
             {
                 Globals::gPulse.muteLoopback(true);
             }
+            if (!Globals::gSettings.pushToTalkKeys.empty())
+            {
+                Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
+            }
 
             if (Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
             {
@@ -189,6 +193,11 @@ namespace Soundux::Objects
     {
         auto sound = Globals::gData.getSound(id);
         auto device = Globals::gAudio.getAudioDevice(Globals::gSettings.output);
+
+        if (!Globals::gSettings.pushToTalkKeys.empty())
+        {
+            Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
+        }
 
         if (sound && (Globals::gSettings.output.empty() || (device && device->get().isDefault)))
         {
@@ -390,23 +399,18 @@ namespace Soundux::Objects
             Globals::gAudio.stop(*remoteSoundId);
         }
 
-#if defined(__linux__)
-        if (Globals::gAudio.getPlayingSounds().empty() && !Globals::gSettings.useAsDefaultDevice)
+        if (Globals::gAudio.getPlayingSounds().empty())
         {
-            if (!Globals::gPulse.moveBackCurrentApplications())
-            {
-                Fancy::fancy.logTime().failure()
-                    << "Failed to move back current application, sound: " << id << std::endl;
-                onError(ErrorCode::FailedToMoveBack);
-            }
+            onAllSoundsFinished();
         }
-#endif
 
         return status;
     }
     void Window::stopSounds()
     {
         Globals::gQueue.push_unique(0, []() { Globals::gAudio.stopAll(); });
+        onAllSoundsFinished();
+
 #if defined(__linux__)
         if (!Globals::gPulse.moveBackCurrentApplications())
         {
@@ -609,23 +613,10 @@ namespace Soundux::Objects
         }
         lock.unlock();
 
-#if defined(__linux__)
         if (Globals::gAudio.getPlayingSounds().size() == 1)
         {
-            if (Globals::gSettings.muteDuringPlayback)
-            {
-                Globals::gPulse.muteLoopback(false);
-            }
-            if (!Globals::gPulse.currentlyPassingthrough())
-            {
-                if (!Globals::gPulse.moveBackCurrentApplications())
-                {
-                    Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
-                    onError(ErrorCode::FailedToMoveBack);
-                }
-            }
+            onAllSoundsFinished();
         }
-#endif
     }
     std::vector<Sound> Window::getFavourites()
     {
@@ -634,5 +625,34 @@ namespace Soundux::Objects
     std::optional<Sound> Window::markFavourite(const std::uint32_t &id, bool favourite)
     {
         return Globals::gData.markFavorite(id, favourite);
+    }
+    void Window::onAllSoundsFinished()
+    {
+        if (!Globals::gSettings.pushToTalkKeys.empty())
+        {
+            Globals::gHotKeys.releaseKeys(Globals::gSettings.pushToTalkKeys);
+        }
+
+#if defined(__linux__)
+        if (Globals::gSettings.muteDuringPlayback)
+        {
+            Globals::gPulse.muteLoopback(false);
+        }
+        if (!Globals::gPulse.currentlyPassingthrough())
+        {
+            if (!Globals::gPulse.moveBackCurrentApplications())
+            {
+                Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
+                onError(ErrorCode::FailedToMoveBack);
+            }
+        }
+#endif
+    }
+    void Window::onSoundPlayed([[maybe_unused]] const PlayingSound &sound)
+    {
+        if (!Globals::gSettings.pushToTalkKeys.empty())
+        {
+            Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
+        }
     }
 } // namespace Soundux::Objects

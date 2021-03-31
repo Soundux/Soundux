@@ -58,7 +58,7 @@ if (UNIX)
     
     find_package(PkgConfig REQUIRED)
 	pkg_check_modules(WNCK libwnck-3.0)
-    target_link_libraries(soundux PRIVATE ${X11_LIBRARIES} ${X11_Xinput_LIB})
+    target_link_libraries(soundux PRIVATE ${X11_LIBRARIES} ${X11_Xinput_LIB} ${X11_XTest_LIB})
     
     if (${WNCK_FOUND})
         add_definitions(${WNCK_CFLAGS})

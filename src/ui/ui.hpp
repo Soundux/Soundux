@@ -21,6 +21,8 @@ namespace Soundux
             std::shared_mutex groupedSoundsMutex;
             std::map<std::uint32_t, std::uint32_t> groupedSounds;
 
+            virtual void onAllSoundsFinished();
+
             virtual void stopSounds();
             virtual bool stopSound(const std::uint32_t &);
             virtual std::vector<Tab> removeTab(const std::uint32_t &);
@@ -60,8 +62,8 @@ namespace Soundux
 
             virtual void onError(const ErrorCode &) = 0;
             virtual void onSoundPlayed(
-                const PlayingSound &) = 0; //* This will be called when a sound is played through a hotkey. PlaySound
-                                           //* will be called before this gets called
+                const PlayingSound &); //* This will be called when a sound is played through a hotkey. PlaySound
+                                       //* will be called before this gets called
             virtual void onSoundFinished(const PlayingSound &);
             virtual void onSoundProgressed(const PlayingSound &) = 0;
             virtual void onDownloadProgressed(float, const std::string &) = 0;

@@ -26,6 +26,10 @@ namespace Soundux
 
             void onKeyUp(int);
             void onKeyDown(int);
+
+            void pressKeys(const std::vector<int> &);
+            void releaseKeys(const std::vector<int> &);
+
             std::string getKeyName(const int &);
             std::string getKeySequence(const std::vector<int> &);
         };
