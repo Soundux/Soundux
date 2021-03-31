@@ -19,7 +19,27 @@ std::optional<Soundux::Objects::VersionStatus> VersionCheck::getStatus()
             auto latestTag = parsed[0]["name"];
             if (!latestTag.is_null())
             {
-                return Soundux::Objects::VersionStatus{SOUNDUX_VERSION, latestTag, latestTag != SOUNDUX_VERSION};
+                static std::regex lastNumber(R"(.*(\d))");
+                bool outdated = false;
+
+                std::smatch match;
+                auto latestTagStr = latestTag.get<std::string>();
+                if (std::regex_search(latestTagStr, match, lastNumber))
+                {
+                    auto remoteNumber = std::stoi(match[1]);
+                    auto localVersion = std::string(SOUNDUX_VERSION);
+                    if (std::regex_search(localVersion, match, lastNumber))
+                    {
+                        auto localNumber = std::stoi(match[1]);
+
+                        if (remoteNumber > localNumber)
+                        {
+                            outdated = true;
+                        }
+                    }
+                }
+
+                return Soundux::Objects::VersionStatus{SOUNDUX_VERSION, latestTag, outdated};
             }
             Fancy::fancy.logTime().warning() << "Failed to find latest tag" << std::endl;
         }
