@@ -17,5 +17,5 @@ std::string SystemInfo::getSettingsInfo()
 
 std::string SystemInfo::getSummary()
 {
-    return getSystemInfo() + "\n" + getSettingsInfo() + "\n";
+    return getSystemInfo() + "\n" + getSettingsInfo() + "\n" + "SOUNDUX_VERSION: " + SOUNDUX_VERSION;
 }

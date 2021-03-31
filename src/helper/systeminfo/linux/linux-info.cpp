@@ -39,8 +39,6 @@ std::string SystemInfo::getSystemInfo()
         Fancy::fancy.logTime() << "XDG_SESSION_TYPE not set" << std::endl;
     }
 
-    result += "\nSOUNDUX_VERSION: " SOUNDUX_VERSION;
-
     return result;
 }
 #endif

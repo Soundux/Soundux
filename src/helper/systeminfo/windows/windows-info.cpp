@@ -16,6 +16,6 @@ std::string SystemInfo::getSystemInfo()
         }
     }
 
-    result += "\nSOUNDUX_VERSION: " SOUNDUX_VERSION;
+    return result;
 }
 #endif
