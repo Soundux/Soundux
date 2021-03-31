@@ -55,6 +55,25 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.2.2b3" date="2021-04-01">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2.2_b3</url>
+      <description>
+        <ul>
+          <li>Tray icon</li>
+          <li>Update notification</li>
+          <li>Downloader integration (youtube-dl)</li>
+          <li>UI improvements</li>
+          <li>Sorting options</li>
+          <li>Improved Hotkeys</li>
+          <li>New Search</li>
+          <li>Application Icons</li>
+          <li>Launchpad Mode</li>
+          <li>Mute during playback</li>
+          <li>System Information</li>
+          <li>Bug fixes and other improvements</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.1" date="2021-03-07">
       <url>https://github.com/Soundux/Soundux/releases/tag/0.2.1</url>
       <description>
