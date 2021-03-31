@@ -15,6 +15,11 @@ namespace Soundux
             std::atomic<bool> notify = false;
 
             std::vector<int> pressedKeys;
+            std::vector<int> keysToPress;
+#if defined(_WIN32)
+            std::thread keyPressThread;
+            std::atomic<bool> shouldPressKeys = false;
+#endif
 
           private:
             void listen();

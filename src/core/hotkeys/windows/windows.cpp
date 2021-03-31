@@ -61,9 +61,28 @@ namespace Soundux::Objects
     {
         oKeyBoardProc = SetWindowsHookEx(WH_KEYBOARD_LL, keyBoardProc, GetModuleHandle(nullptr), NULL);
         oMouseProc = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, GetModuleHandle(nullptr), NULL);
+        keyPressThread = std::thread([this] {
+            while (!kill)
+            {
+                //* Yes, this is absolutely cursed. I tried to implement this by just sending the keydown event once but
+                //* it does not work like that on windows, so I have to do this, thank you Microsoft, I hate you.
+                if (shouldPressKeys)
+                {
+                    for (const auto &key : keysToPress)
+                    {
+                        keybd_event(key, 0, 1, 0);
+                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    }
+                }
+                else
+                {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                }
+            }
+        });
 
         MSG message;
-        while (!GetMessage(&message, NULL, NULL, NULL))
+        while (!GetMessage(&message, nullptr, NULL, NULL))
         {
             if (kill)
             {
@@ -81,6 +100,7 @@ namespace Soundux::Objects
         UnhookWindowsHookEx(oKeyBoardProc);
         PostThreadMessage(GetThreadId(listener.native_handle()), WM_QUIT, 0, 0);
         listener.join();
+        keyPressThread.join();
     }
 
     std::string Hotkeys::getKeyName(const int &key)
@@ -112,7 +132,6 @@ namespace Soundux::Objects
         default:
             result = GetKeyNameTextA(scanCode << 16, name, 128);
         }
-
         if (result == 0)
         {
             return "KEY_" + std::to_string(key);
@@ -123,17 +142,17 @@ namespace Soundux::Objects
 
     void Hotkeys::pressKeys(const std::vector<int> &keys)
     {
-        for (const auto &key : keys)
-        {
-            keybd_event(key, 0, 0, 0);
-        }
+        keysToPress = keys;
+        shouldPressKeys = true;
     }
 
-    void Hotkeys::releaseKeys(const std::vector<int> &keys)
+    void Hotkeys::releaseKeys([[maybe_unused]] const std::vector<int> &keys)
     {
+        shouldPressKeys = false;
+        keysToPress.clear();
         for (const auto &key : keys)
         {
-            keybd_event(key, 0, KEYEVENTF_KEYUP, 0);
+            keybd_event(key, 0, 2, 0);
         }
     }
 } // namespace Soundux::Objects

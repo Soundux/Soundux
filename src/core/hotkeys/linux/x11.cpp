@@ -124,6 +124,7 @@ namespace Soundux::Objects
 
     void Hotkeys::pressKeys(const std::vector<int> &keys)
     {
+        keysToPress = keys;
         for (const auto &key : keys)
         {
             XTestFakeKeyEvent(display, key, True, 0);
@@ -132,6 +133,7 @@ namespace Soundux::Objects
 
     void Hotkeys::releaseKeys(const std::vector<int> &keys)
     {
+        keysToPress.clear();
         for (const auto &key : keys)
         {
             XTestFakeKeyEvent(display, key, False, 0);
