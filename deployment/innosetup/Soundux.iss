@@ -64,6 +64,8 @@ Source: "$PATH\build\Release\soundux.exe"; DestDir: "{app}"; Flags: ignoreversio
 Source: "$PATH\build\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{tmp}\VBCABLE_Driver_Pack43.zip"; DestDir: "{app}"; Flags: external deleteafterinstall; Components: VBCable
 Source: "{tmp}\MicrosoftEdgeWebView2RuntimeInstallerX64.exe"; DestDir: "{tmp}"; Flags: external deleteafterinstall; Components: MicrosoftEdgeWebView2Runtime
+Source: "{tmp}\youtube-dl.exe"; DestDir: "{app}"; Flags: external ignoreversion; Components: FfmpegYouTubeDL
+Source: "{tmp}\ffmpeg.exe"; DestDir: "{app}"; Flags: external ignoreversion; Components: FfmpegYouTubeDL
 
 [Dirs]
 Name: "{app}"; Permissions: users-full
@@ -116,6 +118,7 @@ begin
   Result := True;
 end;
 
+
 procedure InitializeWizard;
 begin
   DownloadPage := CreateDownloadPage(SetupMessage(msgWizardPreparing), SetupMessage(msgPreparingDesc), @OnDownloadProgress);
@@ -130,6 +133,10 @@ begin
     end;
     if WizardIsComponentSelected('VBCable') then begin
       DownloadPage.Add('https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip', 'VBCABLE_Driver_Pack43.zip', '')
+    end;
+    if WizardIsComponentSelected('FfmpegYouTubeDL') then begin
+      DownloadPage.Add('https://github.com/eugeneware/ffmpeg-static/releases/download/b4.3.2/win32-x64', 'ffmpeg.exe', '')
+      DownloadPage.Add('https://github.com/ytdl-org/youtube-dl/releases/download/2021.03.31/youtube-dl.exe', 'youtube-dl.exe', '')
     end;
     DownloadPage.Show;
     try
@@ -157,3 +164,4 @@ Filename: "{app}\{#MyAppExeName}"; Flags: nowait postinstall skipifsilent; Descr
 [Components]
 Name: "MicrosoftEdgeWebView2Runtime"; Description: "Install Microsoft Edge WebView2 Runtime (mandatory)"; Types: custom full compact; Flags: fixed disablenouninstallwarning; Check: IsWebView2NotInstalled
 Name: "VBCable"; Description: "Install VBCable (recommended)"; Types: full; Flags: disablenouninstallwarning
+Name: "FfmpegYouTubeDL"; Description: "Install ffmpeg and youtube-dl (for Downloader support)"; Types: full; Flags: disablenouninstallwarning
