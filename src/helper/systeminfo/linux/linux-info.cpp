@@ -29,6 +29,16 @@ std::string SystemInfo::getSystemInfo()
         Fancy::fancy.logTime() << "XDG_CURRENT_DESKTOP not set" << std::endl;
     }
 
+    auto *sessionType = std::getenv("XDG_SESSION_TYPE"); // NOLINT
+    if (sessionType != nullptr)
+    {
+        result += "\nCurrent Session: " + std::string(sessionType) + "\n";
+    }
+    else
+    {
+        Fancy::fancy.logTime() << "XDG_SESSION_TYPE not set" << std::endl;
+    }
+
     return result;
 }
 #endif
