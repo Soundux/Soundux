@@ -46,7 +46,7 @@ modules:
       - PYTHON=/usr/bin/python
     sources:
       - type: archive
-        url: https://github.com/ytdl-org/youtube-dl/releases/download/2021.03.31/youtube-dl-2021.03.31.tar.gz
-        sha256: f215d0e297febca0552e309dba12d62c53a56ed138de314d63b7fb80617e6ceb
+        url: https://github.com/ytdl-org/youtube-dl/releases/download/2021.04.01/youtube-dl-2021.04.01.tar.gz
+        sha256: f098ef95933a33096f60cb8c3bfbde710f6f84c9cad1b093082584bdc4a089ef
     post-install:
       - install -Dm0755 -t /app/bin youtube-dl

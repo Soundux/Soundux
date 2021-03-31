@@ -136,7 +136,7 @@ begin
     end;
     if WizardIsComponentSelected('FfmpegYouTubeDL') then begin
       DownloadPage.Add('https://github.com/eugeneware/ffmpeg-static/releases/download/b4.3.2/win32-x64', 'ffmpeg.exe', '')
-      DownloadPage.Add('https://github.com/ytdl-org/youtube-dl/releases/download/2021.03.31/youtube-dl.exe', 'youtube-dl.exe', '')
+      DownloadPage.Add('https://github.com/ytdl-org/youtube-dl/releases/download/2021.04.01/youtube-dl.exe', 'youtube-dl.exe', '')
     end;
     DownloadPage.Show;
     try
