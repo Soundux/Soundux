@@ -8,7 +8,7 @@ std::string SystemInfo::getSystemInfo()
 {
     std::string result;
 
-    if (Soundux::Helpers::exec("cmd /c winver", result))
+    if (Soundux::Helpers::exec("cmd /c ver", result))
     {
         if (result.empty())
         {
