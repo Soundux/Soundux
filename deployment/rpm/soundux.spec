@@ -1,5 +1,5 @@
 Name: soundux
-Version: 0.2.2_b2
+Version: 0.2.2_b3
 Release: 1%{?dist}
 Summary: A cross-platform soundboard
 

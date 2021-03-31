@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(soundux VERSION 0.2.2 DESCRIPTION "")
 
-set(FULL_VERSION_STRING "0.2.2_b2")
+set(FULL_VERSION_STRING "0.2.2_b3")
 option(IS_CI_BUILD "Is used for windows ci build" OFF)
 option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
 
