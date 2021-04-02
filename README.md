@@ -37,11 +37,13 @@
 </div>
 
 # 👀 Preview
-| ![Dark Interface](assets/screenshots/1.png)  | ![Seek/Pause/Stop Pane](assets/screenshots/2.png)      |
+| ![Dark Interface](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/home-dark.png) | ![Light Interface](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/home-light.png) |
 | -------------------------------------------- | ------------------------------------------------------ |
-| ![Settings](assets/screenshots/3.png)        | ![Grid View](assets/screenshots/4.png)                 |
-| ![Search Pane](assets/screenshots/5.png)     | ![Application Passthrough](assets/screenshots/6.png)   |
-| ![Light Interface](assets/screenshots/7.png) | ![Light Interface Grid View](assets/screenshots/8.png) |
+| ![Settings Dark](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/settings-dark.png) | ![Settings Light](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/settings-light.png) |
+| ![Search Dark](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/search-dark.png) | ![Search Light](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/search-light.png) |
+| ![Application Passthrough](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/pass-through-dark.png) | ![Application Passthrough](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/pass-through-light.png) |
+| ![Seek/Pause/Stop Dark](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/multiple-playing-dark.png) | ![Seek/Pause/Stop Light](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/multiple-playing-light.png) |
+| ![Grid View Dark](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/grid-view-dark.png) | ![Grid View Light](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/grid-view-light.png) |
 
 # 👋 Introduction
 Soundux is a cross-platform soundboard that features a simple user interface.
