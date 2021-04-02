@@ -44,7 +44,7 @@ jobs:
               uses: actions/upload-artifact@v2.2.2
               with:
                   name: Release
-                  path: build
+                  path: build/Release
 
             - name: Install InnoSetup
               uses: crazy-max/ghaction-chocolatey@v1
