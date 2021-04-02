@@ -45,7 +45,7 @@ namespace Soundux
         }
         bool isCloseMatch(const std::vector<int> &pressedKeys, const std::vector<int> &keys)
         {
-            if (pressedKeys.size() > keys.size())
+            if (pressedKeys.size() >= keys.size())
             {
                 bool allMatched = true;
                 for (const auto &key : keys)
