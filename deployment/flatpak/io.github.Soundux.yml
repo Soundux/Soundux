@@ -16,7 +16,6 @@ modules:
     config-opts:
       - -DUSE_FLATPAK=ON
       - -DCMAKE_BUILD_TYPE=Release
-      - -DEMBED_PATH=src/ui/impl/webview/lib/webviewpp/embed-helper/build
     sources:
       - type: git
         url: https://github.com/Soundux/Soundux.git
