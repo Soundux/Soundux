@@ -30,7 +30,7 @@ jobs:
               run: "sudo apt-get update && sudo apt-get install git build-essential cmake libx11-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev"
 
             - name: Compile Embed-Helper
-              run: "cd src/ui/impl/webview/lib/webviewpp/embed-helper && mkdir build && cd build && cmake .. && cmake --build . --config Release && ./embed-helper ../../../soundux-ui"
+              run: "cd src/ui/impl/webview/lib/webviewpp/embed-helper && mkdir build && cd build && cmake .. && cmake --build . --config Release && ./embed_helper ../../../soundux-ui"
 
             - name: Compile
               run: "mkdir build && cd build && cmake ..  -DEMBED_PATH=src/ui/impl/webview/lib/webviewpp/embed-helper/build && cmake --build . --config Release"
