@@ -102,12 +102,6 @@ else()
     target_compile_definitions(soundux PRIVATE IS_EMBEDDED=1)
 endif()
 
-# [[ Copy tray icon ]]
-if (UNIX)
-    file(COPY "${CMAKE_SOURCE_DIR}/assets/soundux.png" 
-        DESTINATION "${CMAKE_SOURCE_DIR}/build")
-endif()
-
 # [[ Copy Openssl dlls ]] 
 #  > Needed because dlls are not copied to output folder in github action
 if (MSVC)  
@@ -134,14 +128,12 @@ if(USE_FLATPAK)
   if (${EMBED_PATH} STREQUAL "OFF")
     install(DIRECTORY "${CMAKE_SOURCE_DIR}/build/dist" DESTINATION bin)
   endif()
-  install(FILES "${CMAKE_SOURCE_DIR}/build/soundux.png" DESTINATION bin)
 else()
   set(CMAKE_INSTALL_PREFIX "/opt/soundux" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
   install(TARGETS soundux DESTINATION .)
   if (${EMBED_PATH} STREQUAL "OFF")
     install(DIRECTORY "${CMAKE_SOURCE_DIR}/build/dist" DESTINATION .)
   endif()
-  install(FILES "${CMAKE_SOURCE_DIR}/build/soundux.png" DESTINATION /opt/soundux)
   install(FILES "${CMAKE_SOURCE_DIR}/deployment/soundux.desktop" DESTINATION /usr/share/applications)
   install(FILES "${CMAKE_SOURCE_DIR}/deployment/appstream/io.github.Soundux.metainfo.xml" DESTINATION /usr/share/metainfo)
   install(FILES "${CMAKE_SOURCE_DIR}/assets/soundux.png" DESTINATION /usr/share/pixmaps)

@@ -35,7 +35,21 @@ namespace Soundux::Objects
 #endif
 #if defined(__linux__)
         auto path = std::filesystem::canonical("/proc/self/exe").parent_path() / "dist" / "index.html";
-        auto iconPath = std::filesystem::canonical("/proc/self/exe").parent_path() / "soundux.png";
+        std::filesystem::path iconPath;
+
+        if (std::filesystem::exists("/app/share/icons/hicolor/256x256/apps/io.github.Soundux.png"))
+        {
+            iconPath = "/app/share/icons/hicolor/256x256/apps/io.github.Soundux.png";
+        }
+        else if (std::filesystem::exists("/usr/share/pixmaps/soundux.png"))
+        {
+            iconPath = "/usr/share/pixmaps/soundux.png";
+        }
+        else
+        {
+            Fancy::fancy.logTime().warning() << "Failed to find iconPath for tray icon" << std::endl;
+        }
+
         tray = std::make_shared<Tray>("soundux-tray", iconPath);
 #endif
 
