@@ -183,7 +183,11 @@ namespace Soundux::Objects
             });
         });
 
-        webview.navigate("file://" + path.string());
+#if defined(__linux__)
+        webview.navigate("embedded://" + path.string());
+#elif defined(_WIN32)
+        webview.navigate("file:///embedded/" + path.string());
+#endif
     }
     void WebView::mainLoop()
     {

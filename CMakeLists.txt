@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 project(soundux VERSION 0.2.2 DESCRIPTION "")
 
 set(FULL_VERSION_STRING "0.2.2_b3")
+option(EMBED_PATH "The path used for embedding" "")
 option(IS_CI_BUILD "Is used for windows ci build" OFF)
 option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
 
@@ -82,6 +83,13 @@ set(HTTPLIB_REQUIRE_OPENSSL ON)
 add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
 
 target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library httplib tray)
+
+if (${EMBED_PATH} STREQUAL "")
+message("Web-content will not be embedded")
+else()
+message("Using embed path " ${EMBED_PATH})
+target_link_directories(webview PUBLIC ${EMBED_PATH})
+endif()
 
 # [[ Copy Openssl dlls ]] 
 #  > Needed because dlls are not copied to output folder in github action
