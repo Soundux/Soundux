@@ -79,10 +79,9 @@ We also provide a `soundux-git` package which compiles from the master branch
 ### 📜 Other distros
 You can grab the latest release from Flathub
 
-<a
- href='https://flathub.org/apps/details/io.github.Soundux'><img 
-width='240' alt='Download on Flathub' 
-src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+<a href='https://flathub.org/apps/details/io.github.Soundux'>
+  <img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/>
+</a>
 
 ## 🪟 Windows
 Download our installer or portable from [the latest release](https://github.com/Soundux/Soundux/releases/latest)
