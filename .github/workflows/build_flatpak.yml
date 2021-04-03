@@ -24,9 +24,6 @@ jobs:
               with:
                   submodules: true
                   
-            - name: Compile Embed-Helper
-              run: "cd src/ui/impl/webview/lib/webviewpp/embed-helper && mkdir build && cd build && cmake .. && cmake --build . --config Release && ./embed_helper ../../../soundux-ui"
-
             - uses: bilelmoussaoui/flatpak-github-actions@v2
               with:
                   bundle: "soundux.flatpak"
