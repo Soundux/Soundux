@@ -98,7 +98,7 @@ if (${EMBED_PATH} STREQUAL "OFF")
     endif()
 else()
     message("Using embed path " ${EMBED_PATH})
-    target_link_directories(webview PUBLIC ${EMBED_PATH})
+    target_include_directories(webview PUBLIC ${EMBED_PATH})
     target_compile_definitions(soundux PRIVATE IS_EMBEDDED=1)
 endif()
 
