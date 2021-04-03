@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 project(soundux VERSION 0.2.2 DESCRIPTION "")
 
 set(FULL_VERSION_STRING "0.2.2_b3")
-option(EMBED_PATH "The path used for embedding" OFF)
+option(EMBED_PATH "The path used for embedding" "OFF")
 option(IS_CI_BUILD "Is used for windows ci build" OFF)
 option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
 
@@ -84,7 +84,7 @@ add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
 
 target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library httplib tray)
 
-if (NOT ${EMBED_PATH})
+if (${EMBED_PATH} STREQUAL "OFF")
     message("Web-content will not be embedded") 
     
     # [[ Copy required files ]]
