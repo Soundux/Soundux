@@ -106,6 +106,7 @@ namespace Soundux::Objects
             std::thread updateCheck([promise, this] { webview.resolve(promise, VersionCheck::getStatus()); });
             updateCheck.detach();
         });
+        webview.addCallback("isOnFavorites", [this](bool state) { isOnFavorites(state); });
 
 #if !defined(__linux__)
         webview.addCallback("getOutputs", [this]() { return getOutputs(); });

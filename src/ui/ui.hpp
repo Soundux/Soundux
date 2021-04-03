@@ -24,6 +24,7 @@ namespace Soundux
             virtual void onAllSoundsFinished();
 
             virtual void stopSounds();
+            virtual void isOnFavorites(bool);
             virtual bool stopSound(const std::uint32_t &);
             virtual std::vector<Tab> removeTab(const std::uint32_t &);
             virtual std::optional<Tab> refreshTab(const std::uint32_t &);

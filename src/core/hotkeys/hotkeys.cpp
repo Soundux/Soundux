@@ -125,7 +125,13 @@ namespace Soundux
             }
 
             std::optional<Sound> bestMatch;
-            if (Globals::gSettings.tabHotkeysOnly)
+
+            if (Globals::gData.isOnFavorites)
+            {
+                auto sounds = Globals::gData.getFavorites();
+                bestMatch = getBestMatch(sounds, pressedKeys);
+            }
+            else if (Globals::gSettings.tabHotkeysOnly)
             {
                 auto tab = Globals::gData.getTab(Globals::gSettings.selectedTab);
                 if (tab)

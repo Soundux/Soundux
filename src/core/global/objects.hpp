@@ -95,6 +95,7 @@ namespace Soundux
             std::vector<Tab> tabs;
 
           public:
+            bool isOnFavorites = false;
             int width = 1280, height = 720;
             std::uint32_t soundIdCounter = 0;
 

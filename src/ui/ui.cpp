@@ -655,4 +655,8 @@ namespace Soundux::Objects
             Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
         }
     }
+    void Window::isOnFavorites(bool state)
+    {
+        Globals::gData.isOnFavorites = state;
+    }
 } // namespace Soundux::Objects
