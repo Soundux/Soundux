@@ -622,7 +622,7 @@ namespace Soundux::Objects
     {
         return Globals::gData.getFavorites();
     }
-    std::optional<Sound> Window::markFavourite(const std::uint32_t &id, bool favourite)
+    std::vector<Sound> Window::markFavourite(const std::uint32_t &id, bool favourite)
     {
         return Globals::gData.markFavorite(id, favourite);
     }

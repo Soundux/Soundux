@@ -109,7 +109,7 @@ namespace Soundux
             std::optional<std::reference_wrapper<Sound>> getSound(const std::uint32_t &);
 
             std::vector<Sound> getFavorites();
-            std::optional<Sound> markFavorite(const std::uint32_t &, bool);
+            std::vector<Sound> markFavorite(const std::uint32_t &, bool);
 
             void set(const Data &other);
             Data &operator=(const Data &other) = delete;

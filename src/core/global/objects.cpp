@@ -161,30 +161,27 @@ namespace Soundux::Objects
             }
         }
     }
-    std::optional<Sound> Data::markFavorite(const std::uint32_t &id, bool favourite)
+    std::vector<Sound> Data::markFavorite(const std::uint32_t &id, bool favourite)
     {
         auto sound = getSound(id);
-        if (!sound)
+        if (sound)
         {
-            return std::nullopt;
-        }
-
-        sound->get().isFavorite = favourite;
-        if (favourite)
-        {
-            std::unique_lock lock(Globals::gFavoritesMutex);
-            Globals::gFavorites.insert({id, sound->get()});
-        }
-        else
-        {
-            std::unique_lock lock(Globals::gFavoritesMutex);
-            if (Globals::gFavorites.find(id) != Globals::gFavorites.end())
+            sound->get().isFavorite = favourite;
+            if (favourite)
             {
-                Globals::gFavorites.erase(id);
+                std::unique_lock lock(Globals::gFavoritesMutex);
+                Globals::gFavorites.insert({id, sound->get()});
+            }
+            else
+            {
+                std::unique_lock lock(Globals::gFavoritesMutex);
+                if (Globals::gFavorites.find(id) != Globals::gFavorites.end())
+                {
+                    Globals::gFavorites.erase(id);
+                }
             }
         }
-
-        return sound;
+        return getFavorites();
     }
     std::vector<Sound> Data::getFavorites()
     {
