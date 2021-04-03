@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 project(soundux VERSION 0.2.2 DESCRIPTION "")
 
 set(FULL_VERSION_STRING "0.2.2_b3")
-option(EMBED_PATH "The path used for embedding" "")
+option(EMBED_PATH "The path used for embedding" OFF)
 option(IS_CI_BUILD "Is used for windows ci build" OFF)
 option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
 
@@ -84,11 +84,28 @@ add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
 
 target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library httplib tray)
 
-if (${EMBED_PATH} STREQUAL "")
-message("Web-content will not be embedded")
+if (NOT ${EMBED_PATH})
+    message("Web-content will not be embedded") 
+    
+    # [[ Copy required files ]]
+    #  > Copies frontend files
+    if (MSVC)
+        file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/" 
+            DESTINATION "${CMAKE_SOURCE_DIR}/build/Release/dist")
+    else()
+        file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/" 
+            DESTINATION "${CMAKE_SOURCE_DIR}/build/dist")
+    endif()
 else()
-message("Using embed path " ${EMBED_PATH})
-target_link_directories(webview PUBLIC ${EMBED_PATH})
+    message("Using embed path " ${EMBED_PATH})
+    target_link_directories(webview PUBLIC ${EMBED_PATH})
+    target_compile_definitions(soundux PRIVATE IS_EMBEDDED=1)
+endif()
+
+# [[ Copy tray icon ]]
+if (UNIX)
+    file(COPY "${CMAKE_SOURCE_DIR}/assets/soundux.png" 
+        DESTINATION "${CMAKE_SOURCE_DIR}/build")
 endif()
 
 # [[ Copy Openssl dlls ]] 
@@ -104,18 +121,6 @@ if (MSVC)
     endif()
 endif()
 
-# [[ Copy required files ]]
-#  > Copies frontend files and icon for tray
-if (MSVC)
-    file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/" 
-        DESTINATION "${CMAKE_SOURCE_DIR}/build/Release/dist")
-else()
-    file(COPY "${CMAKE_SOURCE_DIR}/src/ui/impl/webview/lib/soundux-ui/" 
-        DESTINATION "${CMAKE_SOURCE_DIR}/build/dist")
-    file(COPY "${CMAKE_SOURCE_DIR}/assets/soundux.png" 
-         DESTINATION "${CMAKE_SOURCE_DIR}/build")
-endif()
-
 target_compile_features(soundux PRIVATE cxx_std_17)
 set_target_properties(soundux PROPERTIES CMAKE_CXX_STANDARD 17)
 set_target_properties(soundux PROPERTIES CMAKE_CXX_EXTENSIONS Off)
@@ -126,12 +131,16 @@ set_target_properties(soundux PROPERTIES PROJECT_NAME ${PROJECT_NAME})
 
 if(USE_FLATPAK)
   install(TARGETS soundux DESTINATION bin)
-  install(DIRECTORY "${CMAKE_SOURCE_DIR}/build/dist" DESTINATION bin)
+  if (NOT ${EMBED_PATH})
+    install(DIRECTORY "${CMAKE_SOURCE_DIR}/build/dist" DESTINATION bin)
+  endif()
   install(FILES "${CMAKE_SOURCE_DIR}/build/soundux.png" DESTINATION bin)
 else()
   set(CMAKE_INSTALL_PREFIX "/opt/soundux" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
   install(TARGETS soundux DESTINATION .)
-  install(DIRECTORY "${CMAKE_SOURCE_DIR}/build/dist" DESTINATION .)
+  if (NOT ${EMBED_PATH})
+    install(DIRECTORY "${CMAKE_SOURCE_DIR}/build/dist" DESTINATION .)
+  endif()
   install(FILES "${CMAKE_SOURCE_DIR}/build/soundux.png" DESTINATION /opt/soundux)
   install(FILES "${CMAKE_SOURCE_DIR}/deployment/soundux.desktop" DESTINATION /usr/share/applications)
   install(FILES "${CMAKE_SOURCE_DIR}/deployment/appstream/io.github.Soundux.metainfo.xml" DESTINATION /usr/share/metainfo)
