@@ -77,7 +77,9 @@ yay -S soundux
 We also provide a `soundux-git` package which compiles from the master branch
 
 ### 📜 Other distros
-You can grab the latest release from Flathub
+You can grab the latest release from the Snap Store or Flathub
+
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/soundux)
 
 <a href='https://flathub.org/apps/details/io.github.Soundux'>
   <img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/>
@@ -96,12 +98,13 @@ This list may not be accurate. Contact me if you find missing dependencies so th
 - Libwnck3 (optional, for icon support)
 - X11 client-side development headers
 - libappindicator3 development headers
+- OpenSSL development headers
 - G++ >= 9
   - Some distros still have G++ versions < 9 in their repos, using them will result in a build failure (for more information refer to [#71](https://github.com/Soundux/Soundux/issues/71)).
 
 #### 📜 Debian/Ubuntu and derivatives
 ```sh
-sudo apt install git build-essential cmake libx11-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev
+sudo apt install git build-essential cmake libx11-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev libssl-dev
 ```
 #### 📜 Fedora and derivatives
 ```sh
@@ -112,6 +115,7 @@ sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel g
 - Nuget
 - MSVC
 - CMake
+- OpenSSL
 
 ## 👷 Build
 Clone the repository
