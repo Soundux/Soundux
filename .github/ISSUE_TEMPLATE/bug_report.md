@@ -29,7 +29,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop:** <!-- Please complete the following information, REQUIRED -->
-- Environment: [Windows Installer/Portable or Linux Flathub/AUR/self-compiled]
+- Environment: [Windows Installer/Portable or Linux Flathub/Snap/AUR/self-compiled]
  - Version [Version number or commit]
  <!-- REMOVE THIS LINE IF USING LINUX
  - Distribution: 
