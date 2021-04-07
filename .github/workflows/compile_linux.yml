@@ -39,7 +39,7 @@ jobs:
               run: "cd build && make install DESTDIR=../deployment/debian/soundux && cd ../deployment/debian && dpkg-deb --build soundux"
 
             - name: Upload deb package
-              uses: actions/upload-artifact@v2.2.2
+              uses: actions/upload-artifact@v2.2.3
               with:
                   name: Deb package
                   path: deployment/debian/soundux.deb
