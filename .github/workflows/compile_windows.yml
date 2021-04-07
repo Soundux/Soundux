@@ -44,7 +44,7 @@ jobs:
               run: "mkdir build && cd build && cmake .. -DIS_CI_BUILD=ON -DEMBED_PATH=src/ui/impl/webview/lib/webviewpp/embed-helper/build/Release && cmake --build . --config Release"
 
             - name: Upload Build Artifact
-              uses: actions/upload-artifact@v2.2.2
+              uses: actions/upload-artifact@v2.2.3
               with:
                   name: Release
                   path: build/Release
@@ -66,7 +66,7 @@ jobs:
               run: '&"${Env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" deployment/innosetup/Soundux.iss'
 
             - name: Upload Installer Artifact
-              uses: actions/upload-artifact@v2.2.2
+              uses: actions/upload-artifact@v2.2.3
               with:
                   name: Installer
                   path: deployment/innosetup/Output/setup.exe
