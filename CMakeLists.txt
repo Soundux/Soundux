@@ -79,9 +79,14 @@ add_subdirectory(lib/tiny-process-library EXCLUDE_FROM_ALL)
 add_subdirectory(lib/InstanceGuard/Source EXCLUDE_FROM_ALL)
 add_subdirectory(lib/traypp EXCLUDE_FROM_ALL)
 
+if (WIN32)
+    set(OPENSSL_USE_STATIC_LIBS TRUE)
+    set(OPENSSL_MSVC_STATIC_RT  TRUE)
+    set(BROTLI_USE_STATIC_LIBS TRUE)
+endif()
+
 set(HTTPLIB_REQUIRE_OPENSSL ON)
 add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
-
 target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library httplib tray)
 
 if (${EMBED_PATH} STREQUAL "OFF")
