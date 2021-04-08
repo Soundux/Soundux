@@ -10,7 +10,7 @@ namespace Soundux::Objects
 {
     void IconFetcher::setup()
     {
-        auto *libWnck = dlopen("libwnck-3.so", RTLD_LAZY);
+        auto *libWnck = dlopen("libwnck-3.so.0", RTLD_LAZY);
         if (libWnck)
         {
             isAvailable = true;
