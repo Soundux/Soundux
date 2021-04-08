@@ -39,9 +39,8 @@ int main()
         return 1;
     }
 
-    Soundux::Globals::gIcons.setup();
-
 #if defined(__linux__)
+    Soundux::Globals::gIcons.setup();
 
     if (!Soundux::Globals::gPulse.isSwitchOnConnectLoaded())
     {
