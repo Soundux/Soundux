@@ -3,7 +3,6 @@ project(soundux VERSION 0.2.2 DESCRIPTION "")
 
 set(FULL_VERSION_STRING "0.2.2_b3")
 option(EMBED_PATH "The path used for embedding" "OFF")
-option(IS_CI_BUILD "Is used for windows ci build" OFF)
 option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
 
 file(GLOB src
@@ -71,9 +70,14 @@ add_subdirectory(lib/tiny-process-library EXCLUDE_FROM_ALL)
 add_subdirectory(lib/InstanceGuard/Source EXCLUDE_FROM_ALL)
 add_subdirectory(lib/traypp EXCLUDE_FROM_ALL)
 
+if (WIN32)
+    set(OPENSSL_USE_STATIC_LIBS TRUE)
+    set(OPENSSL_MSVC_STATIC_RT  TRUE)
+    set(BROTLI_USE_STATIC_LIBS TRUE)
+endif()
+
 set(HTTPLIB_REQUIRE_OPENSSL ON)
 add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
-
 target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library httplib tray)
 
 if (${EMBED_PATH} STREQUAL "OFF")
@@ -92,19 +96,6 @@ else()
     message("Using embed path " ${EMBED_PATH})
     target_include_directories(webview PUBLIC ${EMBED_PATH})
     target_compile_definitions(soundux PRIVATE IS_EMBEDDED=1)
-endif()
-
-# [[ Copy Openssl dlls ]] 
-#  > Needed because dlls are not copied to output folder in github action
-if (MSVC)  
-    if (IS_CI_BUILD)
-        find_package(OpenSSL REQUIRED)
-        file(COPY "${OPENSSL_INCLUDE_DIR}/../libcrypto-1_1-x64.dll"
-             DESTINATION "${CMAKE_SOURCE_DIR}/build/Release")
-        file(COPY "${OPENSSL_INCLUDE_DIR}/../libssl-1_1-x64.dll"
-             DESTINATION "${CMAKE_SOURCE_DIR}/build/Release")
-        message("Copied required dlls!")
-    endif()
 endif()
 
 target_compile_features(soundux PRIVATE cxx_std_17)
