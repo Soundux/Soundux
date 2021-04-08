@@ -56,7 +56,7 @@ These are required to run the program
 Please refer to your distro instructions on how to install
 - [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio)
 - Xorg
-- Libwnck3 (required if compiled with Libwnck3, for icon support)
+- Libwnck3 (optional, for icon support)
 - Webkit2gtk
 - libappindicator3
 - [youtube-dl](https://youtube-dl.org/) & [ffmpeg](https://www.ffmpeg.org/) (optional, for downloader support)
@@ -95,7 +95,6 @@ Download our installer or portable from [the latest release](https://github.com/
 ### 🐧 Linux
 This list may not be accurate. Contact me if you find missing dependencies so that I can update this list
 - Webkit2gtk
-- Libwnck3 (optional, for icon support)
 - X11 client-side development headers
 - libappindicator3 development headers
 - OpenSSL development headers
@@ -104,11 +103,11 @@ This list may not be accurate. Contact me if you find missing dependencies so th
 
 #### 📜 Debian/Ubuntu and derivatives
 ```sh
-sudo apt install git build-essential cmake libx11-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev libssl-dev
+sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev libappindicator3-dev libssl-dev
 ```
 #### 📜 Fedora and derivatives
 ```sh
-sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel gtk3-devel libwnck3-devel webkit2gtk3-devel libappindicator-gtk3-devel
+sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel libappindicator-gtk3-devel
 ```
 
 ### 🪟 Windows

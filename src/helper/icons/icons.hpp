@@ -1,17 +1,28 @@
-#if defined(__linux__) && defined(USE_WNCK)
+#if defined(__linux__)
 #pragma once
-#include <libwnck-3.0/libwnck/libwnck.h>
+#include <gdk/gdk.h>
 #include <map>
 #include <optional>
 #include <string>
 
 namespace Soundux
 {
+    namespace Lib
+    {
+        struct WnckScreen;
+        struct WnckWindow;
+        inline WnckScreen *(*wnckGetDefaultScreen)();
+        inline void (*wnckForceUpdate)(WnckScreen *);
+        inline int (*wnckGetWindowPID)(WnckWindow *);
+        inline GList *(*wnckGetScreenWindows)(WnckScreen *);
+        inline GdkPixbuf *(*wnckGetWindowIcon)(WnckWindow *);
+    } // namespace Lib
     namespace Objects
     {
         class IconFetcher
         {
-            WnckScreen *screen;
+            Lib::WnckScreen *screen;
+            bool isAvailable = false;
             std::map<int, std::string> cache;
 
           public:
