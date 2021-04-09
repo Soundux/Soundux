@@ -41,7 +41,7 @@ jobs:
               run: "cd src/ui/impl/webview/lib/webviewpp/embed-helper && mkdir build && cd build && cmake .. && cmake --build . --config Release && cd Release && ./embed_helper ../../../../soundux-ui"
 
             - name: Compile
-              run: "mkdir build && cd build && cmake .. -DIS_CI_BUILD=ON -DEMBED_PATH=src/ui/impl/webview/lib/webviewpp/embed-helper/build/Release && cmake --build . --config Release"
+              run: "mkdir build && cd build && cmake .. -DEMBED_PATH=src/ui/impl/webview/lib/webviewpp/embed-helper/build/Release && cmake --build . --config Release"
 
             - name: Upload Build Artifact
               uses: actions/upload-artifact@v2.2.3

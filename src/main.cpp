@@ -39,11 +39,8 @@ int main()
         return 1;
     }
 
-#if defined(USE_WNCK)
-    Soundux::Globals::gIcons.setup();
-#endif
-
 #if defined(__linux__)
+    Soundux::Globals::gIcons.setup();
 
     if (!Soundux::Globals::gPulse.isSwitchOnConnectLoaded())
     {

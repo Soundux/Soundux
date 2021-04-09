@@ -526,13 +526,11 @@ namespace Soundux::Objects
                                      [&](const auto &_stream) { return stream.name == _stream.name; });
             if (item == std::end(uniqueStreams))
             {
-#if defined(USE_WNCK)
                 auto icon = Soundux::Globals::gIcons.getIcon(stream.pid);
                 if (icon)
                 {
                     stream.appIcon = *icon;
                 }
-#endif
                 uniqueStreams.emplace_back(stream);
             }
         }
@@ -549,13 +547,11 @@ namespace Soundux::Objects
                                      [&](const auto &_stream) { return stream.name == _stream.name; });
             if (item == std::end(uniqueStreams))
             {
-#if defined(USE_WNCK)
                 auto icon = Soundux::Globals::gIcons.getIcon(stream.pid);
                 if (icon)
                 {
                     stream.appIcon = *icon;
                 }
-#endif
                 uniqueStreams.emplace_back(stream);
             }
         }
