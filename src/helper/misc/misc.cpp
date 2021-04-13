@@ -1,4 +1,5 @@
 #include "misc.hpp"
+#include <chrono>
 #include <exception>
 #include <fancy.hpp>
 #include <filesystem>
@@ -118,8 +119,16 @@ namespace Soundux::Helpers
             }
             try
             {
+                auto time_t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+                auto tm = *std::gmtime(&time_t); // NOLINT
+
+                std::stringstream ss;
+                ss << std::put_time(&tm, "%Y-%m-%dT%H:%M:%S");
+
                 std::ofstream stream(trashFolder / "info" / (trashFileName + ".trashinfo"));
-                stream << "[Trash Info]" << std::endl << "Path=" << filePath.u8string() << std::endl;
+                stream << "[Trash Info]" << std::endl
+                       << "Path=" << filePath.u8string() << std::endl
+                       << "DeletionDate=" << ss.str() << std::endl;
                 stream.close();
             }
             catch (const std::exception &e)
