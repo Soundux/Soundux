@@ -661,7 +661,7 @@ namespace Soundux::Objects
         auto sound = Globals::gData.getSound(id);
         if (sound)
         {
-            if (!Helpers::deleteFile(sound->get().path))
+            if (!Helpers::deleteFile(sound->get().path, Globals::gSettings.deleteToTrash))
             {
                 onError(ErrorCode::FailedToDelete);
             }

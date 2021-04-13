@@ -80,6 +80,7 @@ namespace Soundux
             bool minimizeToTray = false;
             bool tabHotkeysOnly = false;
             bool launchPadMode = false;
+            bool deleteToTrash = true;
             bool syncVolumes = false;
             bool darkTheme = true;
             bool gridView = false;

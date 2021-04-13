@@ -78,6 +78,7 @@ namespace nlohmann
                  {"stopHotkey", obj.stopHotkey},
                  {"syncVolumes", obj.syncVolumes},
                  {"selectedTab", obj.selectedTab},
+                 {"deleteToTrash", obj.deleteToTrash},
                  {"launchPadMode", obj.launchPadMode},
                  {"pushToTalkKeys", obj.pushToTalkKeys},
                  {"tabHotkeysOnly", obj.tabHotkeysOnly},
@@ -122,6 +123,10 @@ namespace nlohmann
             if (j.find("pushToTalkKeys") != j.end())
             {
                 j.at("pushToTalkKeys").get_to(obj.pushToTalkKeys);
+            }
+            if (j.find("deleteToTrash") != j.end())
+            {
+                j.at("deleteToTrash").get_to(obj.deleteToTrash);
             }
         }
     };
