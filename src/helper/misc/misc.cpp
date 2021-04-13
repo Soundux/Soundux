@@ -10,6 +10,7 @@
 
 #if defined(_WIN32)
 #include <Windows.h>
+#include <shellapi.h>
 #include <stringapiset.h>
 #endif
 
@@ -95,6 +96,7 @@ namespace Soundux::Helpers
         }
         else
         {
+#if defined(__linux__)
             std::string home = std::getenv("HOME"); // NOLINT
             if (std::filesystem::exists(home + "/.local/share/Trash/") &&
                 std::filesystem::exists(home + "/.local/share/Trash/files") &&
@@ -132,6 +134,25 @@ namespace Soundux::Helpers
             {
                 Fancy::fancy.logTime().warning() << "Trash folder not found!" << std::endl;
             }
+#else
+            auto filePath = std::filesystem::canonical(widen(path));
+
+            SHFILEOPSTRUCTW operation{};
+            operation.pTo = nullptr;
+            operation.hwnd = nullptr;
+            operation.wFunc = FO_DELETE;
+
+            auto temp = (filePath.wstring() + L'\0');
+            operation.pFrom = temp.c_str();
+
+            operation.fFlags = FOF_ALLOWUNDO | FOF_NOERRORUI | FOF_NOCONFIRMATION | FOF_SILENT;
+
+            auto res = SHFileOperationW(&operation);
+            if (res != 0)
+            {
+                Fancy::fancy.logTime().failure() << "Failed to move file to trash (" << res << ")" << std::endl;
+            }
+#endif
         }
     }
 } // namespace Soundux::Helpers
