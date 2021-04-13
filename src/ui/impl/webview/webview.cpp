@@ -107,7 +107,7 @@ namespace Soundux::Objects
             updateCheck.detach();
         });
         webview.addCallback("isOnFavorites", [this](bool state) { isOnFavorites(state); });
-        webview.addCallback("deleteFile", [this](std::uint32_t id) { deleteSound(id); });
+        webview.addCallback("deleteSound", [this](std::uint32_t id) { deleteSound(id); });
 
 #if !defined(__linux__)
         webview.addCallback("getOutputs", [this]() { return getOutputs(); });
