@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <fancy.hpp>
 #include <filesystem>
+#include <helper/misc/misc.hpp>
 #include <nfd.hpp>
 #include <optional>
 
@@ -654,5 +655,21 @@ namespace Soundux::Objects
     void Window::isOnFavorites(bool state)
     {
         Globals::gData.isOnFavorites = state;
+    }
+    void Window::deleteSound(const std::uint32_t &id)
+    {
+        auto sound = Globals::gData.getSound(id);
+        if (sound)
+        {
+            if (!Helpers::deleteFile(sound->get().path))
+            {
+                onError(ErrorCode::FailedToDelete);
+            }
+        }
+        else
+        {
+            Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
+            onError(ErrorCode::SoundNotFound);
+        }
     }
 } // namespace Soundux::Objects

@@ -81,7 +81,7 @@ namespace Soundux::Helpers
         return std::nullopt;
     }
 #endif
-    void deleteFile(const std::string &path, bool trash)
+    bool deleteFile(const std::string &path, bool trash)
     {
         if (!trash)
         {
@@ -92,67 +92,68 @@ namespace Soundux::Helpers
             {
                 Fancy::fancy.logTime().failure() << "Failed to delete file " << path << " error: " << ec.message()
                                                  << "(" << ec.value() << ")" << std::endl;
+                return false;
             }
+            return true;
         }
-        else
-        {
 #if defined(__linux__)
-            std::string home = std::getenv("HOME"); // NOLINT
-            if (std::filesystem::exists(home + "/.local/share/Trash/") &&
-                std::filesystem::exists(home + "/.local/share/Trash/files") &&
-                std::filesystem::exists(home + "/.local/share/Trash/info"))
+        std::string home = std::getenv("HOME"); // NOLINT
+        if (std::filesystem::exists(home + "/.local/share/Trash/") &&
+            std::filesystem::exists(home + "/.local/share/Trash/files") &&
+            std::filesystem::exists(home + "/.local/share/Trash/info"))
+        {
+            auto trashFolder = std::filesystem::canonical(home + "/.local/share/Trash");
+
+            auto filePath = std::filesystem::canonical(path);
+            auto trashFileName = filePath.filename().u8string() +
+                                 std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
+
+            std::error_code ec;
+            std::filesystem::rename(filePath, trashFolder / "files" / trashFileName, ec);
+
+            if (ec)
             {
-                auto trashFolder = std::filesystem::canonical(home + "/.local/share/Trash");
-
-                auto filePath = std::filesystem::canonical(path);
-                auto trashFileName = filePath.filename().u8string() +
-                                     std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
-
-                std::error_code ec;
-                std::filesystem::rename(filePath, trashFolder / "files" / trashFileName, ec);
-
-                if (ec)
-                {
-                    Fancy::fancy.logTime().failure() << "Failed to move file to trash" << std::endl;
-                }
-                else
-                {
-                    try
-                    {
-                        std::ofstream stream(trashFolder / "info" / (trashFileName + ".trashinfo"));
-                        stream << "[Trash Info]" << std::endl << "Path=" << filePath.u8string() << std::endl;
-                        stream.close();
-                    }
-                    catch (const std::exception &e)
-                    {
-                        Fancy::fancy.logTime().failure()
-                            << "Failed to create .trashinfo file: " << e.what() << std::endl;
-                    }
-                }
+                Fancy::fancy.logTime().failure() << "Failed to move file to trash" << std::endl;
+                return false;
             }
-            else
+            try
             {
-                Fancy::fancy.logTime().warning() << "Trash folder not found!" << std::endl;
+                std::ofstream stream(trashFolder / "info" / (trashFileName + ".trashinfo"));
+                stream << "[Trash Info]" << std::endl << "Path=" << filePath.u8string() << std::endl;
+                stream.close();
             }
-#else
-            auto filePath = std::filesystem::canonical(widen(path));
-
-            SHFILEOPSTRUCTW operation{};
-            operation.pTo = nullptr;
-            operation.hwnd = nullptr;
-            operation.wFunc = FO_DELETE;
-
-            auto temp = (filePath.wstring() + L'\0');
-            operation.pFrom = temp.c_str();
-
-            operation.fFlags = FOF_ALLOWUNDO | FOF_NOERRORUI | FOF_NOCONFIRMATION | FOF_SILENT;
-
-            auto res = SHFileOperationW(&operation);
-            if (res != 0)
+            catch (const std::exception &e)
             {
-                Fancy::fancy.logTime().failure() << "Failed to move file to trash (" << res << ")" << std::endl;
+                Fancy::fancy.logTime().failure() << "Failed to create .trashinfo file: " << e.what() << std::endl;
+                return false;
             }
-#endif
+
+            return true;
         }
+
+        Fancy::fancy.logTime().warning() << "Trash folder not found!" << std::endl;
+        return false;
+#else
+        auto filePath = std::filesystem::canonical(widen(path));
+
+        SHFILEOPSTRUCTW operation{};
+        operation.pTo = nullptr;
+        operation.hwnd = nullptr;
+        operation.wFunc = FO_DELETE;
+
+        auto temp = (filePath.wstring() + L'\0');
+        operation.pFrom = temp.c_str();
+
+        operation.fFlags = FOF_ALLOWUNDO | FOF_NOERRORUI | FOF_NOCONFIRMATION | FOF_SILENT;
+
+        auto res = SHFileOperationW(&operation);
+        if (res != 0)
+        {
+            Fancy::fancy.logTime().failure() << "Failed to move file to trash (" << res << ")" << std::endl;
+            return false;
+        }
+
+        return true;
+#endif
     }
 } // namespace Soundux::Helpers

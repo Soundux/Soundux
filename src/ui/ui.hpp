@@ -52,6 +52,8 @@ namespace Soundux
 
             void stopPassthrough();
             virtual bool startPassthrough(const std::string &);
+
+            virtual void deleteSound(const std::uint32_t &);
 #else
             virtual std::vector<AudioDevice> getOutputs();
 #endif

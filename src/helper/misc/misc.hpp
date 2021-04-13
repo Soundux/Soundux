@@ -14,7 +14,7 @@ namespace Soundux
         std::optional<int> getPpid(int pid);
 #endif
         bool exec(const std::string &command, std::string &result);
-        void deleteFile(const std::string &path, bool trash = true);
+        bool deleteFile(const std::string &path, bool trash = true);
         std::vector<std::string> splitByNewLine(const std::string &str);
     } // namespace Helpers
 } // namespace Soundux
