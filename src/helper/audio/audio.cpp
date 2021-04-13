@@ -1,8 +1,8 @@
 #include "audio.hpp"
-#include "../../core/global/globals.hpp"
+#include <core/global/globals.hpp>
 #include <fancy.hpp>
 #if defined(_WIN32)
-#include "../misc/misc.hpp"
+#include <helper/misc/misc.hpp>
 #endif
 
 #define MINIAUDIO_IMPLEMENTATION

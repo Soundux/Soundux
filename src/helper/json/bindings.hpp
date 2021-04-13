@@ -1,6 +1,6 @@
 #pragma once
-#include "../../core/global/globals.hpp"
-#include "../../helper/version/check.hpp"
+#include <core/global/globals.hpp>
+#include <helper/version/check.hpp>
 #include <nlohmann/json.hpp>
 
 namespace nlohmann

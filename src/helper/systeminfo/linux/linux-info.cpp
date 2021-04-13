@@ -1,7 +1,7 @@
 #if defined(__linux__)
-#include "../../misc/misc.hpp"
 #include "../systeminfo.hpp"
 #include <fancy.hpp>
+#include <helper/misc/misc.hpp>
 
 std::string SystemInfo::getSystemInfo()
 {

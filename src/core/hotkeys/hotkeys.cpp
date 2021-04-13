@@ -1,5 +1,5 @@
 #include "hotkeys.hpp"
-#include "../global/globals.hpp"
+#include <core/global/globals.hpp>
 #include <cstdint>
 
 namespace Soundux

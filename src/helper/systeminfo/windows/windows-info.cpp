@@ -1,8 +1,8 @@
 #if defined(_WIN32)
-#include "../../misc/misc.hpp"
 #include "../systeminfo.hpp"
 #include <Windows.h>
 #include <fancy.hpp>
+#include <helper/misc/misc.hpp>
 #include <regex>
 
 std::string SystemInfo::getSystemInfo()

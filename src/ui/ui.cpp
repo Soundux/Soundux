@@ -1,5 +1,5 @@
 #include "ui.hpp"
-#include "../core/global/globals.hpp"
+#include <core/global/globals.hpp>
 #include <cstdint>
 #include <fancy.hpp>
 #include <filesystem>

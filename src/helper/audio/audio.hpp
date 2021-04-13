@@ -1,6 +1,5 @@
 #pragma once
-#include "../../core/global/objects.hpp"
-
+#include <core/global/objects.hpp>
 #include <cstdint>
 #include <map>
 #include <miniaudio.h>

@@ -1,8 +1,8 @@
 #pragma once
-#include "../core/global/objects.hpp"
-#include "../helper/audio/audio.hpp"
+#include <core/global/objects.hpp>
+#include <helper/audio/audio.hpp>
 #if defined(__linux__)
-#include "../helper/audio/linux/pulse.hpp"
+#include <helper/audio/linux/pulse.hpp>
 #endif
 #include <atomic>
 #include <cstdint>

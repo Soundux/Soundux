@@ -1,8 +1,8 @@
 #if defined(_WIN32)
-#include "../../global/globals.hpp"
 #include "../hotkeys.hpp"
 #include <Windows.h>
 #include <chrono>
+#include <core/global/globals.hpp>
 
 using namespace std::chrono_literals;
 

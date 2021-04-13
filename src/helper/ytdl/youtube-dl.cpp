@@ -1,7 +1,7 @@
 #include "youtube-dl.hpp"
-#include "../../core/global/globals.hpp"
-#include "../misc/misc.hpp"
+#include <core/global/globals.hpp>
 #include <fancy.hpp>
+#include <helper/misc/misc.hpp>
 #include <optional>
 
 namespace Soundux::Objects

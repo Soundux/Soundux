@@ -1,9 +1,9 @@
 #if defined(__linux__)
 #include "icons.hpp"
-#include "../base64/base64.hpp"
-#include "../misc/misc.hpp"
 #include <dlfcn.h>
 #include <fancy.hpp>
+#include <helper/base64/base64.hpp>
+#include <helper/misc/misc.hpp>
 #include <optional>
 
 namespace Soundux::Objects

@@ -1,7 +1,7 @@
 #if defined(__linux__)
 #include "pulse.hpp"
-#include "../../misc/misc.hpp"
 #include <fancy.hpp>
+#include <helper/misc/misc.hpp>
 #include <optional>
 #include <regex>
 #include <string>

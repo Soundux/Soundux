@@ -1,6 +1,6 @@
 #include "systeminfo.hpp"
-#include "../../core/global/globals.hpp"
-#include "../json/bindings.hpp"
+#include <core/global/globals.hpp>
+#include <helper/json/bindings.hpp>
 
 std::string SystemInfo::getSettingsInfo()
 {

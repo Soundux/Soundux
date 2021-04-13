@@ -1,12 +1,12 @@
 #include "webview.hpp"
-#include "../../../core/global/globals.hpp"
-#include "../../../helper/json/bindings.hpp"
-#include "../../../helper/systeminfo/systeminfo.hpp"
-#include "../../../helper/version/check.hpp"
-#include "../../../helper/ytdl/youtube-dl.hpp"
+#include <core/global/globals.hpp>
 #include <cstdint>
 #include <fancy.hpp>
 #include <filesystem>
+#include <helper/json/bindings.hpp>
+#include <helper/systeminfo/systeminfo.hpp>
+#include <helper/version/check.hpp>
+#include <helper/ytdl/youtube-dl.hpp>
 #include <optional>
 #include <thread>
 

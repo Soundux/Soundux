@@ -1,16 +1,16 @@
 #pragma once
-#include "../../helper/audio/audio.hpp"
+#include <helper/audio/audio.hpp>
 #if defined(__linux__)
-#include "../../helper/audio/linux/pulse.hpp"
+#include <helper/audio/linux/pulse.hpp>
 #endif
-#include "../../helper/icons/icons.hpp"
-#include "../../helper/threads/processing.hpp"
-#include "../../helper/ytdl/youtube-dl.hpp"
-#include "../../ui/ui.hpp"
-#include "../config/config.hpp"
-#include "../hotkeys/hotkeys.hpp"
 #include "objects.hpp"
+#include <core/config/config.hpp>
+#include <core/hotkeys/hotkeys.hpp>
+#include <helper/icons/icons.hpp>
+#include <helper/threads/processing.hpp>
+#include <helper/ytdl/youtube-dl.hpp>
 #include <memory>
+#include <ui/ui.hpp>
 
 namespace Soundux
 {

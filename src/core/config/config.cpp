@@ -1,9 +1,9 @@
 #include "config.hpp"
-#include "../../helper/json/bindings.hpp"
 #include <chrono>
 #include <fancy.hpp>
 #include <filesystem>
 #include <fstream>
+#include <helper/json/bindings.hpp>
 #include <string>
 
 namespace Soundux::Objects

@@ -1,6 +1,6 @@
 #pragma once
-#include "../../ui.hpp"
 #include <tray.hpp>
+#include <ui/ui.hpp>
 #include <webview.hpp>
 
 namespace Soundux
