@@ -1,10 +1,12 @@
 #include "misc.hpp"
+#include <exception>
 #include <fancy.hpp>
 #include <filesystem>
 #include <fstream>
 #include <optional>
 #include <process.hpp>
 #include <regex>
+#include <system_error>
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -78,4 +80,58 @@ namespace Soundux::Helpers
         return std::nullopt;
     }
 #endif
+    void deleteFile(const std::string &path, bool trash)
+    {
+        if (!trash)
+        {
+            std::error_code ec;
+            std::filesystem::remove(path, ec);
+
+            if (ec)
+            {
+                Fancy::fancy.logTime().failure() << "Failed to delete file " << path << " error: " << ec.message()
+                                                 << "(" << ec.value() << ")" << std::endl;
+            }
+        }
+        else
+        {
+            std::string home = std::getenv("HOME"); // NOLINT
+            if (std::filesystem::exists(home + "/.local/share/Trash/") &&
+                std::filesystem::exists(home + "/.local/share/Trash/files") &&
+                std::filesystem::exists(home + "/.local/share/Trash/info"))
+            {
+                auto trashFolder = std::filesystem::canonical(home + "/.local/share/Trash");
+
+                auto filePath = std::filesystem::canonical(path);
+                auto trashFileName = filePath.filename().u8string() +
+                                     std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
+
+                std::error_code ec;
+                std::filesystem::rename(filePath, trashFolder / "files" / trashFileName, ec);
+
+                if (ec)
+                {
+                    Fancy::fancy.logTime().failure() << "Failed to move file to trash" << std::endl;
+                }
+                else
+                {
+                    try
+                    {
+                        std::ofstream stream(trashFolder / "info" / (trashFileName + ".trashinfo"));
+                        stream << "[Trash Info]" << std::endl << "Path=" << filePath.u8string() << std::endl;
+                        stream.close();
+                    }
+                    catch (const std::exception &e)
+                    {
+                        Fancy::fancy.logTime().failure()
+                            << "Failed to create .trashinfo file: " << e.what() << std::endl;
+                    }
+                }
+            }
+            else
+            {
+                Fancy::fancy.logTime().warning() << "Trash folder not found!" << std::endl;
+            }
+        }
+    }
 } // namespace Soundux::Helpers
