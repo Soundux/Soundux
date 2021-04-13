@@ -656,7 +656,7 @@ namespace Soundux::Objects
     {
         Globals::gData.isOnFavorites = state;
     }
-    void Window::deleteSound(const std::uint32_t &id)
+    bool Window::deleteSound(const std::uint32_t &id)
     {
         auto sound = Globals::gData.getSound(id);
         if (sound)
@@ -664,12 +664,13 @@ namespace Soundux::Objects
             if (!Helpers::deleteFile(sound->get().path, Globals::gSettings.deleteToTrash))
             {
                 onError(ErrorCode::FailedToDelete);
+                return false;
             }
+            return true;
         }
-        else
-        {
-            Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
-            onError(ErrorCode::SoundNotFound);
-        }
+
+        Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
+        onError(ErrorCode::SoundNotFound);
+        return false;
     }
 } // namespace Soundux::Objects

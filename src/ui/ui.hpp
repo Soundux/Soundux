@@ -46,7 +46,7 @@ namespace Soundux
             virtual std::vector<Sound> refreshTabSounds(const Tab &) const;
             virtual std::vector<Tab> changeTabOrder(const std::vector<int> &);
 
-            virtual void deleteSound(const std::uint32_t &);
+            virtual bool deleteSound(const std::uint32_t &);
 
 #if defined(__linux__)
             virtual std::vector<PulseRecordingStream> getOutputs();
