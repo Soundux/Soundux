@@ -17,12 +17,14 @@ namespace Soundux
             std::string driver;
             std::string source;
             std::string appIcon;
+            std::string mediaName;
             std::string application;
             std::string resampleMethod;
 
             operator bool() const
             {
-                return driver == "protocol-native.c" && resampleMethod != "peaks";
+                return (driver == "protocol-native.c" && resampleMethod != "peaks") ||
+                       (driver == "PipeWire" && resampleMethod == "PipeWire" && mediaName == "AudioStream");
             }
         };
         struct PulsePlaybackStream
@@ -37,7 +39,7 @@ namespace Soundux
 
             operator bool() const
             {
-                return driver == "protocol-native.c";
+                return driver == "protocol-native.c" || driver == "PipeWire";
             }
         };
         struct PulseData

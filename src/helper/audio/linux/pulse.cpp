@@ -371,7 +371,7 @@ namespace Soundux::Objects
         {
             std::vector<PulseRecordingStream> fetchedStreams;
             static const auto recordingStreamRegex = std::regex(
-                R"rgx((^.*#(\d+)$)|(Driver: (.+))|(Source: (\d+))|(.*process.*binary.* = "(.+)")|(Resample method: (.+)|(.*application.name.* = "(.+)"))|(.*application\.process.\id\.* = "(\d+)"))rgx");
+                R"rgx((^.*#(\d+)$)|(Driver: (.+))|(Source: (\d+))|(.*process.*binary.* = "(.+)")|(Resample method: (.+)|(.*application.name.* = "(.+)"))|(.*application\.process.\id\.* = "(\d+)"|(media\.name = "(.+)")))rgx");
 
             PulseRecordingStream stream;
             std::smatch match;
@@ -413,6 +413,10 @@ namespace Soundux::Objects
                     else if (match[14].matched)
                     {
                         stream.pid = std::stoi(match[14]);
+                    }
+                    else if (match[16].matched)
+                    {
+                        stream.mediaName = match[16];
                     }
                 }
             }
