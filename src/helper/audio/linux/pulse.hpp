@@ -59,8 +59,8 @@ namespace Soundux
             bool setModuleId(const std::string &, std::uint32_t &);
 
             PulseData data;
-            std::optional<std::pair<std::string, std::vector<PulseRecordingStream>>> currentApplications;
-            std::optional<std::pair<std::string, std::vector<PulsePlaybackStream>>> currentApplicationPassthroughs;
+            std::optional<std::pair<std::string, std::string>> currentApplications;
+            std::optional<std::pair<std::string, std::string>> currentApplicationPassthroughs;
 
             void fixPlaybackStreams(const std::vector<PulsePlaybackStream> &);
             void fixRecordingStreams(const std::vector<PulseRecordingStream> &);

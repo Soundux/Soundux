@@ -268,7 +268,7 @@ namespace Soundux::Objects
         if (!currentApplications || (currentApplications && currentApplications->first != streamName))
         {
             moveBackCurrentApplications();
-            std::vector<PulseRecordingStream> movedStreams;
+            std::string originalSource;
 
             for (const auto &app : applications)
             {
@@ -279,7 +279,8 @@ namespace Soundux::Objects
                                 " soundux_sink.monitor >/dev/null 2>&1")
                                    .c_str()) == 0)
                     {
-                        movedStreams.emplace_back(app);
+                        if (originalSource.empty())
+                            originalSource = app.source;
                     }
                     else
                     {
@@ -289,14 +290,14 @@ namespace Soundux::Objects
                 }
             }
 
-            if (movedStreams.empty())
+            if (originalSource.empty())
             {
                 Fancy::fancy.logTime().failure()
                     << "Failed to find any PulseRecordingStream with name: " << streamName << std::endl;
                 return false;
             }
 
-            currentApplications = std::make_pair(streamName, movedStreams);
+            currentApplications = std::make_pair(streamName, originalSource);
         }
         return true;
     }
@@ -305,16 +306,19 @@ namespace Soundux::Objects
         bool success = true;
         if (currentApplications)
         {
-            for (const auto &app : currentApplications->second)
+            for (const auto &app : getRecordingStreams())
             {
-                // NOLINTNEXTLINE
-                if (system(
-                        ("pactl move-source-output " + std::to_string(app.id) + " " + app.source + " >/dev/null 2>&1")
-                            .c_str()) != 0)
+                if (app.name == currentApplications->first)
                 {
-                    Fancy::fancy.logTime().warning() << "Failed to move " >> app.id << " back to original source"
-                                                                                    << std::endl;
-                    success = false;
+                    // NOLINTNEXTLINE
+                    if (system(("pactl move-source-output " + std::to_string(app.id) + " " +
+                                currentApplications->second + " >/dev/null 2>&1")
+                                   .c_str()) != 0)
+                    {
+                        Fancy::fancy.logTime().warning() << "Failed to move " >> app.id << " back to original source"
+                                                                                        << std::endl;
+                        success = false;
+                    }
                 }
             }
             currentApplications.reset();
@@ -515,16 +519,21 @@ namespace Soundux::Objects
         bool success = true;
         if (currentApplicationPassthroughs)
         {
-            for (const auto &app : currentApplicationPassthroughs->second)
+            for (const auto &app : getPlaybackStreams())
             {
-                // clang-format off
-                // NOLINTNEXTLINE
-                if (system(("pactl move-sink-input " + std::to_string(app.id) + " " + app.sink + " >/dev/null 2>&1").c_str()) != 0)
+                if (app.name == currentApplicationPassthroughs->first)
                 {
-                    Fancy::fancy.logTime().warning() << "Failed to move " >> app.id << " back from passthrough" << std::endl;
-                    success = false;
+                    // clang-format off
+                    // NOLINTNEXTLINE
+                    if (system(("pactl move-sink-input " + std::to_string(app.id) + " " +
+                                currentApplicationPassthroughs->second + " >/dev/null 2>&1").c_str()) != 0)
+                    {
+                        Fancy::fancy.logTime().warning() << "Failed to move " >> app.id << " back from passthrough"
+                                                                                        << std::endl;
+                        success = false;
+                    }
+                    // clang-format on
                 }
-                // clang-format on
             }
             currentApplicationPassthroughs.reset();
         }
@@ -539,31 +548,30 @@ namespace Soundux::Objects
                 << "Failed to move back application: " << currentApplicationPassthroughs->first << std::endl;
         }
 
-        auto apps = getPlaybackStreams();
-        std::vector<PulsePlaybackStream> movedStreams;
-
-        for (const auto &app : apps)
+        std::string originalSink;
+        for (const auto &app : getPlaybackStreams())
         {
             if (app.name == name)
             {
                 // NOLINTNEXTLINE
                 if (system(("pactl move-sink-input " + std::to_string(app.id) +
                             " soundux_sink_passthrough >/dev/null 2>&1")
-                               .c_str()) == 0)
-                {
-                    movedStreams.emplace_back(app);
-                }
-                else
+                               .c_str()) != 0)
                 {
                     Fancy::fancy.logTime().warning()
                         << "Failed to move application " << name << " to passthrough" << std::endl;
                 }
+                else
+                {
+                    if (originalSink.empty())
+                        originalSink = app.sink;
+                }
             }
         }
 
-        if (!movedStreams.empty())
+        if (!originalSink.empty())
         {
-            currentApplicationPassthroughs = std::make_pair(name, movedStreams);
+            currentApplicationPassthroughs = std::make_pair(name, originalSink);
             return true;
         }
 
