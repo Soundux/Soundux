@@ -436,7 +436,7 @@ namespace Soundux::Objects
         {
             std::vector<PulsePlaybackStream> fetchedStreams;
             static const auto playbackStreamRegex = std::regex(
-                R"rgx((^.*#(\d+)$)|(Driver: (.+))|(Sink: (\d+))|(application\.process\.binary = "(.+)")|(Resample method: (.+)|(application\.name = "(.+)"))|(application\.process\.id = "(\d+)"))rgx");
+                R"rgx((^.*#(\d+)$)|(Driver: (.+))|(Sink: (\d+))|(application\.name = "(.+)")|(application\.process\.binary = "(.+)")|(application\.process\.id = "(\d+)"))rgx");
 
             PulsePlaybackStream stream;
             std::smatch match;
@@ -471,9 +471,9 @@ namespace Soundux::Objects
                     {
                         stream.name = match[10];
                     }
-                    else if (match[14].matched)
+                    else if (match[12].matched)
                     {
-                        stream.pid = std::stoi(match[14]);
+                        stream.pid = std::stoi(match[12]);
                     }
                 }
             }
