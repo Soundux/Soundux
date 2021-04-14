@@ -520,9 +520,9 @@ namespace Soundux::Objects
     }
     bool Pulse::moveBackApplicationsFromPassthrough()
     {
-        bool success = true;
         if (currentApplicationPassthroughs)
         {
+            bool success = false;
             for (const auto &app : getPlaybackStreams())
             {
                 if (app.name == currentApplicationPassthroughs->first)
@@ -534,15 +534,19 @@ namespace Soundux::Objects
                     {
                         Fancy::fancy.logTime().warning() << "Failed to move " >> app.id << " back from passthrough"
                                                                                         << std::endl;
-                        success = false;
+                        
+                    }
+                    else
+                    {
+                        success = true;
                     }
                     // clang-format on
                 }
             }
             currentApplicationPassthroughs.reset();
+            return success;
         }
-
-        return success;
+        return true;
     }
     bool Pulse::moveApplicationsToApplicationPassthrough(const std::string &name)
     {
