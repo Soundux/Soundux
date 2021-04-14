@@ -23,8 +23,9 @@ namespace Soundux
 
             operator bool() const
             {
-                return (driver == "protocol-native.c" && resampleMethod != "peaks") ||
-                       (driver == "PipeWire" && resampleMethod == "PipeWire" && mediaName != "Peak detect");
+                return !name.empty() &&
+                       ((driver == "protocol-native.c" && resampleMethod != "peaks") ||
+                        (driver == "PipeWire" && resampleMethod == "PipeWire" && mediaName != "Peak detect"));
             }
         };
         struct PulsePlaybackStream
