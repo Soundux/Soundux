@@ -40,7 +40,7 @@ namespace Soundux
 
             operator bool() const
             {
-                return driver == "protocol-native.c" || driver == "PipeWire";
+                return !name.empty() && (driver == "protocol-native.c" || driver == "PipeWire");
             }
         };
         struct PulseData
