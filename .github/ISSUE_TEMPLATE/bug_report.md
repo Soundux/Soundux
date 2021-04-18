@@ -46,4 +46,14 @@ I confirm that...
 - [ ] the problem does occur with the reproduction steps I provided
 - [ ] what I described is indeed a problem 
 
-<!-- Please confirm that what you're reporting is actually a problem, so that we don't have to deal with things like in https://github.com/Soundux/Soundux/issues/145 -->
+<!-- 
+Please tick these boxes by replacing the whitespace between the braces with an x, 
+so that it looks like this: 
+- [x] I have ...
+
+Or you can tick the boxes by clicking them with your mouse after submitting the issue
+-->
+
+<!-- 
+Please confirm that what you're reporting is actually a problem, so that we don't have to deal with things like in https://github.com/Soundux/Soundux/issues/145 
+-->
