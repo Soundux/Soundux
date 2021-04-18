@@ -37,3 +37,13 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+**Checklist**
+
+I confirm that...
+- [ ] I have collected all the required information and read all the comments in this document
+- [ ] I searched for an existing bug report for this issue
+- [ ] the problem does occur with the reproduction steps I provided
+- [ ] what I described is indeed a problem 
+
+<!-- Please confirm that what you're reporting is actually a problem, so that we don't have to deal with things like in https://github.com/Soundux/Soundux/issues/145 -->
