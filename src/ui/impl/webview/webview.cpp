@@ -31,7 +31,7 @@ namespace Soundux::Objects
         GetModuleFileNameA(nullptr, rawPath, MAX_PATH);
 
         auto path = std::filesystem::canonical(rawPath).parent_path() / "dist" / "index.html";
-        tray = std::make_shared<Tray>("soundux-tray", IDI_ICON1);
+        tray = std::make_shared<Tray::Tray>("soundux-tray", IDI_ICON1);
 #endif
 #if defined(__linux__)
         auto path = std::filesystem::canonical("/proc/self/exe").parent_path() / "dist" / "index.html";
