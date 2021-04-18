@@ -7,11 +7,6 @@
 #include <nfd.hpp>
 #include <optional>
 
-#if defined(_WIN32)
-#include <codecvt>
-#include <locale>
-#endif
-
 namespace Soundux::Objects
 {
     void Window::setup()
@@ -31,10 +26,16 @@ namespace Soundux::Objects
     }
     std::vector<Sound> Window::refreshTabSounds(const Tab &tab) const
     {
-        if (std::filesystem::exists(tab.path))
+#if defined(_WIN32)
+        const auto path = Helpers::widen(tab.path);
+#else
+        const auto &path = tab.path;
+#endif
+
+        if (std::filesystem::exists(path))
         {
             std::vector<Sound> rtn;
-            for (const auto &entry : std::filesystem::directory_iterator(tab.path))
+            for (const auto &entry : std::filesystem::directory_iterator(path))
             {
                 std::filesystem::path file = entry;
                 if (entry.is_symlink())
@@ -42,7 +43,7 @@ namespace Soundux::Objects
                     file = std::filesystem::read_symlink(entry);
                     if (file.has_relative_path())
                     {
-                        file = std::filesystem::canonical(tab.path / file);
+                        file = std::filesystem::canonical(path / file);
                     }
                 }
 
@@ -104,9 +105,8 @@ namespace Soundux::Objects
         if (result == NFD_OKAY)
         {
 #if defined(_WIN32)
-            std::wstring wpath(outpath);
-            std::string path = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(wpath.c_str()); // NOLINT
-            std::transform(path.begin(), path.end(), path.begin(), [](char c) { return c == '\\' ? '/' : c; });
+            std::wstring path(outpath);
+            std::transform(path.begin(), path.end(), path.begin(), [](wchar_t c) { return c == '\\' ? '/' : c; });
 #else
             std::string path(outpath);
 #endif
@@ -115,7 +115,7 @@ namespace Soundux::Objects
             if (std::filesystem::exists(path))
             {
                 Tab tab;
-                tab.path = path;
+                tab.path = Helpers::narrow(path);
                 tab.sounds = refreshTabSounds(tab);
                 tab.name = std::filesystem::path(path).filename().u8string();
 

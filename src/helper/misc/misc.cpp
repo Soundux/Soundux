@@ -43,8 +43,22 @@ namespace Soundux::Helpers
             return std::wstring();
 
         std::wstring out(wsz, 0);
-        MultiByteToWideChar(65001, 0, s.c_str(), -1, &out[0], wsz);
         out.resize(wsz - 1);
+
+        MultiByteToWideChar(65001, 0, s.c_str(), -1, &out[0], wsz);
+        return out;
+    }
+    std::string narrow(const std::wstring &s)
+    {
+        int wsz = WideCharToMultiByte(65001, 0, s.c_str(), -1, nullptr, 0, nullptr, nullptr);
+
+        if (!wsz)
+            return std::string();
+
+        std::string out(wsz, 0);
+        out.resize(wsz - 1);
+
+        WideCharToMultiByte(65001, 0, s.c_str(), -1, &out[0], wsz, nullptr, nullptr);
         return out;
     }
 #endif

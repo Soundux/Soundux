@@ -9,6 +9,7 @@ namespace Soundux
     {
 #if defined(_WIN32)
         std::wstring widen(const std::string &s);
+        std::string narrow(const std::wstring &s);
 #endif
 #if defined(__linux__)
         std::optional<int> getPpid(int pid);
