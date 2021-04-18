@@ -11,7 +11,7 @@ namespace Soundux
         {
           private:
             SounduxWebView webview;
-            std::shared_ptr<Tray> tray;
+            std::shared_ptr<Tray::Tray> tray;
             void changeSettings(const Settings &newSettings) override;
 
             struct

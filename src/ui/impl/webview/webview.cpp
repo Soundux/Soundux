@@ -50,7 +50,7 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().warning() << "Failed to find iconPath for tray icon" << std::endl;
         }
 
-        tray = std::make_shared<Tray>("soundux-tray", iconPath);
+        tray = std::make_shared<Tray::Tray>("soundux-tray", iconPath.u8string());
 #endif
 
         webview.addCallback("getSettings", []() { return Globals::gSettings; });
@@ -131,7 +131,7 @@ namespace Soundux::Objects
         webview.addCallback("isSwitchOnConnectLoaded", []() { return Globals::gPulse.isSwitchOnConnectLoaded(); });
         webview.addCallback("unloadSwitchOnConnect", []() { Globals::gPulse.unloadSwitchOnConnect(); });
 #endif
-        webview.setCloseCallback([this]() { tray->getChildren().at(1)->setName(translations.show); });
+        webview.setCloseCallback([this]() { tray->getEntries().at(1)->setText(translations.show); });
         webview.setResizeCallback([](int width, int height) {
             Globals::gData.width = width;
             Globals::gData.height = height;
@@ -166,32 +166,32 @@ namespace Soundux::Objects
             });
 
             webview.whenAllReady([&] {
-                tray->addItem(TrayButton(translations.exit, [this]() {
+                tray->addEntry(Tray::Button(translations.exit, [this]() {
                     tray->exit();
                     webview.exit();
                 }));
-                tray->addItem(TrayButton(translations.hide, [this]() {
+                tray->addEntry(Tray::Button(translations.hide, [this]() {
                     if (!webview.getIsHidden())
                     {
                         webview.hide();
-                        tray->getChildren().at(1)->setName(translations.show);
+                        tray->getEntries().at(1)->setText(translations.show);
                     }
                     else
                     {
                         webview.show();
-                        tray->getChildren().at(1)->setName(translations.hide);
+                        tray->getEntries().at(1)->setText(translations.hide);
                     }
                 }));
 
-                auto settings = tray->addItem(TraySubmenu(translations.settings));
-                settings->addItems(
-                    TraySyncedCheck(translations.muteDuringPlayback, Globals::gSettings.muteDuringPlayback,
-                                    [this](bool state) {
-                                        auto settings = Globals::gSettings;
-                                        settings.muteDuringPlayback = state;
-                                        changeSettings(settings);
-                                    }),
-                    TraySyncedCheck(translations.tabHotkeys, Globals::gSettings.tabHotkeysOnly, [this](bool state) {
+                auto settings = tray->addEntry(Tray::Submenu(translations.settings));
+                settings->addEntries(
+                    Tray::SyncedToggle(translations.muteDuringPlayback, Globals::gSettings.muteDuringPlayback,
+                                       [this](bool state) {
+                                           auto settings = Globals::gSettings;
+                                           settings.muteDuringPlayback = state;
+                                           changeSettings(settings);
+                                       }),
+                    Tray::SyncedToggle(translations.tabHotkeys, Globals::gSettings.tabHotkeysOnly, [this](bool state) {
                         auto settings = Globals::gSettings;
                         settings.tabHotkeysOnly = state;
                         changeSettings(settings);
