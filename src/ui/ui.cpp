@@ -115,7 +115,11 @@ namespace Soundux::Objects
             if (std::filesystem::exists(path))
             {
                 Tab tab;
+#if defined(_WIN32)
                 tab.path = Helpers::narrow(path);
+#else
+                tab.path = path;
+#endif
                 tab.sounds = refreshTabSounds(tab);
                 tab.name = std::filesystem::path(path).filename().u8string();
 
