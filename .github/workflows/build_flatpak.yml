@@ -24,7 +24,7 @@ jobs:
               with:
                   submodules: true
                   
-            - uses: bilelmoussaoui/flatpak-github-actions@v2
+            - uses: bilelmoussaoui/flatpak-github-actions@v3
               with:
                   bundle: "soundux.flatpak"
                   manifest-path: "deployment/flatpak/io.github.Soundux.yml"
