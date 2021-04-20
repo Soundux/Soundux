@@ -24,5 +24,7 @@ jobs:
                   submodules: true
             - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v3
               with:
+                  cache: true
+                  cache-key: flatpak-builder-${sha256(deployment/flatpak/io.github.Soundux.yml)}
                   bundle: "soundux.flatpak"
                   manifest-path: "deployment/flatpak/io.github.Soundux.yml"
