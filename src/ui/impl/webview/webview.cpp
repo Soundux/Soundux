@@ -76,10 +76,7 @@ namespace Soundux::Objects
         webview->expose(Webview::Function("stopSounds", [this]() { return stopSounds(); }));
         webview->expose(Webview::Function("changeSettings",
                                           [this](const Settings &newSettings) { return changeSettings(newSettings); }));
-        webview->expose(Webview::Function("requestHotkey", [](bool state) {
-            //
-            Globals::gHotKeys.shouldNotify(state);
-        }));
+        webview->expose(Webview::Function("requestHotkey", [](bool state) { Globals::gHotKeys.shouldNotify(state); }));
         webview->expose(Webview::Function(
             "setHotkey", [this](std::uint32_t id, const std::vector<int> &keys) { return setHotkey(id, keys); }));
         webview->expose(Webview::Function("getHotkeySequence",
