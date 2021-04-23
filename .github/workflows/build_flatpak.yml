@@ -18,13 +18,12 @@ jobs:
         container:
             image: bilelmoussaoui/flatpak-github-actions:gnome-3.38
             options: --privileged
-
         steps:
             - uses: actions/checkout@v2
               with:
                   submodules: true
-                  
-            - uses: bilelmoussaoui/flatpak-github-actions@v2
-              with:
+            - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v3
+              with:          
+                  cache-key: flatpak-builder-${{ github.sha }}
                   bundle: "soundux.flatpak"
                   manifest-path: "deployment/flatpak/io.github.Soundux.yml"
