@@ -10,8 +10,8 @@ namespace Soundux
         class WebView : public Window
         {
           private:
-            SounduxWebView webview;
             std::shared_ptr<Tray::Tray> tray;
+            std::shared_ptr<Webview::Window> webview;
             void changeSettings(const Settings &newSettings) override;
 
             struct
