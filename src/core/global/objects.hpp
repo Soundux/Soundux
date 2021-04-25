@@ -112,7 +112,8 @@ namespace Soundux
             std::optional<std::reference_wrapper<Sound>> getSound(const std::uint32_t &);
 
             std::vector<Sound> getFavorites();
-            std::vector<Sound> markFavorite(const std::uint32_t &, bool);
+            std::vector<std::uint32_t> getFavoriteIds();
+            void markFavorite(const std::uint32_t &, bool);
 
             void set(const Data &other);
             Data &operator=(const Data &other) = delete;

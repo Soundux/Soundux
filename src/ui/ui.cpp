@@ -619,13 +619,13 @@ namespace Soundux::Objects
             onAllSoundsFinished();
         }
     }
-    std::vector<Sound> Window::getFavourites()
+    std::vector<std::uint32_t> Window::getFavouriteIds()
     {
-        return Globals::gData.getFavorites();
+        return Globals::gData.getFavoriteIds();
     }
-    std::vector<Sound> Window::markFavourite(const std::uint32_t &id, bool favourite)
+    void Window::markFavourite(const std::uint32_t &id, bool favorite)
     {
-        return Globals::gData.markFavorite(id, favourite);
+        Globals::gData.markFavorite(id, favorite);
     }
     void Window::onAllSoundsFinished()
     {

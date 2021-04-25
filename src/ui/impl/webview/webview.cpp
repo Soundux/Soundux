@@ -85,9 +85,11 @@ namespace Soundux::Objects
         webview->expose(Webview::Function("refreshTab", [this](std::uint32_t id) { return refreshTab(id); }));
         webview->expose(Webview::Function(
             "moveTabs", [this](const std::vector<int> &newOrder) { return changeTabOrder(newOrder); }));
-        webview->expose(Webview::Function(
-            "markFavorite", [this](const std::uint32_t &id, bool favourite) { return markFavourite(id, favourite); }));
-        webview->expose(Webview::Function("getFavorites", [this] { return getFavourites(); }));
+        webview->expose(Webview::Function("markFavorite", [this](const std::uint32_t &id, bool favourite) {
+            markFavourite(id, favourite);
+            return getFavouriteIds();
+        }));
+        webview->expose(Webview::Function("getFavorites", [this] { return getFavouriteIds(); }));
         webview->expose(Webview::Function("isYoutubeDLAvailable", []() { return Globals::gYtdl.available(); }));
         webview->expose(
             Webview::AsyncFunction("getYoutubeDLInfo", [this](Webview::Promise promise, const std::string &url) {

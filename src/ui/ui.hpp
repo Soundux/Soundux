@@ -39,8 +39,8 @@ namespace Soundux
 
             virtual void changeSettings(const Settings &);
 
-            virtual std::vector<Sound> getFavourites();
-            virtual std::vector<Sound> markFavourite(const std::uint32_t &, bool);
+            virtual std::vector<std::uint32_t> getFavouriteIds();
+            virtual void markFavourite(const std::uint32_t &, bool);
 
             virtual std::optional<Tab> addTab();
             virtual std::vector<Sound> refreshTabSounds(const Tab &) const;
