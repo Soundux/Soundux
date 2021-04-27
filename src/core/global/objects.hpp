@@ -51,15 +51,15 @@ namespace Soundux
 
         enum class Theme : std::uint8_t
         {
+            System,
             Dark,
-            Light,
-            System
+            Light
         };
 
         enum class ViewMode : std::uint8_t
         {
-            Grid,
             List,
+            Grid,
             EmulatedLaunchpad,
         };
 
