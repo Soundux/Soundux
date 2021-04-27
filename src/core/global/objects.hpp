@@ -49,6 +49,20 @@ namespace Soundux
             Alphabetical_Descending,
         };
 
+        enum class Theme : std::uint8_t
+        {
+            Dark,
+            Light,
+            System
+        };
+
+        enum class ViewMode : std::uint8_t
+        {
+            Grid,
+            List,
+            EmulatedLaunchpad,
+        };
+
         struct Sound
         {
             std::uint32_t id;
@@ -70,24 +84,26 @@ namespace Soundux
 
         struct Settings
         {
-            std::vector<int> stopHotkey;
-            std::vector<int> pushToTalkKeys;
             SortMode sortMode = SortMode::ModifiedDate_Descending;
-            bool useAsDefaultDevice = false;
-            bool muteDuringPlayback = false;
+            ViewMode viewMode = ViewMode::List;
+            Theme theme = Theme::Dark;
+
+            std::vector<int> pushToTalkKeys;
+            std::vector<int> stopHotkey;
+
             std::uint32_t selectedTab = 0;
-            bool allowOverlapping = true;
-            bool minimizeToTray = false;
-            bool tabHotkeysOnly = false;
-            bool launchPadMode = false;
-            bool deleteToTrash = true;
-            bool syncVolumes = false;
-            bool darkTheme = true;
-            bool gridView = false;
             std::string output;
 
             float remoteVolume = 1.f;
             float localVolume = 0.5f;
+            bool syncVolumes = false;
+
+            bool useAsDefaultDevice = false;
+            bool muteDuringPlayback = false;
+            bool allowOverlapping = true;
+            bool minimizeToTray = false;
+            bool tabHotkeysOnly = false;
+            bool deleteToTrash = true;
         };
         class Data
         {

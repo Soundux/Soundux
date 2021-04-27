@@ -56,14 +56,14 @@ namespace nlohmann
         }
         static void from_json(const json &j, Soundux::Objects::PlayingSound &obj)
         {
+            j.at("id").get_to(obj.id);
             j.at("sound").get_to(obj.sound);
             j.at("paused").get_to(obj.paused);
             j.at("repeat").get_to(obj.repeat);
-            j.at("id").get_to(obj.id);
             j.at("length").get_to(obj.length);
+            j.at("readInMs").get_to(obj.readInMs);
             j.at("lengthInMs").get_to(obj.lengthInMs);
             j.at("readFrames").get_to(obj.readFrames);
-            j.at("readInMs").get_to(obj.readInMs);
         }
     };
     template <> struct adl_serializer<Soundux::Objects::Settings>
@@ -71,15 +71,14 @@ namespace nlohmann
         static void to_json(json &j, const Soundux::Objects::Settings &obj)
         {
             j = {{"allowOverlapping", obj.allowOverlapping},
+                 {"theme", obj.theme},
                  {"output", obj.output},
-                 {"gridView", obj.gridView},
+                 {"viewMode", obj.viewMode},
                  {"sortMode", obj.sortMode},
-                 {"darkTheme", obj.darkTheme},
                  {"stopHotkey", obj.stopHotkey},
                  {"syncVolumes", obj.syncVolumes},
                  {"selectedTab", obj.selectedTab},
                  {"deleteToTrash", obj.deleteToTrash},
-                 {"launchPadMode", obj.launchPadMode},
                  {"pushToTalkKeys", obj.pushToTalkKeys},
                  {"tabHotkeysOnly", obj.tabHotkeysOnly},
                  {"minimizeToTray", obj.minimizeToTray},
@@ -88,46 +87,33 @@ namespace nlohmann
                  {"useAsDefaultDevice", obj.useAsDefaultDevice},
                  {"localVolume", obj.localVolume}};
         }
+
+        template <typename T> static void getToIfExists(const json &j, const std::string &key, T &member)
+        {
+            if (j.find(key) != j.end())
+            {
+                j.at(key).get_to(member);
+            }
+        }
+
         static void from_json(const json &j, Soundux::Objects::Settings &obj)
         {
-            j.at("allowOverlapping").get_to(obj.allowOverlapping);
-            j.at("output").get_to(obj.output);
-            j.at("gridView").get_to(obj.gridView);
-            j.at("darkTheme").get_to(obj.darkTheme);
-            j.at("stopHotkey").get_to(obj.stopHotkey);
-            j.at("localVolume").get_to(obj.localVolume);
-            j.at("selectedTab").get_to(obj.selectedTab);
-            j.at("remoteVolume").get_to(obj.remoteVolume);
-            j.at("tabHotkeysOnly").get_to(obj.tabHotkeysOnly);
-            j.at("useAsDefaultDevice").get_to(obj.useAsDefaultDevice);
-            if (j.find("launchPadMode") != j.end())
-            {
-                j.at("launchPadMode").get_to(obj.launchPadMode);
-            }
-            if (j.find("muteDuringPlayback") != j.end())
-            {
-                j.at("muteDuringPlayback").get_to(obj.muteDuringPlayback);
-            }
-            if (j.find("sortMode") != j.end())
-            {
-                j.at("sortMode").get_to(obj.sortMode);
-            }
-            if (j.find("syncVolumes") != j.end())
-            {
-                j.at("syncVolumes").get_to(obj.syncVolumes);
-            }
-            if (j.find("minimizeToTray") != j.end())
-            {
-                j.at("minimizeToTray").get_to(obj.minimizeToTray);
-            }
-            if (j.find("pushToTalkKeys") != j.end())
-            {
-                j.at("pushToTalkKeys").get_to(obj.pushToTalkKeys);
-            }
-            if (j.find("deleteToTrash") != j.end())
-            {
-                j.at("deleteToTrash").get_to(obj.deleteToTrash);
-            }
+            getToIfExists(j, "theme", obj.theme);
+            getToIfExists(j, "output", obj.output);
+            getToIfExists(j, "sortMode", obj.sortMode);
+            getToIfExists(j, "viewMode", obj.viewMode);
+            getToIfExists(j, "stopHotkey", obj.stopHotkey);
+            getToIfExists(j, "localVolume", obj.localVolume);
+            getToIfExists(j, "selectedTab", obj.selectedTab);
+            getToIfExists(j, "syncVolumes", obj.syncVolumes);
+            getToIfExists(j, "remoteVolume", obj.remoteVolume);
+            getToIfExists(j, "deleteToTrash", obj.deleteToTrash);
+            getToIfExists(j, "pushToTalkKeys", obj.pushToTalkKeys);
+            getToIfExists(j, "minimizeToTray", obj.minimizeToTray);
+            getToIfExists(j, "tabHotkeysOnly", obj.tabHotkeysOnly);
+            getToIfExists(j, "allowOverlapping", obj.allowOverlapping);
+            getToIfExists(j, "useAsDefaultDevice", obj.useAsDefaultDevice);
+            getToIfExists(j, "muteDuringPlayback", obj.muteDuringPlayback);
         }
     };
     template <> struct adl_serializer<Soundux::Objects::Tab>
