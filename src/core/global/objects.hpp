@@ -86,7 +86,7 @@ namespace Soundux
         {
             SortMode sortMode = SortMode::ModifiedDate_Descending;
             ViewMode viewMode = ViewMode::List;
-            Theme theme = Theme::Dark;
+            Theme theme = Theme::System;
 
             std::vector<int> pushToTalkKeys;
             std::vector<int> stopHotkey;
