@@ -64,13 +64,33 @@ namespace Soundux::Objects
         }));
         webview->expose(Webview::Function("addTab", [this]() { return (addTab()); }));
         webview->expose(Webview::Function("getTabs", []() { return Globals::gData.getTabs(); }));
-        webview->expose(Webview::Function("getPlayingSounds", []() { return Globals::gAudio.getPlayingSounds(); }));
         webview->expose(Webview::Function("playSound", [this](std::uint32_t id) { return playSound(id); }));
         webview->expose(Webview::Function("stopSound", [this](std::uint32_t id) { return stopSound(id); }));
         webview->expose(Webview::Function(
             "seekSound", [this](std::uint32_t id, std::uint64_t seekTo) { return seekSound(id, seekTo); }));
-        webview->expose(Webview::Function("pauseSound", [this](std::uint32_t id) { return pauseSound(id); }));
-        webview->expose(Webview::Function("resumeSound", [this](std::uint32_t id) { return resumeSound(id); }));
+        webview->expose(Webview::AsyncFunction("pauseSound", [this](const Webview::Promise &promise, std::uint32_t id) {
+            auto sound = pauseSound(id);
+            if (sound)
+            {
+                promise.resolve(*sound);
+            }
+            else
+            {
+                promise.discard();
+            }
+        }));
+        webview->expose(
+            Webview::AsyncFunction("resumeSound", [this](const Webview::Promise &promise, std::uint32_t id) {
+                auto sound = resumeSound(id);
+                if (sound)
+                {
+                    promise.resolve(*sound);
+                }
+                else
+                {
+                    promise.discard();
+                }
+            }));
         webview->expose(Webview::Function("repeatSound",
                                           [this](std::uint32_t id, bool repeat) { return repeatSound(id, repeat); }));
         webview->expose(Webview::Function("stopSounds", [this]() { return stopSounds(); }));
@@ -138,9 +158,9 @@ namespace Soundux::Objects
 #endif
 
         webview->setCloseCallback([this]() {
-            tray->getEntries().at(1)->setText(translations.show);
             if (Globals::gSettings.minimizeToTray)
             {
+                tray->getEntries().at(1)->setText(translations.show);
                 webview->hide();
                 return true;
             }
@@ -239,42 +259,29 @@ namespace Soundux::Objects
         {
             hotkeySequence += Globals::gHotKeys.getKeyName(key) + " + ";
         }
-        auto js = "window.hotkeyReceived(`" + hotkeySequence.substr(0, hotkeySequence.length() - 3) +
-                  "`, JSON.parse(`" + nlohmann::json(keys).dump() + "`));";
-
-        webview->runCode(js);
+        webview->callFunction<void>(Webview::JavaScriptFunction(
+            "window.hotkeyReceived", hotkeySequence.substr(0, hotkeySequence.length() - 3), keys));
     }
     void WebView::onSoundFinished(const PlayingSound &sound)
     {
         Window::onSoundFinished(sound);
-        auto soundObj = nlohmann::json(sound).dump();
-        auto js = "window.finishSound(JSON.parse(`" + soundObj + "`));";
-
-        webview->runCode(js);
+        webview->callFunction<void>(Webview::JavaScriptFunction("window.finishSound", sound));
     }
     void WebView::onSoundPlayed(const PlayingSound &sound)
     {
-        auto soundObj = nlohmann::json(sound).dump();
-        auto js = "window.onSoundPlayed(JSON.parse(`" + soundObj + "`));";
-
-        webview->runCode(js);
+        webview->callFunction<void>(Webview::JavaScriptFunction("window.onSoundPlayed", sound));
     }
     void WebView::onSoundProgressed(const PlayingSound &sound)
     {
-        auto soundObj = nlohmann::json(sound).dump();
-        auto js = "window.updateSound(JSON.parse(`" + soundObj + "`));";
-
-        webview->runCode(js);
+        webview->callFunction<void>(Webview::JavaScriptFunction("window.updateSound", sound));
     }
     void WebView::onDownloadProgressed(float progress, const std::string &eta)
     {
-        auto js = "window.downloadProgressed(" + std::to_string(progress) + ", `" + eta + "`);";
-        webview->runCode(js);
+        webview->callFunction<void>(Webview::JavaScriptFunction("window.downloadProgressed", progress, eta));
     }
     void WebView::onError(const ErrorCode &error)
     {
-        auto js = "window.onError(" + std::to_string(static_cast<std::uint8_t>(error)) + ");";
-        webview->runCode(js);
+        webview->callFunction<void>(Webview::JavaScriptFunction("window.onError", static_cast<std::uint8_t>(error)));
     }
     void WebView::changeSettings(const Settings &newSettings)
     {
