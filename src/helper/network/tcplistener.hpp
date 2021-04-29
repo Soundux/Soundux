@@ -16,7 +16,7 @@ namespace Soundux
 
             bool listen(uint16_t port, int maxConnections);
             bool accept(TCPSocket &newSocket);
-			bool close();
+            bool close();
             void destroy();
             bool setBlocking(bool blocking);
 

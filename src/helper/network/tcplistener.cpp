@@ -46,12 +46,12 @@ namespace Soundux
             ::closesocket(m_ServerFD);
         }
 
-		bool TCPListener::close()
-		{
-			if(::shutdown(m_ServerFD, SD_BOTH) == 0)
-				return true;
-			return false;
-		}
+        bool TCPListener::close()
+        {
+            if (::shutdown(m_ServerFD, SD_BOTH) == 0)
+                return true;
+            return false;
+        }
 
         bool TCPListener::setBlocking(bool blocking)
         {

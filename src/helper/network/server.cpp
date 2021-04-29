@@ -69,9 +69,9 @@ namespace Soundux
         void SounduxServer::destroy()
         {
             m_ShouldStop = true;
-			m_TcpListener.close();
+            m_TcpListener.close();
             m_ListenThread.join();
-			m_TcpListener.destroy();
+            m_TcpListener.destroy();
             Network::ReleaseNetwork();
         }
     } // namespace Objects
