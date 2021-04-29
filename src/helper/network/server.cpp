@@ -60,7 +60,7 @@ namespace Soundux
                         }
                         // skipping the length info
                         data.setReadOffset(sizeof(uint32_t));
-                        OnReceived(data);
+                        onReceived(data);
                     }
                     newSocket.disconnect();
                 }
