@@ -169,7 +169,7 @@ namespace Soundux::Objects
             return *sound;
         }
 
-        Fancy::fancy.logTime().warning() << "Failed to pause sound with id " << soundId << ", sound does not exist "
+        Fancy::fancy.logTime().warning() << "Failed to pause sound with id " << soundId << ", sound does not exist"
                                          << std::endl;
         return std::nullopt;
     }
@@ -222,9 +222,12 @@ namespace Soundux::Objects
             sound.rawDevice = nullptr;
             sound.rawDecoder = nullptr;
 
-            lock.unlock();
-            Globals::gGui->onSoundFinished(sound);
-            lock.lock();
+            if (sound.playbackDevice.isDefault)
+            {
+                lock.unlock();
+                Globals::gGui->onSoundFinished(sound);
+                lock.lock();
+            }
 
             playingSounds.erase(sound.id);
         }
