@@ -2,6 +2,7 @@
 
 #include <fancy.hpp>
 #include <helper/protocol/packets.hpp>
+#include <core/global/globals.hpp>
 
 #include <unordered_map>
 
@@ -102,7 +103,7 @@ namespace Soundux
                     Network::InitialiseNetwork();
                     Network::TCPSocket socket;
 
-                    if (!socket.connect("127.0.0.1", SOUNDUX_PORT))
+                    if (!socket.connect("127.0.0.1", Globals::gConfig.settings.serverPort))
                     {
                         Fancy::fancy.logTime().failure()
                             << "Can't connect to local socket to send command" << std::endl;

@@ -94,6 +94,8 @@ namespace Soundux
             std::uint32_t selectedTab = 0;
             std::string output;
 
+			std::uint16_t serverPort = 26656;
+
             float remoteVolume = 1.f;
             float localVolume = 0.5f;
             bool syncVolumes = false;

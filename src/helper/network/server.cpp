@@ -37,7 +37,7 @@ namespace Soundux
         {
             Network::InitialiseNetwork();
             m_ListenThread = std::thread([this]() {
-                m_TcpListener.listen(SOUNDUX_PORT, 1);
+                m_TcpListener.listen(Globals::gConfig.settings.serverPort, 1);
                 m_TcpListener.setBlocking(true);
                 while (!m_ShouldStop)
                 {

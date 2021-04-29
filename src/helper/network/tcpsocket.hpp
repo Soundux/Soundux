@@ -20,8 +20,6 @@
 #include <string>
 #include <vector>
 
-#define SOUNDUX_PORT 26656
-
 namespace Soundux
 {
     namespace Network
