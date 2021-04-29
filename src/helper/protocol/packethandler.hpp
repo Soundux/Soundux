@@ -9,8 +9,8 @@ namespace Soundux
         class PacketHandler
         {
           public:
-            void HandlePacket(const Network::Protocol::PlaySoundPacket &);
-            void HandlePacket(const Network::Protocol::StopSoundsPacket &);
+            void handlePacket(const Network::Protocol::PlaySoundPacket &);
+            void handlePacket(const Network::Protocol::StopSoundsPacket &);
         };
     } // namespace Objects
 } // namespace Soundux
