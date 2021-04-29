@@ -122,7 +122,10 @@ namespace Soundux::Objects
 
             ma_device_uninit(sound->rawDevice);
             ma_decoder_uninit(sound->rawDecoder);
+
+            lock.unlock();
             Globals::gGui->onSoundFinished(*sound, true);
+            lock.lock();
 
             sound->rawDevice = nullptr;
             sound->rawDecoder = nullptr;
@@ -139,7 +142,10 @@ namespace Soundux::Objects
 
             ma_device_uninit(sound->rawDevice);
             ma_decoder_uninit(sound->rawDecoder);
+
+            lock.unlock();
             Globals::gGui->onSoundFinished(*sound, true);
+            lock.lock();
 
             sound->rawDevice = nullptr;
             sound->rawDecoder = nullptr;
