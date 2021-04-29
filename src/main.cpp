@@ -8,7 +8,7 @@
 #include "../assets/icon.h"
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 #else
-int main()
+int main(int argc, const char *args[])
 #endif
 {
 #if defined(_WIN32)
@@ -31,6 +31,11 @@ int main()
     }
 
     CrashHandler::init();
+
+    if (Soundux::Globals::gCli.parseProgramArguments(argc, args))
+    {
+        return 0;
+    }
 
     InstanceGuard::InstanceGuard guard("soundux-guard");
     if (guard.IsAnotherInstanceRunning())
@@ -59,6 +64,8 @@ int main()
     Soundux::Globals::gData.set(Soundux::Globals::gConfig.data);
     Soundux::Globals::gSettings = Soundux::Globals::gConfig.settings;
 
+    Soundux::Globals::gServer.init();
+
     Soundux::Globals::gGui = std::make_unique<Soundux::Objects::WebView>();
     Soundux::Globals::gGui->setup();
 #if defined(_WIN32)
@@ -75,6 +82,8 @@ int main()
     Soundux::Globals::gConfig.data.set(Soundux::Globals::gData);
     Soundux::Globals::gConfig.settings = Soundux::Globals::gSettings;
     Soundux::Globals::gConfig.save();
+
+    Soundux::Globals::gServer.destroy();
 
     return 0;
 }

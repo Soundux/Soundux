@@ -16,6 +16,7 @@ namespace Soundux
         class Window
         {
             friend class Hotkeys;
+            friend class PacketHandler;
 
           protected:
             std::shared_mutex groupedSoundsMutex;

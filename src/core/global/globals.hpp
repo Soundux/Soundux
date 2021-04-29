@@ -6,7 +6,10 @@
 #include "objects.hpp"
 #include <core/config/config.hpp>
 #include <core/hotkeys/hotkeys.hpp>
+#include <helper/cli/cli.hpp>
 #include <helper/icons/icons.hpp>
+#include <helper/network/server.hpp>
+#include <helper/protocol/packethandler.hpp>
 #include <helper/threads/processing.hpp>
 #include <helper/ytdl/youtube-dl.hpp>
 #include <memory>
@@ -28,6 +31,10 @@ namespace Soundux
         inline Objects::Settings gSettings;
         inline std::unique_ptr<Objects::Window> gGui;
         inline Objects::ProcessingQueue<std::uintptr_t> gQueue;
+
+        inline Objects::SounduxServer gServer;
+        inline Objects::CommandLineInterface gCli;
+        inline Objects::PacketHandler gHandler;
 
         /* Allows for fast & easy sound access, is populated on start up */
         inline std::shared_mutex gSoundsMutex;
