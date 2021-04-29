@@ -18,13 +18,13 @@ namespace Soundux
             case PacketType::PlaySoundID: {
                 PlaySoundPacket packet;
                 buffer >> packet;
-                Globals::gHandler.HandlePacket((Network::Protocol::PlaySoundPacket &)packet);
+                Globals::gHandler.handlePacket((Network::Protocol::PlaySoundPacket &)packet);
                 break;
             }
 
             case PacketType::StopSounds: {
                 StopSoundsPacket packet;
-                Globals::gHandler.HandlePacket((Network::Protocol::StopSoundsPacket &)packet);
+                Globals::gHandler.handlePacket((Network::Protocol::StopSoundsPacket &)packet);
                 break;
             }
 
