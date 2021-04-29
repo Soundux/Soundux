@@ -69,9 +69,9 @@ namespace Soundux
                 const PlayingSound &); //* This will be called when a sound is played through a hotkey. PlaySound
                                        //* will be called before this gets called
             virtual void onSoundFinished(const PlayingSound &);
+            virtual void onHotKeyReceived(const std::vector<int> &);
             virtual void onSoundProgressed(const PlayingSound &) = 0;
             virtual void onDownloadProgressed(float, const std::string &) = 0;
-            virtual void onHotKeyReceived(const std::vector<int> &);
         };
     } // namespace Objects
 } // namespace Soundux
