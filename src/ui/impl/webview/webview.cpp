@@ -262,10 +262,13 @@ namespace Soundux::Objects
         webview->callFunction<void>(Webview::JavaScriptFunction(
             "window.hotkeyReceived", hotkeySequence.substr(0, hotkeySequence.length() - 3), keys));
     }
-    void WebView::onSoundFinished(const PlayingSound &sound)
+    void WebView::onSoundFinished(const PlayingSound &sound, bool forced)
     {
-        Window::onSoundFinished(sound);
-        webview->callFunction<void>(Webview::JavaScriptFunction("window.finishSound", sound));
+        Window::onSoundFinished(sound, forced);
+        if (sound.playbackDevice.isDefault)
+        {
+            webview->callFunction<void>(Webview::JavaScriptFunction("window.finishSound", sound, forced));
+        }
     }
     void WebView::onSoundPlayed(const PlayingSound &sound)
     {

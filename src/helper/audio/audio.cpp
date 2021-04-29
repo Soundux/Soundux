@@ -122,6 +122,7 @@ namespace Soundux::Objects
 
             ma_device_uninit(sound->rawDevice);
             ma_decoder_uninit(sound->rawDecoder);
+            Globals::gGui->onSoundFinished(*sound, true);
 
             sound->rawDevice = nullptr;
             sound->rawDecoder = nullptr;
@@ -138,6 +139,7 @@ namespace Soundux::Objects
 
             ma_device_uninit(sound->rawDevice);
             ma_decoder_uninit(sound->rawDecoder);
+            Globals::gGui->onSoundFinished(*sound, true);
 
             sound->rawDevice = nullptr;
             sound->rawDecoder = nullptr;
@@ -211,7 +213,7 @@ namespace Soundux::Objects
                                          << std::endl;
         return std::nullopt;
     }
-    void Audio::onFinished(PlayingSound sound)
+    void Audio::onFinished(PlayingSound sound, bool forced)
     {
         std::unique_lock lock(playingSoundsMutex);
         if (playingSounds.find(sound.id) != playingSounds.end())
@@ -222,12 +224,9 @@ namespace Soundux::Objects
             sound.rawDevice = nullptr;
             sound.rawDecoder = nullptr;
 
-            if (sound.playbackDevice.isDefault)
-            {
-                lock.unlock();
-                Globals::gGui->onSoundFinished(sound);
-                lock.lock();
-            }
+            lock.unlock();
+            Globals::gGui->onSoundFinished(sound, forced);
+            lock.lock();
 
             playingSounds.erase(sound.id);
         }
@@ -321,7 +320,7 @@ namespace Soundux::Objects
             else
             {
                 Globals::gQueue.push_unique(reinterpret_cast<std::uintptr_t>(device),
-                                            [sound = *sound] { Globals::gAudio.onFinished(sound); });
+                                            [sound = *sound] { Globals::gAudio.onFinished(sound, false); });
             }
         }
     }

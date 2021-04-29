@@ -605,7 +605,7 @@ namespace Soundux::Objects
         return Globals::gAudio.getAudioDevices();
     }
 #endif
-    void Window::onSoundFinished(const PlayingSound &sound)
+    void Window::onSoundFinished(const PlayingSound &sound, [[maybe_unused]] bool forced)
     {
         std::unique_lock lock(groupedSoundsMutex);
         if (groupedSounds.find(sound.id) != groupedSounds.end())
