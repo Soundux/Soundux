@@ -6,7 +6,7 @@ namespace Soundux
 {
     namespace Objects
     {
-        void SounduxServer::OnReceived(Network::Buffer &buffer)
+        void SounduxServer::onReceived(Network::Buffer &buffer)
         {
             using namespace Network::Protocol;
 
