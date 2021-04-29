@@ -22,7 +22,7 @@ namespace Soundux
             void destroy();
 
           private:
-            void OnReceived(Network::Buffer &);
+            void onReceived(Network::Buffer &);
         };
     } // namespace Objects
 } // namespace Soundux
