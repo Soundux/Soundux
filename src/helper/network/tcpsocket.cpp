@@ -30,11 +30,11 @@ namespace Soundux
             if (::getaddrinfo(address.c_str(), std::to_string(port).c_str(), &hints, &result) < 0)
                 return false;
 
-            struct addrinfo *ptr = nullptr;
+            addrinfo *ptr = nullptr;
             for (ptr = result; ptr != nullptr; ptr = ptr->ai_next)
             {
-                struct sockaddr_in *sockaddr = (struct sockaddr_in *)ptr->ai_addr;
-                if (::connect(m_SocketFD, (struct sockaddr *)sockaddr, sizeof(struct sockaddr_in)) < 0)
+                sockaddr_in *sockaddr = reinterpret_cast<sockaddr_in *>(ptr->ai_addr);
+                if (::connect(m_SocketFD, reinterpret_cast<::sockaddr *>(sockaddr), sizeof(sockaddr_in)) < 0)
                     continue;
                 m_RemoteAddr = *sockaddr;
                 break;
@@ -60,7 +60,7 @@ namespace Soundux
 
             while (sent < size)
             {
-                int cur = ::send(m_SocketFD, (const char *)data + sent, size - sent, 0);
+                int cur = ::send(m_SocketFD, reinterpret_cast<const char *>(data + sent), size - sent, 0);
                 if (cur <= 0)
                 {
                     disconnect();
@@ -77,7 +77,7 @@ namespace Soundux
             buffer.resizeBuffer(amount);
             buffer.setReadOffset(0);
 
-            int recvAmount = ::recv(m_SocketFD, (char *)buffer.getBufferData(), amount, MSG_DONTWAIT);
+            int recvAmount = ::recv(m_SocketFD, reinterpret_cast<char *>(buffer.getBufferData()), amount, MSG_DONTWAIT);
             if (recvAmount <= 0)
             {
 #ifdef _WIN32

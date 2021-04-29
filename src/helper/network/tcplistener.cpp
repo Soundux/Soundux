@@ -19,7 +19,7 @@ namespace Soundux
             address.sin_addr.s_addr = INADDR_ANY;
             address.sin_port = htons(port);
 
-            if (::bind(m_ServerFD, (struct sockaddr *)&address, sizeof(address)) < 0)
+            if (::bind(m_ServerFD, reinterpret_cast<sockaddr *>(&address), sizeof(address)) < 0)
                 return false;
 
             if (::listen(m_ServerFD, maxConnections) < 0)
@@ -34,8 +34,8 @@ namespace Soundux
         bool TCPListener::accept(TCPSocket &newSocket)
         {
             int addrlen = sizeof(newSocket.m_RemoteAddr);
-            if ((newSocket.m_SocketFD =
-                     ::accept(m_ServerFD, (struct sockaddr *)&newSocket.m_RemoteAddr, (socklen_t *)&addrlen)) < 0)
+            if ((newSocket.m_SocketFD = ::accept(m_ServerFD, reinterpret_cast<sockaddr *>(&newSocket.m_RemoteAddr),
+                                                 reinterpret_cast<socklen_t *>(&addrlen))) < 0)
                 return false;
             newSocket.m_Connected = true;
             return true;
