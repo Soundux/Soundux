@@ -21,9 +21,12 @@ namespace Soundux
         struct PlayingSound
         {
             AudioDevice playbackDevice;
-            mutable std::mutex copyMutex;
-            std::atomic<ma_device *> rawDevice;
-            std::atomic<ma_decoder *> rawDecoder;
+
+            struct
+            {
+                std::atomic<ma_device *> device;
+                std::atomic<ma_decoder *> decoder;
+            } raw;
 
             std::uint64_t length = 0;
             std::uint64_t lengthInMs = 0;

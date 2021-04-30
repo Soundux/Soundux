@@ -35,7 +35,7 @@ namespace Soundux::Objects
     std::optional<PlayingSound> Audio::play(const Objects::Sound &sound,
                                             const std::optional<Objects::AudioDevice> &playbackDevice)
     {
-        static std::uint64_t id = 0;
+        static std::atomic<std::uint64_t> id = 0;
 
         auto *decoder = new ma_decoder;
 #if defined(_WIN32)
@@ -97,10 +97,12 @@ namespace Soundux::Objects
             return std::nullopt;
         }
 
-        pSound->id = ++id;
+        auto soundId = ++id;
+
+        pSound->id = soundId;
         pSound->sound = sound;
-        pSound->rawDevice = device;
-        pSound->rawDecoder = decoder;
+        pSound->raw.device = device;
+        pSound->raw.decoder = decoder;
         pSound->length = length_in_pcm_frames;
         pSound->sampleRate = config.sampleRate;
         pSound->playbackDevice = playbackDevice ? *playbackDevice : defaultPlayback;
@@ -108,7 +110,7 @@ namespace Soundux::Objects
                                                         static_cast<double>(config.sampleRate) * 1000);
 
         playingSoundsMutex.lock();
-        playingSounds.emplace(id, pSound);
+        playingSounds.emplace(soundId, pSound);
         playingSoundsMutex.unlock();
 
         return *pSound;
@@ -119,16 +121,18 @@ namespace Soundux::Objects
         while (!playingSounds.empty())
         {
             auto &sound = playingSounds.begin()->second;
+            if (sound->raw.device && sound->raw.decoder)
+            {
+                ma_device_uninit(sound->raw.device);
+                ma_decoder_uninit(sound->raw.decoder);
+            }
 
-            ma_device_uninit(sound->rawDevice);
-            ma_decoder_uninit(sound->rawDecoder);
+            sound->raw.device = nullptr;
+            sound->raw.decoder = nullptr;
 
             lock.unlock();
             Globals::gGui->onSoundFinished(*sound, true);
             lock.lock();
-
-            sound->rawDevice = nullptr;
-            sound->rawDecoder = nullptr;
 
             playingSounds.erase(sound->id);
         }
@@ -139,16 +143,18 @@ namespace Soundux::Objects
         if (playingSounds.find(soundId) != playingSounds.end())
         {
             auto &sound = playingSounds.at(soundId);
+            if (sound->raw.device && sound->raw.decoder)
+            {
+                ma_device_uninit(sound->raw.device);
+                ma_decoder_uninit(sound->raw.decoder);
+            }
 
-            ma_device_uninit(sound->rawDevice);
-            ma_decoder_uninit(sound->rawDecoder);
+            sound->raw.device = nullptr;
+            sound->raw.decoder = nullptr;
 
             lock.unlock();
             Globals::gGui->onSoundFinished(*sound, true);
             lock.lock();
-
-            sound->rawDevice = nullptr;
-            sound->rawDecoder = nullptr;
 
             playingSounds.erase(sound->id);
             return true;
@@ -167,9 +173,9 @@ namespace Soundux::Objects
 
             if (!sound->paused)
             {
-                if (ma_device_get_state(sound->rawDevice) == MA_STATE_STARTED)
+                if (ma_device_get_state(sound->raw.device) == MA_STATE_STARTED)
                 {
-                    ma_device_stop(sound->rawDevice);
+                    ma_device_stop(sound->raw.device);
                 }
                 sound->paused = true;
             }
@@ -205,9 +211,9 @@ namespace Soundux::Objects
 
             if (sound->paused)
             {
-                if (ma_device_get_state(sound->rawDevice) == MA_STATE_STOPPED)
+                if (ma_device_get_state(sound->raw.device) == MA_STATE_STOPPED)
                 {
-                    ma_device_start(sound->rawDevice);
+                    ma_device_start(sound->raw.device);
                 }
                 sound->paused = false;
             }
@@ -224,11 +230,11 @@ namespace Soundux::Objects
         std::unique_lock lock(playingSoundsMutex);
         if (playingSounds.find(sound.id) != playingSounds.end())
         {
-            ma_device_uninit(sound.rawDevice);
-            ma_decoder_uninit(sound.rawDecoder);
+            ma_device_uninit(sound.raw.device);
+            ma_decoder_uninit(sound.raw.decoder);
 
-            sound.rawDevice = nullptr;
-            sound.rawDecoder = nullptr;
+            sound.raw.device = nullptr;
+            sound.raw.decoder = nullptr;
 
             lock.unlock();
             Globals::gGui->onSoundFinished(sound, forced);
@@ -297,7 +303,7 @@ namespace Soundux::Objects
             return;
         }
 
-        if (!sound->rawDecoder)
+        if (!sound->raw.decoder)
         {
             return;
         }
@@ -305,10 +311,10 @@ namespace Soundux::Objects
         device->masterVolumeFactor =
             sound->playbackDevice.isDefault ? Globals::gSettings.localVolume : Globals::gSettings.remoteVolume;
 
-        auto readFrames = ma_decoder_read_pcm_frames(sound->rawDecoder, output, frameCount);
+        auto readFrames = ma_decoder_read_pcm_frames(sound->raw.decoder, output, frameCount);
         if (sound->shouldSeek)
         {
-            ma_decoder_seek_to_pcm_frame(sound->rawDecoder, sound->seekTo);
+            ma_decoder_seek_to_pcm_frame(sound->raw.decoder, sound->seekTo);
             Globals::gAudio.onSoundSeeked(sound, sound->seekTo);
         }
         if (sound->playbackDevice.isDefault && readFrames > 0)
@@ -320,7 +326,7 @@ namespace Soundux::Objects
         {
             if (sound->repeat)
             {
-                ma_decoder_seek_to_pcm_frame(sound->rawDecoder, 0);
+                ma_decoder_seek_to_pcm_frame(sound->raw.decoder, 0);
                 Globals::gAudio.onSoundSeeked(sound, 0);
             }
             else
@@ -397,8 +403,6 @@ namespace Soundux::Objects
             return;
         }
 
-        std::lock_guard lock(other.copyMutex);
-
         length = other.length;
         lengthInMs = other.lengthInMs;
         readFrames = other.readFrames;
@@ -414,8 +418,8 @@ namespace Soundux::Objects
         readInMs.store(other.readInMs);
         shouldSeek.store(other.shouldSeek);
 
-        rawDevice.store(other.rawDevice);
-        rawDecoder.store(other.rawDecoder);
+        raw.device.store(other.raw.device);
+        raw.decoder.store(other.raw.decoder);
         playbackDevice = other.playbackDevice;
     }
     PlayingSound &PlayingSound::operator=(const PlayingSound &other)
@@ -425,8 +429,6 @@ namespace Soundux::Objects
             return *this;
         }
 
-        std::lock_guard lock(other.copyMutex);
-
         length = other.length;
         lengthInMs = other.lengthInMs;
         readFrames = other.readFrames;
@@ -442,8 +444,8 @@ namespace Soundux::Objects
         readInMs.store(other.readInMs);
         shouldSeek.store(other.shouldSeek);
 
-        rawDevice.store(other.rawDevice);
-        rawDecoder.store(other.rawDecoder);
+        raw.device.store(other.raw.device);
+        raw.decoder.store(other.raw.decoder);
         playbackDevice = other.playbackDevice;
 
         return *this;
