@@ -9,15 +9,15 @@ namespace Soundux
 {
     namespace Objects
     {
-
-        typedef std::function<void(int, const char **)> CommandFunction;
-
         struct Command
         {
+            using command_function_t = std::function<void(int, const char **)>;
+
             std::string description, example;
-            CommandFunction execFunction;
+            command_function_t execFunction;
+
             Command(const std::string &cmdDescription, const std::string &cmdExample,
-                    const CommandFunction &cmdFunction)
+                    const command_function_t &cmdFunction)
                 : description(cmdDescription), example(cmdExample), execFunction(cmdFunction)
             {
             }
