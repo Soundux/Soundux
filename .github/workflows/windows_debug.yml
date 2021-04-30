@@ -26,6 +26,9 @@ jobs:
               with:
                   args: install openssl -y
 
+            - name: Add NuGet Remote
+              run: "nuget.exe sources Add -Name NuGetRemote -Source https://api.nuget.org/v3/index.json"
+
             - name: Setup tmate session
               uses: mxschmitt/action-tmate@v3
               with:
