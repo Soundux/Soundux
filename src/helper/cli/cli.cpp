@@ -3,36 +3,18 @@
 #include <core/global/globals.hpp>
 #include <fancy.hpp>
 
-#include <unordered_map>
-
 namespace Soundux
 {
     namespace Objects
     {
-        struct Command
+
+        CommandLineInterface::Command::Command(const std::string &cmdDescription, const std::string &cmdExample,
+                                               const command_function_t &cmdFunction)
+            : description(cmdDescription), example(cmdExample), execFunction(cmdFunction)
         {
-            using command_function_t = std::function<void(int, const char **)>;
+        }
 
-            std::string description, example;
-            command_function_t execFunction;
-
-            Command(const std::string &cmdDescription, const std::string &cmdExample,
-                    const command_function_t &cmdFunction)
-                : description(cmdDescription), example(cmdExample), execFunction(cmdFunction)
-            {
-            }
-        };
-
-        void playsoundCommand(int, const char **);
-        void stopsoundsCommand(int, const char **);
-
-        static const std::unordered_map<std::string, Command> commandMap{
-            // command name      command description               command example
-            {"playsound", {"play a sound specified by its id", "soundux playsound 40", playsoundCommand}},
-            {"stopsounds", {"stop playing all of the current sounds", "soundux stopsounds", stopsoundsCommand}},
-        };
-
-        void displayHelp()
+        void CommandLineInterface::displayHelp()
         {
             Fancy::fancy << "usage : soundux <command> [value]" << std::endl << std::endl;
             Fancy::fancy << "available commands :" << std::endl;
@@ -74,7 +56,7 @@ namespace Soundux
             return false;
         }
 
-        void playsoundCommand(int argc, const char **args)
+        void CommandLineInterface::playSoundCommand(int argc, const char **args)
         {
             if (argc < 3)
             {
@@ -96,7 +78,7 @@ namespace Soundux
             Globals::gClient.playSound(soundID);
         }
 
-        void stopsoundsCommand(int, const char **)
+        void CommandLineInterface::stopSoundsCommand(int, const char **)
         {
             Globals::gClient.stopSounds();
         }
