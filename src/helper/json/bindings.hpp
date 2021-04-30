@@ -85,7 +85,8 @@ namespace nlohmann
                  {"remoteVolume", obj.remoteVolume},
                  {"muteDuringPlayback", obj.muteDuringPlayback},
                  {"useAsDefaultDevice", obj.useAsDefaultDevice},
-                 {"localVolume", obj.localVolume}};
+                 {"localVolume", obj.localVolume},
+                 {"serverPort", obj.serverPort}};
         }
 
         template <typename T> static void getToIfExists(const json &j, const std::string &key, T &member)
@@ -114,6 +115,7 @@ namespace nlohmann
             getToIfExists(j, "allowOverlapping", obj.allowOverlapping);
             getToIfExists(j, "useAsDefaultDevice", obj.useAsDefaultDevice);
             getToIfExists(j, "muteDuringPlayback", obj.muteDuringPlayback);
+            getToIfExists(j, "serverPort", obj.serverPort);
         }
     };
     template <> struct adl_serializer<Soundux::Objects::Tab>

@@ -98,6 +98,8 @@ namespace Soundux
             float localVolume = 0.5f;
             bool syncVolumes = false;
 
+            std::uint16_t serverPort = 26656;
+
             bool useAsDefaultDevice = false;
             bool muteDuringPlayback = false;
             bool allowOverlapping = true;
