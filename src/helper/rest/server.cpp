@@ -40,16 +40,7 @@ namespace Soundux
             });
             m_Server.Get(R"(/playsound/(\d+))", [](const Request &req, Response &) {
                 std::string number = req.matches[1].str();
-                uint32_t soundID;
-                try
-                {
-                    soundID = std::stoi(number);
-                }
-                catch (std::exception &e)
-                {
-                    Fancy::fancy.logTime().message() << "Received invalid request" << req.path << std::endl;
-                    return;
-                }
+                uint32_t soundID = std::stoi(number);
                 auto pSound = Globals::gGui->playSound(soundID);
                 if (pSound)
                 {
