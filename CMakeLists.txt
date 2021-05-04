@@ -54,9 +54,10 @@ find_package(Threads REQUIRED)
 target_link_libraries(soundux PRIVATE Threads::Threads ${CMAKE_DL_LIBS})
 
 if (UNIX)
+    find_package(PulseAudio)
     find_package(X11 REQUIRED)
-    include_directories(${X11_INCLUDE_DIR})
-    
+    include_directories(${X11_INCLUDE_DIR} ${PULSEAUDIO_INCLUDE_DIR}) 
+
     find_package(PkgConfig REQUIRED)
 	pkg_check_modules(WNCK libwnck-3.0)
     target_link_libraries(soundux PRIVATE ${X11_LIBRARIES} ${X11_Xinput_LIB} ${X11_XTest_LIB})
