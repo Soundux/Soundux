@@ -1,52 +1,10 @@
 #include "../backend.hpp"
+#include "forward.hpp"
 #include <optional>
 #include <regex>
 
-#include <pulse/pulseaudio.h>
-
 namespace Soundux
 {
-    // TODO(curve): Move this to pulse_forwarding.hpp
-    //  namespace PulseAudioAPI
-    //  {
-    //      struct pa_context;
-    //      struct pa_mainloop;
-    //      struct pa_operation;
-    //      struct pa_mainloop_api;
-    //      struct pa_sink_input_info;
-    //      struct pa_source_output_info;
-
-    //     inline pa_mainloop *(*pa_mainloop_new)();
-    //     inline int (*pa_mainloop_iterate)(pa_mainloop *, int, int *);
-    //     inline pa_mainloop_api *(*pa_mainloop_get_api)(pa_mainloop *);
-    //     inline pa_context *(*pa_context_new)(pa_mainloop_api *, const char *);
-    //     inline int (*pa_context_connect)(pa_context *, const char *, unsigned int, const void *);
-
-    //     using context_notify_cb = void (*)(pa_context *, void *);
-    //     inline void (*pa_context_set_state_callback)(pa_context *, context_notify_cb, void *);
-
-    //     using index_cb = void (*)(pa_context *, std::uint32_t, void *);
-    //     inline pa_operation *(*pa_context_load_module)(pa_context *, const char *, const char *, index_cb, void *);
-
-    //     using output_info_cb = void (*)(pa_context *, const pa_source_output_info *, int, void *);
-    //     inline pa_operation *(*pa_context_get_source_output_info_list)(pa_context *, output_info_cb, void *);
-
-    //     using input_info_cb = void (*)(pa_context *, const pa_sink_input_info *, int, void *);
-    //     inline pa_operation *(*pa_context_get_sink_input_info_list)(pa_context *, input_info_cb, void *);
-
-    //     enum class pa_context_state : std::uint8_t
-    //     {
-    //         Unconnected,
-    //         Connecting,
-    //         Authorizing,
-    //         SettingName,
-    //         Ready,
-    //         Failed,
-    //         Terminated
-    //     };
-    //     inline pa_context_state (*pa_context_get_state)(const pa_context *);
-    // } // namespace PulseAudioAPI
-
     namespace Objects
     {
         struct PulsePlaybackApp : public PlaybackApp
