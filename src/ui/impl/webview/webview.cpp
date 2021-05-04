@@ -152,9 +152,15 @@ namespace Soundux::Objects
         webview->expose(
             Webview::Function("startPassthrough", [this](const std::string &app) { return startPassthrough(app); }));
         webview->expose(Webview::Function("stopPassthrough", [this]() { stopPassthrough(); }));
-        webview->expose(
-            Webview::Function("isSwitchOnConnectLoaded", []() { return Globals::gPulse.isSwitchOnConnectLoaded(); }));
-        webview->expose(Webview::Function("unloadSwitchOnConnect", []() { Globals::gPulse.unloadSwitchOnConnect(); }));
+        webview->expose(Webview::Function("isSwitchOnConnectLoaded", []() {
+            // TODO
+            // return Globals::gPulse.isSwitchOnConnectLoaded();
+            return false;
+        }));
+        webview->expose(Webview::Function("unloadSwitchOnConnect", []() {
+            // TODO
+            // Globals::gPulse.unloadSwitchOnConnect();
+        }));
 #endif
 
         webview->setCloseCallback([this]() {
@@ -250,7 +256,7 @@ namespace Soundux::Objects
         {
             tray->exit();
         }
-        Fancy::fancy.logTime() << "UI exited" << std::endl;
+        Fancy::fancy.logTime().message() << "UI exited" << std::endl;
     }
     void WebView::onHotKeyReceived(const std::vector<int> &keys)
     {

@@ -1,7 +1,7 @@
 #pragma once
 #include <helper/audio/audio.hpp>
 #if defined(__linux__)
-#include <helper/audio/linux/pulse.hpp>
+#include <helper/audio/linux/backend.hpp>
 #endif
 #include "objects.hpp"
 #include <core/config/config.hpp>
@@ -19,8 +19,8 @@ namespace Soundux
         inline Objects::Data gData;
         inline Objects::Audio gAudio;
 #if defined(__linux__)
-        inline Objects::Pulse gPulse;
         inline Objects::IconFetcher gIcons;
+        inline std::shared_ptr<Objects::AudioBackend> gAudioBackend;
 #endif
         inline Objects::Config gConfig;
         inline Objects::YoutubeDl gYtdl;

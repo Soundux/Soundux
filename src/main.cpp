@@ -4,6 +4,8 @@
 #include <InstanceGuard.hpp>
 #include <fancy.hpp>
 
+#include <helper/audio/linux/pulse/pulse.hpp>
+
 #if defined(_WIN32)
 #include "../assets/icon.h"
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
@@ -42,10 +44,16 @@ int main()
 #if defined(__linux__)
     Soundux::Globals::gIcons.setup();
 
-    if (!Soundux::Globals::gPulse.isSwitchOnConnectLoaded())
-    {
-        Soundux::Globals::gPulse.setup();
-    }
+    // TODO(pulse): Add switch on connect detection
+    //  if (!Soundux::Globals::gPulse.isSwitchOnConnectLoaded())
+    //  {
+    //      Soundux::Globals::gPulse.setup();
+    //  }
+
+    // TODO(curve): Check existence of pipewire/pulse with dlopen
+    Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PulseAudio>();
+    Soundux::Globals::gAudioBackend->setup();
+
     Soundux::Globals::gAudio.setup();
 #endif
     Soundux::Globals::gConfig.load();
@@ -53,7 +61,7 @@ int main()
 #if defined(__linux__)
     if (Soundux::Globals::gConfig.settings.useAsDefaultDevice)
     {
-        Soundux::Globals::gPulse.setDefaultSourceToSoundboardSink();
+        Soundux::Globals::gAudioBackend->useAsDefault();
     }
 #endif
     Soundux::Globals::gData.set(Soundux::Globals::gConfig.data);
@@ -70,7 +78,7 @@ int main()
 
     Soundux::Globals::gAudio.destroy();
 #if defined(__linux__)
-    Soundux::Globals::gPulse.destroy();
+    Soundux::Globals::gAudioBackend->destroy();
 #endif
     Soundux::Globals::gConfig.data.set(Soundux::Globals::gData);
     Soundux::Globals::gConfig.settings = Soundux::Globals::gSettings;

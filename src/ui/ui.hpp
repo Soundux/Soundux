@@ -2,7 +2,7 @@
 #include <core/global/objects.hpp>
 #include <helper/audio/audio.hpp>
 #if defined(__linux__)
-#include <helper/audio/linux/pulse.hpp>
+#include <helper/audio/linux/backend.hpp>
 #endif
 #include <atomic>
 #include <cstdint>
@@ -49,8 +49,8 @@ namespace Soundux
             virtual bool deleteSound(const std::uint32_t &);
 
 #if defined(__linux__)
-            virtual std::vector<PulseRecordingStream> getOutputs();
-            virtual std::vector<PulsePlaybackStream> getPlayback();
+            virtual std::vector<std::shared_ptr<RecordingApp>> getOutputs();
+            virtual std::vector<std::shared_ptr<PlaybackApp>> getPlayback();
 
             void stopPassthrough();
             virtual bool startPassthrough(const std::string &);
