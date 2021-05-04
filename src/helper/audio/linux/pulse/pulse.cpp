@@ -242,49 +242,78 @@ namespace Soundux::Objects
     }
     bool PulseAudio::useAsDefault()
     {
-        Fancy::fancy.logTime().warning() << "(FIXME) useAsDefault not yet implemented" << std::endl;
-        // if (!Helpers::run("pactl unload-module " + std::to_string(loopBack)))
-        // {
-        //     Fancy::fancy.logTime().failure() << "Failed to unload loopback" << std::endl;
-        //     return false;
-        // }
+        await(pa_context_unload_module(context, loopBack, nullptr, nullptr));
 
-        // loopBack =
-        //     getModuleId("pactl load-module module-loopback rate=44100 source=" + defaultSource + "
-        //     sink=soundux_sink");
+        await(pa_context_load_module(
+            context, "module-loopback", ("rate=44100 source=" + defaultSource + " sink=soundux_sink").c_str(),
+            []([[maybe_unused]] pa_context *m, std::uint32_t id, void *userData) {
+                if (static_cast<int>(id) < 0)
+                {
+                    Fancy::fancy.logTime().failure() << "Failed to load loopback" << std::endl;
+                    std::terminate();
+                }
+                else
+                {
+                    *reinterpret_cast<std::uint32_t *>(userData) = id;
+                }
+            },
+            &loopBack));
 
-        // if (!Helpers::run("pactl set-default-source soundux_sink.monitor"))
-        // {
-        //     Fancy::fancy.logTime().failure() << "Failed to set default source to soundux" << std::endl;
-        //     return false;
-        // }
+        bool success = false;
+        await(pa_context_set_default_source(
+            context, "soundux_sink.monitor",
+            []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
+                *reinterpret_cast<bool *>(userData) = success;
+            },
+            &success));
+
+        if (!success)
+        {
+            Fancy::fancy.logTime().failure() << "Failed to set default source to soundux" << std::endl;
+            return false;
+        }
 
         return true;
     }
     bool PulseAudio::revertDefault()
     {
-        Fancy::fancy.logTime().warning() << "(FIXME) revertDefault not yet implemented" << std::endl;
-        // if (!defaultSource.empty())
-        // {
-        //     if (!Helpers::run("pactl unload-module " + std::to_string(loopBack)))
-        //     {
-        //         Fancy::fancy.logTime().failure() << "Failed to unload loopback" << std::endl;
-        //         return false;
-        //     }
+        if (!defaultSource.empty())
+        {
+            await(pa_context_unload_module(context, loopBack, nullptr, nullptr));
 
-        //     loopBack = getModuleId("pactl load-module module-loopback rate=44100 source=" + defaultSource +
-        //                            " sink=soundux_sink sink_dont_move=true");
+            auto result = std::make_pair(&loopBack, false);
 
-        //     if (!Helpers::run("pactl set-default-source " + defaultSource))
-        //     {
-        //         Fancy::fancy.logTime().failure() << "Failed to revert to default source" << std::endl;
-        //         return false;
-        //     }
-        // }
-        // else
-        // {
-        //     Fancy::fancy.logTime().warning() << "Default source is not set" << std::endl;
-        // }
+            await(pa_context_load_module(
+                context, "module-loopback",
+                ("rate=44100 source=" + defaultSource + " sink=soundux_sink sink_dont_move=true source_dont_move=true")
+                    .c_str(),
+                []([[maybe_unused]] pa_context *m, std::uint32_t id, void *userData) {
+                    auto *pair = reinterpret_cast<decltype(result) *>(userData);
+                    *(pair->first) = id;
+                    pair->second = id > 0;
+                },
+                &result));
+
+            if (!result.second)
+            {
+                Fancy::fancy.logTime().failure() << "Failed to load loopback" << std::endl;
+                return false;
+            }
+
+            bool success = false;
+            await(pa_context_set_default_source(
+                context, defaultSource.c_str(),
+                []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
+                    *reinterpret_cast<bool *>(userData) = success;
+                },
+                &success));
+
+            if (!success)
+            {
+                Fancy::fancy.logTime().failure() << "Failed to reset default device" << std::endl;
+                return false;
+            }
+        }
 
         return true;
     }
