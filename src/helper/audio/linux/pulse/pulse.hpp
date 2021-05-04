@@ -89,6 +89,7 @@ namespace Soundux
 
             void unloadLeftOvers();
             void fetchDefaultSource();
+            void fetchLoopBackSinkId();
             void await(pa_operation *);
 
             void fixPlaybackApps(const std::vector<std::shared_ptr<PlaybackApp>> &);

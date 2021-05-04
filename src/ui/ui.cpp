@@ -146,8 +146,7 @@ namespace Soundux::Objects
             }
             if (Globals::gSettings.muteDuringPlayback)
             {
-                // TODO
-                //  Globals::gPulse.muteLoopback(true);
+                Globals::gAudioBackend->muteInput(true);
             }
             if (!Globals::gSettings.pushToTalkKeys.empty())
             {

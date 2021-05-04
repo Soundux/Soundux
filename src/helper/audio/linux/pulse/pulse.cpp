@@ -3,8 +3,6 @@
 #include <fancy.hpp>
 #include <helper/misc/misc.hpp>
 #include <memory>
-#include <pulse/introspect.h>
-#include <pulse/proplist.h>
 
 namespace Soundux::Objects
 {
@@ -124,6 +122,7 @@ namespace Soundux::Objects
             },
             &passthroughLoopBack));
 
+        fetchLoopBackSinkId();
         fixPlaybackApps(playbackApps);
         fixRecordingApps(recordingApps);
     }
@@ -156,6 +155,22 @@ namespace Soundux::Objects
                 }
             },
             this));
+    }
+    void PulseAudio::fetchLoopBackSinkId()
+    {
+        auto data = std::make_pair(&loopBackSink, loopBack);
+
+        await(pa_context_get_sink_input_info_list(
+            context,
+            []([[maybe_unused]] pa_context *ctx, const pa_sink_input_info *info, [[maybe_unused]] int eol,
+               void *userData) {
+                auto pair = *reinterpret_cast<decltype(data) *>(userData);
+                if (info && info->owner_module && info->owner_module == pair.second)
+                {
+                    *pair.first = info->index;
+                }
+            },
+            &data));
     }
     void PulseAudio::unloadLeftOvers()
     {
@@ -454,18 +469,69 @@ namespace Soundux::Objects
         return nullptr;
     }
 
-    void PulseAudio::fixPlaybackApps(const std::vector<std::shared_ptr<PlaybackApp>> & /**/)
+    void PulseAudio::fixPlaybackApps(const std::vector<std::shared_ptr<PlaybackApp>> &originalPlayback)
     {
-        Fancy::fancy.logTime().warning() << "(FIXME) fixRecordingApps not yet implemented" << std::endl;
+        for (const auto &playbackApp : getPlaybackApps())
+        {
+            auto pulsePlaybackApp = std::dynamic_pointer_cast<PulsePlaybackApp>(playbackApp);
+            auto originalPlaybackApp =
+                std::find_if(originalPlayback.begin(), originalPlayback.end(), [&pulsePlaybackApp](const auto &o) {
+                    return pulsePlaybackApp->id == std::dynamic_pointer_cast<PulsePlaybackApp>(o)->id;
+                });
+
+            if (originalPlaybackApp != originalPlayback.end())
+            {
+                auto *pulseOriginal = dynamic_cast<PulsePlaybackApp *>(originalPlaybackApp->get());
+                if (pulseOriginal->sink != pulsePlaybackApp->sink)
+                {
+                    await(pa_context_move_sink_input_by_index(context, pulsePlaybackApp->id, pulseOriginal->sink,
+                                                              nullptr, nullptr));
+                    Fancy::fancy.logTime().success()
+                        << "Recovered " << pulsePlaybackApp->id << " from soundux passthrough" << std::endl;
+                }
+            }
+        }
     }
-    void PulseAudio::fixRecordingApps(const std::vector<std::shared_ptr<RecordingApp>> & /**/)
+    void PulseAudio::fixRecordingApps(const std::vector<std::shared_ptr<RecordingApp>> &originalRecording)
     {
-        Fancy::fancy.logTime().warning() << "(FIXME) fixRecordingApps not yet implemented" << std::endl;
+        for (const auto &recordingApp : getRecordingApps())
+        {
+            auto pulseRecordingApp = std::dynamic_pointer_cast<PulseRecordingApp>(recordingApp);
+            auto originalRecordingApp =
+                std::find_if(originalRecording.begin(), originalRecording.end(), [&pulseRecordingApp](const auto &o) {
+                    return pulseRecordingApp->id == std::dynamic_pointer_cast<PulseRecordingApp>(o)->id;
+                });
+
+            if (originalRecordingApp != originalRecording.end())
+            {
+                auto *pulseOriginal = dynamic_cast<PulseRecordingApp *>(originalRecordingApp->get());
+                if (pulseOriginal->source != pulseRecordingApp->source)
+                {
+                    await(pa_context_move_source_output_by_index(context, pulseRecordingApp->id, pulseOriginal->source,
+                                                                 nullptr, nullptr));
+                    Fancy::fancy.logTime().success()
+                        << "Recovered " << pulseRecordingApp->id << " from soundux sink" << std::endl;
+                }
+            }
+        }
     }
-    bool PulseAudio::muteInput(bool /**/)
+    bool PulseAudio::muteInput(bool state)
     {
-        Fancy::fancy.logTime().warning() << "(FIXME) muteInput not yet implemented" << std::endl;
-        return false;
+        bool success = false;
+
+        await(pa_context_set_sink_input_mute(
+            context, loopBackSink, state,
+            []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
+                *reinterpret_cast<bool *>(userData) = success;
+            },
+            &success));
+
+        if (!success)
+        {
+            Fancy::fancy.logTime().failure() << "Failed to mute loopback sink" << std::endl;
+        }
+
+        return success;
     }
 
     bool PulseAudio::isCurrentlyPassingThrough()
