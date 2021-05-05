@@ -407,9 +407,6 @@ namespace Soundux::Objects
         }
         if (movedApplication && movedApplication->name == app->name)
         {
-            Fancy::fancy.logTime().message()
-                << "Ignoring sound throughput request because sound is already throughput to requested app"
-                << std::endl;
             return true;
         }
 
