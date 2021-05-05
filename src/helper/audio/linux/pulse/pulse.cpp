@@ -1,13 +1,15 @@
+#if defined(__linux__)
 #include "pulse.hpp"
+#include <cstring>
 #include <exception>
 #include <fancy.hpp>
-#include <helper/misc/misc.hpp>
-#include <memory>
+#include <helper/audio/linux/pulse/forward.hpp>
 
 namespace Soundux::Objects
 {
     void PulseAudio::setup()
     {
+        PulseApi::setup();
         mainloop = PulseApi::pa_mainloop_new();
         mainloopApi = PulseApi::pa_mainloop_get_api(mainloop);
         context = PulseApi::pa_context_new(mainloopApi, "soundux");
@@ -568,3 +570,4 @@ namespace Soundux::Objects
         return movedPassthroughApplication != nullptr;
     }
 } // namespace Soundux::Objects
+#endif

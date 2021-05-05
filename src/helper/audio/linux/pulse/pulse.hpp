@@ -1,7 +1,6 @@
+#if defined(__linux__)
 #include "../backend.hpp"
 #include "forward.hpp"
-#include <optional>
-#include <regex>
 
 namespace Soundux
 {
@@ -78,3 +77,4 @@ namespace Soundux
         };
     } // namespace Objects
 } // namespace Soundux
+#endif

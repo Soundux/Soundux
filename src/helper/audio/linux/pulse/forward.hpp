@@ -1,4 +1,5 @@
 #pragma once
+#if defined(__linux__)
 #include <cstdint>
 #include <pulse/pulseaudio.h>
 
@@ -6,7 +7,7 @@ namespace Soundux
 {
     namespace PulseApi
     {
-        // TODO(curve): Acquire functions with dlopen at runtime
+        void setup();
 
         inline pa_mainloop *(*pa_mainloop_new)();
         inline int (*pa_mainloop_iterate)(pa_mainloop *, int, int *);
@@ -41,3 +42,4 @@ namespace Soundux
         inline pa_operation_state (*pa_operation_get_state)(const pa_operation *);
     } // namespace PulseApi
 } // namespace Soundux
+#endif
