@@ -32,7 +32,7 @@ namespace Soundux::Objects
         }
         else
         {
-            Fancy::fancy.logTime() << "Using DISPLAY " << displayenv << std::endl;
+            Fancy::fancy.logTime().message() << "Using DISPLAY " << displayenv << std::endl;
         }
         display = x11Display;
 

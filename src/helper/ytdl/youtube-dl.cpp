@@ -6,8 +6,6 @@
 
 namespace Soundux::Objects
 {
-    using Helpers::exec;
-
     const std::regex YoutubeDl::urlRegex(
         R"(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*))");
 
@@ -36,8 +34,8 @@ namespace Soundux::Objects
             return std::nullopt;
         }
 
-        std::string result;
-        if (exec("youtube-dl -i -j \"" + url + "\"", result))
+        auto [result, success] = Helpers::getResultCompact("youtube-dl -i -j \"" + url + "\"");
+        if (success)
         {
             auto json = nlohmann::json::parse(result, nullptr, false);
             if (json.is_discarded())
