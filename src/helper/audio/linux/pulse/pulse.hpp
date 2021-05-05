@@ -56,6 +56,7 @@ namespace Soundux
             PulseAudio() = default;
 
             void setup() override;
+            void loadModules(); //! Is not ran by default to avoid problems with switch-on-connect
             void destroy() override;
 
             bool useAsDefault() override;
@@ -68,6 +69,9 @@ namespace Soundux
 
             bool stopSoundInput() override;
             bool inputSoundTo(std::shared_ptr<RecordingApp> app) override;
+
+            void unloadSwitchOnConnect();
+            bool switchOnConnectPresent();
 
             std::shared_ptr<PlaybackApp> getPlaybackApp(const std::string &name) override;
             std::shared_ptr<RecordingApp> getRecordingApp(const std::string &name) override;

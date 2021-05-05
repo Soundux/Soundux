@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <fancy.hpp>
 #include <filesystem>
+#include <helper/audio/linux/pulse/pulse.hpp>
 #include <helper/json/bindings.hpp>
 #include <helper/systeminfo/systeminfo.hpp>
 #include <helper/version/check.hpp>
@@ -153,13 +154,28 @@ namespace Soundux::Objects
             Webview::Function("startPassthrough", [this](const std::string &app) { return startPassthrough(app); }));
         webview->expose(Webview::Function("stopPassthrough", [this]() { stopPassthrough(); }));
         webview->expose(Webview::Function("isSwitchOnConnectLoaded", []() {
-            // TODO
-            // return Globals::gPulse.isSwitchOnConnectLoaded();
+            auto pulseBackend =
+                std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
+            if (pulseBackend)
+            {
+                return pulseBackend->switchOnConnectPresent();
+            }
             return false;
         }));
         webview->expose(Webview::Function("unloadSwitchOnConnect", []() {
-            // TODO
-            // Globals::gPulse.unloadSwitchOnConnect();
+            auto pulseBackend =
+                std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
+            if (pulseBackend)
+            {
+                pulseBackend->unloadSwitchOnConnect();
+                pulseBackend->loadModules();
+                Globals::gAudio.setup();
+            }
+            else
+            {
+                Fancy::fancy.logTime().failure()
+                    << "unloadSwitchOnConnect was called but no pulse backend was detected!" << std::endl;
+            }
         }));
 #endif
 

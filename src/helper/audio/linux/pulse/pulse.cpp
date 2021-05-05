@@ -40,7 +40,9 @@ namespace Soundux::Objects
 
         unloadLeftOvers();
         fetchDefaultSource();
-
+    }
+    void PulseAudio::loadModules()
+    {
         auto playbackApps = getPlaybackApps();
         auto recordingApps = getRecordingApps();
 
@@ -568,6 +570,44 @@ namespace Soundux::Objects
     bool PulseAudio::isCurrentlyPassingThrough()
     {
         return movedPassthroughApplication != nullptr;
+    }
+
+    bool PulseAudio::switchOnConnectPresent()
+    {
+        bool isPresent = false;
+        await(PulseApi::pa_context_get_module_info_list(
+            context,
+            []([[maybe_unused]] pa_context *ctx, const pa_module_info *info, [[maybe_unused]] int eol, void *userData) {
+                if (info && info->name)
+                {
+                    if (std::string(info->name).find("switch-on-connect") != std::string::npos)
+                    {
+                        *reinterpret_cast<bool *>(userData) = true;
+                        Fancy::fancy.logTime().warning() << "Switch on connect found: " << info->index << std::endl;
+                    }
+                }
+            },
+            &isPresent));
+
+        return isPresent;
+    }
+
+    void PulseAudio::unloadSwitchOnConnect()
+    {
+        await(PulseApi::pa_context_get_module_info_list(
+            context,
+            []([[maybe_unused]] pa_context *ctx, const pa_module_info *info, [[maybe_unused]] int eol,
+               [[maybe_unused]] void *userData) {
+                if (info && info->name)
+                {
+                    if (std::string(info->name).find("switch-on-connect") != std::string::npos)
+                    {
+                        Fancy::fancy.logTime().message() << "Unloading: " << info->index << std::endl;
+                        PulseApi::pa_context_unload_module(ctx, info->index, nullptr, nullptr);
+                    }
+                }
+            },
+            nullptr));
     }
 } // namespace Soundux::Objects
 #endif
