@@ -4,6 +4,11 @@
 #include <InstanceGuard.hpp>
 #include <fancy.hpp>
 
+#if defined(__linux__)
+#include <dlfcn.h>
+#include <helper/audio/linux/pulse/pulse.hpp>
+#endif
+
 #if defined(_WIN32)
 #include "../assets/icon.h"
 int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
@@ -42,10 +47,18 @@ int main()
 #if defined(__linux__)
     Soundux::Globals::gIcons.setup();
 
-    if (!Soundux::Globals::gPulse.isSwitchOnConnectLoaded())
+    if (dlopen("libpulse.so", RTLD_LAZY))
     {
-        Soundux::Globals::gPulse.setup();
+        Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PulseAudio>();
+        auto pulseBackend = std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
+        pulseBackend->setup();
+
+        if (!pulseBackend->switchOnConnectPresent())
+        {
+            pulseBackend->loadModules();
+        }
     }
+
     Soundux::Globals::gAudio.setup();
 #endif
     Soundux::Globals::gConfig.load();
@@ -53,7 +66,7 @@ int main()
 #if defined(__linux__)
     if (Soundux::Globals::gConfig.settings.useAsDefaultDevice)
     {
-        Soundux::Globals::gPulse.setDefaultSourceToSoundboardSink();
+        Soundux::Globals::gAudioBackend->useAsDefault();
     }
 #endif
     Soundux::Globals::gData.set(Soundux::Globals::gConfig.data);
@@ -70,7 +83,7 @@ int main()
 
     Soundux::Globals::gAudio.destroy();
 #if defined(__linux__)
-    Soundux::Globals::gPulse.destroy();
+    Soundux::Globals::gAudioBackend->destroy();
 #endif
     Soundux::Globals::gConfig.data.set(Soundux::Globals::gData);
     Soundux::Globals::gConfig.settings = Soundux::Globals::gSettings;

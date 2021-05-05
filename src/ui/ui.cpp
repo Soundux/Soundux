@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <fancy.hpp>
 #include <filesystem>
+#include <helper/audio/linux/backend.hpp>
+#include <helper/audio/linux/pulse/pulse.hpp>
 #include <helper/misc/misc.hpp>
 #include <nfd.hpp>
 #include <optional>
@@ -144,7 +146,7 @@ namespace Soundux::Objects
             }
             if (Globals::gSettings.muteDuringPlayback)
             {
-                Globals::gPulse.muteLoopback(true);
+                Globals::gAudioBackend->muteInput(true);
             }
             if (!Globals::gSettings.pushToTalkKeys.empty())
             {
@@ -156,7 +158,8 @@ namespace Soundux::Objects
                 return Globals::gAudio.play(*sound);
             }
             if (Globals::gSettings.useAsDefaultDevice ||
-                Globals::gPulse.moveApplicationsToSinkMonitor(Globals::gSettings.output))
+                Globals::gAudioBackend->inputSoundTo(
+                    Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output)))
             {
                 auto playingSound = Globals::gAudio.play(*sound);
                 auto remotePlayingSound = Globals::gAudio.play(*sound, Globals::gAudio.nullSink);
@@ -417,12 +420,12 @@ namespace Soundux::Objects
         onAllSoundsFinished();
 
 #if defined(__linux__)
-        if (!Globals::gPulse.moveBackCurrentApplications())
+        if (!Globals::gAudioBackend->stopSoundInput())
         {
             Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
             onError(ErrorCode::FailedToMoveBack);
         }
-        if (!Globals::gPulse.moveBackApplicationsFromPassthrough())
+        if (!Globals::gAudioBackend->stopPassthrough())
         {
             Fancy::fancy.logTime().failure() << "Failed to move back current passthrough application" << std::endl;
             onError(ErrorCode::FailedToMoveBackPassthrough);
@@ -434,7 +437,7 @@ namespace Soundux::Objects
 #if defined(__linux__)
         if (!settings.useAsDefaultDevice && Globals::gSettings.useAsDefaultDevice)
         {
-            if (!Globals::gPulse.revertDefaultSourceToOriginal())
+            if (!Globals::gAudioBackend->revertDefault())
             {
                 Fancy::fancy.logTime().failure() << "Failed to move back default source" << std::endl;
                 onError(ErrorCode::FailedToRevertDefaultSource);
@@ -443,26 +446,26 @@ namespace Soundux::Objects
         else if (settings.useAsDefaultDevice && !Globals::gSettings.useAsDefaultDevice)
         {
             Globals::gSettings.output = "";
-            if (!Globals::gPulse.moveBackCurrentApplications())
+            if (!Globals::gAudioBackend->stopSoundInput())
             {
                 Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
                 onError(ErrorCode::FailedToMoveBack);
             }
-            if (!Globals::gPulse.setDefaultSourceToSoundboardSink())
+            if (!Globals::gAudioBackend->useAsDefault())
             {
                 onError(ErrorCode::FailedToSetDefaultSource);
             }
         }
         if (settings.output != Globals::gSettings.output)
         {
-            if (!Globals::gPulse.moveBackCurrentApplications())
+            if (!Globals::gAudioBackend->stopSoundInput())
             {
                 Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
                 onError(ErrorCode::FailedToMoveBack);
             }
             if (!settings.output.empty() && !Globals::gAudio.getPlayingSounds().empty())
             {
-                Globals::gPulse.moveApplicationsToSinkMonitor(settings.output);
+                Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(settings.output));
             }
         }
 #endif
@@ -518,45 +521,56 @@ namespace Soundux::Objects
         return Globals::gData.getTabs();
     }
 #if defined(__linux__)
-    std::vector<PulseRecordingStream> Window::getOutputs()
+    std::vector<std::shared_ptr<RecordingApp>> Window::getOutputs()
     {
         //* The frontend only uses the stream name and should only show multiple streams that belong to one application
         //* once. The backend (gPulse.getRecordingStreams()) will work with multiple instances, so we need to filter out
         //* duplicates here.
-        auto streams = Globals::gPulse.getRecordingStreams();
-        std::vector<PulseRecordingStream> uniqueStreams;
+        auto streams = Globals::gAudioBackend->getRecordingApps();
+        std::vector<std::shared_ptr<RecordingApp>> uniqueStreams;
         for (auto &stream : streams)
         {
             auto item = std::find_if(std::begin(uniqueStreams), std::end(uniqueStreams),
-                                     [&](const auto &_stream) { return stream.name == _stream.name; });
-            if (item == std::end(uniqueStreams))
+                                     [&](const auto &_stream) { return stream->name == _stream->name; });
+            if (stream && item == std::end(uniqueStreams))
             {
-                auto icon = Soundux::Globals::gIcons.getIcon(stream.pid);
-                if (icon)
-                {
-                    stream.appIcon = *icon;
-                }
+                // if (auto pulseApp = std::dynamic_pointer_cast<PulseRecordingApp>(stream); pulseApp)
+                // {
+                //     auto icon = Soundux::Globals::gIcons.getIcon(pulseApp->pid);
+                //     if (icon)
+                //     {
+                //         pulseApp->appIcon = *icon;
+                //     }
+                // }
+
                 uniqueStreams.emplace_back(stream);
             }
         }
 
         return uniqueStreams;
     }
-    std::vector<PulsePlaybackStream> Window::getPlayback()
+    std::vector<std::shared_ptr<PlaybackApp>> Window::getPlayback()
     {
-        auto streams = Globals::gPulse.getPlaybackStreams();
-        std::vector<PulsePlaybackStream> uniqueStreams;
+        auto streams = Globals::gAudioBackend->getPlaybackApps();
+        std::vector<std::shared_ptr<PlaybackApp>> uniqueStreams;
+
         for (auto &stream : streams)
         {
             auto item = std::find_if(std::begin(uniqueStreams), std::end(uniqueStreams),
-                                     [&](const auto &_stream) { return stream.name == _stream.name; });
-            if (item == std::end(uniqueStreams))
+                                     [&](const auto &_stream) { return stream->name == _stream->name; });
+            if (stream && item == std::end(uniqueStreams))
             {
-                auto icon = Soundux::Globals::gIcons.getIcon(stream.pid);
-                if (icon)
-                {
-                    stream.appIcon = *icon;
-                }
+                // TODO(curve): create frontend specific Recording/Playback-App type and set icon there (because the
+                // audio backend should not be responsible for that)
+
+                //  if (auto pulseApp = std::dynamic_pointer_cast<PulsePlaybackApp>(stream); pulseApp)
+                //  {
+                //      auto icon = Soundux::Globals::gIcons.getIcon(pulseApp->pid);
+                //      if (icon)
+                //      {
+                //          pulseApp->appIcon = *icon;
+                //      }
+                //  }
                 uniqueStreams.emplace_back(stream);
             }
         }
@@ -566,9 +580,9 @@ namespace Soundux::Objects
     bool Window::startPassthrough(const std::string &name)
     {
         if (Globals::gSettings.output.empty() ||
-            Globals::gPulse.moveApplicationsToSinkMonitor(Globals::gSettings.output))
+            Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output)))
         {
-            if (!Globals::gPulse.moveApplicationsToApplicationPassthrough(name))
+            if (!Globals::gAudioBackend->passthroughFrom(Globals::gAudioBackend->getPlaybackApp(name)))
             {
                 Fancy::fancy.logTime().failure()
                     << "Failed to move application: " << name << " to passthrough" << std::endl;
@@ -586,13 +600,13 @@ namespace Soundux::Objects
     {
         if (Globals::gAudio.getPlayingSounds().empty())
         {
-            if (!Globals::gPulse.moveBackCurrentApplications())
+            if (!Globals::gAudioBackend->stopSoundInput())
             {
                 Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
                 onError(ErrorCode::FailedToMoveBack);
             }
         }
-        if (!Globals::gPulse.moveBackApplicationsFromPassthrough())
+        if (!Globals::gAudioBackend->stopPassthrough())
         {
             Fancy::fancy.logTime().failure() << "Failed to move back current passthrough application" << std::endl;
             onError(ErrorCode::FailedToMoveBackPassthrough);
@@ -637,11 +651,11 @@ namespace Soundux::Objects
 #if defined(__linux__)
         if (Globals::gSettings.muteDuringPlayback)
         {
-            Globals::gPulse.muteLoopback(false);
+            Globals::gAudioBackend->muteInput(false);
         }
-        if (!Globals::gPulse.currentlyPassingthrough())
+        if (!Globals::gAudioBackend->isCurrentlyPassingThrough())
         {
-            if (!Globals::gPulse.moveBackCurrentApplications())
+            if (!Globals::gAudioBackend->stopSoundInput())
             {
                 Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
                 onError(ErrorCode::FailedToMoveBack);

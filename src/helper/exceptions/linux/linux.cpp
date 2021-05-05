@@ -14,7 +14,7 @@ void CrashHandler::backtrace()
 
     for (int i = 0; size > i; i++)
     {
-        Fancy::fancy.logTime() << stack[i] << std::endl;
+        Fancy::fancy.logTime().message() << stack[i] << std::endl;
     }
 
     free(stack);

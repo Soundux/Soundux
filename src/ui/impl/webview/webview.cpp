@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <fancy.hpp>
 #include <filesystem>
+#include <helper/audio/linux/pulse/pulse.hpp>
 #include <helper/json/bindings.hpp>
 #include <helper/systeminfo/systeminfo.hpp>
 #include <helper/version/check.hpp>
@@ -152,9 +153,30 @@ namespace Soundux::Objects
         webview->expose(
             Webview::Function("startPassthrough", [this](const std::string &app) { return startPassthrough(app); }));
         webview->expose(Webview::Function("stopPassthrough", [this]() { stopPassthrough(); }));
-        webview->expose(
-            Webview::Function("isSwitchOnConnectLoaded", []() { return Globals::gPulse.isSwitchOnConnectLoaded(); }));
-        webview->expose(Webview::Function("unloadSwitchOnConnect", []() { Globals::gPulse.unloadSwitchOnConnect(); }));
+        webview->expose(Webview::Function("isSwitchOnConnectLoaded", []() {
+            auto pulseBackend =
+                std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
+            if (pulseBackend)
+            {
+                return pulseBackend->switchOnConnectPresent();
+            }
+            return false;
+        }));
+        webview->expose(Webview::Function("unloadSwitchOnConnect", []() {
+            auto pulseBackend =
+                std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
+            if (pulseBackend)
+            {
+                pulseBackend->unloadSwitchOnConnect();
+                pulseBackend->loadModules();
+                Globals::gAudio.setup();
+            }
+            else
+            {
+                Fancy::fancy.logTime().failure()
+                    << "unloadSwitchOnConnect was called but no pulse backend was detected!" << std::endl;
+            }
+        }));
 #endif
 
         webview->setCloseCallback([this]() {
@@ -250,7 +272,7 @@ namespace Soundux::Objects
         {
             tray->exit();
         }
-        Fancy::fancy.logTime() << "UI exited" << std::endl;
+        Fancy::fancy.logTime().message() << "UI exited" << std::endl;
     }
     void WebView::onHotKeyReceived(const std::vector<int> &keys)
     {
