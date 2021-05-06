@@ -206,9 +206,9 @@ namespace Soundux::Objects
 
                     app.id = info->index;
                     app.sink = info->sink;
-                    app.name = PulseApi::pa_proplist_gets(info->proplist, "application.name");
+                    app.application = PulseApi::pa_proplist_gets(info->proplist, "application.name");
+                    app.name = PulseApi::pa_proplist_gets(info->proplist, "application.process.binary");
                     app.pid = std::stoi(PulseApi::pa_proplist_gets(info->proplist, "application.process.id"));
-                    app.application = PulseApi::pa_proplist_gets(info->proplist, "application.process.binary");
                     reinterpret_cast<decltype(rtn) *>(userData)->emplace_back(std::make_shared<PulsePlaybackApp>(app));
                 }
             },
@@ -234,9 +234,9 @@ namespace Soundux::Objects
 
                     app.id = info->index;
                     app.source = info->source;
-                    app.name = PulseApi::pa_proplist_gets(info->proplist, "application.name");
+                    app.application = PulseApi::pa_proplist_gets(info->proplist, "application.name");
+                    app.name = PulseApi::pa_proplist_gets(info->proplist, "application.process.binary");
                     app.pid = std::stoi(PulseApi::pa_proplist_gets(info->proplist, "application.process.id"));
-                    app.application = PulseApi::pa_proplist_gets(info->proplist, "application.process.binary");
                     reinterpret_cast<decltype(rtn) *>(userData)->emplace_back(std::make_shared<PulseRecordingApp>(app));
                 }
             },
