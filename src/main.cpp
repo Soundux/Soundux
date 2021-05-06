@@ -11,7 +11,8 @@
 
 #if defined(_WIN32)
 #include "../assets/icon.h"
-int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+int __stdcall WinMain([[maybe_unused]] HINSTANCE hInstrance, [[maybe_unused]] HINSTANCE prevInstance,
+                      [[maybe_unused]] LPSTR args, [[maybe_unused]] int argc)
 #else
 int main()
 #endif
@@ -59,8 +60,8 @@ int main()
         }
     }
 
-    Soundux::Globals::gAudio.setup();
 #endif
+    Soundux::Globals::gAudio.setup();
     Soundux::Globals::gConfig.load();
     Soundux::Globals::gYtdl.setup();
 #if defined(__linux__)

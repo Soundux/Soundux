@@ -68,6 +68,10 @@ namespace Soundux
             std::vector<AudioDevice> getAudioDevices();
             std::vector<Objects::PlayingSound> getPlayingSounds();
 
+#if defined(_WIN32)
+            std::optional<AudioDevice> getAudioDevice(const std::string &);
+#endif
+
             void setup();
             void destroy();
 

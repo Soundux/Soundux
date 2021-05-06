@@ -22,10 +22,12 @@ namespace Soundux::Objects
             {
                 defaultPlayback = device;
             }
+#if defined(__linux__)
             if (device.name == "soundux_sink")
             {
                 nullSink = device;
             }
+#endif
         }
     }
     void Audio::destroy()
@@ -375,6 +377,17 @@ namespace Soundux::Objects
         ma_context_uninit(&context);
 
         return playBackDevices;
+    }
+    std::optional<AudioDevice> Audio::getAudioDevice(const std::string &name)
+    {
+        for (const auto &device : getAudioDevices())
+        {
+            if (device.name == name)
+            {
+                return device;
+            }
+        }
+        return std::nullopt;
     }
     std::vector<PlayingSound> Audio::getPlayingSounds()
     {

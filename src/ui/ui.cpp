@@ -200,48 +200,44 @@ namespace Soundux::Objects
     std::optional<PlayingSound> Window::playSound(const std::uint32_t &id)
     {
         auto sound = Globals::gData.getSound(id);
-        auto device = Globals::gAudio.getAudioDevice(Globals::gSettings.output);
-
-        if (!Globals::gSettings.pushToTalkKeys.empty())
-        {
-            Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
-        }
-
-        if (sound && (Globals::gSettings.output.empty() || (device && device->get().isDefault)))
+        if (sound)
         {
             if (!Globals::gSettings.allowOverlapping)
             {
                 Globals::gAudio.stopAll();
             }
-            return Globals::gAudio.play(*sound);
-        }
-        if (sound && device)
-        {
-            if (!Globals::gSettings.allowOverlapping)
+            if (!Globals::gSettings.pushToTalkKeys.empty())
             {
-                Globals::gAudio.stopAll();
+                Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
             }
+
+            if (Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
+            {
+                return Globals::gAudio.play(*sound);
+            }
+
             auto playingSound = Globals::gAudio.play(*sound);
-            auto remotePlayingSound = Globals::gAudio.play(*sound, *device, true);
+            auto playbackDevice = Globals::gAudio.getAudioDevice(Globals::gSettings.output);
 
-            if (playingSound && remotePlayingSound)
+            if (playbackDevice && !playbackDevice->isDefault)
             {
-                std::unique_lock lock(groupedSoundsMutex);
-                groupedSounds.insert({playingSound->id, remotePlayingSound->id});
-                return *playingSound;
-            }
+                auto remotePlayingSound = Globals::gAudio.play(*sound, playbackDevice);
+                if (playingSound && remotePlayingSound)
+                {
+                    std::unique_lock lock(groupedSoundsMutex);
+                    groupedSounds.insert({playingSound->id, remotePlayingSound->id});
 
-            if (playingSound)
-                stopSound(playingSound->id);
-            if (remotePlayingSound)
-                stopSound(remotePlayingSound->id);
+                    return *playingSound;
+                }
+            }
         }
-        else if (!sound)
+        else
         {
             Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
             onError(ErrorCode::SoundNotFound);
             return std::nullopt;
         }
+
         Fancy::fancy.logTime().failure() << "Failed to play sound " << id << std::endl;
         onError(ErrorCode::FailedToPlay);
         return std::nullopt;
@@ -614,7 +610,6 @@ namespace Soundux::Objects
 #else
     std::vector<AudioDevice> Window::getOutputs()
     {
-        Globals::gAudio.refreshAudioDevices();
         return Globals::gAudio.getAudioDevices();
     }
 #endif
@@ -695,6 +690,7 @@ namespace Soundux::Objects
         stopSounds();
     }
 
+#if defined(__linux__)
     IconRecordingApp::IconRecordingApp(const RecordingApp &base)
     {
         name = base.name;
@@ -705,4 +701,5 @@ namespace Soundux::Objects
         name = base.name;
         application = base.application;
     }
+#endif
 } // namespace Soundux::Objects

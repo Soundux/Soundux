@@ -13,6 +13,7 @@ namespace Soundux
 {
     namespace Objects
     {
+#if defined(__linux__)
         struct IconRecordingApp : public RecordingApp
         {
             std::string appIcon;
@@ -25,6 +26,7 @@ namespace Soundux
             IconPlaybackApp(const PlaybackApp &);
             ~IconPlaybackApp() override = default;
         };
+#endif
 
         class Window
         {
