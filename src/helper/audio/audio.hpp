@@ -52,7 +52,7 @@ namespace Soundux
             std::shared_mutex playingSoundsMutex;
             std::map<std::uint32_t, std::shared_ptr<PlayingSound>> playingSounds;
 
-            void onFinished(PlayingSound, bool);
+            void onFinished(PlayingSound);
             void onSoundSeeked(PlayingSound *, std::uint64_t);
             void onSoundProgressed(PlayingSound *, std::uint64_t);
 

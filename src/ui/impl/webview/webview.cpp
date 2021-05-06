@@ -94,7 +94,7 @@ namespace Soundux::Objects
             }));
         webview->expose(Webview::Function("repeatSound",
                                           [this](std::uint32_t id, bool repeat) { return repeatSound(id, repeat); }));
-        webview->expose(Webview::Function("stopSounds", [this]() { return stopSounds(); }));
+        webview->expose(Webview::Function("stopSounds", [this]() { stopSounds(); }));
         webview->expose(Webview::Function("changeSettings",
                                           [this](const Settings &newSettings) { return changeSettings(newSettings); }));
         webview->expose(Webview::Function("requestHotkey", [](bool state) { Globals::gHotKeys.shouldNotify(state); }));
@@ -284,12 +284,12 @@ namespace Soundux::Objects
         webview->callFunction<void>(Webview::JavaScriptFunction(
             "window.hotkeyReceived", hotkeySequence.substr(0, hotkeySequence.length() - 3), keys));
     }
-    void WebView::onSoundFinished(const PlayingSound &sound, bool forced)
+    void WebView::onSoundFinished(const PlayingSound &sound)
     {
-        Window::onSoundFinished(sound, forced);
+        Window::onSoundFinished(sound);
         if (sound.playbackDevice.isDefault)
         {
-            webview->callFunction<void>(Webview::JavaScriptFunction("window.finishSound", sound, forced));
+            webview->callFunction<void>(Webview::JavaScriptFunction("window.finishSound", sound));
         }
     }
     void WebView::onSoundPlayed(const PlayingSound &sound)
@@ -312,5 +312,10 @@ namespace Soundux::Objects
     {
         Window::changeSettings(newSettings);
         tray->update();
+    }
+    void WebView::onStopHotkey()
+    {
+        Window::onStopHotkey();
+        webview->callFunction<void>(Webview::JavaScriptFunction("window.onStopHotkey"));
     }
 } // namespace Soundux::Objects

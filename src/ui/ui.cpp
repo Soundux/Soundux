@@ -394,11 +394,10 @@ namespace Soundux::Objects
             if (groupedSounds.find(id) == groupedSounds.end())
             {
                 Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
+                return false;
             }
-            else
-            {
-                remoteSoundId = groupedSounds.at(id);
-            }
+
+            remoteSoundId = groupedSounds.at(id);
         }
 
         auto status = Globals::gAudio.stop(id);
@@ -619,7 +618,7 @@ namespace Soundux::Objects
         return Globals::gAudio.getAudioDevices();
     }
 #endif
-    void Window::onSoundFinished(const PlayingSound &sound, [[maybe_unused]] bool forced)
+    void Window::onSoundFinished(const PlayingSound &sound)
     {
         std::unique_lock lock(groupedSoundsMutex);
         if (groupedSounds.find(sound.id) != groupedSounds.end())
@@ -690,5 +689,9 @@ namespace Soundux::Objects
         Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
         onError(ErrorCode::SoundNotFound);
         return false;
+    }
+    void Window::onStopHotkey()
+    {
+        stopSounds();
     }
 } // namespace Soundux::Objects
