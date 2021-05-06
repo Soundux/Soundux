@@ -378,6 +378,7 @@ namespace Soundux::Objects
 
         return playBackDevices;
     }
+#if defined(_WIN32)
     std::optional<AudioDevice> Audio::getAudioDevice(const std::string &name)
     {
         for (const auto &device : getAudioDevices())
@@ -389,6 +390,7 @@ namespace Soundux::Objects
         }
         return std::nullopt;
     }
+#endif
     std::vector<PlayingSound> Audio::getPlayingSounds()
     {
         std::shared_lock lock(playingSoundsMutex);
