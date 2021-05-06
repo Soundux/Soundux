@@ -520,38 +520,39 @@ namespace Soundux::Objects
         return Globals::gData.getTabs();
     }
 #if defined(__linux__)
-    std::vector<std::shared_ptr<RecordingApp>> Window::getOutputs()
+    std::vector<std::shared_ptr<IconRecordingApp>> Window::getOutputs()
     {
         //* The frontend only uses the stream name and should only show multiple streams that belong to one application
         //* once. The backend (gPulse.getRecordingStreams()) will work with multiple instances, so we need to filter out
         //* duplicates here.
         auto streams = Globals::gAudioBackend->getRecordingApps();
-        std::vector<std::shared_ptr<RecordingApp>> uniqueStreams;
+        std::vector<std::shared_ptr<IconRecordingApp>> uniqueStreams;
         for (auto &stream : streams)
         {
             auto item = std::find_if(std::begin(uniqueStreams), std::end(uniqueStreams),
                                      [&](const auto &_stream) { return stream->name == _stream->name; });
             if (stream && item == std::end(uniqueStreams))
             {
-                // if (auto pulseApp = std::dynamic_pointer_cast<PulseRecordingApp>(stream); pulseApp)
-                // {
-                //     auto icon = Soundux::Globals::gIcons.getIcon(pulseApp->pid);
-                //     if (icon)
-                //     {
-                //         pulseApp->appIcon = *icon;
-                //     }
-                // }
+                auto iconStream = std::make_shared<IconRecordingApp>(*stream);
+                if (auto pulseApp = std::dynamic_pointer_cast<PulseRecordingApp>(stream); pulseApp)
+                {
+                    auto icon = Soundux::Globals::gIcons.getIcon(static_cast<int>(pulseApp->pid));
+                    if (icon)
+                    {
+                        iconStream->appIcon = *icon;
+                    }
+                }
 
-                uniqueStreams.emplace_back(stream);
+                uniqueStreams.emplace_back(iconStream);
             }
         }
 
         return uniqueStreams;
     }
-    std::vector<std::shared_ptr<PlaybackApp>> Window::getPlayback()
+    std::vector<std::shared_ptr<IconPlaybackApp>> Window::getPlayback()
     {
         auto streams = Globals::gAudioBackend->getPlaybackApps();
-        std::vector<std::shared_ptr<PlaybackApp>> uniqueStreams;
+        std::vector<std::shared_ptr<IconPlaybackApp>> uniqueStreams;
 
         for (auto &stream : streams)
         {
@@ -559,18 +560,17 @@ namespace Soundux::Objects
                                      [&](const auto &_stream) { return stream->name == _stream->name; });
             if (stream && item == std::end(uniqueStreams))
             {
-                // TODO(curve): create frontend specific Recording/Playback-App type and set icon there (because the
-                // audio backend should not be responsible for that)
+                auto iconStream = std::make_shared<IconPlaybackApp>(*stream);
+                if (auto pulseApp = std::dynamic_pointer_cast<PulsePlaybackApp>(stream); pulseApp)
+                {
+                    auto icon = Soundux::Globals::gIcons.getIcon(static_cast<int>(pulseApp->pid));
+                    if (icon)
+                    {
+                        iconStream->appIcon = *icon;
+                    }
+                }
 
-                //  if (auto pulseApp = std::dynamic_pointer_cast<PulsePlaybackApp>(stream); pulseApp)
-                //  {
-                //      auto icon = Soundux::Globals::gIcons.getIcon(pulseApp->pid);
-                //      if (icon)
-                //      {
-                //          pulseApp->appIcon = *icon;
-                //      }
-                //  }
-                uniqueStreams.emplace_back(stream);
+                uniqueStreams.emplace_back(iconStream);
             }
         }
 
@@ -693,5 +693,16 @@ namespace Soundux::Objects
     void Window::onStopHotkey()
     {
         stopSounds();
+    }
+
+    IconRecordingApp::IconRecordingApp(const RecordingApp &base)
+    {
+        name = base.name;
+        application = base.application;
+    }
+    IconPlaybackApp::IconPlaybackApp(const PlaybackApp &base)
+    {
+        name = base.name;
+        application = base.application;
     }
 } // namespace Soundux::Objects

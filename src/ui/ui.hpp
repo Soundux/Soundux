@@ -13,6 +13,19 @@ namespace Soundux
 {
     namespace Objects
     {
+        struct IconRecordingApp : public RecordingApp
+        {
+            std::string appIcon;
+            IconRecordingApp(const RecordingApp &);
+            ~IconRecordingApp() override = default;
+        };
+        struct IconPlaybackApp : public PlaybackApp
+        {
+            std::string appIcon;
+            IconPlaybackApp(const PlaybackApp &);
+            ~IconPlaybackApp() override = default;
+        };
+
         class Window
         {
             friend class Hotkeys;
@@ -49,8 +62,8 @@ namespace Soundux
             virtual bool deleteSound(const std::uint32_t &);
 
 #if defined(__linux__)
-            virtual std::vector<std::shared_ptr<RecordingApp>> getOutputs();
-            virtual std::vector<std::shared_ptr<PlaybackApp>> getPlayback();
+            virtual std::vector<std::shared_ptr<IconRecordingApp>> getOutputs();
+            virtual std::vector<std::shared_ptr<IconPlaybackApp>> getPlayback();
 
             void stopPassthrough();
             virtual bool startPassthrough(const std::string &);

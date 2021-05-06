@@ -205,64 +205,71 @@ namespace Soundux::Objects
 #endif
 
         webview->setNavigateCallback([this]([[maybe_unused]] const std::string &url) {
-            auto future = std::make_shared<std::future<void>>();
-            *future = std::async(std::launch::async, [future, this] {
-                translations.settings = webview
+            static bool once = false;
+            if (!once)
+            {
+                auto future = std::make_shared<std::future<void>>();
+                *future = std::async(std::launch::async, [future, this] {
+                    translations.settings = webview
+                                                ->callFunction<std::string>(Webview::JavaScriptFunction(
+                                                    "window.getTranslation", "settings.title"))
+                                                .get();
+                    translations.tabHotkeys = webview
+                                                  ->callFunction<std::string>(Webview::JavaScriptFunction(
+                                                      "window.getTranslation", "settings.tabHotkeysOnly"))
+                                                  .get();
+                    translations.muteDuringPlayback = webview
+                                                          ->callFunction<std::string>(Webview::JavaScriptFunction(
+                                                              "window.getTranslation", "settings.muteDuringPlayback"))
+                                                          .get();
+                    translations.show = webview
                                             ->callFunction<std::string>(
-                                                Webview::JavaScriptFunction("window.getTranslation", "settings.title"))
+                                                Webview::JavaScriptFunction("window.getTranslation", "tray.show"))
                                             .get();
-                translations.tabHotkeys = webview
-                                              ->callFunction<std::string>(Webview::JavaScriptFunction(
-                                                  "window.getTranslation", "settings.tabHotkeysOnly"))
-                                              .get();
-                translations.muteDuringPlayback = webview
-                                                      ->callFunction<std::string>(Webview::JavaScriptFunction(
-                                                          "window.getTranslation", "settings.muteDuringPlayback"))
-                                                      .get();
-                translations.show =
-                    webview
-                        ->callFunction<std::string>(Webview::JavaScriptFunction("window.getTranslation", "tray.show"))
-                        .get();
-                translations.hide =
-                    webview
-                        ->callFunction<std::string>(Webview::JavaScriptFunction("window.getTranslation", "tray.hide"))
-                        .get();
-                translations.exit =
-                    webview
-                        ->callFunction<std::string>(Webview::JavaScriptFunction("window.getTranslation", "tray.exit"))
-                        .get();
+                    translations.hide = webview
+                                            ->callFunction<std::string>(
+                                                Webview::JavaScriptFunction("window.getTranslation", "tray.hide"))
+                                            .get();
+                    translations.exit = webview
+                                            ->callFunction<std::string>(
+                                                Webview::JavaScriptFunction("window.getTranslation", "tray.exit"))
+                                            .get();
 
-                tray->addEntry(Tray::Button(translations.exit, [this]() {
-                    tray->exit();
-                    webview->exit();
-                }));
-                tray->addEntry(Tray::Button(translations.hide, [this]() {
-                    if (!webview->isHidden())
-                    {
-                        webview->hide();
-                        tray->getEntries().at(1)->setText(translations.show);
-                    }
-                    else
-                    {
-                        webview->show();
-                        tray->getEntries().at(1)->setText(translations.hide);
-                    }
-                }));
-
-                auto settings = tray->addEntry(Tray::Submenu(translations.settings));
-                settings->addEntries(
-                    Tray::SyncedToggle(translations.muteDuringPlayback, Globals::gSettings.muteDuringPlayback,
-                                       [this](bool state) {
-                                           auto settings = Globals::gSettings;
-                                           settings.muteDuringPlayback = state;
-                                           changeSettings(settings);
-                                       }),
-                    Tray::SyncedToggle(translations.tabHotkeys, Globals::gSettings.tabHotkeysOnly, [this](bool state) {
-                        auto settings = Globals::gSettings;
-                        settings.tabHotkeysOnly = state;
-                        changeSettings(settings);
+                    tray->addEntry(Tray::Button(translations.exit, [this]() {
+                        tray->exit();
+                        webview->exit();
                     }));
-            });
+                    tray->addEntry(Tray::Button(translations.hide, [this]() {
+                        if (!webview->isHidden())
+                        {
+                            webview->hide();
+                            tray->getEntries().at(1)->setText(translations.show);
+                        }
+                        else
+                        {
+                            webview->show();
+                            tray->getEntries().at(1)->setText(translations.hide);
+                        }
+                    }));
+
+                    auto settings = tray->addEntry(Tray::Submenu(translations.settings));
+                    settings->addEntries(Tray::SyncedToggle(translations.muteDuringPlayback,
+                                                            Globals::gSettings.muteDuringPlayback,
+                                                            [this](bool state) {
+                                                                auto settings = Globals::gSettings;
+                                                                settings.muteDuringPlayback = state;
+                                                                changeSettings(settings);
+                                                            }),
+                                         Tray::SyncedToggle(translations.tabHotkeys, Globals::gSettings.tabHotkeysOnly,
+                                                            [this](bool state) {
+                                                                auto settings = Globals::gSettings;
+                                                                settings.tabHotkeysOnly = state;
+                                                                changeSettings(settings);
+                                                            }));
+                });
+
+                once = true;
+            }
         });
     }
     void WebView::mainLoop()

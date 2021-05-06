@@ -174,42 +174,42 @@ namespace nlohmann
         }
     };
 #if defined(__linux__)
-    template <> struct adl_serializer<std::shared_ptr<Soundux::Objects::RecordingApp>>
+    template <> struct adl_serializer<std::shared_ptr<Soundux::Objects::IconRecordingApp>>
     {
-        static void to_json(json &j, const std::shared_ptr<Soundux::Objects::RecordingApp> &obj)
+        static void to_json(json &j, const std::shared_ptr<Soundux::Objects::IconRecordingApp> &obj)
         {
             j = {
                 {"name", obj->name},
-                // {"appIcon", obj->appIcon},
+                {"appIcon", obj->appIcon},
                 {"application", obj->application},
             };
         }
-        static void from_json(const json &j, std::shared_ptr<Soundux::Objects::RecordingApp> &obj)
+        static void from_json(const json &j, std::shared_ptr<Soundux::Objects::IconRecordingApp> &obj)
         {
             if (obj)
             {
                 j.at("name").get_to(obj->name);
-                // j.at("appIcon").get_to(obj->appIcon);
+                j.at("appIcon").get_to(obj->appIcon);
                 j.at("application").get_to(obj->application);
             }
         }
     };
-    template <> struct adl_serializer<std::shared_ptr<Soundux::Objects::PlaybackApp>>
+    template <> struct adl_serializer<std::shared_ptr<Soundux::Objects::IconPlaybackApp>>
     {
-        static void to_json(json &j, const std::shared_ptr<Soundux::Objects::PlaybackApp> &obj)
+        static void to_json(json &j, const std::shared_ptr<Soundux::Objects::IconPlaybackApp> &obj)
         {
             j = {
                 {"name", obj->name},
-                // {"appIcon", obj->appIcon},
+                {"appIcon", obj->appIcon},
                 {"application", obj->application},
             };
         }
-        static void from_json(const json &j, std::shared_ptr<Soundux::Objects::PlaybackApp> &obj)
+        static void from_json(const json &j, std::shared_ptr<Soundux::Objects::IconPlaybackApp> &obj)
         {
             if (obj)
             {
                 j.at("name").get_to(obj->name);
-                // j.at("appIcon").get_to(obj->appIcon);
+                j.at("appIcon").get_to(obj->appIcon);
                 j.at("application").get_to(obj->application);
             }
         }
