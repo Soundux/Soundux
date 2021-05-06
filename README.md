@@ -108,7 +108,7 @@ sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.
 ```
 #### 📜 Fedora and derivatives
 ```sh
-sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel libappindicator-gtk3-devel libpulse-devel
+sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel libappindicator-gtk3-devel pulseaudio-libs-devel
 ```
 
 ### 🪟 Windows
