@@ -46,20 +46,20 @@ namespace Soundux::Objects
             }
 
             nlohmann::json j;
-            if (json.find("thumbnails") != json.end() && json.find("title") != json.end() &&
-                json.find("uploader") != json.end())
+            if (json.find("thumbnails") != json.end())
+            {
+                j["thumbnails"] = json.at("thumbnails");
+            }
+            if (json.find("title") != json.end())
             {
                 j["title"] = json.at("title");
+            }
+            if (json.find("uploader") != json.end())
+            {
                 j["uploader"] = json.at("uploader");
-                j["thumbnails"] = json.at("thumbnails");
-
-                return j;
             }
 
-            Fancy::fancy.logTime().warning()
-                << "Failed to get required information from youtube-dl output" << std::endl;
-            Globals::gGui->onError(ErrorCode::YtdlBadInformation);
-            return std::nullopt;
+            return j;
         }
 
         Fancy::fancy.logTime().warning() << "Failed to get info from youtube-dl" << std::endl;

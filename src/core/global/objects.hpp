@@ -36,7 +36,6 @@ namespace Soundux
             YtdlNotFound,
             YtdlInvalidUrl,
             YtdlInvalidJson,
-            YtdlBadInformation,
             YtdlInformationUnknown,
             FailedToDelete
         };
