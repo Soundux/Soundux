@@ -22,10 +22,12 @@ namespace Soundux::Objects
             {
                 defaultPlayback = device;
             }
+#if defined(__linux__)
             if (device.name == "soundux_sink")
             {
                 nullSink = device;
             }
+#endif
         }
     }
     void Audio::destroy()
@@ -376,6 +378,19 @@ namespace Soundux::Objects
 
         return playBackDevices;
     }
+#if defined(_WIN32)
+    std::optional<AudioDevice> Audio::getAudioDevice(const std::string &name)
+    {
+        for (const auto &device : getAudioDevices())
+        {
+            if (device.name == name)
+            {
+                return device;
+            }
+        }
+        return std::nullopt;
+    }
+#endif
     std::vector<PlayingSound> Audio::getPlayingSounds()
     {
         std::shared_lock lock(playingSoundsMutex);

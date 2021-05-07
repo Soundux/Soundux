@@ -5,7 +5,7 @@
 
 std::string SystemInfo::getSystemInfo()
 {
-    auto [result, success] = Soundux::Helpers::getResultCompact("lsb_release - a");
+    auto [result, success] = Soundux::Helpers::getResultCompact("lsb_release -a");
 
     if (success)
     {
