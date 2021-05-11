@@ -164,6 +164,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "serkan-maker",
+      "name": "Serkan ÖNDER",
+      "avatar_url": "https://avatars.githubusercontent.com/u/63740626?v=4",
+      "profile": "https://github.com/serkan-maker",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 2,
