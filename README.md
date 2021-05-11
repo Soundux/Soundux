@@ -76,7 +76,13 @@ yay -S soundux
 ```
 We also provide a `soundux-git` package which compiles from the master branch
 
-### 📜 Other distros
+### 🗃️ Ubuntu and derivatives
+You can install Soundux via [pacstall](https://github.com/Henryws/pacstall)
+```sh
+sudo pacstall -I soundux
+```
+
+### 📜 Distro-agnostic packages
 You can grab the latest release from the Snap Store or Flathub
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/soundux)
