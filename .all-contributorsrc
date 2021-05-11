@@ -10,7 +10,7 @@
   "commit": true,
   "commitConvention": "none",
   "contributors": [
-      {
+    {
       "login": "Curve",
       "name": "Noah",
       "avatar_url": "https://avatars.githubusercontent.com/u/37805707?v=4",
@@ -146,7 +146,17 @@
       "contributions": [
         "platform"
       ]
+    },
+    {
+      "login": "thomasfinstad",
+      "name": "Thomas Finstad Larsen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5358752?v=4",
+      "profile": "https://github.com/thomasfinstad",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
-  "contributorsPerLine": 2
+  "contributorsPerLine": 2,
+  "skipCi": true
 }
