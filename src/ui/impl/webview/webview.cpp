@@ -320,9 +320,9 @@ namespace Soundux::Objects
         Window::changeSettings(newSettings);
         tray->update();
     }
-    void WebView::onStopHotkey()
+    void WebView::onAllSoundsFinished()
     {
-        Window::onStopHotkey();
-        webview->callFunction<void>(Webview::JavaScriptFunction("window.onStopHotkey"));
+        Window::onAllSoundsFinished();
+        webview->callFunction<void>(Webview::JavaScriptFunction("window.onAllStopped"));
     }
 } // namespace Soundux::Objects

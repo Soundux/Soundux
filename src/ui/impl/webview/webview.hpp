@@ -12,6 +12,8 @@ namespace Soundux
           private:
             std::shared_ptr<Tray::Tray> tray;
             std::shared_ptr<Webview::Window> webview;
+
+            void onAllSoundsFinished() override;
             void changeSettings(const Settings &newSettings) override;
 
             struct
@@ -27,7 +29,6 @@ namespace Soundux
           public:
             void setup() override;
             void mainLoop() override;
-            void onStopHotkey() override;
             void onSoundFinished(const PlayingSound &sound) override;
             void onHotKeyReceived(const std::vector<int> &keys) override;
 

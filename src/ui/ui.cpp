@@ -142,7 +142,7 @@ namespace Soundux::Objects
         {
             if (!Globals::gSettings.allowOverlapping)
             {
-                Globals::gAudio.stopAll();
+                stopSounds();
             }
             if (Globals::gSettings.muteDuringPlayback)
             {
@@ -205,7 +205,7 @@ namespace Soundux::Objects
         {
             if (!Globals::gSettings.allowOverlapping)
             {
-                Globals::gAudio.stopAll();
+                stopSounds();
             }
             if (!Globals::gSettings.pushToTalkKeys.empty())
             {
@@ -685,10 +685,6 @@ namespace Soundux::Objects
         Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
         onError(ErrorCode::SoundNotFound);
         return false;
-    }
-    void Window::onStopHotkey()
-    {
-        stopSounds();
     }
 
 #if defined(__linux__)

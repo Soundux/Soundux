@@ -120,7 +120,7 @@ namespace Soundux
             if (!Globals::gSettings.stopHotkey.empty() && (pressedKeys == Globals::gSettings.stopHotkey ||
                                                            isCloseMatch(pressedKeys, Globals::gSettings.stopHotkey)))
             {
-                Globals::gGui->onStopHotkey();
+                Globals::gGui->stopSounds();
                 return;
             }
 

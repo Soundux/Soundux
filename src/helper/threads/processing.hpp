@@ -60,13 +60,6 @@ namespace Soundux
             }
 
           public:
-            void push(const std::function<void()> &item)
-            {
-                std::unique_lock lock(queueMutex);
-                queue.emplace({nullptr, item});
-                lock.unlock();
-                cv.notify_one();
-            }
             void push_unique(const UID &identifier, const std::function<void()> &item)
             {
                 {
@@ -82,7 +75,7 @@ namespace Soundux
 
                 unhandled.emplace_back(identifier);
 
-                queue.push({nullptr, item, identifier});
+                queue.emplace(Item{nullptr, item, identifier});
                 lock.unlock();
                 cv.notify_one();
             }
