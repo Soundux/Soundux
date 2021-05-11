@@ -152,19 +152,20 @@ namespace Soundux::Objects
             {
                 Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
             }
-
             if (Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
             {
                 return Globals::gAudio.play(*sound);
             }
-            if (Globals::gSettings.useAsDefaultDevice ||
-                Globals::gAudioBackend->inputSoundTo(
-                    Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output)))
+
+            if (Globals::gSettings.useAsDefaultDevice)
             {
+                auto moveSuccess = Globals::gAudioBackend->inputSoundTo(
+                    Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output));
+
                 auto playingSound = Globals::gAudio.play(*sound);
                 auto remotePlayingSound = Globals::gAudio.play(*sound, Globals::gAudio.nullSink);
 
-                if (playingSound && remotePlayingSound)
+                if (moveSuccess && playingSound && remotePlayingSound)
                 {
                     std::unique_lock lock(groupedSoundsMutex);
                     groupedSounds.insert({playingSound->id, remotePlayingSound->id});
@@ -179,8 +180,8 @@ namespace Soundux::Objects
             }
             else
             {
-                Fancy::fancy.logTime().failure() << "Failed to move Application '" << Globals::gSettings.output
-                                                 << "' to soundux sink for sound " << id << std::endl;
+                Fancy::fancy.logTime().failure() << "Failed to move Application " << Globals::gSettings.output
+                                                 << " to soundux sink for sound " << id << std::endl;
                 onError(ErrorCode::FailedToMoveToSink);
                 return std::nullopt;
             }
