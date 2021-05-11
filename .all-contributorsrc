@@ -155,6 +155,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "AMTitan",
+      "name": "Arthur Melton",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29708070?v=4",
+      "profile": "http://arthurmelton.me",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 2,
