@@ -1,3 +1,4 @@
+#if defined(__linux__)
 #include "../backend.hpp"
 #include <mutex>
 #include <optional>
@@ -86,3 +87,4 @@ namespace Soundux
         };
     } // namespace Objects
 } // namespace Soundux
+#endif

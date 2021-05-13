@@ -1,75 +1,74 @@
 on:
-    push:
-        branches: [master]
-        paths-ignore:
-            - "**/README.md"
-            - "**/compile_linux.yml"
-            - "**/build_flatpak.yml"
-            - "**/.all-contributorsrc"
-            - "**/upload_full_src.yml"
-            - "**/windows_debug.yml"
-    pull_request:
-        branches: [master]
+  push:
+    paths-ignore:
+      - "**/README.md"
+      - "**/compile_linux.yml"
+      - "**/build_flatpak.yml"
+      - "**/.all-contributorsrc"
+      - "**/upload_full_src.yml"
+      - "**/windows_debug.yml"
+  pull_request:
+    branches: [master]
 
 name: Build on Windows
 jobs:
-    build-windows:
-        runs-on: windows-latest
-        strategy:
-            fail-fast: false
-            matrix:
-                language: ["cpp"]
+  build-windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["cpp"]
 
-        steps:
-            - name: Setup Node.js environment
-              uses: actions/setup-node@v2.1.5
+    steps:
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.1.5
 
-            - name: Setup NuGet.exe for use with actions
-              uses: NuGet/setup-nuget@v1.0.5
+      - name: Setup NuGet.exe for use with actions
+        uses: NuGet/setup-nuget@v1.0.5
 
-            - name: Checkout
-              uses: actions/checkout@v2.3.4
-              with:
-                  submodules: recursive
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+        with:
+          submodules: recursive
 
-            - name: Install OpenSSL
-              uses: crazy-max/ghaction-chocolatey@v1.4.2
-              with:
-                  args: install openssl -y
+      - name: Install OpenSSL
+        uses: crazy-max/ghaction-chocolatey@v1.4.2
+        with:
+          args: install openssl -y
 
-            - name: Add NuGet Remote
-              run: "nuget.exe sources Add -Name NuGetRemote -Source https://api.nuget.org/v3/index.json"
+      - name: Add NuGet Remote
+        run: "nuget.exe sources Add -Name NuGetRemote -Source https://api.nuget.org/v3/index.json"
 
-            - name: Compile Embed-Helper
-              run: "cd src/ui/impl/webview/lib/webviewpp/embed-helper && mkdir build && cd build && cmake .. && cmake --build . --config Release && cd Release && ./embed_helper ../../../../soundux-ui"
+      - name: Compile Embed-Helper
+        run: "cd src/ui/impl/webview/lib/webviewpp/embed-helper && mkdir build && cd build && cmake .. && cmake --build . --config Release && cd Release && ./embed_helper ../../../../soundux-ui"
 
-            - name: Compile
-              run: "mkdir build && cd build && cmake .. -DEMBED_PATH=src/ui/impl/webview/lib/webviewpp/embed-helper/build/Release && cmake --build . --config Release"
+      - name: Compile
+        run: "mkdir build && cd build && cmake .. -DEMBED_PATH=src/ui/impl/webview/lib/webviewpp/embed-helper/build/Release && cmake --build . --config Release"
 
-            - name: Upload Build Artifact
-              uses: actions/upload-artifact@v2.2.3
-              with:
-                  name: Release
-                  path: build/Release
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v2.2.3
+        with:
+          name: Release
+          path: build/Release
 
-            - name: Install InnoSetup
-              uses: crazy-max/ghaction-chocolatey@v1.4.2
-              with:
-                  args: install innosetup -y
+      - name: Install InnoSetup
+        uses: crazy-max/ghaction-chocolatey@v1.4.2
+        with:
+          args: install innosetup -y
 
-            - name: Install Sed
-              uses: crazy-max/ghaction-chocolatey@v1.4.2
-              with:
-                  args: install sed -y
+      - name: Install Sed
+        uses: crazy-max/ghaction-chocolatey@v1.4.2
+        with:
+          args: install sed -y
 
-            - name: Run Sed
-              run: '&"${Env:ProgramData}\chocolatey\bin\sed.exe" -i ''s%\$PATH%D:\\a\\Soundux\\Soundux%'' deployment/innosetup/Soundux.iss'
+      - name: Run Sed
+        run: '&"${Env:ProgramData}\chocolatey\bin\sed.exe" -i ''s%\$PATH%D:\\a\\Soundux\\Soundux%'' deployment/innosetup/Soundux.iss'
 
-            - name: Run InnoSetup
-              run: '&"${Env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" deployment/innosetup/Soundux.iss'
+      - name: Run InnoSetup
+        run: '&"${Env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" deployment/innosetup/Soundux.iss'
 
-            - name: Upload Installer Artifact
-              uses: actions/upload-artifact@v2.2.3
-              with:
-                  name: Installer
-                  path: deployment/innosetup/Output/setup.exe
+      - name: Upload Installer Artifact
+        uses: actions/upload-artifact@v2.2.3
+        with:
+          name: Installer
+          path: deployment/innosetup/Output/setup.exe

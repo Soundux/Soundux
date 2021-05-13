@@ -1,45 +1,44 @@
 on:
-    push:
-        branches: [master]
-        paths-ignore:
-            - "**/README.md"
-            - "**/compile_windows.yml"
-            - "**/build_flatpak.yml"
-            - "**/.all-contributorsrc"
-            - "**/upload_full_src.yml"
-            - "**/windows_debug.yml"
-    pull_request:
-        branches: [master]
+  push:
+    paths-ignore:
+      - "**/README.md"
+      - "**/compile_windows.yml"
+      - "**/build_flatpak.yml"
+      - "**/.all-contributorsrc"
+      - "**/upload_full_src.yml"
+      - "**/windows_debug.yml"
+  pull_request:
+    branches: [master]
 
 name: Build on Linux
 jobs:
-    build-linux:
-        runs-on: ubuntu-20.04
-        strategy:
-            fail-fast: false
-            matrix:
-                language: ["cpp"]
+  build-linux:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["cpp"]
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2.3.4
-              with:
-                  submodules: recursive
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+        with:
+          submodules: recursive
 
-            - name: Install build dependencies
-              run: "sudo apt-get update && sudo apt-get install git build-essential cmake libx11-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev libpulse-dev"
+      - name: Install build dependencies
+        run: "sudo apt-get update && sudo apt-get install git build-essential cmake libx11-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev libpulse-dev"
 
-            - name: Compile Embed-Helper
-              run: "cd src/ui/impl/webview/lib/webviewpp/embed-helper && mkdir build && cd build && cmake .. && cmake --build . --config Release && ./embed_helper ../../../soundux-ui"
+      - name: Compile Embed-Helper
+        run: "cd src/ui/impl/webview/lib/webviewpp/embed-helper && mkdir build && cd build && cmake .. && cmake --build . --config Release && ./embed_helper ../../../soundux-ui"
 
-            - name: Compile
-              run: "mkdir build && cd build && cmake .. -DEMBED_PATH=src/ui/impl/webview/lib/webviewpp/embed-helper/build && cmake --build . --config Release"
+      - name: Compile
+        run: "mkdir build && cd build && cmake .. -DEMBED_PATH=src/ui/impl/webview/lib/webviewpp/embed-helper/build && cmake --build . --config Release"
 
-            - name: Build debian package
-              run: "cd build && make install DESTDIR=../deployment/debian/soundux && cd ../deployment/debian && dpkg-deb --build soundux"
+      - name: Build debian package
+        run: "cd build && make install DESTDIR=../deployment/debian/soundux && cd ../deployment/debian && dpkg-deb --build soundux"
 
-            - name: Upload deb package
-              uses: actions/upload-artifact@v2.2.3
-              with:
-                  name: Deb package
-                  path: deployment/debian/soundux.deb
+      - name: Upload deb package
+        uses: actions/upload-artifact@v2.2.3
+        with:
+          name: Deb package
+          path: deployment/debian/soundux.deb

@@ -1,3 +1,4 @@
+#if defined(__linux__)
 #include "pipewire.hpp"
 #include <memory>
 #include <optional>
@@ -398,3 +399,4 @@ namespace Soundux::Objects
         return true;
     }
 } // namespace Soundux::Objects
+#endif
