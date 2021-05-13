@@ -225,10 +225,22 @@ namespace Soundux::Objects
                 {
                     std::unique_lock lock(groupedSoundsMutex);
                     groupedSounds.insert({playingSound->id, remotePlayingSound->id});
-
                     return *playingSound;
                 }
+
+                if (playingSound)
+                {
+                    stopSound(playingSound->id);
+                }
+                if (remotePlayingSound)
+                {
+                    stopSound(remotePlayingSound->id);
+                }
+
+                return std::nullopt;
             }
+
+            return *playingSound;
         }
         else
         {
