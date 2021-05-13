@@ -54,6 +54,7 @@ find_package(Threads REQUIRED)
 target_link_libraries(soundux PRIVATE Threads::Threads ${CMAKE_DL_LIBS})
 
 if (UNIX)
+    set_source_files_properties(pipewire.cpp PROPERTIES COMPILE_FLAGS -Wno-gnu)
     list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
     find_package(PipeWire REQUIRED)
 

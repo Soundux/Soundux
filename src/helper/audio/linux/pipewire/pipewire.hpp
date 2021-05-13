@@ -33,12 +33,6 @@ namespace Soundux
             ~PipeWireRecordingApp() override = default;
         };
 
-        template <class T> struct MovedApp
-        {
-            T app;
-            std::vector<std::uint32_t> createdLinks;
-        };
-
         class PipeWire : public AudioBackend
         {
             pw_core *core;

@@ -93,7 +93,6 @@ namespace Soundux::Objects
             }
             else if (strcmp(type, PW_TYPE_INTERFACE_Link) == 0)
             {
-                //* Should be used later to delete left over Soundux Links.
                 const auto *inputPort = spa_dict_lookup(props, "link.input.port");
                 const auto *outputPort = spa_dict_lookup(props, "link.output.port");
 
@@ -210,7 +209,10 @@ namespace Soundux::Objects
         pw_properties *props = pw_properties_new(nullptr, nullptr);
 
         pw_properties_set(props, PW_KEY_APP_NAME, "soundux");
+
+        //* By not setting linger to true we don't have to worry about unloading left overs!
         // pw_properties_set(props, PW_KEY_OBJECT_LINGER, "true");
+
         pw_properties_setf(props, PW_KEY_LINK_INPUT_PORT, "%u", in);
         pw_properties_setf(props, PW_KEY_LINK_OUTPUT_PORT, "%u", out);
 
