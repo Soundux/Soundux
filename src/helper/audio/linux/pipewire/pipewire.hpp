@@ -1,5 +1,6 @@
 #if defined(__linux__)
 #include "../backend.hpp"
+#include <map>
 #include <mutex>
 #include <optional>
 #include <pipewire/core.h>
@@ -51,11 +52,18 @@ namespace Soundux
             std::vector<std::shared_ptr<RecordingApp>> recordingApps;
 
           private:
+            std::uint32_t nullSinkLeft;
+            std::uint32_t nullSinkRight;
+
+            std::uint32_t nullSinkPlaybackLeft;
+            std::uint32_t nullSinkPlaybackRight;
+
             std::vector<std::uint32_t> soundInputLinks;
             std::vector<std::uint32_t> passthroughLinks;
 
           private:
             void sync();
+            bool createNullSink();
             bool deleteLink(std::uint32_t);
             std::optional<int> linkPorts(std::uint32_t, std::uint32_t);
 

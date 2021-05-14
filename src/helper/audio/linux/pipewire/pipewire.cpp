@@ -1,5 +1,6 @@
 #if defined(__linux__)
 #include "pipewire.hpp"
+#include <fancy.hpp>
 #include <memory>
 #include <optional>
 #include <stdexcept>
@@ -46,27 +47,56 @@ namespace Soundux::Objects
         {
             if (strcmp(type, PW_TYPE_INTERFACE_Port) == 0)
             {
-                const auto *alias = spa_dict_lookup(props, "port.alias");
-                const auto *portName = spa_dict_lookup(props, "port.name");
+                const auto *rawAlias = spa_dict_lookup(props, "port.alias");
+                const auto *rawPortName = spa_dict_lookup(props, "port.name");
 
-                if (alias && portName)
+                if (rawAlias && rawPortName)
                 {
                     //* This is the only reliable way to get the name
                     //* PW_KEY_APP_NAME or PW_KEY_APP_PROCESS_BINARY are almost certainly never set.
+
+                    std::string alias(rawAlias);
+                    std::string portName(rawPortName);
+
                     auto name = std::string(alias);
                     name = name.substr(0, name.find_first_of(':'));
 
                     Direction direction;
-                    if (strstr(portName, "FR"))
+                    if (portName.back() == 'R' || portName.back() == '2')
                     {
                         direction = Direction::FrontRight;
                     }
-                    else
+                    else if (portName.back() == 'L' || portName.back() == '1')
                     {
                         direction = Direction::FrontLeft;
                     }
 
-                    if (strstr(portName, "output"))
+                    if (name == "soundux_sink")
+                    {
+                        if (portName.find("playback") != std::string::npos)
+                        {
+                            if (direction == Direction::FrontRight)
+                            {
+                                thiz->nullSinkPlaybackRight = id;
+                            }
+                            else if (direction == Direction::FrontLeft)
+                            {
+                                thiz->nullSinkPlaybackLeft = id;
+                            }
+                        }
+                        else
+                        {
+                            if (direction == Direction::FrontRight)
+                            {
+                                thiz->nullSinkRight = id;
+                            }
+                            else if (direction == Direction::FrontLeft)
+                            {
+                                thiz->nullSinkLeft = id;
+                            }
+                        }
+                    }
+                    else if (portName.find("output") != std::string::npos)
                     {
                         auto outputApp = std::make_shared<PipeWirePlaybackApp>();
 
@@ -78,7 +108,7 @@ namespace Soundux::Objects
                         std::lock_guard lock(thiz->playbackMutex);
                         thiz->playbackApps.emplace_back(outputApp);
                     }
-                    else if (strstr(portName, "input"))
+                    else if (portName.find("input") != std::string::npos)
                     {
                         auto recordingApp = std::make_shared<PipeWireRecordingApp>();
 
@@ -186,7 +216,9 @@ namespace Soundux::Objects
         registryEvents.version = PW_VERSION_REGISTRY_EVENTS;
 
         pw_registry_add_listener(registry, &registryListener, &registryEvents, this); // NOLINT
+
         sync();
+        createNullSink();
     }
 
     void PipeWire::destroy()
@@ -195,6 +227,45 @@ namespace Soundux::Objects
         pw_core_disconnect(core);
         pw_context_destroy(context);
         pw_main_loop_destroy(loop);
+    }
+
+    bool PipeWire::createNullSink()
+    {
+        pw_properties *props = pw_properties_new(nullptr, nullptr);
+
+        pw_properties_set(props, PW_KEY_MEDIA_CLASS, "Audio/Sink");
+        pw_properties_set(props, PW_KEY_NODE_NAME, "soundux_sink");
+        pw_properties_set(props, PW_KEY_FACTORY_NAME, "support.null-audio-sink");
+
+        auto *proxy = reinterpret_cast<pw_proxy *>(
+            pw_core_create_object(core, "adapter", PW_TYPE_INTERFACE_Node, PW_VERSION_NODE, &props->dict, 0));
+
+        if (!proxy)
+        {
+            pw_properties_free(props);
+            return false;
+        }
+
+        spa_hook listener;
+        bool success = false;
+        pw_proxy_events linkEvent = {};
+        linkEvent.version = PW_VERSION_PROXY_EVENTS;
+        linkEvent.bound = [](void *data, [[maybe_unused]] std::uint32_t id) { *reinterpret_cast<bool *>(data) = true; };
+        linkEvent.error = [](void *data, [[maybe_unused]] int a, [[maybe_unused]] int b, const char *message) {
+            Fancy::fancy.logTime().failure() << "Failed to create null sink: " << message << std::endl;
+            *reinterpret_cast<bool *>(data) = false;
+        };
+
+        spa_zero(listener);
+        pw_proxy_add_listener(proxy, &listener, &linkEvent, &success);
+
+        sync();
+
+        spa_hook_remove(&listener);
+        pw_properties_free(props);
+        // pw_proxy_destroy(proxy); Not required.
+
+        return success;
     }
 
     bool PipeWire::deleteLink(std::uint32_t id)
@@ -235,7 +306,7 @@ namespace Soundux::Objects
             *reinterpret_cast<std::optional<std::uint32_t> *>(data) = id;
         };
         linkEvent.error = [](void *data, [[maybe_unused]] int a, [[maybe_unused]] int b, const char *message) {
-            printf("Error: %s\n", message);
+            Fancy::fancy.logTime().failure() << "Failed to create link: " << message << std::endl;
             *reinterpret_cast<std::optional<std::uint32_t> *>(data) = std::nullopt;
         };
 
@@ -246,7 +317,7 @@ namespace Soundux::Objects
 
         spa_hook_remove(&listener);
         pw_properties_free(props);
-        pw_proxy_destroy(proxy);
+        // pw_proxy_destroy(proxy); Not required
 
         return result;
     }
@@ -306,24 +377,29 @@ namespace Soundux::Objects
     bool PipeWire::useAsDefault()
     {
         // TODO(pipewire): Find a way to connect the output to the microphone
+        Fancy::fancy.logTime().warning() << "Fix Me: useAsDefault() is not yet implemented on pipewire" << std::endl;
         return false;
     }
 
     bool PipeWire::revertDefault()
     {
         // TODO(pipewire): Delete link created by `useAsDefault`
+        Fancy::fancy.logTime().warning() << "Fix Me: revertDefault() is not yet implemented on pipewire" << std::endl;
         return true;
     }
 
     bool PipeWire::muteInput(bool state)
     {
         // TODO(pipewire): Maybe we could delete any link from the microphone to the output app and recreate it?
+        Fancy::fancy.logTime().warning() << "Fix Me: muteInput() is not yet implemented on pipewire" << std::endl;
+
         (void)state;
         return false;
     }
 
     bool PipeWire::inputSoundTo(std::shared_ptr<RecordingApp> app)
     {
+        stopSoundInput();
         std::vector<PipeWireRecordingApp> toMove;
 
         recordingMutex.lock();
@@ -337,14 +413,37 @@ namespace Soundux::Objects
         }
         recordingMutex.unlock();
 
+        bool success = true;
+
         for (const auto &pipeWireApp : toMove)
         {
-            (void)pipeWireApp;
-            // TODO(pipewire): Link null sink to each app
-            // TODO(pipewire): Save id of each created link
+            if (pipeWireApp.direction == Direction::FrontLeft)
+            {
+                auto linkId = linkPorts(pipeWireApp.id, nullSinkLeft);
+                if (linkId)
+                {
+                    soundInputLinks.emplace_back(*linkId);
+                }
+                else
+                {
+                    success = false;
+                }
+            }
+            else
+            {
+                auto linkId = linkPorts(pipeWireApp.id, nullSinkRight);
+                if (linkId)
+                {
+                    soundInputLinks.emplace_back(*linkId);
+                }
+                else
+                {
+                    success = false;
+                }
+            }
         }
 
-        return true;
+        return success;
     }
 
     bool PipeWire::stopSoundInput()
@@ -373,14 +472,36 @@ namespace Soundux::Objects
         }
         playbackMutex.unlock();
 
+        bool success = true;
         for (const auto &pipeWireApp : toMove)
         {
-            (void)pipeWireApp;
-            // TODO(pipewire): Link each app to null sink
-            // TODO(pipewire): Save id of each created link
+            if (pipeWireApp.direction == Direction::FrontLeft)
+            {
+                auto linkId = linkPorts(nullSinkPlaybackLeft, pipeWireApp.id);
+                if (linkId)
+                {
+                    passthroughLinks.emplace_back(*linkId);
+                }
+                else
+                {
+                    success = false;
+                }
+            }
+            else
+            {
+                auto linkId = linkPorts(nullSinkPlaybackRight, pipeWireApp.id);
+                if (linkId)
+                {
+                    passthroughLinks.emplace_back(*linkId);
+                }
+                else
+                {
+                    success = false;
+                }
+            }
         }
 
-        return true;
+        return success;
     }
 
     bool PipeWire::isCurrentlyPassingThrough()
