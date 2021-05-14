@@ -15,7 +15,7 @@ namespace Soundux::Objects
             "youtube-dl --version", "", []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {},
             []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {});
         TinyProcessLib::Process ffmpegVersion(
-            "ffmpeg --version", "", []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {},
+            "ffmpeg -version", "", []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {},
             []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {});
 
         isAvailable = ytdlVersion.get_exit_status() == 0 && ffmpegVersion.get_exit_status() == 0;
