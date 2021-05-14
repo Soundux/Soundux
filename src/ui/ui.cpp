@@ -153,36 +153,39 @@ namespace Soundux::Objects
             {
                 Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
             }
-            if (Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
-            {
-                return Globals::gAudio.play(*sound);
-            }
-
-            auto moveSuccess = Globals::gAudioBackend->inputSoundTo(
-                Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output));
 
             auto playingSound = Globals::gAudio.play(*sound);
             auto remotePlayingSound = Globals::gAudio.play(*sound, Globals::gAudio.nullSink);
 
-            if (moveSuccess && playingSound && remotePlayingSound)
+            if (playingSound && remotePlayingSound)
             {
                 std::unique_lock lock(groupedSoundsMutex);
                 groupedSounds.insert({playingSound->id, remotePlayingSound->id});
 
-                return *playingSound;
-            }
+                if (Globals::gSettings.output.empty() && playingSound)
+                {
+                    return *playingSound;
+                }
+                if (!Globals::gSettings.output.empty())
+                {
+                    auto moveSuccess = Globals::gAudioBackend->inputSoundTo(
+                        Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output));
 
-            if (playingSound)
-                stopSound(playingSound->id);
-            if (remotePlayingSound)
-                stopSound(remotePlayingSound->id);
+                    if (!moveSuccess)
+                    {
+                        if (playingSound)
+                            stopSound(playingSound->id);
+                        if (remotePlayingSound)
+                            stopSound(remotePlayingSound->id);
 
-            if (!moveSuccess)
-            {
-                Fancy::fancy.logTime().failure() << "Failed to move Application " << Globals::gSettings.output
-                                                 << " to soundux sink for sound " << id << std::endl;
-                onError(ErrorCode::FailedToMoveToSink);
-                return std::nullopt;
+                        Fancy::fancy.logTime().failure() << "Failed to move Application " << Globals::gSettings.output
+                                                         << " to soundux sink for sound " << id << std::endl;
+                        onError(ErrorCode::FailedToMoveToSink);
+                        return std::nullopt;
+                    }
+
+                    return *playingSound;
+                }
             }
         }
         else
@@ -533,6 +536,7 @@ namespace Soundux::Objects
         //* The frontend only uses the stream name and should only show multiple streams that belong to one application
         //* once. The backend (gPulse.getRecordingStreams()) will work with multiple instances, so we need to filter out
         //* duplicates here.
+
         auto streams = Globals::gAudioBackend->getRecordingApps();
         std::vector<std::shared_ptr<IconRecordingApp>> uniqueStreams;
         for (auto &stream : streams)
