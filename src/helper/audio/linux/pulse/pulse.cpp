@@ -139,7 +139,11 @@ namespace Soundux::Objects
         //* We only have to unload these 3 because the other modules depend on these and will automatically be deleted
         await(PulseApi::pa_context_unload_module(context, nullSink, nullptr, nullptr));
         await(PulseApi::pa_context_unload_module(context, loopBack, nullptr, nullptr));
+        await(PulseApi::pa_context_unload_module(context, loopBackSink, nullptr, nullptr));
+
         await(PulseApi::pa_context_unload_module(context, passthrough, nullptr, nullptr));
+        await(PulseApi::pa_context_unload_module(context, passthroughSink, nullptr, nullptr));
+        await(PulseApi::pa_context_unload_module(context, passthroughLoopBack, nullptr, nullptr));
     }
     void PulseAudio::await(pa_operation *operation)
     {
