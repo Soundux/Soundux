@@ -32,3 +32,6 @@
 [submodule "deployment/flatpak/shared-modules"]
 	path = deployment/flatpak/shared-modules
 	url = https://github.com/flathub/shared-modules
+[submodule "lib/semver"]
+	path = lib/semver
+	url = https://github.com/Neargye/semver

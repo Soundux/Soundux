@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
-project(soundux VERSION 0.2.2 DESCRIPTION "")
+project(soundux VERSION 0.2.3 DESCRIPTION "")
 
-set(FULL_VERSION_STRING "0.2.2_b3")
+set(FULL_VERSION_STRING "0.2.3")
 option(EMBED_PATH "The path used for embedding" "OFF")
 option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
 
@@ -45,6 +45,7 @@ endif()
 target_compile_definitions(soundux PRIVATE SOUNDUX_VERSION="${FULL_VERSION_STRING}" WNCK_I_KNOW_THIS_IS_UNSTABLE=1)
 target_include_directories(soundux SYSTEM PRIVATE "src")
 target_include_directories(soundux SYSTEM PRIVATE "lib/miniaudio")
+target_include_directories(soundux SYSTEM PRIVATE "lib/semver/include")
 target_include_directories(soundux SYSTEM PRIVATE "lib/fancypp/include")
 target_include_directories(soundux SYSTEM PRIVATE "lib/json/single_include")
 target_include_directories(soundux SYSTEM PRIVATE "lib/InstanceGuard/Source")
