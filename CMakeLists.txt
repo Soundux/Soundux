@@ -55,9 +55,13 @@ find_package(Threads REQUIRED)
 target_link_libraries(soundux PRIVATE Threads::Threads ${CMAKE_DL_LIBS})
 
 if (UNIX)
+    set_source_files_properties(pipewire.cpp PROPERTIES COMPILE_FLAGS -Wno-gnu)
+    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+    find_package(PipeWire REQUIRED)
+
     find_package(PulseAudio)
     find_package(X11 REQUIRED)
-    include_directories(${X11_INCLUDE_DIR} ${PULSEAUDIO_INCLUDE_DIR}) 
+    target_include_directories(soundux SYSTEM PRIVATE ${X11_INCLUDE_DIR} ${PULSEAUDIO_INCLUDE_DIR} ${PipeWire_INCLUDE_DIRS} ${Spa_INCLUDE_DIRS}) 
 
     find_package(PkgConfig REQUIRED)
 	pkg_check_modules(WNCK libwnck-3.0)

@@ -6,6 +6,7 @@
 
 #if defined(__linux__)
 #include <dlfcn.h>
+#include <helper/audio/linux/pipewire/pipewire.hpp>
 #include <helper/audio/linux/pulse/pulse.hpp>
 #endif
 
@@ -45,10 +46,15 @@ int main()
         return 1;
     }
 
+    Soundux::Globals::gConfig.load();
+    Soundux::Globals::gData.set(Soundux::Globals::gConfig.data);
+    Soundux::Globals::gSettings = Soundux::Globals::gConfig.settings;
+
 #if defined(__linux__)
     Soundux::Globals::gIcons.setup();
 
-    if (dlopen("libpulse.so", RTLD_LAZY))
+    if (Soundux::Globals::gSettings.audioBackend == Soundux::Objects::BackendType::PulseAudio &&
+        dlopen("libpulse.so", RTLD_LAZY))
     {
         Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PulseAudio>();
         auto pulseBackend = std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
@@ -59,22 +65,27 @@ int main()
             pulseBackend->loadModules();
         }
     }
+    else
+    {
+        Soundux::Globals::gSettings.audioBackend = Soundux::Objects::BackendType::PipeWire;
+        Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PipeWire>();
+        Soundux::Globals::gAudioBackend->setup();
+    }
 
 #endif
     Soundux::Globals::gAudio.setup();
-    Soundux::Globals::gConfig.load();
     Soundux::Globals::gYtdl.setup();
 #if defined(__linux__)
-    if (Soundux::Globals::gConfig.settings.useAsDefaultDevice)
+    if (Soundux::Globals::gSettings.audioBackend == Soundux::Objects::BackendType::PulseAudio &&
+        Soundux::Globals::gConfig.settings.useAsDefaultDevice)
     {
         Soundux::Globals::gAudioBackend->useAsDefault();
     }
 #endif
-    Soundux::Globals::gData.set(Soundux::Globals::gConfig.data);
-    Soundux::Globals::gSettings = Soundux::Globals::gConfig.settings;
 
     Soundux::Globals::gGui = std::make_unique<Soundux::Objects::WebView>();
     Soundux::Globals::gGui->setup();
+
 #if defined(_WIN32)
     HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1));
     SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
