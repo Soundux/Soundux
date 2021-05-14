@@ -15,7 +15,6 @@ namespace Soundux
         inline pw_loop *(*pw_main_loop_get_loop)(pw_main_loop *);
 
         inline void (*pw_proxy_add_listener)(pw_proxy *, spa_hook *, pw_proxy_events *, void *);
-        inline void (*pw_core_add_listener)(pw_core *, spa_hook *, pw_core_events *, void *);
         inline int (*pw_properties_setf)(pw_properties *, const char *, const char *, ...);
         inline int (*pw_properties_set)(pw_properties *, const char *, const char *);
         inline pw_properties *(*pw_properties_new)(const char *, ...);

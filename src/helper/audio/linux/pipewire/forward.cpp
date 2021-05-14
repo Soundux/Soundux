@@ -15,7 +15,7 @@ template <typename T> void loadFunc(void *so, T &function, const std::string &na
 
 void Soundux::PipeWireApi::setup()
 {
-    auto *libpulse = dlopen("libpipewire.so", RTLD_LAZY);
+    auto *libpulse = dlopen("libpipewire-0.3.so", RTLD_LAZY);
     if (libpulse)
     {
 #define load(name) loadFunc(libpulse, name, #name)
@@ -24,7 +24,6 @@ void Soundux::PipeWireApi::setup()
         load(pw_main_loop_new);
         load(pw_main_loop_get_loop);
         load(pw_proxy_add_listener);
-        load(pw_core_add_listener);
         load(pw_properties_setf);
         load(pw_properties_set);
         load(pw_properties_new);
