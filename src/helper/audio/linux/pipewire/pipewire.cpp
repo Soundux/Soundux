@@ -1,5 +1,6 @@
 #if defined(__linux__)
 #include "pipewire.hpp"
+#include "forward.hpp"
 #include <fancy.hpp>
 #include <memory>
 #include <optional>
@@ -21,7 +22,7 @@ namespace Soundux::Objects
                 if (id == PW_ID_CORE && seq == *info->second)
                 {
                     *info->second = -1;
-                    pw_main_loop_quit(info->first->loop);
+                    PipeWireApi::pw_main_loop_quit(info->first->loop);
                 }
             }
         };
@@ -33,7 +34,7 @@ namespace Soundux::Objects
         pending = pw_core_sync(core, PW_ID_CORE, 0); // NOLINT
         while (pending != -1)
         {
-            pw_main_loop_run(loop);
+            PipeWireApi::pw_main_loop_run(loop);
         }
 
         spa_hook_remove(&coreListener);
@@ -190,19 +191,20 @@ namespace Soundux::Objects
 
     void PipeWire::setup()
     {
-        pw_init(nullptr, nullptr);
-        loop = pw_main_loop_new(nullptr);
+        PipeWireApi::setup();
+        PipeWireApi::pw_init(nullptr, nullptr);
+        loop = PipeWireApi::pw_main_loop_new(nullptr);
         if (!loop)
         {
             throw std::runtime_error("Failed to create main loop");
         }
-        context = pw_context_new(pw_main_loop_get_loop(loop), nullptr, 0);
+        context = PipeWireApi::pw_context_new(PipeWireApi::pw_main_loop_get_loop(loop), nullptr, 0);
         if (!context)
         {
             throw std::runtime_error("Failed to create context");
         }
 
-        core = pw_context_connect(context, nullptr, 0);
+        core = PipeWireApi::pw_context_connect(context, nullptr, 0);
         if (!core)
         {
             throw std::runtime_error("Failed to connect context");
@@ -226,26 +228,26 @@ namespace Soundux::Objects
 
     void PipeWire::destroy()
     {
-        pw_proxy_destroy(reinterpret_cast<pw_proxy *>(registry));
-        pw_core_disconnect(core);
-        pw_context_destroy(context);
-        pw_main_loop_destroy(loop);
+        PipeWireApi::pw_proxy_destroy(reinterpret_cast<pw_proxy *>(registry));
+        PipeWireApi::pw_core_disconnect(core);
+        PipeWireApi::pw_context_destroy(context);
+        PipeWireApi::pw_main_loop_destroy(loop);
     }
 
     bool PipeWire::createNullSink()
     {
-        pw_properties *props = pw_properties_new(nullptr, nullptr);
+        pw_properties *props = PipeWireApi::pw_properties_new(nullptr, nullptr);
 
-        pw_properties_set(props, PW_KEY_MEDIA_CLASS, "Audio/Sink");
-        pw_properties_set(props, PW_KEY_NODE_NAME, "soundux_sink");
-        pw_properties_set(props, PW_KEY_FACTORY_NAME, "support.null-audio-sink");
+        PipeWireApi::pw_properties_set(props, PW_KEY_MEDIA_CLASS, "Audio/Sink");
+        PipeWireApi::pw_properties_set(props, PW_KEY_NODE_NAME, "soundux_sink");
+        PipeWireApi::pw_properties_set(props, PW_KEY_FACTORY_NAME, "support.null-audio-sink");
 
         auto *proxy = reinterpret_cast<pw_proxy *>(
             pw_core_create_object(core, "adapter", PW_TYPE_INTERFACE_Node, PW_VERSION_NODE, &props->dict, 0));
 
         if (!proxy)
         {
-            pw_properties_free(props);
+            PipeWireApi::pw_properties_free(props);
             return false;
         }
 
@@ -260,12 +262,12 @@ namespace Soundux::Objects
         };
 
         spa_zero(listener);
-        pw_proxy_add_listener(proxy, &listener, &linkEvent, &success);
+        PipeWireApi::pw_proxy_add_listener(proxy, &listener, &linkEvent, &success);
 
         sync();
 
         spa_hook_remove(&listener);
-        pw_properties_free(props);
+        PipeWireApi::pw_properties_free(props);
         // pw_proxy_destroy(proxy); Not required.
 
         return success;
@@ -281,22 +283,22 @@ namespace Soundux::Objects
 
     std::optional<int> PipeWire::linkPorts(std::uint32_t in, std::uint32_t out)
     {
-        pw_properties *props = pw_properties_new(nullptr, nullptr);
+        pw_properties *props = PipeWireApi::pw_properties_new(nullptr, nullptr);
 
-        pw_properties_set(props, PW_KEY_APP_NAME, "soundux");
+        PipeWireApi::pw_properties_set(props, PW_KEY_APP_NAME, "soundux");
 
         //* By not setting linger to true we don't have to worry about unloading left overs!
         // pw_properties_set(props, PW_KEY_OBJECT_LINGER, "true");
 
-        pw_properties_setf(props, PW_KEY_LINK_INPUT_PORT, "%u", in);
-        pw_properties_setf(props, PW_KEY_LINK_OUTPUT_PORT, "%u", out);
+        PipeWireApi::pw_properties_setf(props, PW_KEY_LINK_INPUT_PORT, "%u", in);
+        PipeWireApi::pw_properties_setf(props, PW_KEY_LINK_OUTPUT_PORT, "%u", out);
 
         auto *proxy = reinterpret_cast<pw_proxy *>(
             pw_core_create_object(core, "link-factory", PW_TYPE_INTERFACE_Link, PW_VERSION_LINK, &props->dict, 0));
 
         if (!proxy)
         {
-            pw_properties_free(props);
+            PipeWireApi::pw_properties_free(props);
             return std::nullopt;
         }
 
@@ -314,12 +316,12 @@ namespace Soundux::Objects
         };
 
         spa_zero(listener);
-        pw_proxy_add_listener(proxy, &listener, &linkEvent, &result);
+        PipeWireApi::pw_proxy_add_listener(proxy, &listener, &linkEvent, &result);
 
         sync();
 
         spa_hook_remove(&listener);
-        pw_properties_free(props);
+        PipeWireApi::pw_properties_free(props);
         // pw_proxy_destroy(proxy); Not required
 
         return result;

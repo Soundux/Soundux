@@ -64,7 +64,7 @@ if (UNIX)
 
     find_package(PkgConfig REQUIRED)
 	pkg_check_modules(WNCK libwnck-3.0)
-    target_link_libraries(soundux PRIVATE ${X11_LIBRARIES} ${X11_Xinput_LIB} ${X11_XTest_LIB} ${PipeWire_LIBRARIES})
+    target_link_libraries(soundux PRIVATE ${X11_LIBRARIES} ${X11_Xinput_LIB} ${X11_XTest_LIB})
 endif()
 if (WIN32)
     target_compile_definitions(soundux PRIVATE _CRT_SECURE_NO_WARNINGS=1 _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1 _UNICODE=1)
