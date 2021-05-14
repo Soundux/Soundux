@@ -49,7 +49,7 @@ int main()
 #if defined(__linux__)
     Soundux::Globals::gIcons.setup();
 
-    if (Soundux::Globals::gSettings.audioBackend == Soundux::Objects::BackendType::PipeWire &&
+    if (Soundux::Globals::gSettings.audioBackend == Soundux::Objects::BackendType::PulseAudio &&
         dlopen("libpulse.so", RTLD_LAZY))
     {
         Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PulseAudio>();
@@ -63,6 +63,7 @@ int main()
     }
     else
     {
+        Soundux::Globals::gSettings.audioBackend = Soundux::Objects::BackendType::PipeWire;
         Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PipeWire>();
         Soundux::Globals::gAudioBackend->setup();
     }
