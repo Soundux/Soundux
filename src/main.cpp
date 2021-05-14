@@ -46,6 +46,8 @@ int main()
         return 1;
     }
 
+    Soundux::Globals::gConfig.load();
+
 #if defined(__linux__)
     Soundux::Globals::gIcons.setup();
 
@@ -70,10 +72,9 @@ int main()
 
 #endif
     Soundux::Globals::gAudio.setup();
-    Soundux::Globals::gConfig.load();
     Soundux::Globals::gYtdl.setup();
 #if defined(__linux__)
-    if (Soundux::Globals::gSettings.audioBackend == Soundux::Objects::BackendType::PipeWire &&
+    if (Soundux::Globals::gSettings.audioBackend == Soundux::Objects::BackendType::PulseAudio &&
         Soundux::Globals::gConfig.settings.useAsDefaultDevice)
     {
         Soundux::Globals::gAudioBackend->useAsDefault();
