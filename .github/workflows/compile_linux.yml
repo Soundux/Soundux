@@ -25,6 +25,9 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Add PipeWire PPA
+        run: "sudo add-apt-repository ppa:pipewire-debian/pipewire-upstream"
+
       - name: Install build dependencies
         run: "sudo apt-get update && sudo apt-get install git build-essential cmake libx11-dev libpipewire-0.3-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev libpulse-dev"
 
