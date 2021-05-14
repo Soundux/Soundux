@@ -157,28 +157,26 @@ namespace Soundux::Objects
                 return Globals::gAudio.play(*sound);
             }
 
-            if (Globals::gSettings.useAsDefaultDevice)
+            auto moveSuccess = Globals::gAudioBackend->inputSoundTo(
+                Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output));
+
+            auto playingSound = Globals::gAudio.play(*sound);
+            auto remotePlayingSound = Globals::gAudio.play(*sound, Globals::gAudio.nullSink);
+
+            if (moveSuccess && playingSound && remotePlayingSound)
             {
-                auto moveSuccess = Globals::gAudioBackend->inputSoundTo(
-                    Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output));
+                std::unique_lock lock(groupedSoundsMutex);
+                groupedSounds.insert({playingSound->id, remotePlayingSound->id});
 
-                auto playingSound = Globals::gAudio.play(*sound);
-                auto remotePlayingSound = Globals::gAudio.play(*sound, Globals::gAudio.nullSink);
-
-                if (moveSuccess && playingSound && remotePlayingSound)
-                {
-                    std::unique_lock lock(groupedSoundsMutex);
-                    groupedSounds.insert({playingSound->id, remotePlayingSound->id});
-
-                    return *playingSound;
-                }
-
-                if (playingSound)
-                    stopSound(playingSound->id);
-                if (remotePlayingSound)
-                    stopSound(remotePlayingSound->id);
+                return *playingSound;
             }
-            else
+
+            if (playingSound)
+                stopSound(playingSound->id);
+            if (remotePlayingSound)
+                stopSound(remotePlayingSound->id);
+
+            if (!moveSuccess)
             {
                 Fancy::fancy.logTime().failure() << "Failed to move Application " << Globals::gSettings.output
                                                  << " to soundux sink for sound " << id << std::endl;
@@ -227,10 +225,22 @@ namespace Soundux::Objects
                 {
                     std::unique_lock lock(groupedSoundsMutex);
                     groupedSounds.insert({playingSound->id, remotePlayingSound->id});
-
                     return *playingSound;
                 }
+
+                if (playingSound)
+                {
+                    stopSound(playingSound->id);
+                }
+                if (remotePlayingSound)
+                {
+                    stopSound(remotePlayingSound->id);
+                }
+
+                return std::nullopt;
             }
+
+            return *playingSound;
         }
         else
         {
