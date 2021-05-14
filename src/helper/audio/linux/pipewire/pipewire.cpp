@@ -95,8 +95,11 @@ namespace Soundux::Objects
                                 thiz->nullSinkLeft = id;
                             }
                         }
+
+                        return;
                     }
-                    else if (portName.find("output") != std::string::npos)
+
+                    if (portName.find("output") != std::string::npos)
                     {
                         auto outputApp = std::make_shared<PipeWirePlaybackApp>();
 
@@ -399,6 +402,11 @@ namespace Soundux::Objects
 
     bool PipeWire::inputSoundTo(std::shared_ptr<RecordingApp> app)
     {
+        if (!app)
+        {
+            return false;
+        }
+
         stopSoundInput();
         std::vector<PipeWireRecordingApp> toMove;
 
@@ -459,6 +467,11 @@ namespace Soundux::Objects
 
     bool PipeWire::passthroughFrom(std::shared_ptr<PlaybackApp> app)
     {
+        if (!app)
+        {
+            return false;
+        }
+
         std::vector<PipeWirePlaybackApp> toMove;
 
         playbackMutex.lock();
