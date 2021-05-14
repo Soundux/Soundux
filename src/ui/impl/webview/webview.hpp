@@ -16,16 +16,6 @@ namespace Soundux
             void onAllSoundsFinished() override;
             void changeSettings(const Settings &newSettings) override;
 
-            struct
-            {
-                std::string exit;
-                std::string hide;
-                std::string show;
-                std::string settings;
-                std::string tabHotkeys;
-                std::string muteDuringPlayback;
-            } translations;
-
           public:
             void setup() override;
             void mainLoop() override;

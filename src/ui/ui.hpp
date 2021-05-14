@@ -36,6 +36,16 @@ namespace Soundux
             std::shared_mutex groupedSoundsMutex;
             std::map<std::uint32_t, std::uint32_t> groupedSounds;
 
+            struct
+            {
+                std::string exit;
+                std::string hide;
+                std::string show;
+                std::string settings;
+                std::string tabHotkeys;
+                std::string muteDuringPlayback;
+            } translations;
+
             virtual void onAllSoundsFinished();
 
             virtual void stopSounds();

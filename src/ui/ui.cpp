@@ -104,6 +104,7 @@ namespace Soundux::Objects
     {
         nfdnchar_t *outpath = {};
         auto result = NFD::PickFolder(outpath, nullptr);
+
         if (result == NFD_OKAY)
         {
 #if defined(_WIN32)
