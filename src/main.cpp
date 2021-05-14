@@ -47,6 +47,8 @@ int main()
     }
 
     Soundux::Globals::gConfig.load();
+    Soundux::Globals::gData.set(Soundux::Globals::gConfig.data);
+    Soundux::Globals::gSettings = Soundux::Globals::gConfig.settings;
 
 #if defined(__linux__)
     Soundux::Globals::gIcons.setup();
@@ -80,8 +82,6 @@ int main()
         Soundux::Globals::gAudioBackend->useAsDefault();
     }
 #endif
-    Soundux::Globals::gData.set(Soundux::Globals::gConfig.data);
-    Soundux::Globals::gSettings = Soundux::Globals::gConfig.settings;
 
     Soundux::Globals::gGui = std::make_unique<Soundux::Objects::WebView>();
     Soundux::Globals::gGui->setup();
