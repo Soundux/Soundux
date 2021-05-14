@@ -17,7 +17,7 @@ namespace Soundux::Objects
         Globals::gHotKeys.init();
         for (auto &tab : Globals::gData.getTabs())
         {
-            tab.sounds = refreshTabSounds(tab);
+            tab.sounds = getTabContent(tab);
             Globals::gData.setTab(tab.id, tab);
         }
     }
@@ -26,7 +26,7 @@ namespace Soundux::Objects
         NFD::Quit();
         Globals::gHotKeys.stop();
     }
-    std::vector<Sound> Window::refreshTabSounds(const Tab &tab) const
+    std::vector<Sound> Window::getTabContent(const Tab &tab) const
     {
 #if defined(_WIN32)
         const auto path = Helpers::widen(tab.path);
@@ -122,7 +122,7 @@ namespace Soundux::Objects
 #else
                 tab.path = path;
 #endif
-                tab.sounds = refreshTabSounds(tab);
+                tab.sounds = getTabContent(tab);
                 tab.name = std::filesystem::path(path).filename().u8string();
 
                 tab = Globals::gData.addTab(std::move(tab));
@@ -486,7 +486,7 @@ namespace Soundux::Objects
         auto tab = Globals::gData.getTab(id);
         if (tab)
         {
-            tab->sounds = refreshTabSounds(*tab);
+            tab->sounds = getTabContent(*tab);
             auto newTab = Globals::gData.setTab(id, *tab);
             if (newTab)
             {

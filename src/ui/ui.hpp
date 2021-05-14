@@ -58,7 +58,7 @@ namespace Soundux
             virtual void markFavourite(const std::uint32_t &, bool);
 
             virtual std::optional<Tab> addTab();
-            virtual std::vector<Sound> refreshTabSounds(const Tab &) const;
+            virtual std::vector<Sound> getTabContent(const Tab &) const;
             virtual std::vector<Tab> changeTabOrder(const std::vector<int> &);
 
             virtual bool deleteSound(const std::uint32_t &);
