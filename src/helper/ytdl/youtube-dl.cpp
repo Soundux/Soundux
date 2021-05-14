@@ -12,9 +12,11 @@ namespace Soundux::Objects
     void YoutubeDl::setup()
     {
         TinyProcessLib::Process ytdlVersion(
-            "youtube-dl --version", "", []([[maybe_unused]] auto... args) {}, []([[maybe_unused]] auto... args) {});
+            "youtube-dl --version", "", []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {},
+            []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {});
         TinyProcessLib::Process ffmpegVersion(
-            "ffmpeg --version", "", []([[maybe_unused]] auto... args) {}, []([[maybe_unused]] auto... args) {});
+            "ffmpeg --version", "", []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {},
+            []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {});
 
         isAvailable = ytdlVersion.get_exit_status() == 0 && ffmpegVersion.get_exit_status() == 0;
         if (!isAvailable)
