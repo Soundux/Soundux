@@ -12,13 +12,14 @@ namespace Soundux::Objects
     void YoutubeDl::setup()
     {
         TinyProcessLib::Process ytdlVersion(
-            "youtube-dl --version", "", [](const char * /**/, std::size_t /**/) { /*Hide stdout*/ },
-            [](const char * /**/, std::size_t /**/) { /* Hide stderr*/ });
-        isAvailable = ytdlVersion.get_exit_status() == 0;
+            "youtube-dl --version", "", []([[maybe_unused]] auto... args) {}, []([[maybe_unused]] auto... args) {});
+        TinyProcessLib::Process ffmpegVersion(
+            "ffmpeg --version", "", []([[maybe_unused]] auto... args) {}, []([[maybe_unused]] auto... args) {});
 
+        isAvailable = ytdlVersion.get_exit_status() == 0 && ffmpegVersion.get_exit_status() == 0;
         if (!isAvailable)
         {
-            Fancy::fancy.logTime().warning() << "Youtube-Dl is not available!" << std::endl;
+            Fancy::fancy.logTime().warning() << "youtube-dl or ffmpeg is not available!" << std::endl;
         }
     }
     std::optional<nlohmann::json> YoutubeDl::getInfo(const std::string &url) const
@@ -96,7 +97,7 @@ namespace Soundux::Objects
                 currentDownload.reset();
             }
 
-            currentDownload.emplace("youtube-dl --extract-audio --audio-format mp3 \"" + url + "\" -o \"" +
+            currentDownload.emplace("youtube-dl --extract-audio --audio-format mp3 --no-mtime \"" + url + "\" -o \"" +
                                         currentTab->path + "/%(title)s.%(ext)s" + "\"",
                                     "", [](const char *rawData, std::size_t dataLen) {
                                         std::string data(rawData, dataLen);
@@ -111,6 +112,7 @@ namespace Soundux::Objects
                                             }
                                         }
                                     });
+
             Fancy::fancy.logTime().success() << "Started download of " >> url << std::endl;
             auto rtn = currentDownload->get_exit_status() == 0;
             currentDownload.reset();
