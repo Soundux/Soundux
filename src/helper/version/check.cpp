@@ -21,10 +21,17 @@ std::optional<Soundux::Objects::VersionStatus> VersionCheck::getStatus()
             {
                 auto latestTagStr = latestTag.get<std::string>();
 
-                auto remote = semver::from_string(latestTagStr);
-                auto local = semver::from_string(SOUNDUX_VERSION);
+                try
+                {
+                    auto remote = semver::from_string(latestTagStr);
+                    auto local = semver::from_string(SOUNDUX_VERSION);
 
-                return Soundux::Objects::VersionStatus{SOUNDUX_VERSION, latestTagStr, remote > local};
+                    return Soundux::Objects::VersionStatus{SOUNDUX_VERSION, latestTagStr, remote > local};
+                }
+                catch (const std::exception &e)
+                {
+                    Fancy::fancy.logTime().warning() << "Could not fetch version" << std::endl;
+                }
             }
             Fancy::fancy.logTime().warning() << "Failed to find latest tag" << std::endl;
         }
