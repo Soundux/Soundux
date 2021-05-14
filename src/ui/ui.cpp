@@ -4,6 +4,7 @@
 #include <fancy.hpp>
 #include <filesystem>
 #include <helper/audio/linux/backend.hpp>
+#include <helper/audio/linux/pipewire/pipewire.hpp>
 #include <helper/audio/linux/pulse/pulse.hpp>
 #include <helper/misc/misc.hpp>
 #include <nfd.hpp>
@@ -441,6 +442,30 @@ namespace Soundux::Objects
     void Window::changeSettings(const Settings &settings)
     {
 #if defined(__linux__)
+        if (settings.audioBackend != Globals::gSettings.audioBackend)
+        {
+            Globals::gAudio.stopAll(); //* <-- Explicitly called to avoid async problems
+            stopSounds();
+
+            Globals::gAudioBackend->destroy();
+
+            if (settings.audioBackend == BackendType::PulseAudio)
+            {
+                Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PulseAudio>();
+                auto pulseBackend =
+                    std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
+
+                pulseBackend->setup();
+                pulseBackend->loadModules();
+            }
+            else
+            {
+                Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PipeWire>();
+                Soundux::Globals::gAudioBackend->setup();
+            }
+
+            Globals::gAudio.setup();
+        }
         if (!settings.useAsDefaultDevice && Globals::gSettings.useAsDefaultDevice)
         {
             if (!Globals::gAudioBackend->revertDefault())

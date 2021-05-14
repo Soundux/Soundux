@@ -79,6 +79,7 @@ namespace nlohmann
                  {"stopHotkey", obj.stopHotkey},
                  {"syncVolumes", obj.syncVolumes},
                  {"selectedTab", obj.selectedTab},
+                 {"audioBackend", obj.audioBackend},
                  {"deleteToTrash", obj.deleteToTrash},
                  {"pushToTalkKeys", obj.pushToTalkKeys},
                  {"tabHotkeysOnly", obj.tabHotkeysOnly},
@@ -107,6 +108,7 @@ namespace nlohmann
             getToIfExists(j, "localVolume", obj.localVolume);
             getToIfExists(j, "selectedTab", obj.selectedTab);
             getToIfExists(j, "syncVolumes", obj.syncVolumes);
+            getToIfExists(j, "audioBackend", obj.audioBackend);
             getToIfExists(j, "remoteVolume", obj.remoteVolume);
             getToIfExists(j, "deleteToTrash", obj.deleteToTrash);
             getToIfExists(j, "pushToTalkKeys", obj.pushToTalkKeys);

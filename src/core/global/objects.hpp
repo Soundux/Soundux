@@ -62,6 +62,12 @@ namespace Soundux
             EmulatedLaunchpad,
         };
 
+        enum class BackendType : std::uint8_t
+        {
+            PulseAudio,
+            PipeWire,
+        };
+
         struct Sound
         {
             std::uint32_t id;
@@ -84,6 +90,7 @@ namespace Soundux
         struct Settings
         {
             SortMode sortMode = SortMode::ModifiedDate_Descending;
+            BackendType audioBackend = BackendType::PulseAudio;
             ViewMode viewMode = ViewMode::List;
             Theme theme = Theme::System;
 
