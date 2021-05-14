@@ -12,6 +12,7 @@
 
 #ifdef _WIN32
 #include "../../assets/icon.h"
+#include <helper/misc/misc.hpp>
 #include <shellapi.h>
 #include <windows.h>
 #endif
@@ -140,12 +141,37 @@ namespace Soundux::Objects
         webview->expose(Webview::Function("openUrl", [](const std::string &url) {
             ShellExecuteA(nullptr, nullptr, url.c_str(), nullptr, nullptr, SW_SHOW);
         }));
+        webview->expose(Webview::Function("openFolder", [](const std::uint32_t &id) {
+            auto tab = Globals::gData.getTab(id);
+            if (tab)
+            {
+                ShellExecuteW(nullptr, nullptr, Helpers::widen(tab->path).c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+            }
+            else
+            {
+                Fancy::fancy.logTime().warning() << "Failed to find tab with id " << id << std::endl;
+            }
+        }));
 #endif
 #if defined(__linux__)
         webview->expose(Webview::Function("openUrl", [](const std::string &url) {
             if (system(("xdg-open \"" + url + "\"").c_str()) != 0) // NOLINT
             {
                 Fancy::fancy.logTime().warning() << "Failed to open url " << url << std::endl;
+            }
+        }));
+        webview->expose(Webview::Function("openFolder", [](const std::uint32_t &id) {
+            auto tab = Globals::gData.getTab(id);
+            if (tab)
+            {
+                if (system(("xdg-open \"" + tab->path + "\"").c_str()) != 0) // NOLINT
+                {
+                    Fancy::fancy.logTime().warning() << "Failed to open folder " << tab->path << std::endl;
+                }
+            }
+            else
+            {
+                Fancy::fancy.logTime().warning() << "Failed to find tab with id " << id << std::endl;
             }
         }));
         webview->expose(Webview::Function("getOutputs", [this]() { return getOutputs(); }));
