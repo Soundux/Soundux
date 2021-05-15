@@ -3,9 +3,10 @@
 #include <core/global/objects.hpp>
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <miniaudio.h>
+#include <mutex>
 #include <optional>
-#include <shared_mutex>
 #include <string>
 
 namespace Soundux
@@ -49,7 +50,7 @@ namespace Soundux
         };
         class Audio
         {
-            std::shared_mutex playingSoundsMutex;
+            std::recursive_mutex playingSoundsMutex;
             std::map<std::uint32_t, std::shared_ptr<PlayingSound>> playingSounds;
 
             void onFinished(PlayingSound);

@@ -230,10 +230,7 @@ namespace Soundux::Objects
             sound.raw.device = nullptr;
             sound.raw.decoder = nullptr;
 
-            lock.unlock();
             Globals::gGui->onSoundFinished(sound);
-            lock.lock();
-
             playingSounds.erase(sound.id);
         }
         else
@@ -393,7 +390,7 @@ namespace Soundux::Objects
 #endif
     std::vector<PlayingSound> Audio::getPlayingSounds()
     {
-        std::shared_lock lock(playingSoundsMutex);
+        std::lock_guard lock(playingSoundsMutex);
 
         std::vector<PlayingSound> rtn;
         for (const auto &sound : playingSounds)
