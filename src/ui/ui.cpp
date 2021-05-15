@@ -144,7 +144,7 @@ namespace Soundux::Objects
         {
             if (!Globals::gSettings.allowOverlapping)
             {
-                stopSounds();
+                stopSounds(true);
             }
             if (Globals::gSettings.muteDuringPlayback)
             {
@@ -425,9 +425,16 @@ namespace Soundux::Objects
 
         return status;
     }
-    void Window::stopSounds()
+    void Window::stopSounds(bool sync)
     {
-        Globals::gQueue.push_unique(0, []() { Globals::gAudio.stopAll(); });
+        if (!sync)
+        {
+            Globals::gQueue.push_unique(0, []() { Globals::gAudio.stopAll(); });
+        }
+        else
+        {
+            Globals::gAudio.stopAll();
+        }
         onAllSoundsFinished();
 
 #if defined(__linux__)
@@ -469,6 +476,23 @@ namespace Soundux::Objects
             }
 
             Globals::gAudio.setup();
+        }
+        if (!Globals::gAudio.getPlayingSounds().empty())
+        {
+            if (settings.muteDuringPlayback && !Globals::gSettings.muteDuringPlayback)
+            {
+                if (!Globals::gAudioBackend->muteInput(true))
+                {
+                    Fancy::fancy.logTime().failure() << "Failed to mute input" << std::endl;
+                }
+            }
+            else if (!settings.muteDuringPlayback && Globals::gSettings.muteDuringPlayback)
+            {
+                if (!Globals::gAudioBackend->muteInput(false))
+                {
+                    Fancy::fancy.logTime().failure() << "Failed to un-mute input" << std::endl;
+                }
+            }
         }
         if (!settings.useAsDefaultDevice && Globals::gSettings.useAsDefaultDevice)
         {

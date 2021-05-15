@@ -7,6 +7,7 @@
 #include <atomic>
 #include <cstdint>
 #include <queue>
+#include <shared_mutex>
 #include <string>
 
 namespace Soundux
@@ -48,8 +49,8 @@ namespace Soundux
 
             virtual void onAllSoundsFinished();
 
-            virtual void stopSounds();
             virtual void isOnFavorites(bool);
+            virtual void stopSounds(bool = false);
             virtual bool stopSound(const std::uint32_t &);
             virtual std::vector<Tab> removeTab(const std::uint32_t &);
             virtual std::optional<Tab> refreshTab(const std::uint32_t &);
