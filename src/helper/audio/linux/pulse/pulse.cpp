@@ -147,6 +147,7 @@ namespace Soundux::Objects
     }
     void PulseAudio::await(pa_operation *operation)
     {
+        std::lock_guard lock(operationMutex);
         while (PulseApi::pa_operation_get_state(operation) != PA_OPERATION_DONE)
         {
             PulseApi::pa_mainloop_iterate(mainloop, true, nullptr);
@@ -409,12 +410,16 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().warning() << "Tried to input sound to non existant app" << std::endl;
             return false;
         }
+
+        std::unique_lock lock(movedAppMutex);
         if (movedApplication && movedApplication->name == app->name)
         {
             return true;
         }
 
+        lock.unlock();
         stopSoundInput();
+        lock.lock();
 
         for (const auto &recordingApp : getRecordingApps())
         {
@@ -442,10 +447,13 @@ namespace Soundux::Objects
         }
 
         movedApplication = std::dynamic_pointer_cast<PulseRecordingApp>(app);
+
         return true;
     }
     bool PulseAudio::stopSoundInput()
     {
+        std::unique_lock lock(movedAppMutex);
+
         bool success = true;
         if (movedApplication)
         {

@@ -1,6 +1,7 @@
 #if defined(__linux__)
 #include "../backend.hpp"
 #include "forward.hpp"
+#include <mutex>
 
 namespace Soundux
 {
@@ -43,6 +44,9 @@ namespace Soundux
             std::string defaultSource;
             std::shared_ptr<PulseRecordingApp> movedApplication;
             std::shared_ptr<PulsePlaybackApp> movedPassthroughApplication;
+
+            std::mutex movedAppMutex;
+            std::mutex operationMutex;
 
             void unloadLeftOvers();
             void fetchDefaultSource();
