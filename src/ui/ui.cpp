@@ -174,6 +174,8 @@ namespace Soundux::Objects
 
                     if (!moveSuccess)
                     {
+                        groupedSoundsMutex.unlock();
+
                         if (playingSound)
                             stopSound(playingSound->id);
                         if (remotePlayingSound)
