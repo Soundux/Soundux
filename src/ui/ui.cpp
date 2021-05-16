@@ -181,6 +181,8 @@ namespace Soundux::Objects
                         if (remotePlayingSound)
                             stopSound(remotePlayingSound->id);
 
+                        groupedSoundsMutex.lock();
+
                         Fancy::fancy.logTime().failure() << "Failed to move Application " << Globals::gSettings.output
                                                          << " to soundux sink for sound " << id << std::endl;
                         onError(ErrorCode::FailedToMoveToSink);
