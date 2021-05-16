@@ -311,8 +311,8 @@ namespace Soundux::Objects
         linkEvent.bound = [](void *data, std::uint32_t id) {
             *reinterpret_cast<std::optional<std::uint32_t> *>(data) = id;
         };
-        linkEvent.error = [](void *data, [[maybe_unused]] int a, [[maybe_unused]] int b, const char *message) {
-            Fancy::fancy.logTime().warning() << "Failed to create link: " << message << std::endl;
+        linkEvent.error = [](void *data, [[maybe_unused]] int a, [[maybe_unused]] int b,
+                             [[maybe_unused]] const char *message) {
             *reinterpret_cast<std::optional<std::uint32_t> *>(data) = std::nullopt;
         };
 
