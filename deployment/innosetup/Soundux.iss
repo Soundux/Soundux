@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Soundux"
-#define MyAppVersion "0.2.2_b3"
+#define MyAppVersion "0.2.3"
 #define MyAppPublisher "Soundux"
 #define MyAppURL "https://soundux.rocks"
 #define MyAppExeName "soundux.exe"
@@ -136,7 +136,7 @@ begin
     end;
     if WizardIsComponentSelected('FfmpegYouTubeDL') then begin
       DownloadPage.Add('https://github.com/eugeneware/ffmpeg-static/releases/download/b4.3.2/win32-x64', 'ffmpeg.exe', '')
-      DownloadPage.Add('https://github.com/ytdl-org/youtube-dl/releases/download/2021.04.26/youtube-dl.exe', 'youtube-dl.exe', '')
+      DownloadPage.Add('https://github.com/ytdl-org/youtube-dl/releases/download/2021.05.16/youtube-dl.exe', 'youtube-dl.exe', '')
     end;
     DownloadPage.Show;
     try
