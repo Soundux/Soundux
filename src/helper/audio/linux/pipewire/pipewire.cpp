@@ -471,12 +471,7 @@ namespace Soundux::Objects
         stopSoundInput();
 
         std::unique_lock lock(nodeLock);
-        if (nodes.find(pipeWireApp->nodeId) == nodes.end())
-        {
-            return false;
-        }
-
-        auto node = nodes.at(pipeWireApp->nodeId);
+        auto nodes = this->nodes;
         lock.unlock();
 
         bool success = false;
@@ -485,33 +480,40 @@ namespace Soundux::Objects
         auto ports = this->ports;
         portLock.unlock();
 
-        for (const auto &[portId, port] : ports)
+        for (const auto &[nodeId, node] : nodes)
         {
-            if (port.direction == SPA_DIRECTION_OUTPUT && port.portAlias.find("soundux") != std::string::npos)
+            if (node.name != app->name)
+                continue;
+
+            for (const auto &[portId, port] : ports)
             {
-                for (const auto &[nodePortId, nodePort] : node.ports)
+                if (port.direction == SPA_DIRECTION_OUTPUT && port.portAlias.find("soundux") != std::string::npos)
                 {
-                    if (nodePort.direction == SPA_DIRECTION_INPUT)
+                    for (const auto &[nodePortId, nodePort] : node.ports)
                     {
-                        if ((port.side == 'R' || port.side == '2') && (nodePort.side == 'R' || nodePort.side == '2'))
+                        if (nodePort.direction == SPA_DIRECTION_INPUT)
                         {
-                            auto link = linkPorts(nodePortId, portId);
-
-                            if (link)
+                            if ((port.side == 'R' || port.side == '2') &&
+                                (nodePort.side == 'R' || nodePort.side == '2'))
                             {
-                                success = true;
-                                soundInputLinks.emplace_back(*link);
+                                auto link = linkPorts(nodePortId, portId);
+
+                                if (link)
+                                {
+                                    success = true;
+                                    soundInputLinks.emplace_back(*link);
+                                }
                             }
-                        }
-                        else if ((port.side == 'L' || port.side == '1') &&
-                                 (nodePort.side == 'L' || nodePort.side == '1'))
-                        {
-                            auto link = linkPorts(nodePortId, portId);
-
-                            if (link)
+                            else if ((port.side == 'L' || port.side == '1') &&
+                                     (nodePort.side == 'L' || nodePort.side == '1'))
                             {
-                                success = true;
-                                soundInputLinks.emplace_back(*link);
+                                auto link = linkPorts(nodePortId, portId);
+
+                                if (link)
+                                {
+                                    success = true;
+                                    soundInputLinks.emplace_back(*link);
+                                }
                             }
                         }
                     }
@@ -548,12 +550,7 @@ namespace Soundux::Objects
         stopPassthrough();
 
         std::unique_lock lock(nodeLock);
-        if (nodes.find(pipeWireApp->nodeId) == nodes.end())
-        {
-            return false;
-        }
-
-        auto node = nodes.at(pipeWireApp->nodeId);
+        auto nodes = this->nodes;
         lock.unlock();
 
         bool success = false;
@@ -562,33 +559,40 @@ namespace Soundux::Objects
         auto ports = this->ports;
         portLock.unlock();
 
-        for (const auto &[portId, port] : ports)
+        for (const auto &[nodeId, node] : nodes)
         {
-            if (port.direction == SPA_DIRECTION_INPUT && port.portAlias.find("soundux") != std::string::npos)
+            if (node.name != app->name)
+                continue;
+
+            for (const auto &[portId, port] : ports)
             {
-                for (const auto &[nodePortId, nodePort] : node.ports)
+                if (port.direction == SPA_DIRECTION_INPUT && port.portAlias.find("soundux") != std::string::npos)
                 {
-                    if (nodePort.direction == SPA_DIRECTION_OUTPUT)
+                    for (const auto &[nodePortId, nodePort] : node.ports)
                     {
-                        if ((port.side == 'R' || port.side == '2') && (nodePort.side == 'R' || nodePort.side == '2'))
+                        if (nodePort.direction == SPA_DIRECTION_OUTPUT)
                         {
-                            auto link = linkPorts(portId, nodePortId);
-
-                            if (link)
+                            if ((port.side == 'R' || port.side == '2') &&
+                                (nodePort.side == 'R' || nodePort.side == '2'))
                             {
-                                success = true;
-                                passthroughLinks.emplace_back(*link);
+                                auto link = linkPorts(portId, nodePortId);
+
+                                if (link)
+                                {
+                                    success = true;
+                                    passthroughLinks.emplace_back(*link);
+                                }
                             }
-                        }
-                        else if ((port.side == 'L' || port.side == '1') &&
-                                 (nodePort.side == 'L' || nodePort.side == '1'))
-                        {
-                            auto link = linkPorts(portId, nodePortId);
-
-                            if (link)
+                            else if ((port.side == 'L' || port.side == '1') &&
+                                     (nodePort.side == 'L' || nodePort.side == '1'))
                             {
-                                success = true;
-                                passthroughLinks.emplace_back(*link);
+                                auto link = linkPorts(portId, nodePortId);
+
+                                if (link)
+                                {
+                                    success = true;
+                                    passthroughLinks.emplace_back(*link);
+                                }
                             }
                         }
                     }
