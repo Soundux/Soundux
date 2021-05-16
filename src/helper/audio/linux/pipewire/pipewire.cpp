@@ -62,7 +62,7 @@ namespace Soundux::Objects
                     auto name = std::string(alias);
                     name = name.substr(0, name.find_first_of(':'));
 
-                    Direction direction;
+                    Direction direction = Direction::FrontLeft;
                     if (portName.back() == 'R' || portName.back() == '2')
                     {
                         direction = Direction::FrontRight;
