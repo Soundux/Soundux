@@ -464,13 +464,14 @@ namespace Soundux::Objects
 
         stopSoundInput();
 
-        std::lock_guard lock(nodeLock);
+        std::unique_lock lock(nodeLock);
         if (nodes.find(pipeWireApp->nodeId) == nodes.end())
         {
             return false;
         }
 
         auto node = nodes.at(pipeWireApp->nodeId);
+        lock.unlock();
 
         bool success = false;
         for (const auto &[portId, port] : ports)
@@ -533,13 +534,14 @@ namespace Soundux::Objects
 
         stopPassthrough();
 
-        std::lock_guard lock(nodeLock);
+        std::unique_lock lock(nodeLock);
         if (nodes.find(pipeWireApp->nodeId) == nodes.end())
         {
             return false;
         }
 
         auto node = nodes.at(pipeWireApp->nodeId);
+        lock.unlock();
 
         bool success = false;
         for (const auto &[portId, port] : ports)
