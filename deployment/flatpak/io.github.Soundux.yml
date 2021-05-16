@@ -1,6 +1,6 @@
 app-id: io.github.Soundux
 runtime: org.gnome.Platform
-runtime-version: "3.38"
+runtime-version: "40.1"
 sdk: org.gnome.Sdk
 command: soundux
 finish-args:
@@ -9,6 +9,7 @@ finish-args:
   - --socket=pulseaudio
   - --socket=x11
   - --filesystem=host
+  - --filesystem=xdg-run/pipewire-0
 modules:
   - "shared-modules/libappindicator/libappindicator-gtk3-introspection-12.10.json"
   - name: soundux
