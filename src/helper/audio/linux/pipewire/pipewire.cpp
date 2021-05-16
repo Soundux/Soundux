@@ -480,6 +480,7 @@ namespace Soundux::Objects
         lock.unlock();
 
         bool success = false;
+        std::lock_guard _lock(portLock);
         for (const auto &[portId, port] : ports)
         {
             if (port.direction == SPA_DIRECTION_OUTPUT && port.portAlias.find("soundux") != std::string::npos)
@@ -550,6 +551,7 @@ namespace Soundux::Objects
         lock.unlock();
 
         bool success = false;
+        std::lock_guard _lock(portLock);
         for (const auto &[portId, port] : ports)
         {
             if (port.direction == SPA_DIRECTION_INPUT && port.portAlias.find("soundux") != std::string::npos)
