@@ -53,8 +53,7 @@ int main()
 #if defined(__linux__)
     Soundux::Globals::gIcons.setup();
 
-    if (Soundux::Globals::gSettings.audioBackend == Soundux::Objects::BackendType::PulseAudio &&
-        dlopen("libpulse.so", RTLD_LAZY))
+    if (Soundux::Globals::gSettings.audioBackend == Soundux::Objects::BackendType::PulseAudio)
     {
         Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PulseAudio>();
         auto pulseBackend = std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
