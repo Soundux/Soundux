@@ -531,7 +531,7 @@ namespace Soundux::Objects
             return false;
         }
 
-        stopSoundInput();
+        stopPassthrough();
 
         std::lock_guard lock(nodeLock);
         if (nodes.find(pipeWireApp->nodeId) == nodes.end())
