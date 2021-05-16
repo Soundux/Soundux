@@ -1,5 +1,5 @@
 Name: soundux
-Version: 0.2.2_b3
+Version: 0.2.3
 Release: 1%{?dist}
 Summary: A cross-platform soundboard
 
@@ -9,7 +9,7 @@ URL: https://%{name}.rocks
 
 Source0: https://github.com/Soundux/Soundux/releases/download/%{version}/%{name}-%{version}.tar.gz
 
-BuildRequires: git webkit2gtk3-devel ninja-build gtk3-devel libwnck3-devel libappindicator-gtk3-devel libXi-devel clang llvm cmake openssl-devel
+BuildRequires: git webkit2gtk3-devel ninja-build gtk3-devel libwnck3-devel pipewire-devel libappindicator-gtk3-devel libXi-devel clang llvm cmake openssl-devel
 Requires: pulseaudio-utils webkit2gtk3 libwnck3 libappindicator-gtk3
 Suggests: ffmpeg youtube-dl
 

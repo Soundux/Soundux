@@ -101,7 +101,8 @@ Download our installer or portable from [the latest release](https://github.com/
 ### 🐧 Linux
 This list may not be accurate. Contact me if you find missing dependencies so that I can update this list
 - Webkit2gtk
-- Pulseaudio development headers
+- PulseAudio development headers
+- PipeWire development headers
 - X11 client-side development headers
 - libappindicator3 development headers
 - OpenSSL development headers
@@ -110,11 +111,13 @@ This list may not be accurate. Contact me if you find missing dependencies so th
 
 #### 📜 Debian/Ubuntu and derivatives
 ```sh
-sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev libappindicator3-dev libssl-dev libpulse-dev
+sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev libappindicator3-dev libssl-dev libpulse-dev libpipewire-0.3-dev
 ```
+> If you're on Ubuntu 20.10 or lower you might have to add the PipeWire PPA:
+> `sudo add-apt-repository ppa:pipewire-debian/pipewire-upstream`
 #### 📜 Fedora and derivatives
 ```sh
-sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel libappindicator-gtk3-devel pulseaudio-libs-devel
+sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel libappindicator-gtk3-devel pulseaudio-libs-devel pipewire-devel
 ```
 
 ### 🪟 Windows
