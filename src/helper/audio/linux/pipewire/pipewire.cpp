@@ -480,7 +480,11 @@ namespace Soundux::Objects
         lock.unlock();
 
         bool success = false;
-        std::unique_lock _lock(portLock);
+
+        portLock.lock();
+        auto ports = this->ports;
+        portLock.unlock();
+
         for (const auto &[portId, port] : ports)
         {
             if (port.direction == SPA_DIRECTION_OUTPUT && port.portAlias.find("soundux") != std::string::npos)
@@ -491,9 +495,7 @@ namespace Soundux::Objects
                     {
                         if ((port.side == 'R' || port.side == '2') && (nodePort.side == 'R' || nodePort.side == '2'))
                         {
-                            _lock.unlock();
                             auto link = linkPorts(nodePortId, portId);
-                            _lock.lock();
 
                             if (link)
                             {
@@ -504,9 +506,7 @@ namespace Soundux::Objects
                         else if ((port.side == 'L' || port.side == '1') &&
                                  (nodePort.side == 'L' || nodePort.side == '1'))
                         {
-                            _lock.unlock();
                             auto link = linkPorts(nodePortId, portId);
-                            _lock.lock();
 
                             if (link)
                             {
@@ -557,7 +557,11 @@ namespace Soundux::Objects
         lock.unlock();
 
         bool success = false;
-        std::unique_lock _lock(portLock);
+
+        portLock.lock();
+        auto ports = this->ports;
+        portLock.unlock();
+
         for (const auto &[portId, port] : ports)
         {
             if (port.direction == SPA_DIRECTION_INPUT && port.portAlias.find("soundux") != std::string::npos)
@@ -568,9 +572,7 @@ namespace Soundux::Objects
                     {
                         if ((port.side == 'R' || port.side == '2') && (nodePort.side == 'R' || nodePort.side == '2'))
                         {
-                            _lock.unlock();
                             auto link = linkPorts(portId, nodePortId);
-                            _lock.lock();
 
                             if (link)
                             {
@@ -581,9 +583,7 @@ namespace Soundux::Objects
                         else if ((port.side == 'L' || port.side == '1') &&
                                  (nodePort.side == 'L' || nodePort.side == '1'))
                         {
-                            _lock.unlock();
                             auto link = linkPorts(portId, nodePortId);
-                            _lock.lock();
 
                             if (link)
                             {
