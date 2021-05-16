@@ -348,8 +348,8 @@ namespace Soundux::Objects
                     PipeWireRecordingApp app;
                     app.pid = node.pid;
                     app.nodeId = nodeId;
-                    app.name = node.name;
-                    app.application = node.applicationBinary;
+                    app.application = node.name;
+                    app.name = node.applicationBinary;
                     rtn.emplace_back(std::make_shared<PipeWireRecordingApp>(app));
                 }
             }
@@ -383,8 +383,8 @@ namespace Soundux::Objects
                     PipeWirePlaybackApp app;
                     app.pid = node.pid;
                     app.nodeId = nodeId;
-                    app.name = node.name;
-                    app.application = node.applicationBinary;
+                    app.application = node.name;
+                    app.name = node.applicationBinary;
                     rtn.emplace_back(std::make_shared<PipeWirePlaybackApp>(app));
                 }
             }
@@ -403,8 +403,8 @@ namespace Soundux::Objects
                 PipeWirePlaybackApp app;
                 app.pid = node.pid;
                 app.nodeId = nodeId;
-                app.name = node.name;
-                app.application = node.applicationBinary;
+                app.application = node.name;
+                app.name = node.applicationBinary;
                 return std::make_shared<PipeWirePlaybackApp>(app);
             }
         }
@@ -422,8 +422,8 @@ namespace Soundux::Objects
                 PipeWireRecordingApp app;
                 app.pid = node.pid;
                 app.nodeId = nodeId;
-                app.name = node.name;
-                app.application = node.applicationBinary;
+                app.application = node.name;
+                app.name = node.applicationBinary;
                 return std::make_shared<PipeWireRecordingApp>(app);
             }
         }
