@@ -603,6 +603,14 @@ namespace Soundux::Objects
                         iconStream->appIcon = *icon;
                     }
                 }
+                else if (auto pipeWireApp = std::dynamic_pointer_cast<PipeWireRecordingApp>(stream); pipeWireApp)
+                {
+                    auto icon = Soundux::Globals::gIcons.getIcon(static_cast<int>(pipeWireApp->pid));
+                    if (icon)
+                    {
+                        iconStream->appIcon = *icon;
+                    }
+                }
 
                 uniqueStreams.emplace_back(iconStream);
             }
@@ -625,6 +633,14 @@ namespace Soundux::Objects
                 if (auto pulseApp = std::dynamic_pointer_cast<PulsePlaybackApp>(stream); pulseApp)
                 {
                     auto icon = Soundux::Globals::gIcons.getIcon(static_cast<int>(pulseApp->pid));
+                    if (icon)
+                    {
+                        iconStream->appIcon = *icon;
+                    }
+                }
+                if (auto pipeWireApp = std::dynamic_pointer_cast<PipeWirePlaybackApp>(stream); pipeWireApp)
+                {
+                    auto icon = Soundux::Globals::gIcons.getIcon(static_cast<int>(pipeWireApp->pid));
                     if (icon)
                     {
                         iconStream->appIcon = *icon;
