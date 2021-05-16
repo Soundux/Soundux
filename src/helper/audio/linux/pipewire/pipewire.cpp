@@ -27,7 +27,6 @@ namespace Soundux::Objects
             }
         };
 
-        spa_zero(coreListener);
         auto data = std::make_pair(this, &pending);
         pw_core_add_listener(core, &coreListener, &coreEvents, &data); // NOLINT
 
@@ -40,110 +39,133 @@ namespace Soundux::Objects
         spa_hook_remove(&coreListener);
     }
 
+    void PipeWire::onNodeInfo(const pw_node_info *info)
+    {
+        if (info && nodes.find(info->id) != nodes.end())
+        {
+            auto &self = nodes.at(info->id);
+
+            if (const auto *pid = spa_dict_lookup(info->props, "application.process.id"); pid)
+            {
+                self.pid = std::stol(pid);
+            }
+            if (const auto *appName = spa_dict_lookup(info->props, "application.name"); appName)
+            {
+                self.name = appName;
+            }
+            if (const auto *appBinary = spa_dict_lookup(info->props, "application.process.binary"); appBinary)
+            {
+                self.applicationBinary = appBinary;
+            }
+        }
+    }
+
+    void PipeWire::onPortInfo(const pw_port_info *info)
+    {
+        if (info && ports.find(info->id) != ports.end())
+        {
+            auto &self = ports.at(info->id);
+            self.direction = info->direction;
+
+            if (const auto *nodeId = spa_dict_lookup(info->props, "node.id"); nodeId)
+            {
+                self.parentNode = std::stol(nodeId);
+            }
+            if (const auto *portName = spa_dict_lookup(info->props, "port.name"); portName)
+            {
+                self.side = std::string(portName).back();
+            }
+            if (const auto *portAlias = spa_dict_lookup(info->props, "port.alias"); portAlias)
+            {
+                self.portAlias = std::string(portAlias);
+            }
+        }
+    }
+
     void PipeWire::onGlobalAdded(void *data, std::uint32_t id, [[maybe_unused]] std::uint32_t perms, const char *type,
                                  [[maybe_unused]] std::uint32_t version, const spa_dict *props)
     {
         auto *thiz = reinterpret_cast<PipeWire *>(data);
-        if (thiz && data && props && type)
+        if (thiz && props)
         {
-            if (strcmp(type, PW_TYPE_INTERFACE_Port) == 0)
+            if (strcmp(type, PW_TYPE_INTERFACE_Node) == 0)
             {
-                const auto *rawAlias = spa_dict_lookup(props, "port.alias");
-                const auto *rawPortName = spa_dict_lookup(props, "port.name");
-
-                if (rawAlias && rawPortName)
+                const auto *name = spa_dict_lookup(props, PW_KEY_NODE_NAME);
+                if (name && strstr(name, "soundux"))
                 {
-                    //* This is the only reliable way to get the name
-                    //* PW_KEY_APP_NAME or PW_KEY_APP_PROCESS_BINARY are almost certainly never set.
+                    return;
+                }
 
-                    std::string alias(rawAlias);
-                    std::string portName(rawPortName);
+                Node node;
+                node.id = id;
 
-                    auto name = std::string(alias);
-                    name = name.substr(0, name.find_first_of(':'));
+                spa_hook listener;
+                pw_node_events events = {};
 
-                    Direction direction = Direction::FrontLeft;
-                    if (portName.back() == 'R' || portName.back() == '2')
+                events.info = [](void *data, const pw_node_info *info) {
+                    auto *thiz = reinterpret_cast<PipeWire *>(data);
+                    if (thiz)
                     {
-                        direction = Direction::FrontRight;
+                        thiz->onNodeInfo(info);
                     }
-                    else if (portName.back() == 'L' || portName.back() == '1')
-                    {
-                        direction = Direction::FrontLeft;
-                    }
+                };
+                events.version = PW_VERSION_NODE_EVENTS;
+                auto *boundNode = reinterpret_cast<pw_node *>(
+                    pw_registry_bind(thiz->registry, id, type, PW_VERSION_NODE, sizeof(PipeWire)));
 
-                    if (name == "soundux_sink")
-                    {
-                        if (portName.find("playback") != std::string::npos)
-                        {
-                            if (direction == Direction::FrontRight)
-                            {
-                                thiz->nullSinkPlaybackRight = id;
-                            }
-                            else if (direction == Direction::FrontLeft)
-                            {
-                                thiz->nullSinkPlaybackLeft = id;
-                            }
-                        }
-                        else
-                        {
-                            if (direction == Direction::FrontRight)
-                            {
-                                thiz->nullSinkRight = id;
-                            }
-                            else if (direction == Direction::FrontLeft)
-                            {
-                                thiz->nullSinkLeft = id;
-                            }
-                        }
+                if (boundNode)
+                {
+                    thiz->nodeLock.lock();
+                    thiz->nodes.emplace(id, node);
+                    thiz->nodeLock.unlock();
 
-                        return;
-                    }
-
-                    if (portName.find("output") != std::string::npos)
-                    {
-                        auto outputApp = std::make_shared<PipeWirePlaybackApp>();
-
-                        outputApp->id = id;
-                        outputApp->name = name;
-                        outputApp->application = name;
-                        outputApp->direction = direction;
-
-                        std::lock_guard lock(thiz->playbackMutex);
-                        thiz->playbackApps.emplace_back(outputApp);
-                    }
-                    else if (portName.find("input") != std::string::npos)
-                    {
-                        auto recordingApp = std::make_shared<PipeWireRecordingApp>();
-
-                        recordingApp->id = id;
-                        recordingApp->name = name;
-                        recordingApp->application = name;
-                        recordingApp->direction = direction;
-
-                        std::lock_guard lock(thiz->recordingMutex);
-                        thiz->recordingApps.emplace_back(recordingApp);
-                    }
+                    pw_node_add_listener(boundNode, &listener, &events, thiz); // NOLINT
+                    thiz->sync();
+                    spa_hook_remove(&listener);
+                    PipeWireApi::pw_proxy_destroy(reinterpret_cast<pw_proxy *>(boundNode));
                 }
             }
-            else if (strcmp(type, PW_TYPE_INTERFACE_Link) == 0)
+            if (strcmp(type, PW_TYPE_INTERFACE_Port) == 0)
             {
-                const auto *inputPort = spa_dict_lookup(props, "link.input.port");
-                const auto *outputPort = spa_dict_lookup(props, "link.output.port");
+                Port port;
+                port.id = id;
 
-                if (inputPort && outputPort)
-                {
-                    const auto in = std::stol(inputPort);
-                    const auto out = std::stol(outputPort);
-                    std::lock_guard lock(thiz->playbackMutex);
+                spa_hook listener;
+                pw_port_events events = {};
 
-                    for (auto &app : thiz->playbackApps)
+                events.info = [](void *data, const pw_port_info *info) {
+                    auto *thiz = reinterpret_cast<PipeWire *>(data);
+                    if (thiz)
                     {
-                        auto pipeWireApp = std::dynamic_pointer_cast<PipeWirePlaybackApp>(app);
+                        thiz->onPortInfo(info);
+                    }
+                };
+                events.version = PW_VERSION_PORT_EVENTS;
 
-                        if (pipeWireApp->id == out)
+                auto *boundPort =
+                    reinterpret_cast<pw_port *>(pw_registry_bind(thiz->registry, id, type, version, sizeof(PipeWire)));
+
+                if (boundPort)
+                {
+                    thiz->portLock.lock();
+                    thiz->ports.emplace(id, port);
+                    thiz->portLock.unlock();
+
+                    pw_port_add_listener(boundPort, &listener, &events, thiz); // NOLINT
+                    thiz->sync();
+                    spa_hook_remove(&listener);
+                    PipeWireApi::pw_proxy_destroy(reinterpret_cast<pw_proxy *>(boundPort));
+
+                    std::lock_guard portLock(thiz->portLock);
+                    std::lock_guard nodeLock(thiz->nodeLock);
+                    if (thiz->ports.find(id) != thiz->ports.end())
+                    {
+                        auto &port = thiz->ports.at(id);
+                        if (port.parentNode > 0 && thiz->nodes.find(port.parentNode) != thiz->nodes.end())
                         {
-                            pipeWireApp->links.emplace_back(Link{static_cast<std::uint32_t>(in)});
+                            auto &node = thiz->nodes.at(port.parentNode);
+                            node.ports.emplace(id, port);
+                            thiz->ports.erase(id);
                         }
                     }
                 }
@@ -154,38 +176,19 @@ namespace Soundux::Objects
     void PipeWire::onGlobalRemoved(void *data, std::uint32_t id)
     {
         auto *thiz = reinterpret_cast<PipeWire *>(data);
-
         if (thiz)
         {
-            thiz->playbackMutex.lock();
-            for (auto it = thiz->playbackApps.begin(); it != thiz->playbackApps.end();)
+            std::lock_guard lock(thiz->nodeLock);
+            if (thiz->nodes.find(id) != thiz->nodes.end())
             {
-                auto pipeWireApp = std::dynamic_pointer_cast<PipeWirePlaybackApp>(*it);
-                if (pipeWireApp && pipeWireApp->id == id)
-                {
-                    it = thiz->playbackApps.erase(it);
-                }
-                else
-                {
-                    it++;
-                }
+                thiz->nodes.erase(id);
             }
-            thiz->playbackMutex.unlock();
 
-            thiz->recordingMutex.lock();
-            for (auto it = thiz->recordingApps.begin(); it != thiz->recordingApps.end();)
+            std::lock_guard portLock(thiz->portLock);
+            if (thiz->ports.find(id) != thiz->ports.end())
             {
-                auto pipeWireApp = std::dynamic_pointer_cast<PipeWireRecordingApp>(*it);
-                if (pipeWireApp && pipeWireApp->id == id)
-                {
-                    it = thiz->recordingApps.erase(it);
-                }
-                else
-                {
-                    it++;
-                }
+                thiz->ports.erase(id);
             }
-            thiz->recordingMutex.unlock();
         }
     }
 
@@ -215,7 +218,6 @@ namespace Soundux::Objects
             throw std::runtime_error("Failed to get registry");
         }
 
-        spa_zero(registryListener);
         registryEvents.global = onGlobalAdded;
         registryEvents.global_remove = onGlobalRemoved;
         registryEvents.version = PW_VERSION_REGISTRY_EVENTS;
@@ -261,14 +263,11 @@ namespace Soundux::Objects
             *reinterpret_cast<bool *>(data) = false;
         };
 
-        spa_zero(listener);
         PipeWireApi::pw_proxy_add_listener(proxy, &listener, &linkEvent, &success);
-
         sync();
 
         spa_hook_remove(&listener);
         PipeWireApi::pw_properties_free(props);
-        // pw_proxy_destroy(proxy); Not required.
 
         return success;
     }
@@ -286,10 +285,6 @@ namespace Soundux::Objects
         pw_properties *props = PipeWireApi::pw_properties_new(nullptr, nullptr);
 
         PipeWireApi::pw_properties_set(props, PW_KEY_APP_NAME, "soundux");
-
-        //* By not setting linger to true we don't have to worry about unloading left overs!
-        // pw_properties_set(props, PW_KEY_OBJECT_LINGER, "true");
-
         PipeWireApi::pw_properties_setf(props, PW_KEY_LINK_INPUT_PORT, "%u", in);
         PipeWireApi::pw_properties_setf(props, PW_KEY_LINK_OUTPUT_PORT, "%u", out);
 
@@ -315,14 +310,11 @@ namespace Soundux::Objects
             *reinterpret_cast<std::optional<std::uint32_t> *>(data) = std::nullopt;
         };
 
-        spa_zero(listener);
         PipeWireApi::pw_proxy_add_listener(proxy, &listener, &linkEvent, &result);
-
         sync();
 
         spa_hook_remove(&listener);
         PipeWireApi::pw_properties_free(props);
-        // pw_proxy_destroy(proxy); Not required
 
         return result;
     }
@@ -330,21 +322,67 @@ namespace Soundux::Objects
     std::vector<std::shared_ptr<RecordingApp>> PipeWire::getRecordingApps()
     {
         sync();
-        return recordingApps;
+        std::vector<std::shared_ptr<RecordingApp>> rtn;
+
+        std::lock_guard lock(nodeLock);
+        for (const auto &[nodeId, node] : nodes)
+        {
+            if (!node.applicationBinary.empty())
+            {
+                bool hasInput = false;
+                for (const auto &[portId, port] : node.ports)
+                {
+                    if (port.direction == SPA_DIRECTION_INPUT)
+                    {
+                        hasInput = true;
+                        break;
+                    }
+                }
+
+                if (hasInput)
+                {
+                    PipeWireRecordingApp app;
+                    app.pid = node.pid;
+                    app.nodeId = nodeId;
+                    app.name = node.name;
+                    app.application = node.applicationBinary;
+                    rtn.emplace_back(std::make_shared<PipeWireRecordingApp>(app));
+                }
+            }
+        }
+
+        return rtn;
     }
 
     std::vector<std::shared_ptr<PlaybackApp>> PipeWire::getPlaybackApps()
     {
         sync();
-        std::lock_guard lock(playbackMutex);
         std::vector<std::shared_ptr<PlaybackApp>> rtn;
 
-        for (const auto &app : playbackApps)
+        std::lock_guard lock(nodeLock);
+        for (const auto &[nodeId, node] : nodes)
         {
-            auto pipeWireApp = std::dynamic_pointer_cast<PipeWirePlaybackApp>(app);
-            if (!pipeWireApp->links.empty())
+            if (!node.applicationBinary.empty())
             {
-                rtn.emplace_back(app);
+                bool hasOutput = false;
+                for (const auto &[portId, port] : node.ports)
+                {
+                    if (port.direction == SPA_DIRECTION_OUTPUT)
+                    {
+                        hasOutput = true;
+                        break;
+                    }
+                }
+
+                if (hasOutput)
+                {
+                    PipeWirePlaybackApp app;
+                    app.pid = node.pid;
+                    app.nodeId = nodeId;
+                    app.name = node.name;
+                    app.application = node.applicationBinary;
+                    rtn.emplace_back(std::make_shared<PipeWirePlaybackApp>(app));
+                }
             }
         }
 
@@ -353,12 +391,17 @@ namespace Soundux::Objects
 
     std::shared_ptr<PlaybackApp> PipeWire::getPlaybackApp(const std::string &name)
     {
-        std::lock_guard lock(playbackMutex);
-        for (const auto &app : playbackApps)
+        std::lock_guard lock(nodeLock);
+        for (const auto &[nodeId, node] : nodes)
         {
-            if (app->name == name)
+            if (node.name == name)
             {
-                return app;
+                PipeWirePlaybackApp app;
+                app.pid = node.pid;
+                app.nodeId = nodeId;
+                app.name = node.name;
+                app.application = node.applicationBinary;
+                return std::make_shared<PipeWirePlaybackApp>(app);
             }
         }
 
@@ -367,12 +410,17 @@ namespace Soundux::Objects
 
     std::shared_ptr<RecordingApp> PipeWire::getRecordingApp(const std::string &name)
     {
-        std::lock_guard lock(recordingMutex);
-        for (const auto &app : recordingApps)
+        std::lock_guard lock(nodeLock);
+        for (const auto &[nodeId, node] : nodes)
         {
-            if (app->name == name)
+            if (node.name == name)
             {
-                return app;
+                PipeWireRecordingApp app;
+                app.pid = node.pid;
+                app.nodeId = nodeId;
+                app.name = node.name;
+                app.application = node.applicationBinary;
+                return std::make_shared<PipeWireRecordingApp>(app);
             }
         }
 
@@ -408,47 +456,51 @@ namespace Soundux::Objects
         {
             return false;
         }
+        auto pipeWireApp = std::dynamic_pointer_cast<PipeWireRecordingApp>(app);
+        if (!pipeWireApp)
+        {
+            return false;
+        }
 
         stopSoundInput();
-        std::vector<PipeWireRecordingApp> toMove;
 
-        recordingMutex.lock();
-        for (const auto &recordingApp : recordingApps)
+        std::lock_guard lock(nodeLock);
+        if (nodes.find(pipeWireApp->nodeId) == nodes.end())
         {
-            if (recordingApp->name == app->name)
-            {
-                auto pipeWireApp = std::dynamic_pointer_cast<PipeWireRecordingApp>(recordingApp);
-                toMove.emplace_back(*pipeWireApp);
-            }
+            return false;
         }
-        recordingMutex.unlock();
 
-        bool success = true;
+        auto node = nodes.at(pipeWireApp->nodeId);
 
-        for (const auto &pipeWireApp : toMove)
+        bool success = false;
+        for (const auto &[portId, port] : ports)
         {
-            if (pipeWireApp.direction == Direction::FrontLeft)
+            if (port.direction == SPA_DIRECTION_OUTPUT && port.portAlias.find("soundux") != std::string::npos)
             {
-                auto linkId = linkPorts(pipeWireApp.id, nullSinkLeft);
-                if (linkId)
+                for (const auto &[nodePortId, nodePort] : node.ports)
                 {
-                    soundInputLinks.emplace_back(*linkId);
-                }
-                else
-                {
-                    success = false;
-                }
-            }
-            else
-            {
-                auto linkId = linkPorts(pipeWireApp.id, nullSinkRight);
-                if (linkId)
-                {
-                    soundInputLinks.emplace_back(*linkId);
-                }
-                else
-                {
-                    success = false;
+                    if (nodePort.direction == SPA_DIRECTION_INPUT)
+                    {
+                        if ((port.side == 'R' || port.side == '2') && (nodePort.side == 'R' || nodePort.side == '2'))
+                        {
+                            auto link = linkPorts(nodePortId, portId);
+                            if (link)
+                            {
+                                success = true;
+                                soundInputLinks.emplace_back(*link);
+                            }
+                        }
+                        else if ((port.side == 'L' || port.side == '1') &&
+                                 (nodePort.side == 'L' || nodePort.side == '1'))
+                        {
+                            auto link = linkPorts(nodePortId, portId);
+                            if (link)
+                            {
+                                success = true;
+                                soundInputLinks.emplace_back(*link);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -473,45 +525,51 @@ namespace Soundux::Objects
         {
             return false;
         }
-
-        std::vector<PipeWirePlaybackApp> toMove;
-
-        playbackMutex.lock();
-        for (const auto &playbackApp : playbackApps)
+        auto pipeWireApp = std::dynamic_pointer_cast<PipeWirePlaybackApp>(app);
+        if (!pipeWireApp)
         {
-            if (playbackApp->name == app->name)
-            {
-                auto pipeWireApp = std::dynamic_pointer_cast<PipeWirePlaybackApp>(playbackApp);
-                toMove.emplace_back(*pipeWireApp);
-            }
+            return false;
         }
-        playbackMutex.unlock();
 
-        bool success = true;
-        for (const auto &pipeWireApp : toMove)
+        stopSoundInput();
+
+        std::lock_guard lock(nodeLock);
+        if (nodes.find(pipeWireApp->nodeId) == nodes.end())
         {
-            if (pipeWireApp.direction == Direction::FrontLeft)
+            return false;
+        }
+
+        auto node = nodes.at(pipeWireApp->nodeId);
+
+        bool success = false;
+        for (const auto &[portId, port] : ports)
+        {
+            if (port.direction == SPA_DIRECTION_INPUT && port.portAlias.find("soundux") != std::string::npos)
             {
-                auto linkId = linkPorts(nullSinkPlaybackLeft, pipeWireApp.id);
-                if (linkId)
+                for (const auto &[nodePortId, nodePort] : node.ports)
                 {
-                    passthroughLinks.emplace_back(*linkId);
-                }
-                else
-                {
-                    success = false;
-                }
-            }
-            else
-            {
-                auto linkId = linkPorts(nullSinkPlaybackRight, pipeWireApp.id);
-                if (linkId)
-                {
-                    passthroughLinks.emplace_back(*linkId);
-                }
-                else
-                {
-                    success = false;
+                    if (nodePort.direction == SPA_DIRECTION_OUTPUT)
+                    {
+                        if ((port.side == 'R' || port.side == '2') && (nodePort.side == 'R' || nodePort.side == '2'))
+                        {
+                            auto link = linkPorts(portId, nodePortId);
+                            if (link)
+                            {
+                                success = true;
+                                passthroughLinks.emplace_back(*link);
+                            }
+                        }
+                        else if ((port.side == 'L' || port.side == '1') &&
+                                 (nodePort.side == 'L' || nodePort.side == '1'))
+                        {
+                            auto link = linkPorts(portId, nodePortId);
+                            if (link)
+                            {
+                                success = true;
+                                passthroughLinks.emplace_back(*link);
+                            }
+                        }
+                    }
                 }
             }
         }

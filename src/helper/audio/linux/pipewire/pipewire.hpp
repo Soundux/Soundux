@@ -3,35 +3,40 @@
 #include <map>
 #include <mutex>
 #include <optional>
-#include <pipewire/core.h>
-#include <pipewire/main-loop.h>
 #include <pipewire/pipewire.h>
 
 namespace Soundux
 {
     namespace Objects
     {
-        enum class Direction : std::uint8_t
+        struct Port
         {
-            FrontLeft,
-            FrontRight
-        };
-        struct Link
-        {
-            std::uint32_t destination;
-        };
-        struct PipeWirePlaybackApp : public PlaybackApp
-        {
+            char side;
             std::uint32_t id;
-            Direction direction;
-            std::vector<Link> links;
-            ~PipeWirePlaybackApp() override = default;
+            std::string portAlias;
+            spa_direction direction;
+            std::uint32_t parentNode = 0;
         };
 
-        struct PipeWireRecordingApp : public RecordingApp
+        struct Node
         {
             std::uint32_t id;
-            Direction direction;
+            std::string name;
+            std::uint32_t pid;
+            std::string applicationBinary;
+            std::map<std::uint32_t, Port> ports;
+        };
+
+        struct PipeWirePlaybackApp : public PlaybackApp
+        {
+            std::uint32_t pid;
+            std::uint32_t nodeId;
+            ~PipeWirePlaybackApp() override = default;
+        };
+        struct PipeWireRecordingApp : public RecordingApp
+        {
+            std::uint32_t pid;
+            std::uint32_t nodeId;
             ~PipeWireRecordingApp() override = default;
         };
 
@@ -45,19 +50,17 @@ namespace Soundux
             spa_hook registryListener;
             pw_registry_events registryEvents;
 
-            std::mutex playbackMutex;
-            std::vector<std::shared_ptr<PlaybackApp>> playbackApps;
+          private:
+            std::mutex nodeLock;
+            std::map<std::uint32_t, Node> nodes;
 
-            std::mutex recordingMutex;
-            std::vector<std::shared_ptr<RecordingApp>> recordingApps;
+            std::mutex portLock;
+            std::map<std::uint32_t, Port> ports;
+
+            void onNodeInfo(const pw_node_info *);
+            void onPortInfo(const pw_port_info *);
 
           private:
-            std::uint32_t nullSinkLeft;
-            std::uint32_t nullSinkRight;
-
-            std::uint32_t nullSinkPlaybackLeft;
-            std::uint32_t nullSinkPlaybackRight;
-
             std::vector<std::uint32_t> soundInputLinks;
             std::vector<std::uint32_t> passthroughLinks;
 

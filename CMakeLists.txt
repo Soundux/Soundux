@@ -39,7 +39,7 @@ if (WIN32)
     target_compile_options(soundux PRIVATE /W4)
 else()
     add_executable(soundux ${src})
-    target_compile_options(soundux PRIVATE -Wall -Wextra -Werror -pedantic -Wno-unused-lambda-capture)
+    target_compile_options(soundux PRIVATE -Wall -Wextra -Werror -pedantic -Wno-unused-lambda-capture -Wno-gnu)
 endif()
 
 target_compile_definitions(soundux PRIVATE SOUNDUX_VERSION="${FULL_VERSION_STRING}" WNCK_I_KNOW_THIS_IS_UNSTABLE=1)
@@ -55,7 +55,6 @@ find_package(Threads REQUIRED)
 target_link_libraries(soundux PRIVATE Threads::Threads ${CMAKE_DL_LIBS})
 
 if (UNIX)
-    set_source_files_properties(pipewire.cpp PROPERTIES COMPILE_FLAGS -Wno-gnu)
     list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
     find_package(PipeWire REQUIRED)
 
