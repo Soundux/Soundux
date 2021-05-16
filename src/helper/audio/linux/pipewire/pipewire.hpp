@@ -23,6 +23,7 @@ namespace Soundux
             std::uint32_t id;
             std::string name;
             std::uint32_t pid;
+            bool isMonitor = false;
             std::string applicationBinary;
             std::map<std::uint32_t, Port> ports;
         };

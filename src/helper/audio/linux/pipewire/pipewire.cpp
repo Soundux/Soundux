@@ -49,6 +49,10 @@ namespace Soundux::Objects
             {
                 self.pid = std::stol(pid);
             }
+            if (const auto *monitor = spa_dict_lookup(info->props, "stream.monitor"); monitor)
+            {
+                self.isMonitor = true;
+            }
             if (const auto *appName = spa_dict_lookup(info->props, "application.name"); appName)
             {
                 self.name = appName;
@@ -306,7 +310,7 @@ namespace Soundux::Objects
             *reinterpret_cast<std::optional<std::uint32_t> *>(data) = id;
         };
         linkEvent.error = [](void *data, [[maybe_unused]] int a, [[maybe_unused]] int b, const char *message) {
-            Fancy::fancy.logTime().failure() << "Failed to create link: " << message << std::endl;
+            Fancy::fancy.logTime().warning() << "Failed to create link: " << message << std::endl;
             *reinterpret_cast<std::optional<std::uint32_t> *>(data) = std::nullopt;
         };
 
@@ -327,7 +331,7 @@ namespace Soundux::Objects
         std::lock_guard lock(nodeLock);
         for (const auto &[nodeId, node] : nodes)
         {
-            if (!node.applicationBinary.empty())
+            if (!node.applicationBinary.empty() && !node.isMonitor)
             {
                 bool hasInput = false;
                 for (const auto &[portId, port] : node.ports)
@@ -362,7 +366,7 @@ namespace Soundux::Objects
         std::lock_guard lock(nodeLock);
         for (const auto &[nodeId, node] : nodes)
         {
-            if (!node.applicationBinary.empty())
+            if (!node.applicationBinary.empty() && !node.isMonitor)
             {
                 bool hasOutput = false;
                 for (const auto &[portId, port] : node.ports)
