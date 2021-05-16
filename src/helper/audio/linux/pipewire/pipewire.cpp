@@ -53,13 +53,15 @@ namespace Soundux::Objects
             {
                 self.isMonitor = true;
             }
+
+            //* Yes this is swapped. (For compatibility reasons)
             if (const auto *appName = spa_dict_lookup(info->props, "application.name"); appName)
             {
-                self.name = appName;
+                self.applicationBinary = appName;
             }
-            if (const auto *appBinary = spa_dict_lookup(info->props, "application.process.binary"); appBinary)
+            if (const auto *binary = spa_dict_lookup(info->props, "application.process.binary"); binary)
             {
-                self.applicationBinary = appBinary;
+                self.name = binary;
             }
         }
     }
@@ -348,8 +350,8 @@ namespace Soundux::Objects
                     PipeWireRecordingApp app;
                     app.pid = node.pid;
                     app.nodeId = nodeId;
-                    app.application = node.name;
-                    app.name = node.applicationBinary;
+                    app.name = node.name;
+                    app.application = node.applicationBinary;
                     rtn.emplace_back(std::make_shared<PipeWireRecordingApp>(app));
                 }
             }
@@ -383,8 +385,8 @@ namespace Soundux::Objects
                     PipeWirePlaybackApp app;
                     app.pid = node.pid;
                     app.nodeId = nodeId;
-                    app.application = node.name;
-                    app.name = node.applicationBinary;
+                    app.name = node.name;
+                    app.application = node.applicationBinary;
                     rtn.emplace_back(std::make_shared<PipeWirePlaybackApp>(app));
                 }
             }
@@ -403,8 +405,8 @@ namespace Soundux::Objects
                 PipeWirePlaybackApp app;
                 app.pid = node.pid;
                 app.nodeId = nodeId;
-                app.application = node.name;
-                app.name = node.applicationBinary;
+                app.name = node.name;
+                app.application = node.applicationBinary;
                 return std::make_shared<PipeWirePlaybackApp>(app);
             }
         }
@@ -422,8 +424,8 @@ namespace Soundux::Objects
                 PipeWireRecordingApp app;
                 app.pid = node.pid;
                 app.nodeId = nodeId;
-                app.application = node.name;
-                app.name = node.applicationBinary;
+                app.name = node.name;
+                app.application = node.applicationBinary;
                 return std::make_shared<PipeWireRecordingApp>(app);
             }
         }
