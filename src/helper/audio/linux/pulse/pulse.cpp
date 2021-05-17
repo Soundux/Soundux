@@ -14,16 +14,16 @@ namespace Soundux::Objects
             return;
         }
 
-        mainloop = PulseApi::_pa_mainloop_new();
-        mainloopApi = PulseApi::_pa_mainloop_get_api(mainloop);
-        context = PulseApi::_pa_context_new(mainloopApi, "soundux");
-        PulseApi::_pa_context_connect(context, nullptr, 0, nullptr);
+        mainloop = PulseApi::mainloop_new();
+        mainloopApi = PulseApi::mainloop_get_api(mainloop);
+        context = PulseApi::context_new(mainloopApi, "soundux");
+        PulseApi::context_connect(context, nullptr, 0, nullptr);
 
         bool ready = false;
-        PulseApi::_pa_context_set_state_callback(
+        PulseApi::context_set_state_callback(
             context,
             [](pa_context *context, void *userData) {
-                auto state = PulseApi::_pa_context_get_state(context);
+                auto state = PulseApi::context_get_state(context);
                 if (state == PA_CONTEXT_FAILED)
                 {
                     Fancy::fancy.logTime().failure() << "Failed to connect to pulseaudio" << std::endl;
@@ -39,7 +39,7 @@ namespace Soundux::Objects
 
         while (!ready)
         {
-            PulseApi::_pa_mainloop_iterate(mainloop, true, nullptr);
+            PulseApi::mainloop_iterate(mainloop, true, nullptr);
         }
 
         unloadLeftOvers();
@@ -50,7 +50,7 @@ namespace Soundux::Objects
         auto playbackApps = getPlaybackApps();
         auto recordingApps = getRecordingApps();
 
-        await(PulseApi::_pa_context_load_module(
+        await(PulseApi::context_load_module(
             context, "module-null-sink",
             "sink_name=soundux_sink rate=44100 sink_properties=device.description=soundux_sink",
             []([[maybe_unused]] pa_context *m, std::uint32_t id, void *userData) {
@@ -66,7 +66,7 @@ namespace Soundux::Objects
             },
             &nullSink));
 
-        await(PulseApi::_pa_context_load_module(
+        await(PulseApi::context_load_module(
             context, "module-loopback",
             ("rate=44100 source=" + defaultSource + " sink=soundux_sink sink_dont_move=true source_dont_move=true")
                 .c_str(),
@@ -83,7 +83,7 @@ namespace Soundux::Objects
             },
             &loopBack));
 
-        await(PulseApi::_pa_context_load_module(
+        await(PulseApi::context_load_module(
             context, "module-null-sink",
             "sink_name=soundux_sink_passthrough rate=44100 sink_properties=device.description=soundux_sink_passthrough",
             []([[maybe_unused]] pa_context *m, std::uint32_t id, void *userData) {
@@ -99,7 +99,7 @@ namespace Soundux::Objects
             },
             &passthrough));
 
-        await(PulseApi::_pa_context_load_module(
+        await(PulseApi::context_load_module(
             context, "module-loopback",
             "source=soundux_sink_passthrough.monitor sink=soundux_sink source_dont_move=true",
             []([[maybe_unused]] pa_context *m, std::uint32_t id, void *userData) {
@@ -115,7 +115,7 @@ namespace Soundux::Objects
             },
             &passthroughSink));
 
-        await(PulseApi::_pa_context_load_module(
+        await(PulseApi::context_load_module(
             context, "module-loopback", "source=soundux_sink_passthrough.monitor source_dont_move=true",
             []([[maybe_unused]] pa_context *m, std::uint32_t id, void *userData) {
                 if (static_cast<int>(id) < 0)
@@ -141,25 +141,25 @@ namespace Soundux::Objects
         stopPassthrough();
 
         //* We only have to unload these 3 because the other modules depend on these and will automatically be deleted
-        await(PulseApi::_pa_context_unload_module(context, nullSink, nullptr, nullptr));
-        await(PulseApi::_pa_context_unload_module(context, loopBack, nullptr, nullptr));
-        await(PulseApi::_pa_context_unload_module(context, loopBackSink, nullptr, nullptr));
+        await(PulseApi::context_unload_module(context, nullSink, nullptr, nullptr));
+        await(PulseApi::context_unload_module(context, loopBack, nullptr, nullptr));
+        await(PulseApi::context_unload_module(context, loopBackSink, nullptr, nullptr));
 
-        await(PulseApi::_pa_context_unload_module(context, passthrough, nullptr, nullptr));
-        await(PulseApi::_pa_context_unload_module(context, passthroughSink, nullptr, nullptr));
-        await(PulseApi::_pa_context_unload_module(context, passthroughLoopBack, nullptr, nullptr));
+        await(PulseApi::context_unload_module(context, passthrough, nullptr, nullptr));
+        await(PulseApi::context_unload_module(context, passthroughSink, nullptr, nullptr));
+        await(PulseApi::context_unload_module(context, passthroughLoopBack, nullptr, nullptr));
     }
     void PulseAudio::await(pa_operation *operation)
     {
         std::lock_guard lock(operationMutex);
-        while (PulseApi::_pa_operation_get_state(operation) != PA_OPERATION_DONE)
+        while (PulseApi::operation_get_state(operation) != PA_OPERATION_DONE)
         {
-            PulseApi::_pa_mainloop_iterate(mainloop, true, nullptr);
+            PulseApi::mainloop_iterate(mainloop, true, nullptr);
         }
     }
     void PulseAudio::fetchDefaultSource()
     {
-        await(PulseApi::_pa_context_get_server_info(
+        await(PulseApi::context_get_server_info(
             context,
             []([[maybe_unused]] pa_context *context, const pa_server_info *info, void *userData) {
                 if (info)
@@ -173,7 +173,7 @@ namespace Soundux::Objects
     {
         auto data = std::make_pair(&loopBackSink, loopBack);
 
-        await(PulseApi::_pa_context_get_sink_input_info_list(
+        await(PulseApi::context_get_sink_input_info_list(
             context,
             []([[maybe_unused]] pa_context *ctx, const pa_sink_input_info *info, [[maybe_unused]] int eol,
                void *userData) {
@@ -187,7 +187,7 @@ namespace Soundux::Objects
     }
     void PulseAudio::unloadLeftOvers()
     {
-        await(PulseApi::_pa_context_get_module_info_list(
+        await(PulseApi::context_get_module_info_list(
             context,
             []([[maybe_unused]] pa_context *ctx, const pa_module_info *info, [[maybe_unused]] int eol, void *userData) {
                 if (info && info->argument)
@@ -195,7 +195,7 @@ namespace Soundux::Objects
                     if (std::string(info->argument).find("soundux") != std::string::npos)
                     {
                         auto *thiz = reinterpret_cast<PulseAudio *>(userData);
-                        PulseApi::_pa_context_unload_module(thiz->context, info->index, nullptr, nullptr);
+                        PulseApi::context_unload_module(thiz->context, info->index, nullptr, nullptr);
                         Fancy::fancy.logTime().success() << "Unloaded left over module " << info->index << std::endl;
                     }
                 }
@@ -205,7 +205,7 @@ namespace Soundux::Objects
     std::vector<std::shared_ptr<PlaybackApp>> PulseAudio::getPlaybackApps()
     {
         std::vector<std::shared_ptr<PlaybackApp>> rtn;
-        await(PulseApi::_pa_context_get_sink_input_info_list(
+        await(PulseApi::context_get_sink_input_info_list(
             context,
             []([[maybe_unused]] pa_context *ctx, const pa_sink_input_info *info, [[maybe_unused]] int eol,
                void *userData) {
@@ -215,9 +215,9 @@ namespace Soundux::Objects
 
                     app.id = info->index;
                     app.sink = info->sink;
-                    app.application = PulseApi::_pa_proplist_gets(info->proplist, "application.name");
-                    app.name = PulseApi::_pa_proplist_gets(info->proplist, "application.process.binary");
-                    app.pid = std::stoi(PulseApi::_pa_proplist_gets(info->proplist, "application.process.id"));
+                    app.application = PulseApi::proplist_gets(info->proplist, "application.name");
+                    app.name = PulseApi::proplist_gets(info->proplist, "application.process.binary");
+                    app.pid = std::stoi(PulseApi::proplist_gets(info->proplist, "application.process.id"));
                     reinterpret_cast<decltype(rtn) *>(userData)->emplace_back(std::make_shared<PulsePlaybackApp>(app));
                 }
             },
@@ -228,7 +228,7 @@ namespace Soundux::Objects
     std::vector<std::shared_ptr<RecordingApp>> PulseAudio::getRecordingApps()
     {
         std::vector<std::shared_ptr<RecordingApp>> rtn;
-        await(PulseApi::_pa_context_get_source_output_info_list(
+        await(PulseApi::context_get_source_output_info_list(
             context,
             []([[maybe_unused]] pa_context *ctx, const pa_source_output_info *info, [[maybe_unused]] int eol,
                void *userData) {
@@ -243,9 +243,9 @@ namespace Soundux::Objects
 
                     app.id = info->index;
                     app.source = info->source;
-                    app.application = PulseApi::_pa_proplist_gets(info->proplist, "application.name");
-                    app.name = PulseApi::_pa_proplist_gets(info->proplist, "application.process.binary");
-                    app.pid = std::stoi(PulseApi::_pa_proplist_gets(info->proplist, "application.process.id"));
+                    app.application = PulseApi::proplist_gets(info->proplist, "application.name");
+                    app.name = PulseApi::proplist_gets(info->proplist, "application.process.binary");
+                    app.pid = std::stoi(PulseApi::proplist_gets(info->proplist, "application.process.id"));
                     reinterpret_cast<decltype(rtn) *>(userData)->emplace_back(std::make_shared<PulseRecordingApp>(app));
                 }
             },
@@ -255,9 +255,9 @@ namespace Soundux::Objects
     }
     bool PulseAudio::useAsDefault()
     {
-        await(PulseApi::_pa_context_unload_module(context, loopBack, nullptr, nullptr));
+        await(PulseApi::context_unload_module(context, loopBack, nullptr, nullptr));
 
-        await(PulseApi::_pa_context_load_module(
+        await(PulseApi::context_load_module(
             context, "module-loopback", ("rate=44100 source=" + defaultSource + " sink=soundux_sink").c_str(),
             []([[maybe_unused]] pa_context *m, std::uint32_t id, void *userData) {
                 if (static_cast<int>(id) < 0)
@@ -273,7 +273,7 @@ namespace Soundux::Objects
             &loopBack));
 
         bool success = false;
-        await(PulseApi::_pa_context_set_default_source(
+        await(PulseApi::context_set_default_source(
             context, "soundux_sink.monitor",
             []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
                 *reinterpret_cast<bool *>(userData) = success;
@@ -292,11 +292,11 @@ namespace Soundux::Objects
     {
         if (!defaultSource.empty())
         {
-            await(PulseApi::_pa_context_unload_module(context, loopBack, nullptr, nullptr));
+            await(PulseApi::context_unload_module(context, loopBack, nullptr, nullptr));
 
             auto result = std::make_pair(&loopBack, false);
 
-            await(PulseApi::_pa_context_load_module(
+            await(PulseApi::context_load_module(
                 context, "module-loopback",
                 ("rate=44100 source=" + defaultSource + " sink=soundux_sink sink_dont_move=true source_dont_move=true")
                     .c_str(),
@@ -314,7 +314,7 @@ namespace Soundux::Objects
             }
 
             bool success = false;
-            await(PulseApi::_pa_context_set_default_source(
+            await(PulseApi::context_set_default_source(
                 context, defaultSource.c_str(),
                 []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
                     *reinterpret_cast<bool *>(userData) = success;
@@ -356,7 +356,7 @@ namespace Soundux::Objects
             {
                 bool success = true;
 
-                await(PulseApi::_pa_context_move_sink_input_by_name(
+                await(PulseApi::context_move_sink_input_by_name(
                     context, pulsePlayback->id, "soundux_sink_passthrough",
                     []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
                         if (!success)
@@ -390,7 +390,7 @@ namespace Soundux::Objects
 
                 if (app->name == movedPassthroughApplication->name)
                 {
-                    await(PulseApi::_pa_context_move_sink_input_by_index(
+                    await(PulseApi::context_move_sink_input_by_index(
                         context, pulseApp->id, movedPassthroughApplication->sink,
                         []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
                             if (success)
@@ -432,7 +432,7 @@ namespace Soundux::Objects
             if (pulseApp->name == app->name)
             {
                 bool success = true;
-                await(PulseApi::_pa_context_move_source_output_by_name(
+                await(PulseApi::context_move_source_output_by_name(
                     context, pulseApp->id, "soundux_sink.monitor",
                     []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
                         if (!success)
@@ -467,7 +467,7 @@ namespace Soundux::Objects
 
                 if (pulseApp->name == movedApplication->name)
                 {
-                    await(PulseApi::_pa_context_move_source_output_by_index(
+                    await(PulseApi::context_move_source_output_by_index(
                         context, pulseApp->id, movedApplication->source,
                         []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
                             if (!success)
@@ -530,8 +530,8 @@ namespace Soundux::Objects
                 auto *pulseOriginal = dynamic_cast<PulsePlaybackApp *>(originalPlaybackApp->get());
                 if (pulseOriginal->sink != pulsePlaybackApp->sink)
                 {
-                    await(PulseApi::_pa_context_move_sink_input_by_index(context, pulsePlaybackApp->id,
-                                                                         pulseOriginal->sink, nullptr, nullptr));
+                    await(PulseApi::context_move_sink_input_by_index(context, pulsePlaybackApp->id, pulseOriginal->sink,
+                                                                     nullptr, nullptr));
                     Fancy::fancy.logTime().success()
                         << "Recovered " << pulsePlaybackApp->id << " from soundux passthrough" << std::endl;
                 }
@@ -553,8 +553,8 @@ namespace Soundux::Objects
                 auto *pulseOriginal = dynamic_cast<PulseRecordingApp *>(originalRecordingApp->get());
                 if (pulseOriginal->source != pulseRecordingApp->source)
                 {
-                    await(PulseApi::_pa_context_move_source_output_by_index(context, pulseRecordingApp->id,
-                                                                            pulseOriginal->source, nullptr, nullptr));
+                    await(PulseApi::context_move_source_output_by_index(context, pulseRecordingApp->id,
+                                                                        pulseOriginal->source, nullptr, nullptr));
                     Fancy::fancy.logTime().success()
                         << "Recovered " << pulseRecordingApp->id << " from soundux sink" << std::endl;
                 }
@@ -565,7 +565,7 @@ namespace Soundux::Objects
     {
         bool success = false;
 
-        await(PulseApi::_pa_context_set_sink_input_mute(
+        await(PulseApi::context_set_sink_input_mute(
             context, loopBackSink, state,
             +[]([[maybe_unused]] pa_context *ctx, int success, void *userData) {
                 *reinterpret_cast<bool *>(userData) = success;
@@ -588,7 +588,7 @@ namespace Soundux::Objects
     bool PulseAudio::switchOnConnectPresent()
     {
         bool isPresent = false;
-        await(PulseApi::_pa_context_get_module_info_list(
+        await(PulseApi::context_get_module_info_list(
             context,
             []([[maybe_unused]] pa_context *ctx, const pa_module_info *info, [[maybe_unused]] int eol, void *userData) {
                 if (info && info->name)
@@ -607,7 +607,7 @@ namespace Soundux::Objects
 
     void PulseAudio::unloadSwitchOnConnect()
     {
-        await(PulseApi::_pa_context_get_module_info_list(
+        await(PulseApi::context_get_module_info_list(
             context,
             []([[maybe_unused]] pa_context *ctx, const pa_module_info *info, [[maybe_unused]] int eol,
                [[maybe_unused]] void *userData) {
@@ -616,7 +616,7 @@ namespace Soundux::Objects
                     if (std::string(info->name).find("switch-on-connect") != std::string::npos)
                     {
                         Fancy::fancy.logTime().message() << "Unloading: " << info->index << std::endl;
-                        PulseApi::_pa_context_unload_module(ctx, info->index, nullptr, nullptr);
+                        PulseApi::context_unload_module(ctx, info->index, nullptr, nullptr);
                     }
                 }
             },

@@ -18,57 +18,58 @@ template <typename T> void loadFunc(void *so, T &function, const std::string &na
 bool Soundux::PulseApi::setup()
 {
 #if defined(USE_FLATPAK)
-#define load(name) _##name = reinterpret_cast<decltype(_##name)>(name);
-    load(pa_mainloop_new);
-    load(pa_mainloop_iterate);
-    load(pa_mainloop_get_api);
-    load(pa_context_new);
-    load(pa_context_connect);
-    load(pa_context_set_state_callback);
-    load(pa_context_load_module);
-    load(pa_context_get_module_info_list);
-    load(pa_context_get_source_output_info_list);
-    load(pa_context_get_sink_input_info_list);
-    load(pa_context_get_server_info);
-    load(pa_proplist_gets);
-    load(pa_context_set_default_source);
-    load(pa_context_move_sink_input_by_name);
-    load(pa_context_get_server_info);
-    load(pa_context_move_sink_input_by_index);
-    load(pa_context_move_source_output_by_name);
-    load(pa_context_move_source_output_by_index);
-    load(pa_context_set_sink_input_mute);
-    load(pa_context_unload_module);
-    load(pa_context_get_state);
-    load(pa_operation_get_state);
+#define load(name) name = reinterpret_cast<decltype(name)>(pa_##name);
+    load(mainloop_new);
+    load(mainloop_iterate);
+    load(mainloop_get_api);
+    load(context_new);
+    load(context_connect);
+    load(context_set_state_callback);
+    load(context_load_module);
+    load(context_get_module_info_list);
+    load(context_get_source_output_info_list);
+    load(context_get_sink_input_info_list);
+    load(context_get_server_info);
+    load(proplist_gets);
+    load(context_set_default_source);
+    load(context_move_sink_input_by_name);
+    load(context_get_server_info);
+    load(context_move_sink_input_by_index);
+    load(context_move_source_output_by_name);
+    load(context_move_source_output_by_index);
+    load(context_set_sink_input_mute);
+    load(context_unload_module);
+    load(context_get_state);
+    load(operation_get_state);
     return true;
 #else
     auto *libpulse = dlopen("libpulse.so", RTLD_LAZY);
     if (libpulse)
     {
-#define load(name) loadFunc(libpulse, _##name, #name)
-        load(pa_mainloop_new);
-        load(pa_mainloop_iterate);
-        load(pa_mainloop_get_api);
-        load(pa_context_new);
-        load(pa_context_connect);
-        load(pa_context_set_state_callback);
-        load(pa_context_load_module);
-        load(pa_context_get_module_info_list);
-        load(pa_context_get_source_output_info_list);
-        load(pa_context_get_sink_input_info_list);
-        load(pa_context_get_server_info);
-        load(pa_proplist_gets);
-        load(pa_context_set_default_source);
-        load(pa_context_move_sink_input_by_name);
-        load(pa_context_get_server_info);
-        load(pa_context_move_sink_input_by_index);
-        load(pa_context_move_source_output_by_name);
-        load(pa_context_move_source_output_by_index);
-        load(pa_context_set_sink_input_mute);
-        load(pa_context_unload_module);
-        load(pa_context_get_state);
-        load(pa_operation_get_state);
+#define stringify(what) #what
+#define load(name) loadFunc(libpulse, name, stringify(pa_##name))
+        load(mainloop_new);
+        load(mainloop_iterate);
+        load(mainloop_get_api);
+        load(context_new);
+        load(context_connect);
+        load(context_set_state_callback);
+        load(context_load_module);
+        load(context_get_module_info_list);
+        load(context_get_source_output_info_list);
+        load(context_get_sink_input_info_list);
+        load(context_get_server_info);
+        load(proplist_gets);
+        load(context_set_default_source);
+        load(context_move_sink_input_by_name);
+        load(context_get_server_info);
+        load(context_move_sink_input_by_index);
+        load(context_move_source_output_by_name);
+        load(context_move_source_output_by_index);
+        load(context_set_sink_input_mute);
+        load(context_unload_module);
+        load(context_get_state);
+        load(operation_get_state);
         return true;
     }
 
