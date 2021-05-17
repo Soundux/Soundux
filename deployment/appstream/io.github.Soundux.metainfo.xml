@@ -14,7 +14,7 @@
   <url type="help">https://github.com/Soundux/Soundux/issues</url>
   <description>
     <p>
-      A universal soundboard using pulseaudio modules
+      A universal soundboard that uses PulseAudio modules or PipeWire linking
     </p>
     <p>Features</p>
     <ul>
