@@ -22,7 +22,7 @@ jobs:
                   submodules: recursive
 
             - name: Install OpenSSL
-              uses: crazy-max/ghaction-chocolatey@v1.4.2
+              uses: crazy-max/ghaction-chocolatey@v1.5.0
               with:
                   args: install openssl -y
 
