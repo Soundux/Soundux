@@ -116,7 +116,6 @@ set_target_properties(soundux PROPERTIES PROJECT_NAME ${PROJECT_NAME})
 if(USE_FLATPAK)
     target_compile_definitions(soundux PRIVATE USE_FLATPAK)
     target_link_libraries(soundux PRIVATE ${PULSEAUDIO_LIBRARY})
-    target_compile_definitions(soundux USE_FLATPAK)
 
     install(TARGETS soundux DESTINATION bin)
     if (${EMBED_PATH} STREQUAL "OFF")
