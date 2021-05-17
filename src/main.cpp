@@ -56,10 +56,11 @@ int main()
     if (Soundux::Globals::gSettings.audioBackend == Soundux::Objects::BackendType::PulseAudio)
     {
         Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PulseAudio>();
-        auto pulseBackend = std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
-        pulseBackend->setup();
+        Soundux::Globals::gAudioBackend->setup();
 
-        if (!pulseBackend->switchOnConnectPresent())
+        auto pulseBackend = std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
+
+        if (pulseBackend && !pulseBackend->switchOnConnectPresent())
         {
             pulseBackend->loadModules();
         }

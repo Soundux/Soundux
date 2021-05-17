@@ -7,7 +7,7 @@ namespace Soundux
 {
     namespace PulseApi
     {
-        void setup();
+        bool setup();
 
         inline pa_mainloop *(*pa_mainloop_new)();
         inline int (*pa_mainloop_iterate)(pa_mainloop *, int, int *);

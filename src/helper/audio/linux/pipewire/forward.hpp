@@ -7,7 +7,7 @@ namespace Soundux
 {
     namespace PipeWireApi
     {
-        void setup();
+        bool setup();
 
         inline pw_core *(*pw_context_connect)(pw_context *, pw_properties *, std::size_t);
         inline pw_context *(*pw_context_new)(pw_loop *, pw_properties *, std::size_t);

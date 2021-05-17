@@ -16,6 +16,7 @@ namespace Soundux::Objects
 
     void Audio::setup()
     {
+        nullSink = std::nullopt;
         for (const auto &device : getAudioDevices())
         {
             if (device.isDefault)

@@ -200,7 +200,11 @@ namespace Soundux::Objects
 
     void PipeWire::setup()
     {
-        PipeWireApi::setup();
+        if (!PipeWireApi::setup())
+        {
+            return;
+        }
+
         PipeWireApi::pw_init(nullptr, nullptr);
         loop = PipeWireApi::pw_main_loop_new(nullptr);
         if (!loop)

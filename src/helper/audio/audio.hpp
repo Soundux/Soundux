@@ -80,7 +80,7 @@ namespace Soundux
             bool stop(const std::uint32_t &);
 
 #if defined(__linux__)
-            AudioDevice nullSink;
+            std::optional<AudioDevice> nullSink;
 #endif
             AudioDevice defaultPlayback;
         };

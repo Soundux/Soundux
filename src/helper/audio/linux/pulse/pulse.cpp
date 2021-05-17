@@ -9,7 +9,11 @@ namespace Soundux::Objects
 {
     void PulseAudio::setup()
     {
-        PulseApi::setup();
+        if (!PulseApi::setup())
+        {
+            return;
+        }
+
         mainloop = PulseApi::pa_mainloop_new();
         mainloopApi = PulseApi::pa_mainloop_get_api(mainloop);
         context = PulseApi::pa_context_new(mainloopApi, "soundux");

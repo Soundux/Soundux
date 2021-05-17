@@ -1,6 +1,8 @@
 #if defined(__linux__)
 #include "forward.hpp"
+#include <core/global/globals.hpp>
 #include <dlfcn.h>
+#include <fancy.hpp>
 #include <stdexcept>
 
 template <typename T> void loadFunc(void *so, T &function, const std::string &name)
@@ -13,7 +15,7 @@ template <typename T> void loadFunc(void *so, T &function, const std::string &na
     }
 }
 
-void Soundux::PipeWireApi::setup()
+bool Soundux::PipeWireApi::setup()
 {
     auto *libpulse = dlopen("libpipewire-0.3.so", RTLD_LAZY);
     if (!libpulse)
@@ -41,11 +43,12 @@ void Soundux::PipeWireApi::setup()
         load(pw_main_loop_run);
         load(pw_proxy_destroy);
         load(pw_init);
+        return true;
     }
-    else
-    {
-        throw std::runtime_error("Failed to load pipewire");
-    }
+
+    Fancy::fancy.logTime().failure() << "Failed to load pipewire" << std::endl;
+    Globals::gAudioBackend = std::make_shared<Objects::AudioBackend>();
+    return false;
 }
 
 #endif

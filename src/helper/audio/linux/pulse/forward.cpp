@@ -1,6 +1,8 @@
 #if defined(__linux__)
 #include "forward.hpp"
+#include <core/global/globals.hpp>
 #include <dlfcn.h>
+#include <fancy.hpp>
 #include <stdexcept>
 
 template <typename T> void loadFunc(void *so, T &function, const std::string &name)
@@ -13,7 +15,7 @@ template <typename T> void loadFunc(void *so, T &function, const std::string &na
     }
 }
 
-void Soundux::PulseApi::setup()
+bool Soundux::PulseApi::setup()
 {
     auto *libpulse = dlopen("libpulse.so", RTLD_LAZY);
     if (libpulse)
@@ -41,11 +43,12 @@ void Soundux::PulseApi::setup()
         load(pa_context_unload_module);
         load(pa_context_get_state);
         load(pa_operation_get_state);
+        return true;
     }
-    else
-    {
-        throw std::runtime_error("Failed to load pulseaudio");
-    }
+
+    Fancy::fancy.logTime().failure() << "Failed to load pulseaudio" << std::endl;
+    Globals::gAudioBackend = std::make_shared<Objects::AudioBackend>();
+    return false;
 }
 
 #endif
