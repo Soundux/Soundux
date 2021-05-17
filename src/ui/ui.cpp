@@ -463,15 +463,17 @@ namespace Soundux::Objects
             stopSounds();
 
             Globals::gAudioBackend->destroy();
-
             if (settings.audioBackend == BackendType::PulseAudio)
             {
                 Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PulseAudio>();
+                Soundux::Globals::gAudioBackend->setup();
+
                 auto pulseBackend =
                     std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
-
-                pulseBackend->setup();
-                pulseBackend->loadModules();
+                if (pulseBackend)
+                {
+                    pulseBackend->loadModules();
+                }
             }
             else
             {
