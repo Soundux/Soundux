@@ -17,10 +17,36 @@ template <typename T> void loadFunc(void *so, T &function, const std::string &na
 
 bool Soundux::PulseApi::setup()
 {
+#if defined(USE_FLATPAK)
+#define load(name) _##name = reinterpret_cast<decltype(_##name)>(name);
+    load(pa_mainloop_new);
+    load(pa_mainloop_iterate);
+    load(pa_mainloop_get_api);
+    load(pa_context_new);
+    load(pa_context_connect);
+    load(pa_context_set_state_callback);
+    load(pa_context_load_module);
+    load(pa_context_get_module_info_list);
+    load(pa_context_get_source_output_info_list);
+    load(pa_context_get_sink_input_info_list);
+    load(pa_context_get_server_info);
+    load(pa_proplist_gets);
+    load(pa_context_set_default_source);
+    load(pa_context_move_sink_input_by_name);
+    load(pa_context_get_server_info);
+    load(pa_context_move_sink_input_by_index);
+    load(pa_context_move_source_output_by_name);
+    load(pa_context_move_source_output_by_index);
+    load(pa_context_set_sink_input_mute);
+    load(pa_context_unload_module);
+    load(pa_context_get_state);
+    load(pa_operation_get_state);
+    return true;
+#else
     auto *libpulse = dlopen("libpulse.so", RTLD_LAZY);
     if (libpulse)
     {
-#define load(name) loadFunc(libpulse, name, #name)
+#define load(name) loadFunc(libpulse, _##name, #name)
         load(pa_mainloop_new);
         load(pa_mainloop_iterate);
         load(pa_mainloop_get_api);
@@ -49,6 +75,7 @@ bool Soundux::PulseApi::setup()
     Fancy::fancy.logTime().failure() << "Failed to load pulseaudio" << std::endl;
     Globals::gAudioBackend = std::make_shared<Objects::AudioBackend>();
     return false;
+#endif
 }
 
 #endif
