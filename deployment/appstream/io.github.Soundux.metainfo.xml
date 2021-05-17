@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2020 Soundux -->
+<!-- Copyright 2021 Soundux -->
 <component type="desktop-application">
   <id>io.github.Soundux</id>
   <launchable type="desktop-id">io.github.Soundux.desktop</launchable>
@@ -14,7 +14,7 @@
   <url type="help">https://github.com/Soundux/Soundux/issues</url>
   <description>
     <p>
-      A universal soundboard using pulseaudio modules
+      A universal soundboard that uses PulseAudio modules or PipeWire linking
     </p>
     <p>Features</p>
     <ul>
@@ -55,6 +55,22 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.2.3" date="2021-05-17">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2.3</url>
+      <description>
+        <ul>
+          <li>PipeWire support</li>
+          <li>Delete confirmation</li>
+          <li>Open Tab folder</li>
+          <li>Favorites</li>
+          <li>Playlist mode</li>
+          <li>Push to talk keys</li>
+          <li>Delete Sounds (move to trash)</li>
+          <li>Improved Launchpad mode</li>
+          <li>Bug fixes and other improvements</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.2b3" date="2021-04-01">
       <url>https://github.com/Soundux/Soundux/releases/tag/0.2.2_b3</url>
       <description>
