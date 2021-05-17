@@ -10,7 +10,7 @@ URL: https://%{name}.rocks
 Source0: https://github.com/Soundux/Soundux/releases/download/%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires: git webkit2gtk3-devel ninja-build gtk3-devel libwnck3-devel pulseaudio-libs-devel pipewire-devel libappindicator-gtk3-devel libXi-devel clang llvm cmake openssl-devel
-Requires: pulseaudio-utils webkit2gtk3 libwnck3 libappindicator-gtk3
+Requires: pulseaudio-utils webkit2gtk3 libwnck3 libappindicator-gtk3 redhat-lsb-core
 Suggests: ffmpeg youtube-dl
 
 %description
