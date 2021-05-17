@@ -12,6 +12,19 @@ finish-args:
   - --filesystem=xdg-run/pipewire-0
 modules:
   - "shared-modules/libappindicator/libappindicator-gtk3-introspection-12.10.json"
+  - name: libwnck
+    buildsystem: meson
+    config-opts:
+      - "-Dgtk_doc=false"
+    cleanup:
+      - "/include"
+      - "/lib/pkgconfig"
+      - "/bin"
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/GNOME/libwnck.git
+        tag: 40.0
+        commit: d161ed31914711b97a1c6ebef0558d80ce51113b
   - name: soundux
     buildsystem: cmake-ninja
     config-opts:
