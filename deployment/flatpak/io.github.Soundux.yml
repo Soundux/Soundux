@@ -23,13 +23,17 @@ modules:
     sources:
       - type: git
         url: https://gitlab.gnome.org/GNOME/libwnck.git
-        tag: 40.0
-        commit: d161ed31914711b97a1c6ebef0558d80ce51113b
+        tag: "40.0"
+        commit: "d161ed31914711b97a1c6ebef0558d80ce51113b"
   - name: soundux
     buildsystem: cmake-ninja
     config-opts:
       - -DUSE_FLATPAK=ON
       - -DCMAKE_BUILD_TYPE=Release
+    post-install:
+      - "install -Dm 644 -t /app/share/metainfo deployment/appstream/io.github.Soundux.metainfo.xml"
+      - "install -Dm 644 -t /app/share/applications deployment/appstream/io.github.Soundux.desktop"
+      - "install -Dm 644 deployment/flatpak/icons/io.github.Soundux-256.png /app/share/icons/hicolor/256x256/apps/io.github.Soundux.png"
     sources:
       - type: git
         url: https://github.com/Soundux/Soundux.git
