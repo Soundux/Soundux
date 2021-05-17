@@ -173,6 +173,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "pizzadude",
+      "name": "PizzaDude",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1454420?v=4",
+      "profile": "https://github.com/pizzadude",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 2,
