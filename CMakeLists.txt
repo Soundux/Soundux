@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
-project(soundux VERSION 0.2.3 DESCRIPTION "")
+project(soundux VERSION 0.2.4 DESCRIPTION "")
 
-set(FULL_VERSION_STRING "0.2.3")
+set(FULL_VERSION_STRING "0.2.4")
 option(EMBED_PATH "The path used for embedding" "OFF")
 option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
 
@@ -39,7 +39,7 @@ if (WIN32)
     target_compile_options(soundux PRIVATE /W4)
 else()
     add_executable(soundux ${src})
-    target_compile_options(soundux PRIVATE -Wall -Wextra -Werror -pedantic -Wno-unused-lambda-capture -Wno-gnu)
+    target_compile_options(soundux PRIVATE -Wall -Wextra -pedantic -Wno-unused-lambda-capture -Wno-gnu)
 endif()
 
 target_compile_definitions(soundux PRIVATE SOUNDUX_VERSION="${FULL_VERSION_STRING}" WNCK_I_KNOW_THIS_IS_UNSTABLE=1)
@@ -105,9 +105,10 @@ else()
 endif()
 
 target_compile_features(soundux PRIVATE cxx_std_17)
-set_target_properties(soundux PROPERTIES CMAKE_CXX_STANDARD 17)
-set_target_properties(soundux PROPERTIES CMAKE_CXX_EXTENSIONS Off)
-set_target_properties(soundux PROPERTIES CMAKE_CXX_STANDARD_REQUIRED On)
+set_target_properties(soundux PROPERTIES 
+                        CXX_STANDARD 17
+                        CXX_EXTENSIONS OFF
+                        CXX_STANDARD_REQUIRED ON)
 
 set_target_properties(soundux PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(soundux PROPERTIES PROJECT_NAME ${PROJECT_NAME})

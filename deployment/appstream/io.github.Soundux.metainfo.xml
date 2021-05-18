@@ -55,6 +55,16 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.2.4" date="2021-05-18">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2.4</url>
+        <description>
+        <ul>
+          <li>Enable Icon support for flatpak</li>
+          <li>Fix Blank Page bug on Ubuntu</li>
+          <li>Fix Crash on Startup</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.3" date="2021-05-17">
       <url>https://github.com/Soundux/Soundux/releases/tag/0.2.3</url>
       <description>
