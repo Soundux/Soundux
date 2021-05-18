@@ -39,7 +39,7 @@ if (WIN32)
     target_compile_options(soundux PRIVATE /W4)
 else()
     add_executable(soundux ${src})
-    target_compile_options(soundux PRIVATE -Wall -Wextra -pedantic -Wno-unused-lambda-capture -Wno-gnu)
+    target_compile_options(soundux PRIVATE -Wall -Werror -Wextra -pedantic -Wno-unused-lambda-capture -Wno-gnu)
 endif()
 
 target_compile_definitions(soundux PRIVATE SOUNDUX_VERSION="${FULL_VERSION_STRING}" WNCK_I_KNOW_THIS_IS_UNSTABLE=1)
@@ -84,7 +84,9 @@ endif()
 
 set(HTTPLIB_REQUIRE_OPENSSL ON)
 add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
-target_link_libraries(soundux PUBLIC webview nfd InstanceGuard tiny-process-library httplib tray)
+target_include_directories(soundux SYSTEM PRIVATE "lib/cpp-httplib")
+
+target_link_libraries(soundux PRIVATE webview nfd InstanceGuard tiny-process-library tray httplib)
 
 if (${EMBED_PATH} STREQUAL "OFF")
     message("Web-content will not be embedded") 
@@ -106,9 +108,9 @@ endif()
 
 target_compile_features(soundux PRIVATE cxx_std_17)
 set_target_properties(soundux PROPERTIES 
-                        CXX_STANDARD 17
-                        CXX_EXTENSIONS OFF
-                        CXX_STANDARD_REQUIRED ON)
+                      CXX_STANDARD 17
+                      CXX_EXTENSIONS OFF
+                      CXX_STANDARD_REQUIRED ON)
 
 set_target_properties(soundux PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(soundux PROPERTIES PROJECT_NAME ${PROJECT_NAME})
