@@ -26,6 +26,16 @@ namespace Soundux::Objects
                 }
             }
         };
+        coreEvents.error = [](void *data, std::uint32_t id, int seq, int res, const char *message) {
+            Fancy::fancy.logTime() << "Core Failure - Seq " << seq << " - Res " << res << ": " << message << std::endl;
+            auto *info = reinterpret_cast<std::pair<PipeWire *, int *> *>(data);
+
+            if (info && id == 0)
+            {
+                *info->second = -1;
+                PipeWireApi::pw_main_loop_quit(info->first->loop);
+            }
+        };
 
         auto data = std::make_pair(this, &pending);
         pw_core_add_listener(core, &coreListener, &coreEvents, &data); // NOLINT
