@@ -54,7 +54,7 @@ These are required to run the program
 
 ## 🐧 Linux
 Please refer to your distro instructions on how to install
-- [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio)
+- [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio) / [pipewire](https://pipewire.org/)
 - Xorg
 - Libwnck3 (optional, for icon support)
 - Webkit2gtk
