@@ -459,9 +459,7 @@ namespace Soundux::Objects
 #if defined(__linux__)
         if (settings.audioBackend != Globals::gSettings.audioBackend)
         {
-            Globals::gAudio.stopAll(); //* <-- Explicitly called to avoid async problems
-            stopSounds();
-
+            stopSounds(true);
             Globals::gAudioBackend->destroy();
             if (settings.audioBackend == BackendType::PulseAudio)
             {
