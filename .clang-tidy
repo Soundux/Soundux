@@ -51,4 +51,5 @@ Checks: "*,\
   -readability-static-accessed-through-instance,\
   -cppcoreguidelines-special-member-functions,\
   -readability-isolate-declaration,\
-  -google-default-arguments"
+  -google-default-arguments,\
+  -altera-*"
