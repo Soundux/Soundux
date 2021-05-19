@@ -19,27 +19,41 @@ namespace Soundux::Objects
         context = PulseApi::context_new(mainloopApi, "soundux");
         PulseApi::context_connect(context, nullptr, 0, nullptr);
 
-        bool ready = false;
+        auto data = std::make_pair(false, false);
         PulseApi::context_set_state_callback(
             context,
             [](pa_context *context, void *userData) {
                 auto state = PulseApi::context_get_state(context);
+                auto *data = reinterpret_cast<std::pair<bool, bool> *>(userData);
+
+                if (!data)
+                {
+                    return;
+                }
+
                 if (state == PA_CONTEXT_FAILED)
                 {
                     Fancy::fancy.logTime().failure() << "Failed to connect to pulseaudio" << std::endl;
-                    std::terminate();
+                    data->first = true;
+                    data->second = false;
                 }
                 else if (state == PA_CONTEXT_READY)
                 {
                     Fancy::fancy.logTime().message() << "PulseAudio is ready!" << std::endl;
-                    *reinterpret_cast<bool *>(userData) = true;
+                    data->first = true;
+                    data->second = true;
                 }
             },
-            &ready);
+            &data);
 
-        while (!ready)
+        while (!data.first)
         {
             PulseApi::mainloop_iterate(mainloop, true, nullptr);
+        }
+
+        if (!data.second)
+        {
+            return;
         }
 
         unloadLeftOvers();
@@ -57,7 +71,6 @@ namespace Soundux::Objects
                 if (static_cast<int>(id) < 0)
                 {
                     Fancy::fancy.logTime().failure() << "Failed to load null sink" << std::endl;
-                    std::terminate();
                 }
                 else
                 {
@@ -74,7 +87,6 @@ namespace Soundux::Objects
                 if (static_cast<int>(id) < 0)
                 {
                     Fancy::fancy.logTime().failure() << "Failed to load loopback" << std::endl;
-                    std::terminate();
                 }
                 else
                 {
@@ -90,7 +102,6 @@ namespace Soundux::Objects
                 if (static_cast<int>(id) < 0)
                 {
                     Fancy::fancy.logTime().failure() << "Failed to load passthrough null sink" << std::endl;
-                    std::terminate();
                 }
                 else
                 {
@@ -106,7 +117,6 @@ namespace Soundux::Objects
                 if (static_cast<int>(id) < 0)
                 {
                     Fancy::fancy.logTime().failure() << "Failed to load passthrough sink" << std::endl;
-                    std::terminate();
                 }
                 else
                 {
@@ -121,7 +131,6 @@ namespace Soundux::Objects
                 if (static_cast<int>(id) < 0)
                 {
                     Fancy::fancy.logTime().failure() << "Failed to load passthrough loopback" << std::endl;
-                    std::terminate();
                 }
                 else
                 {
@@ -255,38 +264,50 @@ namespace Soundux::Objects
     }
     bool PulseAudio::useAsDefault()
     {
-        await(PulseApi::context_unload_module(context, loopBack, nullptr, nullptr));
-
-        await(PulseApi::context_load_module(
-            context, "module-loopback", ("rate=44100 source=" + defaultSource + " sink=soundux_sink").c_str(),
-            []([[maybe_unused]] pa_context *m, std::uint32_t id, void *userData) {
-                if (static_cast<int>(id) < 0)
-                {
-                    Fancy::fancy.logTime().failure() << "Failed to load loopback" << std::endl;
-                    std::terminate();
-                }
-                else
-                {
-                    *reinterpret_cast<std::uint32_t *>(userData) = id;
-                }
-            },
-            &loopBack));
-
-        bool success = false;
-        await(PulseApi::context_set_default_source(
-            context, "soundux_sink.monitor",
-            []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
-                *reinterpret_cast<bool *>(userData) = success;
-            },
-            &success));
-
-        if (!success)
+        if (!defaultSource.empty())
         {
-            Fancy::fancy.logTime().failure() << "Failed to set default source to soundux" << std::endl;
-            return false;
+
+            await(PulseApi::context_unload_module(context, loopBack, nullptr, nullptr));
+
+            await(PulseApi::context_load_module(
+                context, "module-loopback", ("rate=44100 source=" + defaultSource + " sink=soundux_sink").c_str(),
+                []([[maybe_unused]] pa_context *m, std::uint32_t id, void *userData) {
+                    if (static_cast<int>(id) < 0)
+                    {
+                        Fancy::fancy.logTime().failure() << "Failed to load loopback" << std::endl;
+                        *reinterpret_cast<std::uint32_t *>(userData) = 0;
+                    }
+                    else
+                    {
+                        *reinterpret_cast<std::uint32_t *>(userData) = id;
+                    }
+                },
+                &loopBack));
+
+            if (loopBack == 0)
+            {
+                return false;
+            }
+
+            bool success = false;
+            await(PulseApi::context_set_default_source(
+                context, "soundux_sink.monitor",
+                []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
+                    *reinterpret_cast<bool *>(userData) = success;
+                },
+                &success));
+
+            if (!success)
+            {
+                Fancy::fancy.logTime().failure() << "Failed to set default source to soundux" << std::endl;
+                return false;
+            }
+            return true;
         }
 
-        return true;
+        Fancy::fancy.logTime().failure() << "Could not set default source because original default source is unknown"
+                                         << std::endl;
+        return false;
     }
     bool PulseAudio::revertDefault()
     {
