@@ -113,7 +113,7 @@ This list may not be accurate. Contact me if you find missing dependencies so th
 ```sh
 sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev libappindicator3-dev libssl-dev libpulse-dev libpipewire-0.3-dev
 ```
-> If you're on Ubuntu 20.10 or lower you might have to add the PipeWire PPA:
+> If you're on Ubuntu 20.04 or lower you might have to add the PipeWire PPA:
 > `sudo add-apt-repository ppa:pipewire-debian/pipewire-upstream`
 #### 📜 Fedora and derivatives
 ```sh
