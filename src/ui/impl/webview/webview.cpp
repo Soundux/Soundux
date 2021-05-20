@@ -206,6 +206,11 @@ namespace Soundux::Objects
                         tray->getEntries().at(1)->setText(translations.hide);
                     }
                 }));
+                if (hideOnStartup)
+                {
+                    hideOnStartup = false;
+                    tray->getEntries().at(1)->setText(translations.show);
+                }
 
                 auto settings = tray->addEntry(Tray::Submenu(translations.settings));
                 settings->addEntries(
@@ -222,6 +227,10 @@ namespace Soundux::Objects
                     }));
             });
         });
+        if (hideOnStartup)
+        {
+            webview->hide();
+        }
     }
     void WebView::mainLoop()
     {
@@ -280,5 +289,19 @@ namespace Soundux::Objects
     {
         Window::changeSettings(newSettings);
         tray->update();
+    }
+    void WebView::hide()
+    {
+        if (!webview->isHidden())
+            webview->hide();
+    }
+    void WebView::show()
+    {
+        if (webview->isHidden())
+            webview->show();
+    }
+    void WebView::setHideWindowOnStartup()
+    {
+        hideOnStartup = true;
     }
 } // namespace Soundux::Objects

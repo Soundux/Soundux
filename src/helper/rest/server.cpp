@@ -1,6 +1,7 @@
 #include "server.hpp"
 #include <core/global/globals.hpp>
 #include <fancy.hpp>
+#include <ui/impl/webview/webview.hpp>
 
 namespace Soundux
 {
@@ -46,6 +47,14 @@ namespace Soundux
                 {
                     Globals::gGui->onSoundPlayed(*pSound);
                 }
+            });
+            m_Server.Get("/hide", [](const Request &, Response &) {
+                Objects::WebView *window = reinterpret_cast<Objects::WebView *>(Globals::gGui.get());
+                window->hide();
+            });
+            m_Server.Get("/show", [](const Request &, Response &) {
+                Objects::WebView *window = reinterpret_cast<Objects::WebView *>(Globals::gGui.get());
+                window->show();
             });
         }
     } // namespace Objects

@@ -16,7 +16,7 @@ namespace Soundux
 
             struct Command
             {
-                using command_function_t = std::function<void(int, const char **)>;
+                using command_function_t = std::function<bool(int, const char **)>;
 
                 std::string description, example;
                 command_function_t execFunction;
@@ -33,10 +33,19 @@ namespace Soundux
                 {"stopsounds",
                  {"stop playing all of the current sounds", "soundux stopsounds",
                   std::bind(&CommandLineInterface::stopSoundsCommand, this, _1, _2)}},
+                {"hide",
+                 {"\thide Soundux window (if not hidden)",
+                  "soundux hide (if there is not another instance running, hides window on startup ",
+                  std::bind(&CommandLineInterface::hideCommand, this, _1, _2)}},
+                {"show",
+                 {"\tshow Soundux window (if not visible)", "soundux show",
+                  std::bind(&CommandLineInterface::showCommand, this, _1, _2)}},
             };
 
-            void playSoundCommand(int, const char **);
-            void stopSoundsCommand(int, const char **);
+            bool playSoundCommand(int, const char **);
+            bool stopSoundsCommand(int, const char **);
+            bool hideCommand(int, const char **);
+            bool showCommand(int, const char **);
             void displayHelp();
 
           public:

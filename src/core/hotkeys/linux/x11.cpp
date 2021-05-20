@@ -119,7 +119,10 @@ namespace Soundux::Objects
     void Hotkeys::stop()
     {
         kill = true;
-        listener.join();
+        if (listener.joinable())
+        {
+            listener.join();
+        }
     }
 
     void Hotkeys::pressKeys(const std::vector<int> &keys)

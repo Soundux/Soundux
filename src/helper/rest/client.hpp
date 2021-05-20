@@ -11,6 +11,8 @@ namespace Soundux
           public:
             void playSound(std::uint32_t soundID);
             void stopSounds();
+            void hideWindow();
+            void showWindow();
         };
     } // namespace Objects
 } // namespace Soundux

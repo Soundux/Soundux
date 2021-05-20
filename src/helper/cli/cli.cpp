@@ -50,19 +50,18 @@ namespace Soundux
                     return true;
                 }
                 auto execFunction = it->second.execFunction;
-                execFunction(argc, args);
-                return true;
+                return execFunction(argc, args);
             }
             return false;
         }
 
-        void CommandLineInterface::playSoundCommand(int argc, const char **args)
+        bool CommandLineInterface::playSoundCommand(int argc, const char **args)
         {
             if (argc < 3)
             {
                 Fancy::fancy.failure() << "Missing argument for command playsound" << std::endl;
                 displayHelp();
-                return;
+                return true;
             }
             std::string commandValue = args[2];
             uint32_t soundID;
@@ -73,14 +72,28 @@ namespace Soundux
             catch (std::exception &e)
             {
                 Fancy::fancy.failure() << commandValue << " is not a correct number" << std::endl;
-                return;
+                return true;
             }
             Globals::gClient.playSound(soundID);
+            return true;
         }
 
-        void CommandLineInterface::stopSoundsCommand(int, const char **)
+        bool CommandLineInterface::stopSoundsCommand(int, const char **)
         {
             Globals::gClient.stopSounds();
+            return true;
+        }
+
+        bool CommandLineInterface::hideCommand(int, const char **)
+        {
+            Globals::gClient.hideWindow();
+            return false;
+        }
+
+        bool CommandLineInterface::showCommand(int, const char **)
+        {
+            Globals::gClient.showWindow();
+            return true;
         }
 
     } // namespace Objects

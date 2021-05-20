@@ -2,6 +2,7 @@
 
 #include <core/global/globals.hpp>
 #include <httplib.h>
+#include <ui/impl/webview/webview.hpp>
 
 namespace Soundux
 {
@@ -19,6 +20,19 @@ namespace Soundux
         {
             Client cl("localhost", Globals::gConfig.settings.serverPort);
             cl.Get("/stopsounds");
+        }
+        void SounduxClient::hideWindow()
+        {
+            WebView *window = reinterpret_cast<WebView *>(Globals::gGui.get());
+            window->setHideWindowOnStartup();
+
+            Client cl("localhost", Globals::gConfig.settings.serverPort);
+            cl.Get("/hide");
+        }
+        void SounduxClient::showWindow()
+        {
+            Client cl("localhost", Globals::gConfig.settings.serverPort);
+            cl.Get("/show");
         }
 
     } // namespace Objects
