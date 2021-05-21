@@ -37,9 +37,6 @@ jobs:
         with:
           args: install openssl -y
 
-      - name: Add NuGet Remote
-        run: "nuget.exe sources Add -Name NuGetRemote -Source https://api.nuget.org/v3/index.json"
-
       - name: Compile Embed-Helper
         run: "cd src/ui/impl/webview/lib/webviewpp/embed-helper && mkdir build && cd build && cmake .. && cmake --build . --config Release && cd Release && ./embed_helper ../../../../soundux-ui"
 
