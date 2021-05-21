@@ -13,7 +13,6 @@ namespace Soundux
             std::shared_ptr<Tray::Tray> tray;
             std::shared_ptr<Webview::Window> webview;
             void changeSettings(const Settings &newSettings) override;
-            bool hideOnStartup = false;
 
             struct
             {
@@ -35,8 +34,6 @@ namespace Soundux
             void onSoundPlayed(const PlayingSound &sound) override;
             void onSoundProgressed(const PlayingSound &sound) override;
             void onDownloadProgressed(float progress, const std::string &eta) override;
-
-            void setHideWindowOnStartup();
 
             void hide();
             void show();

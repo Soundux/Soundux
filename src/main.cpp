@@ -32,8 +32,6 @@ int main(int argc, const char *args[])
 
     CrashHandler::init();
 
-    Soundux::Globals::gGui = std::make_unique<Soundux::Objects::WebView>();
-
     if (Soundux::Globals::gCli.parseProgramArguments(argc, args))
     {
         return 0;
@@ -68,6 +66,7 @@ int main(int argc, const char *args[])
 
     Soundux::Globals::gServer.start();
 
+    Soundux::Globals::gGui = std::make_unique<Soundux::Objects::WebView>();
     Soundux::Globals::gGui->setup();
 #if defined(_WIN32)
     HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1));

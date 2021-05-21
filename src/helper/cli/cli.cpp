@@ -87,7 +87,7 @@ namespace Soundux
         bool CommandLineInterface::hideCommand(int, const char **)
         {
             Globals::gClient.hideWindow();
-            return false;
+            return true;
         }
 
         bool CommandLineInterface::showCommand(int, const char **)

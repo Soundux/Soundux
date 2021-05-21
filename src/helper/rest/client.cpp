@@ -23,9 +23,6 @@ namespace Soundux
         }
         void SounduxClient::hideWindow()
         {
-            WebView *window = reinterpret_cast<WebView *>(Globals::gGui.get());
-            window->setHideWindowOnStartup();
-
             Client cl("localhost", Globals::gConfig.settings.serverPort);
             cl.Get("/hide");
         }
