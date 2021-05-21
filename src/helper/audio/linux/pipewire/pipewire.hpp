@@ -1,9 +1,9 @@
 #if defined(__linux__)
 #include "../backend.hpp"
 #include <map>
-#include <mutex>
 #include <optional>
 #include <pipewire/pipewire.h>
+#include <var_guard.hpp>
 
 namespace Soundux
 {
@@ -52,11 +52,8 @@ namespace Soundux
             pw_registry_events registryEvents;
 
           private:
-            std::mutex nodeLock;
-            std::map<std::uint32_t, Node> nodes;
-
-            std::mutex portLock;
-            std::map<std::uint32_t, Port> ports;
+            sxl::var_guard<std::map<std::uint32_t, Node>> nodes;
+            sxl::var_guard<std::map<std::uint32_t, Port>> ports;
 
             void onNodeInfo(const pw_node_info *);
             void onPortInfo(const pw_port_info *);

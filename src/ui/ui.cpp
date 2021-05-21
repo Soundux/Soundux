@@ -160,9 +160,7 @@ namespace Soundux::Objects
 
             if (playingSound && remotePlayingSound)
             {
-                std::unique_lock lock(groupedSoundsMutex);
-                groupedSounds.insert({playingSound->id, remotePlayingSound->id});
-
+                groupedSounds->insert({playingSound->id, remotePlayingSound->id});
                 if (Globals::gSettings.output.empty() && playingSound)
                 {
                     return *playingSound;
@@ -174,14 +172,10 @@ namespace Soundux::Objects
 
                     if (!moveSuccess)
                     {
-                        groupedSoundsMutex.unlock();
-
                         if (playingSound)
                             stopSound(playingSound->id);
                         if (remotePlayingSound)
                             stopSound(remotePlayingSound->id);
-
-                        groupedSoundsMutex.lock();
 
                         Fancy::fancy.logTime().failure() << "Failed to move Application " << Globals::gSettings.output
                                                          << " to soundux sink for sound " << id << std::endl;
@@ -232,8 +226,7 @@ namespace Soundux::Objects
                 auto remotePlayingSound = Globals::gAudio.play(*sound, playbackDevice);
                 if (playingSound && remotePlayingSound)
                 {
-                    std::unique_lock lock(groupedSoundsMutex);
-                    groupedSounds.insert({playingSound->id, remotePlayingSound->id});
+                    groupedSounds->insert({playingSound->id, remotePlayingSound->id});
                     return *playingSound;
                 }
 
@@ -268,8 +261,8 @@ namespace Soundux::Objects
         std::optional<std::uint32_t> remoteSoundId;
         if (!Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
         {
-            std::shared_lock lock(groupedSoundsMutex);
-            if (groupedSounds.find(id) == groupedSounds.end())
+            auto scoped = groupedSounds.scoped();
+            if (scoped->find(id) == scoped->end())
             {
                 if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
                 {
@@ -278,7 +271,7 @@ namespace Soundux::Objects
             }
             else
             {
-                remoteSoundId = groupedSounds.at(id);
+                remoteSoundId = scoped->at(id);
             }
         }
         auto playingSound = Globals::gAudio.pause(id);
@@ -301,8 +294,8 @@ namespace Soundux::Objects
         std::optional<std::uint32_t> remoteSoundId;
         if (!Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
         {
-            std::shared_lock lock(groupedSoundsMutex);
-            if (groupedSounds.find(id) == groupedSounds.end())
+            auto scoped = groupedSounds.scoped();
+            if (scoped->find(id) == scoped->end())
             {
                 if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
                 {
@@ -311,7 +304,7 @@ namespace Soundux::Objects
             }
             else
             {
-                remoteSoundId = groupedSounds.at(id);
+                remoteSoundId = scoped->at(id);
             }
         }
         auto playingSound = Globals::gAudio.resume(id);
@@ -334,8 +327,8 @@ namespace Soundux::Objects
         std::optional<std::uint32_t> remoteSoundId;
         if (!Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
         {
-            std::shared_lock lock(groupedSoundsMutex);
-            if (groupedSounds.find(id) == groupedSounds.end())
+            auto scoped = groupedSounds.scoped();
+            if (scoped->find(id) == scoped->end())
             {
                 if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
                 {
@@ -344,7 +337,7 @@ namespace Soundux::Objects
             }
             else
             {
-                remoteSoundId = groupedSounds.at(id);
+                remoteSoundId = scoped->at(id);
             }
         }
         auto playingSound = Globals::gAudio.seek(id, seekTo);
@@ -367,8 +360,8 @@ namespace Soundux::Objects
         std::optional<std::uint32_t> remoteSoundId;
         if (!Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
         {
-            std::shared_lock lock(groupedSoundsMutex);
-            if (groupedSounds.find(id) == groupedSounds.end())
+            auto scoped = groupedSounds.scoped();
+            if (scoped->find(id) == scoped->end())
             {
                 if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
                 {
@@ -377,7 +370,7 @@ namespace Soundux::Objects
             }
             else
             {
-                remoteSoundId = groupedSounds.at(id);
+                remoteSoundId = scoped->at(id);
             }
         }
         auto playingSound = Globals::gAudio.repeat(id, shouldRepeat);
@@ -406,14 +399,14 @@ namespace Soundux::Objects
         std::optional<std::uint32_t> remoteSoundId;
         if (!Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
         {
-            std::shared_lock lock(groupedSoundsMutex);
-            if (groupedSounds.find(id) == groupedSounds.end())
+            auto scoped = groupedSounds.scoped();
+            if (scoped->find(id) == scoped->end())
             {
                 Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
                 return false;
             }
 
-            remoteSoundId = groupedSounds.at(id);
+            remoteSoundId = scoped->at(id);
         }
 
         auto status = Globals::gAudio.stop(id);
@@ -700,12 +693,12 @@ namespace Soundux::Objects
 #endif
     void Window::onSoundFinished(const PlayingSound &sound)
     {
-        std::unique_lock lock(groupedSoundsMutex);
-        if (groupedSounds.find(sound.id) != groupedSounds.end())
+        auto scoped = groupedSounds.scoped();
+        if (scoped->find(sound.id) != scoped->end())
         {
-            groupedSounds.erase(sound.id);
+            scoped->erase(sound.id);
         }
-        lock.unlock();
+        scoped.unlock();
 
         if (Globals::gAudio.getPlayingSounds().size() == 1)
         {

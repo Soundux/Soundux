@@ -8,6 +8,7 @@
 #include <mutex>
 #include <optional>
 #include <string>
+#include <var_guard.hpp>
 
 namespace Soundux
 {
@@ -50,8 +51,7 @@ namespace Soundux
         };
         class Audio
         {
-            std::recursive_mutex playingSoundsMutex;
-            std::map<std::uint32_t, std::shared_ptr<PlayingSound>> playingSounds;
+            sxl::var_guard<std::map<std::uint32_t, std::shared_ptr<PlayingSound>>, std::recursive_mutex> playingSounds;
 
             void onFinished(PlayingSound);
             void onSoundSeeked(PlayingSound *, std::uint64_t);

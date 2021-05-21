@@ -75,6 +75,7 @@ add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 add_subdirectory(lib/tiny-process-library EXCLUDE_FROM_ALL)
 add_subdirectory(lib/InstanceGuard/Source EXCLUDE_FROM_ALL)
 add_subdirectory(lib/traypp EXCLUDE_FROM_ALL)
+add_subdirectory(lib/lockpp)
 
 if (WIN32)
     set(OPENSSL_USE_STATIC_LIBS TRUE)
@@ -86,7 +87,7 @@ set(HTTPLIB_REQUIRE_OPENSSL ON)
 add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
 target_include_directories(soundux SYSTEM PRIVATE "lib/cpp-httplib")
 
-target_link_libraries(soundux PRIVATE webview nfd InstanceGuard tiny-process-library tray httplib)
+target_link_libraries(soundux PRIVATE webview nfd InstanceGuard tiny-process-library tray httplib lockpp)
 
 if (${EMBED_PATH} STREQUAL "OFF")
     message("Web-content will not be embedded") 

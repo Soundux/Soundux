@@ -144,7 +144,8 @@ namespace Soundux
             }
             else
             {
-                bestMatch = getBestMatch(Globals::gSounds, pressedKeys);
+                auto scopedSounds = Globals::gSounds.scoped();
+                bestMatch = getBestMatch(*scopedSounds, pressedKeys);
             }
 
             if (bestMatch)

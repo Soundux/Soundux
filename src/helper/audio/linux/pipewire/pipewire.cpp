@@ -30,7 +30,7 @@ namespace Soundux::Objects
             Fancy::fancy.logTime() << "Core Failure - Seq " << seq << " - Res " << res << ": " << message << std::endl;
             auto *info = reinterpret_cast<std::pair<PipeWire *, int *> *>(data);
 
-            if (info && id == 0)
+            if (info && id == PW_ID_CORE)
             {
                 *info->second = -1;
                 PipeWireApi::pw_main_loop_quit(info->first->loop);
@@ -51,9 +51,9 @@ namespace Soundux::Objects
 
     void PipeWire::onNodeInfo(const pw_node_info *info)
     {
-        if (info && nodes.find(info->id) != nodes.end())
+        if (info && (~nodes).find(info->id) != (~nodes).end())
         {
-            auto &self = nodes.at(info->id);
+            auto &self = (~nodes).at(info->id);
 
             if (const auto *pid = spa_dict_lookup(info->props, "application.process.id"); pid)
             {
@@ -78,9 +78,9 @@ namespace Soundux::Objects
 
     void PipeWire::onPortInfo(const pw_port_info *info)
     {
-        if (info && ports.find(info->id) != ports.end())
+        if (info && (~ports).find(info->id) != (~ports).end())
         {
-            auto &self = ports.at(info->id);
+            auto &self = (~ports).at(info->id);
             self.direction = info->direction;
 
             if (const auto *nodeId = spa_dict_lookup(info->props, "node.id"); nodeId)
@@ -131,10 +131,7 @@ namespace Soundux::Objects
 
                 if (boundNode)
                 {
-                    thiz->nodeLock.lock();
-                    thiz->nodes.emplace(id, node);
-                    thiz->nodeLock.unlock();
-
+                    thiz->nodes->emplace(id, node);
                     pw_node_add_listener(boundNode, &listener, &events, thiz); // NOLINT
                     thiz->sync();
                     spa_hook_remove(&listener);
@@ -163,25 +160,22 @@ namespace Soundux::Objects
 
                 if (boundPort)
                 {
-                    thiz->portLock.lock();
-                    thiz->ports.emplace(id, port);
-                    thiz->portLock.unlock();
-
+                    thiz->ports->emplace(id, port);
                     pw_port_add_listener(boundPort, &listener, &events, thiz); // NOLINT
                     thiz->sync();
                     spa_hook_remove(&listener);
                     PipeWireApi::pw_proxy_destroy(reinterpret_cast<pw_proxy *>(boundPort));
 
-                    std::lock_guard portLock(thiz->portLock);
-                    std::lock_guard nodeLock(thiz->nodeLock);
-                    if (thiz->ports.find(id) != thiz->ports.end())
+                    auto scopedNodes = thiz->nodes.scoped();
+                    auto scopedPorts = thiz->ports.scoped();
+                    if (scopedPorts->find(id) != scopedPorts->end())
                     {
-                        auto &port = thiz->ports.at(id);
-                        if (port.parentNode > 0 && thiz->nodes.find(port.parentNode) != thiz->nodes.end())
+                        auto &port = scopedPorts->at(id);
+                        if (port.parentNode > 0 && scopedNodes->find(port.parentNode) != scopedNodes->end())
                         {
-                            auto &node = thiz->nodes.at(port.parentNode);
+                            auto &node = scopedNodes->at(port.parentNode);
                             node.ports.emplace(id, port);
-                            thiz->ports.erase(id);
+                            scopedPorts->erase(id);
                         }
                     }
                 }
@@ -194,16 +188,16 @@ namespace Soundux::Objects
         auto *thiz = reinterpret_cast<PipeWire *>(data);
         if (thiz)
         {
-            std::lock_guard lock(thiz->nodeLock);
-            if (thiz->nodes.find(id) != thiz->nodes.end())
+            auto scopedNodes = thiz->nodes.scoped();
+            if (scopedNodes->find(id) != scopedNodes->end())
             {
-                thiz->nodes.erase(id);
+                scopedNodes->erase(id);
             }
 
-            std::lock_guard portLock(thiz->portLock);
-            if (thiz->ports.find(id) != thiz->ports.end())
+            auto scopedPorts = thiz->ports.scoped();
+            if (scopedPorts->find(id) != scopedPorts->end())
             {
-                thiz->ports.erase(id);
+                scopedPorts->erase(id);
             }
         }
     }
@@ -344,8 +338,8 @@ namespace Soundux::Objects
         sync();
         std::vector<std::shared_ptr<RecordingApp>> rtn;
 
-        std::lock_guard lock(nodeLock);
-        for (const auto &[nodeId, node] : nodes)
+        auto scopedNodes = nodes.scoped();
+        for (const auto &[nodeId, node] : *scopedNodes)
         {
             if (!node.applicationBinary.empty() && !node.isMonitor)
             {
@@ -379,8 +373,8 @@ namespace Soundux::Objects
         sync();
         std::vector<std::shared_ptr<PlaybackApp>> rtn;
 
-        std::lock_guard lock(nodeLock);
-        for (const auto &[nodeId, node] : nodes)
+        auto scopedNodes = nodes.scoped();
+        for (const auto &[nodeId, node] : *scopedNodes)
         {
             if (!node.applicationBinary.empty() && !node.isMonitor)
             {
@@ -411,8 +405,8 @@ namespace Soundux::Objects
 
     std::shared_ptr<PlaybackApp> PipeWire::getPlaybackApp(const std::string &name)
     {
-        std::lock_guard lock(nodeLock);
-        for (const auto &[nodeId, node] : nodes)
+        auto scopedNodes = nodes.scoped();
+        for (const auto &[nodeId, node] : *scopedNodes)
         {
             if (node.name == name)
             {
@@ -430,8 +424,8 @@ namespace Soundux::Objects
 
     std::shared_ptr<RecordingApp> PipeWire::getRecordingApp(const std::string &name)
     {
-        std::lock_guard lock(nodeLock);
-        for (const auto &[nodeId, node] : nodes)
+        auto scopedNodes = nodes.scoped();
+        for (const auto &[nodeId, node] : *scopedNodes)
         {
             if (node.name == name)
             {
@@ -484,15 +478,9 @@ namespace Soundux::Objects
 
         stopSoundInput();
 
-        std::unique_lock lock(nodeLock);
-        auto nodes = this->nodes;
-        lock.unlock();
-
         bool success = false;
-
-        portLock.lock();
-        auto ports = this->ports;
-        portLock.unlock();
+        auto nodes = this->nodes.copy();
+        auto ports = this->ports.copy();
 
         for (const auto &[nodeId, node] : nodes)
         {
@@ -563,15 +551,9 @@ namespace Soundux::Objects
 
         stopPassthrough();
 
-        std::unique_lock lock(nodeLock);
-        auto nodes = this->nodes;
-        lock.unlock();
-
         bool success = false;
-
-        portLock.lock();
-        auto ports = this->ports;
-        portLock.unlock();
+        auto nodes = this->nodes.copy();
+        auto ports = this->ports.copy();
 
         for (const auto &[nodeId, node] : nodes)
         {

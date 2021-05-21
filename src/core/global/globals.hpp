@@ -11,6 +11,7 @@
 #include <helper/ytdl/youtube-dl.hpp>
 #include <memory>
 #include <ui/ui.hpp>
+#include <var_guard.hpp>
 
 namespace Soundux
 {
@@ -30,9 +31,7 @@ namespace Soundux
         inline Objects::ProcessingQueue<std::uintptr_t> gQueue;
 
         /* Allows for fast & easy sound access, is populated on start up */
-        inline std::shared_mutex gSoundsMutex;
-        inline std::shared_mutex gFavoritesMutex;
-        inline std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>> gSounds;
-        inline std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>> gFavorites;
+        inline sxl::var_guard<std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>>> gSounds;
+        inline sxl::var_guard<std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>>> gFavorites;
     } // namespace Globals
 } // namespace Soundux

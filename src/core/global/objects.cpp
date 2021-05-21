@@ -10,15 +10,13 @@ namespace Soundux::Objects
     {
         tab.id = tabs.size();
         tabs.emplace_back(tab);
-        std::unique_lock lock(Globals::gSoundsMutex);
-        std::unique_lock favLock(Globals::gFavoritesMutex);
 
         for (auto &sound : tabs.back().sounds)
         {
-            Globals::gSounds.insert({sound.id, sound});
+            Globals::gSounds->insert({sound.id, sound});
             if (sound.isFavorite)
             {
-                Globals::gFavorites.insert({sound.id, sound});
+                Globals::gFavorites->insert({sound.id, sound});
             }
         }
 
@@ -26,17 +24,15 @@ namespace Soundux::Objects
     }
     void Data::removeTabById(const std::uint32_t &index)
     {
-        std::unique_lock lock(Globals::gSoundsMutex);
-        std::unique_lock favLock(Globals::gFavoritesMutex);
         if (tabs.size() > index)
         {
             auto &tab = tabs.at(index);
             for (auto &sound : tab.sounds)
             {
-                Globals::gSounds.erase(sound.id);
+                Globals::gSounds->erase(sound.id);
                 if (sound.isFavorite)
                 {
-                    Globals::gFavorites.erase(sound.id);
+                    Globals::gFavorites->erase(sound.id);
                 }
             }
 
@@ -55,11 +51,8 @@ namespace Soundux::Objects
     void Data::setTabs(const std::vector<Tab> &newTabs)
     {
         tabs = newTabs;
-        std::unique_lock lock(Globals::gSoundsMutex);
-        std::unique_lock favLock(Globals::gFavoritesMutex);
-
-        Globals::gSounds.clear();
-        Globals::gFavorites.clear();
+        Globals::gSounds->clear();
+        Globals::gFavorites->clear();
         for (std::size_t i = 0; tabs.size() > i; i++)
         {
             auto &tab = tabs.at(i);
@@ -67,10 +60,10 @@ namespace Soundux::Objects
 
             for (auto &sound : tab.sounds)
             {
-                Globals::gSounds.insert({sound.id, sound});
+                Globals::gSounds->insert({sound.id, sound});
                 if (sound.isFavorite)
                 {
-                    Globals::gFavorites.insert({sound.id, sound});
+                    Globals::gFavorites->insert({sound.id, sound});
                 }
             }
         }
@@ -91,11 +84,10 @@ namespace Soundux::Objects
     }
     std::optional<std::reference_wrapper<Sound>> Data::getSound(const std::uint32_t &id)
     {
-        std::shared_lock lock(Globals::gSoundsMutex);
-
-        if (Globals::gSounds.find(id) != Globals::gSounds.end())
+        auto scopedSounds = Globals::gSounds.scoped();
+        if (scopedSounds->find(id) != scopedSounds->end())
         {
-            return Globals::gSounds.at(id);
+            return scopedSounds->at(id);
         }
 
         Fancy::fancy.logTime().warning() << "Tried to access non existent sound " << id << std::endl;
@@ -107,14 +99,12 @@ namespace Soundux::Objects
         {
             auto &realTab = tabs.at(id);
 
-            std::unique_lock lock(Globals::gSoundsMutex);
-            std::unique_lock favLock(Globals::gFavoritesMutex);
             for (const auto &sound : realTab.sounds)
             {
-                Globals::gSounds.erase(sound.id);
+                Globals::gSounds->erase(sound.id);
                 if (sound.isFavorite)
                 {
-                    Globals::gFavorites.erase(sound.id);
+                    Globals::gFavorites->erase(sound.id);
                 }
             }
 
@@ -122,10 +112,10 @@ namespace Soundux::Objects
 
             for (auto &sound : realTab.sounds)
             {
-                Globals::gSounds.insert({sound.id, sound});
+                Globals::gSounds->insert({sound.id, sound});
                 if (sound.isFavorite)
                 {
-                    Globals::gFavorites.insert({sound.id, sound});
+                    Globals::gFavorites->insert({sound.id, sound});
                 }
             }
             return realTab;
@@ -141,10 +131,8 @@ namespace Soundux::Objects
         height = other.height;
         soundIdCounter = other.soundIdCounter;
 
-        std::unique_lock lock(Globals::gSoundsMutex);
-        std::unique_lock favLock(Globals::gFavoritesMutex);
-        Globals::gSounds.clear();
-        Globals::gFavorites.clear();
+        Globals::gSounds->clear();
+        Globals::gFavorites->clear();
 
         for (std::size_t i = 0; tabs.size() > i; i++)
         {
@@ -153,10 +141,10 @@ namespace Soundux::Objects
 
             for (auto &sound : tab.sounds)
             {
-                Globals::gSounds.insert({sound.id, sound});
+                Globals::gSounds->insert({sound.id, sound});
                 if (sound.isFavorite)
                 {
-                    Globals::gFavorites.insert({sound.id, sound});
+                    Globals::gFavorites->insert({sound.id, sound});
                 }
             }
         }
@@ -169,27 +157,26 @@ namespace Soundux::Objects
             sound->get().isFavorite = favourite;
             if (favourite)
             {
-                std::unique_lock lock(Globals::gFavoritesMutex);
-                Globals::gFavorites.insert({id, sound->get()});
+                Globals::gFavorites->insert({id, sound->get()});
             }
             else
             {
-                std::unique_lock lock(Globals::gFavoritesMutex);
-                if (Globals::gFavorites.find(id) != Globals::gFavorites.end())
+                auto scopedFavorites = Globals::gFavorites.scoped();
+                if (scopedFavorites->find(id) != scopedFavorites->end())
                 {
-                    Globals::gFavorites.erase(id);
+                    scopedFavorites->erase(id);
                 }
             }
         }
     }
     std::vector<std::uint32_t> Data::getFavoriteIds()
     {
-        std::shared_lock lock(Globals::gFavoritesMutex);
+        auto scopedFavorites = Globals::gFavorites.scoped();
 
         std::vector<std::uint32_t> rtn;
-        rtn.reserve(Globals::gFavorites.size());
+        rtn.reserve(scopedFavorites->size());
 
-        for (const auto &sound : Globals::gFavorites)
+        for (const auto &sound : *scopedFavorites)
         {
             rtn.emplace_back(sound.first);
         }
@@ -198,12 +185,12 @@ namespace Soundux::Objects
     }
     std::vector<Sound> Data::getFavorites()
     {
-        std::shared_lock lock(Globals::gFavoritesMutex);
+        auto scopedFavorites = Globals::gFavorites.scoped();
 
         std::vector<Sound> rtn;
-        rtn.reserve(Globals::gFavorites.size());
+        rtn.reserve(scopedFavorites->size());
 
-        for (const auto &sound : Globals::gFavorites)
+        for (const auto &sound : *scopedFavorites)
         {
             rtn.emplace_back(sound.second);
         }

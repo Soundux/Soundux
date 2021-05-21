@@ -35,3 +35,6 @@
 [submodule "lib/semver"]
 	path = lib/semver
 	url = https://github.com/Neargye/semver
+[submodule "lib/lockpp"]
+	path = lib/lockpp
+	url = https://github.com/Soundux/lockpp

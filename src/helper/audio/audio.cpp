@@ -114,18 +114,15 @@ namespace Soundux::Objects
         pSound->lengthInMs = static_cast<std::uint64_t>(static_cast<double>(pSound->length) /
                                                         static_cast<double>(config.sampleRate) * 1000);
 
-        playingSoundsMutex.lock();
-        playingSounds.emplace(soundId, pSound);
-        playingSoundsMutex.unlock();
-
+        playingSounds->emplace(soundId, pSound);
         return *pSound;
     }
     void Audio::stopAll()
     {
-        std::unique_lock lock(playingSoundsMutex);
-        while (!playingSounds.empty())
+        auto scoped = playingSounds.scoped();
+        while (!scoped->empty())
         {
-            auto &sound = playingSounds.begin()->second;
+            auto &sound = scoped->begin()->second;
             if (sound->raw.device && sound->raw.decoder)
             {
                 ma_device_uninit(sound->raw.device);
@@ -135,15 +132,15 @@ namespace Soundux::Objects
             sound->raw.device = nullptr;
             sound->raw.decoder = nullptr;
 
-            playingSounds.erase(sound->id);
+            scoped->erase(sound->id);
         }
     }
     bool Audio::stop(const std::uint32_t &soundId)
     {
-        std::unique_lock lock(playingSoundsMutex);
-        if (playingSounds.find(soundId) != playingSounds.end())
+        auto scoped = playingSounds.scoped();
+        if (scoped->find(soundId) != scoped->end())
         {
-            auto &sound = playingSounds.at(soundId);
+            auto &sound = scoped->at(soundId);
             if (sound->raw.device && sound->raw.decoder)
             {
                 ma_device_uninit(sound->raw.device);
@@ -153,7 +150,7 @@ namespace Soundux::Objects
             sound->raw.device = nullptr;
             sound->raw.decoder = nullptr;
 
-            playingSounds.erase(sound->id);
+            scoped->erase(sound->id);
             return true;
         }
 
@@ -163,10 +160,10 @@ namespace Soundux::Objects
     }
     std::optional<PlayingSound> Audio::pause(const std::uint32_t &soundId)
     {
-        std::unique_lock lock(playingSoundsMutex);
-        if (playingSounds.find(soundId) != playingSounds.end())
+        auto scoped = playingSounds.scoped();
+        if (scoped->find(soundId) != scoped->end())
         {
-            auto &sound = playingSounds.at(soundId);
+            auto &sound = scoped->at(soundId);
 
             if (!sound->paused)
             {
@@ -186,10 +183,10 @@ namespace Soundux::Objects
     }
     std::optional<PlayingSound> Audio::repeat(const std::uint32_t &soundId, bool shouldRepeat)
     {
-        std::unique_lock lock(playingSoundsMutex);
-        if (playingSounds.find(soundId) != playingSounds.end())
+        auto scoped = playingSounds.scoped();
+        if (scoped->find(soundId) != scoped->end())
         {
-            auto &sound = playingSounds.at(soundId);
+            auto &sound = scoped->at(soundId);
             sound->repeat = shouldRepeat;
 
             return *sound;
@@ -201,10 +198,10 @@ namespace Soundux::Objects
     }
     std::optional<PlayingSound> Audio::resume(const std::uint32_t &soundId)
     {
-        std::unique_lock lock(playingSoundsMutex);
-        if (playingSounds.find(soundId) != playingSounds.end())
+        auto scoped = playingSounds.scoped();
+        if (scoped->find(soundId) != scoped->end())
         {
-            auto &sound = playingSounds.at(soundId);
+            auto &sound = scoped->at(soundId);
 
             if (sound->paused)
             {
@@ -224,8 +221,8 @@ namespace Soundux::Objects
     }
     void Audio::onFinished(PlayingSound sound)
     {
-        std::unique_lock lock(playingSoundsMutex);
-        if (playingSounds.find(sound.id) != playingSounds.end())
+        auto scoped = playingSounds.scoped();
+        if (scoped->find(sound.id) != scoped->end())
         {
             ma_device_uninit(sound.raw.device);
             ma_decoder_uninit(sound.raw.decoder);
@@ -234,7 +231,7 @@ namespace Soundux::Objects
             sound.raw.decoder = nullptr;
 
             Globals::gGui->onSoundFinished(sound);
-            playingSounds.erase(sound.id);
+            scoped->erase(sound.id);
         }
         else
         {
@@ -266,10 +263,10 @@ namespace Soundux::Objects
     }
     std::optional<PlayingSound> Audio::seek(const std::uint32_t &soundId, std::uint64_t position)
     {
-        std::unique_lock lock(playingSoundsMutex);
-        if (playingSounds.find(soundId) != playingSounds.end())
+        auto scoped = playingSounds.scoped();
+        if (scoped->find(soundId) != scoped->end())
         {
-            auto &sound = playingSounds.at(soundId);
+            auto &sound = scoped->at(soundId);
             sound->seekTo =
                 static_cast<std::uint64_t>((static_cast<double>(position) / static_cast<double>(sound->lengthInMs)) *
                                            static_cast<double>(sound->length));
@@ -393,10 +390,10 @@ namespace Soundux::Objects
 #endif
     std::vector<PlayingSound> Audio::getPlayingSounds()
     {
-        std::lock_guard lock(playingSoundsMutex);
+        auto scoped = playingSounds.scoped();
 
         std::vector<PlayingSound> rtn;
-        for (const auto &sound : playingSounds)
+        for (const auto &sound : *scoped)
         {
             rtn.emplace_back(*sound.second);
         }

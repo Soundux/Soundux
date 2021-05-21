@@ -7,8 +7,8 @@
 #include <atomic>
 #include <cstdint>
 #include <queue>
-#include <shared_mutex>
 #include <string>
+#include <var_guard.hpp>
 
 namespace Soundux
 {
@@ -34,8 +34,7 @@ namespace Soundux
             friend class Hotkeys;
 
           protected:
-            std::shared_mutex groupedSoundsMutex;
-            std::map<std::uint32_t, std::uint32_t> groupedSounds;
+            sxl::var_guard<std::map<std::uint32_t, std::uint32_t>> groupedSounds;
 
             struct
             {
