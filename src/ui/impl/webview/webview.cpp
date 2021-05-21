@@ -232,6 +232,22 @@ namespace Soundux::Objects
         }
         Fancy::fancy.logTime() << "UI exited" << std::endl;
     }
+    void WebView::hide()
+    {
+        if (!webview->isHidden())
+        {
+            webview->hide();
+            tray->getEntries().at(1)->setText(translations.show);
+        }
+    }
+    void WebView::show()
+    {
+        if (webview->isHidden())
+        {
+            webview->show();
+            tray->getEntries().at(1)->setText(translations.hide);
+        }
+    }
     void WebView::onHotKeyReceived(const std::vector<int> &keys)
     {
         std::string hotkeySequence;
@@ -280,21 +296,5 @@ namespace Soundux::Objects
     {
         Window::changeSettings(newSettings);
         tray->update();
-    }
-    void WebView::hide()
-    {
-        if (!webview->isHidden())
-        {
-            webview->hide();
-            tray->getEntries().at(1)->setText(translations.show);
-        }
-    }
-    void WebView::show()
-    {
-        if (webview->isHidden())
-        {
-            webview->show();
-            tray->getEntries().at(1)->setText(translations.hide);
-        }
     }
 } // namespace Soundux::Objects
