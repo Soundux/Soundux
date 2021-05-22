@@ -342,10 +342,11 @@ namespace Soundux::Objects
     {
         webview->callFunction<void>(Webview::JavaScriptFunction("window.onError", static_cast<std::uint8_t>(error)));
     }
-    void WebView::changeSettings(const Settings &newSettings)
+    Settings WebView::changeSettings(const Settings &newSettings)
     {
-        Window::changeSettings(newSettings);
+        auto rtn = Window::changeSettings(newSettings);
         tray->update();
+        return rtn;
     }
     void WebView::onAllSoundsFinished()
     {

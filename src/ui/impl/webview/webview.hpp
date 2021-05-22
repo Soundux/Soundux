@@ -14,7 +14,7 @@ namespace Soundux
             std::shared_ptr<Webview::Window> webview;
 
             void onAllSoundsFinished() override;
-            void changeSettings(const Settings &newSettings) override;
+            Settings changeSettings(const Settings &newSettings) override;
 
           public:
             void setup() override;

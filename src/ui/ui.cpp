@@ -453,10 +453,13 @@ namespace Soundux::Objects
         }
 #endif
     }
-    void Window::changeSettings(const Settings &settings)
+    Settings Window::changeSettings(const Settings &settings)
     {
 #if defined(__linux__)
-        if (settings.audioBackend != Globals::gSettings.audioBackend)
+        auto oldSettings = Globals::gSettings;
+        Globals::gSettings = settings;
+
+        if (settings.audioBackend != oldSettings.audioBackend)
         {
             stopSounds(true);
 
@@ -464,22 +467,22 @@ namespace Soundux::Objects
             {
                 Globals::gAudioBackend->destroy();
             }
-            Globals::gAudioBackend = AudioBackend::createInstance(settings.audioBackend);
 
+            Globals::gAudioBackend = AudioBackend::createInstance(settings.audioBackend);
             Globals::gAudio.setup();
         }
         if (Globals::gAudioBackend)
         {
             if (!Globals::gAudio.getPlayingSounds().empty())
             {
-                if (settings.muteDuringPlayback && !Globals::gSettings.muteDuringPlayback)
+                if (settings.muteDuringPlayback && !oldSettings.muteDuringPlayback)
                 {
                     if (!Globals::gAudioBackend->muteInput(true))
                     {
                         Fancy::fancy.logTime().failure() << "Failed to mute input" << std::endl;
                     }
                 }
-                else if (!settings.muteDuringPlayback && Globals::gSettings.muteDuringPlayback)
+                else if (!settings.muteDuringPlayback && oldSettings.muteDuringPlayback)
                 {
                     if (!Globals::gAudioBackend->muteInput(false))
                     {
@@ -487,7 +490,7 @@ namespace Soundux::Objects
                     }
                 }
             }
-            if (!settings.useAsDefaultDevice && Globals::gSettings.useAsDefaultDevice)
+            if (!settings.useAsDefaultDevice && oldSettings.useAsDefaultDevice)
             {
                 if (!Globals::gAudioBackend->revertDefault())
                 {
@@ -495,7 +498,7 @@ namespace Soundux::Objects
                     onError(Enums::ErrorCode::FailedToRevertDefaultSource);
                 }
             }
-            else if (settings.useAsDefaultDevice && !Globals::gSettings.useAsDefaultDevice)
+            else if (settings.useAsDefaultDevice && !oldSettings.useAsDefaultDevice)
             {
                 Globals::gSettings.output = "";
                 if (!Globals::gAudioBackend->stopSoundInput())
@@ -508,7 +511,7 @@ namespace Soundux::Objects
                     onError(Enums::ErrorCode::FailedToSetDefaultSource);
                 }
             }
-            if (settings.output != Globals::gSettings.output)
+            if (settings.output != oldSettings.output)
             {
                 if (!Globals::gAudioBackend->stopSoundInput())
                 {
@@ -522,7 +525,7 @@ namespace Soundux::Objects
             }
         }
 #endif
-        Globals::gSettings = settings;
+        return Globals::gSettings;
     }
     void Window::onHotKeyReceived([[maybe_unused]] const std::vector<int> &keys)
     {
