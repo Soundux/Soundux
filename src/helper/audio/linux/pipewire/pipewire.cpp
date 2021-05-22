@@ -566,6 +566,11 @@ namespace Soundux::Objects
         auto nodes = this->nodes.copy();
         auto ports = this->ports.copy();
 
+        if (passthroughLinks.find(app->name) == passthroughLinks.end())
+        {
+            passthroughLinks.emplace(app->name, std::vector<std::uint32_t>{});
+        }
+
         for (const auto &[nodeId, node] : nodes)
         {
             if (node.name != app->name)
@@ -587,7 +592,7 @@ namespace Soundux::Objects
                                 if (link)
                                 {
                                     success = true;
-                                    passthroughLinks.emplace_back(*link);
+                                    passthroughLinks.at(app->name).emplace_back(*link);
                                 }
                             }
                             else if ((port.side == 'L' || port.side == '1') &&
@@ -598,7 +603,7 @@ namespace Soundux::Objects
                                 if (link)
                                 {
                                     success = true;
-                                    passthroughLinks.emplace_back(*link);
+                                    passthroughLinks.at(app->name).emplace_back(*link);
                                 }
                             }
                         }
@@ -615,15 +620,38 @@ namespace Soundux::Objects
         return !passthroughLinks.empty();
     }
 
-    bool PipeWire::stopPassthrough()
+    bool PipeWire::stopPassthrough(const std::string &name)
     {
-        for (const auto &id : passthroughLinks)
+        if (passthroughLinks.find(name) != passthroughLinks.end())
         {
-            deleteLink(id);
+            for (const auto &id : passthroughLinks.at(name))
+            {
+                deleteLink(id);
+            }
+            passthroughLinks.erase(name);
+            return true;
         }
-        passthroughLinks.clear();
 
+        return false;
+    }
+
+    bool PipeWire::stopAllPassthrough()
+    {
+        for (const auto &[appName, links] : passthroughLinks)
+        {
+            for (const auto &id : links)
+            {
+                deleteLink(id);
+            }
+        }
+
+        passthroughLinks.clear();
         return true;
+    }
+
+    std::size_t PipeWire::passedThroughApplications()
+    {
+        return passthroughLinks.size();
     }
 } // namespace Soundux::Objects
 #endif

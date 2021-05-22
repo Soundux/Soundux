@@ -39,8 +39,11 @@ namespace Soundux
             virtual bool revertDefault() = 0;
             virtual bool muteInput(bool) = 0;
 
-            virtual bool stopPassthrough() = 0;
             virtual bool isCurrentlyPassingThrough() = 0;
+            virtual std::size_t passedThroughApplications() = 0;
+
+            virtual bool stopAllPassthrough() = 0;
+            virtual bool stopPassthrough(const std::string &) = 0;
             virtual bool passthroughFrom(std::shared_ptr<PlaybackApp>) = 0;
 
             virtual bool stopSoundInput() = 0;

@@ -456,9 +456,9 @@ namespace Soundux::Objects
                 Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
                 onError(Enums::ErrorCode::FailedToMoveBack);
             }
-            if (!Globals::gAudioBackend->stopPassthrough())
+            if (!Globals::gAudioBackend->stopAllPassthrough())
             {
-                Fancy::fancy.logTime().failure() << "Failed to move back current passthrough application" << std::endl;
+                Fancy::fancy.logTime().failure() << "Failed to move back current passthrough applications" << std::endl;
                 onError(Enums::ErrorCode::FailedToMoveBackPassthrough);
             }
         }
@@ -704,11 +704,11 @@ namespace Soundux::Objects
 
         return success;
     }
-    void Window::stopPassthrough()
+    void Window::stopPassthrough(const std::string &name)
     {
         if (Globals::gAudioBackend)
         {
-            if (Globals::gAudio.getPlayingSounds().empty())
+            if (Globals::gAudio.getPlayingSounds().empty() && Globals::gAudioBackend->passedThroughApplications() == 1)
             {
                 if (!Globals::gAudioBackend->stopSoundInput())
                 {
@@ -716,7 +716,8 @@ namespace Soundux::Objects
                     onError(Enums::ErrorCode::FailedToMoveBack);
                 }
             }
-            if (!Globals::gAudioBackend->stopPassthrough())
+
+            if (!Globals::gAudioBackend->stopPassthrough(name))
             {
                 Fancy::fancy.logTime().failure() << "Failed to move back current passthrough application" << std::endl;
                 onError(Enums::ErrorCode::FailedToMoveBackPassthrough);

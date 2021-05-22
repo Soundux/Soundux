@@ -50,8 +50,8 @@ namespace Soundux
             std::string serverName;
             std::string defaultSource;
 
-            sxl::var_guard<std::map<std::string, std::shared_ptr<PulseRecordingApp>>> movedApplication;
-            sxl::var_guard<std::map<std::string, std::shared_ptr<PulsePlaybackApp>>> movedPassthroughApplication;
+            sxl::var_guard<std::map<std::string, std::shared_ptr<PulseRecordingApp>>> movedApplications;
+            sxl::var_guard<std::map<std::string, std::shared_ptr<PulsePlaybackApp>>> movedPassthroughApplications;
 
             std::mutex operationMutex;
 
@@ -77,8 +77,10 @@ namespace Soundux
             bool revertDefault() override;
             bool muteInput(bool state) override;
 
-            bool stopPassthrough() override;
+            bool stopAllPassthrough() override;
             bool isCurrentlyPassingThrough() override;
+            std::size_t passedThroughApplications() override;
+            bool stopPassthrough(const std::string &name) override;
             bool passthroughFrom(std::shared_ptr<PlaybackApp> app) override;
 
             bool stopSoundInput() override;

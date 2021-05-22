@@ -65,7 +65,7 @@ namespace Soundux
             virtual Settings changeSettings(const Settings &);
 
 #if defined(__linux__)
-            void stopPassthrough();
+            void stopPassthrough(const std::string &);
             virtual bool startPassthrough(const std::string &);
 #endif
 
