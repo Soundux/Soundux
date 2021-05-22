@@ -120,6 +120,7 @@ namespace nlohmann
             getToIfExists(j, "allowOverlapping", obj.allowOverlapping);
             getToIfExists(j, "useAsDefaultDevice", obj.useAsDefaultDevice);
             getToIfExists(j, "muteDuringPlayback", obj.muteDuringPlayback);
+            getToIfExists(j, "allowMultipleOutputs", obj.allowMultipleOutputs);
         }
     };
     template <> struct adl_serializer<Soundux::Objects::Tab>
