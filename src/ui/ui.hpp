@@ -64,8 +64,10 @@ namespace Soundux
             virtual bool deleteSound(const std::uint32_t &);
             virtual Settings changeSettings(const Settings &);
 
+#if defined(__linux__)
             void stopPassthrough();
             virtual bool startPassthrough(const std::string &);
+#endif
 
           protected:
             virtual std::optional<Tab> addTab();
