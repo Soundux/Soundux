@@ -680,23 +680,26 @@ namespace Soundux::Objects
     bool Window::startPassthrough(const std::string &name)
     {
         bool success = true;
-        if (Globals::gAudioBackend)
+        if (Globals::gAudioBackend && !Globals::gSettings.output.empty())
         {
             for (const auto &outputApp : Globals::gSettings.output)
             {
-                if (Globals::gSettings.output.empty() ||
-                    Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
+                if (!Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
                 {
-                    if (!Globals::gAudioBackend->passthroughFrom(Globals::gAudioBackend->getPlaybackApp(name)))
-                    {
-                        Fancy::fancy.logTime().failure()
-                            << "Failed to move application: " << name << " to passthrough" << std::endl;
-                        success = false;
-                    }
+                    success = false;
                 }
             }
 
-            if (!success)
+            if (success)
+            {
+                if (!Globals::gAudioBackend->passthroughFrom(Globals::gAudioBackend->getPlaybackApp(name)))
+                {
+                    Fancy::fancy.logTime().failure()
+                        << "Failed to move application: " << name << " to passthrough" << std::endl;
+                    success = false;
+                }
+            }
+            else
             {
                 onError(Enums::ErrorCode::FailedToStartPassthrough);
             }

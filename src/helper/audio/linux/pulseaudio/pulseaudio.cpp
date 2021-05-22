@@ -375,7 +375,7 @@ namespace Soundux::Objects
     bool PulseAudio::passthroughFrom(std::shared_ptr<PlaybackApp> app)
     {
         auto movedPassthroughScoped = movedPassthroughApplications.scoped();
-        if (movedPassthroughScoped->find(app->name) != movedPassthroughApplications->end())
+        if (movedPassthroughScoped->count(app->name))
         {
             Fancy::fancy.logTime().message()
                 << "Ignoring sound passthrough request because requested app is already moved" << std::endl;

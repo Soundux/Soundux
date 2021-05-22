@@ -556,6 +556,7 @@ namespace Soundux::Objects
         {
             return false;
         }
+
         auto pipeWireApp = std::dynamic_pointer_cast<PipeWirePlaybackApp>(app);
         if (!pipeWireApp)
         {
@@ -566,7 +567,7 @@ namespace Soundux::Objects
         auto nodes = this->nodes.copy();
         auto ports = this->ports.copy();
 
-        if (passthroughLinks.find(app->name) == passthroughLinks.end())
+        if (!passthroughLinks.count(app->name))
         {
             passthroughLinks.emplace(app->name, std::vector<std::uint32_t>{});
         }
