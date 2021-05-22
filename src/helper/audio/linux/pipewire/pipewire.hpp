@@ -5,6 +5,13 @@
 #include <pipewire/pipewire.h>
 #include <var_guard.hpp>
 
+// TODO(pipewire):
+//* From the pipewire news of 0.3.26
+//*   - The link factory can now also make links between nodes and
+//*     ports by name so that it can be used in scripts.
+//*
+//* Maybe we could try to make use of that, it could reduce loc.
+
 namespace Soundux
 {
     namespace Objects
@@ -43,6 +50,9 @@ namespace Soundux
 
         class PipeWire : public AudioBackend
         {
+            friend class AudioBackend;
+
+          private:
             pw_core *core;
             pw_main_loop *loop;
             pw_context *context;
@@ -72,9 +82,11 @@ namespace Soundux
             static void onGlobalAdded(void *, std::uint32_t, std::uint32_t, const char *, std::uint32_t,
                                       const spa_dict *);
 
+          protected:
+            bool setup() override;
+
           public:
             PipeWire() = default;
-            void setup() override;
             void destroy() override;
 
             bool useAsDefault() override;

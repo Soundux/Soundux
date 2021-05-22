@@ -1,6 +1,6 @@
 #pragma once
 #include <atomic>
-#include <core/global/objects.hpp>
+#include <core/objects/objects.hpp>
 #include <cstdint>
 #include <map>
 #include <memory>

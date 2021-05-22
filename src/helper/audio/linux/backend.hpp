@@ -1,5 +1,6 @@
 #pragma once
 #if defined(__linux__)
+#include <core/enums/enums.hpp>
 #include <memory>
 #include <string>
 #include <vector>
@@ -25,28 +26,31 @@ namespace Soundux
 
         class AudioBackend
         {
-          public:
+          protected:
+            virtual bool setup() = 0;
             AudioBackend() = default;
 
-            virtual void setup();
-            virtual void destroy();
+          public:
+            static std::shared_ptr<AudioBackend> createInstance(Enums::BackendType);
 
-            virtual bool useAsDefault();
-            virtual bool revertDefault();
-            virtual bool muteInput(bool);
+          public:
+            virtual void destroy() = 0;
+            virtual bool useAsDefault() = 0;
+            virtual bool revertDefault() = 0;
+            virtual bool muteInput(bool) = 0;
 
-            virtual bool stopPassthrough();
-            virtual bool isCurrentlyPassingThrough();
-            virtual bool passthroughFrom(std::shared_ptr<PlaybackApp>);
+            virtual bool stopPassthrough() = 0;
+            virtual bool isCurrentlyPassingThrough() = 0;
+            virtual bool passthroughFrom(std::shared_ptr<PlaybackApp>) = 0;
 
-            virtual bool stopSoundInput();
-            virtual bool inputSoundTo(std::shared_ptr<RecordingApp>);
+            virtual bool stopSoundInput() = 0;
+            virtual bool inputSoundTo(std::shared_ptr<RecordingApp>) = 0;
 
-            virtual std::shared_ptr<PlaybackApp> getPlaybackApp(const std::string &);
-            virtual std::shared_ptr<RecordingApp> getRecordingApp(const std::string &);
+            virtual std::shared_ptr<PlaybackApp> getPlaybackApp(const std::string &) = 0;
+            virtual std::shared_ptr<RecordingApp> getRecordingApp(const std::string &) = 0;
 
-            virtual std::vector<std::shared_ptr<PlaybackApp>> getPlaybackApps();
-            virtual std::vector<std::shared_ptr<RecordingApp>> getRecordingApps();
+            virtual std::vector<std::shared_ptr<PlaybackApp>> getPlaybackApps() = 0;
+            virtual std::vector<std::shared_ptr<RecordingApp>> getRecordingApps() = 0;
         };
     } // namespace Objects
 } // namespace Soundux

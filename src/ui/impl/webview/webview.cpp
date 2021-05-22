@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <fancy.hpp>
 #include <filesystem>
-#include <helper/audio/linux/pulse/pulse.hpp>
+#include <helper/audio/linux/pulseaudio/pulseaudio.hpp>
 #include <helper/json/bindings.hpp>
 #include <helper/systeminfo/systeminfo.hpp>
 #include <helper/version/check.hpp>
@@ -101,17 +101,18 @@ namespace Soundux::Objects
         webview->expose(Webview::Function("requestHotkey", [](bool state) { Globals::gHotKeys.shouldNotify(state); }));
         webview->expose(Webview::Function(
             "setHotkey", [this](std::uint32_t id, const std::vector<int> &keys) { return setHotkey(id, keys); }));
-        webview->expose(Webview::Function("getHotkeySequence",
-                                          [this](const std::vector<int> &keys) { return getHotkeySequence(keys); }));
+        webview->expose(Webview::Function("getHotkeySequence", [this](const std::vector<int> &keys) {
+            return Globals::gHotKeys.getKeySequence(keys);
+        }));
         webview->expose(Webview::Function("removeTab", [this](std::uint32_t id) { return removeTab(id); }));
         webview->expose(Webview::Function("refreshTab", [this](std::uint32_t id) { return refreshTab(id); }));
         webview->expose(Webview::Function(
             "moveTabs", [this](const std::vector<int> &newOrder) { return changeTabOrder(newOrder); }));
-        webview->expose(Webview::Function("markFavorite", [this](const std::uint32_t &id, bool favourite) {
-            markFavourite(id, favourite);
-            return getFavouriteIds();
+        webview->expose(Webview::Function("markFavorite", [this](const std::uint32_t &id, bool favorite) {
+            Globals::gData.markFavorite(id, favorite);
+            return Globals::gData.getFavoriteIds();
         }));
-        webview->expose(Webview::Function("getFavorites", [this] { return getFavouriteIds(); }));
+        webview->expose(Webview::Function("getFavorites", [this] { return Globals::gData.getFavoriteIds(); }));
         webview->expose(Webview::Function("isYoutubeDLAvailable", []() { return Globals::gYtdl.available(); }));
         webview->expose(
             Webview::AsyncFunction("getYoutubeDLInfo", [this](Webview::Promise promise, const std::string &url) {
@@ -131,7 +132,7 @@ namespace Soundux::Objects
         webview->expose(Webview::Function("getSystemInfo", []() -> std::string { return SystemInfo::getSummary(); }));
         webview->expose(Webview::AsyncFunction(
             "updateCheck", [this](Webview::Promise promise) { promise.resolve(VersionCheck::getStatus()); }));
-        webview->expose(Webview::Function("isOnFavorites", [this](bool state) { isOnFavorites(state); }));
+        webview->expose(Webview::Function("isOnFavorites", [this](bool state) { setIsOnFavorites(state); }));
         webview->expose(Webview::Function("deleteSound", [this](std::uint32_t id) { return deleteSound(id); }));
 
 #if !defined(__linux__)
@@ -337,7 +338,7 @@ namespace Soundux::Objects
     {
         webview->callFunction<void>(Webview::JavaScriptFunction("window.downloadProgressed", progress, eta));
     }
-    void WebView::onError(const ErrorCode &error)
+    void WebView::onError(const Enums::ErrorCode &error)
     {
         webview->callFunction<void>(Webview::JavaScriptFunction("window.onError", static_cast<std::uint8_t>(error)));
     }

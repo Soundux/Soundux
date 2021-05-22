@@ -2,6 +2,7 @@
 #include "forward.hpp"
 #include <core/global/globals.hpp>
 #include <dlfcn.h>
+#include <exception>
 #include <fancy.hpp>
 #include <stdexcept>
 
@@ -20,34 +21,41 @@ bool Soundux::PipeWireApi::setup()
     auto *libpulse = dlopen("libpipewire-0.3.so", RTLD_LAZY);
     if (!libpulse)
     {
-        //* For flatpak
+        //* For Ubuntu
         libpulse = dlopen("/usr/lib/x86_64-linux-gnu/libpipewire-0.3.so.0", RTLD_LAZY);
     }
 
     if (libpulse)
     {
-#define load(name) loadFunc(libpulse, name, #name)
-        load(pw_context_connect);
-        load(pw_context_new);
-        load(pw_main_loop_new);
-        load(pw_main_loop_get_loop);
-        load(pw_proxy_add_listener);
-        load(pw_properties_setf);
-        load(pw_properties_set);
-        load(pw_properties_new);
-        load(pw_properties_free);
-        load(pw_main_loop_destroy);
-        load(pw_main_loop_quit);
-        load(pw_context_destroy);
-        load(pw_core_disconnect);
-        load(pw_main_loop_run);
-        load(pw_proxy_destroy);
-        load(pw_init);
-        return true;
+        try
+        {
+#define stringify(what) #what
+#define load(name) loadFunc(libpulse, name, stringify(pw_##name))
+            load(init);
+            load(context_new);
+            load(main_loop_run);
+            load(main_loop_new);
+            load(proxy_destroy);
+            load(main_loop_quit);
+            load(properties_new);
+            load(properties_set);
+            load(context_connect);
+            load(properties_setf);
+            load(context_destroy);
+            load(properties_free);
+            load(core_disconnect);
+            load(main_loop_destroy);
+            load(main_loop_get_loop);
+            load(proxy_add_listener);
+            return true;
+        }
+        catch (std::exception &e)
+        {
+            Fancy::fancy.logTime().failure() << "Loading Functions failed: " << e.what() << std::endl;
+        }
     }
 
     Fancy::fancy.logTime().failure() << "Failed to load pipewire" << std::endl;
-    Globals::gAudioBackend = std::make_shared<Objects::AudioBackend>();
     return false;
 }
 

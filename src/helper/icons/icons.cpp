@@ -2,67 +2,94 @@
 #include "icons.hpp"
 #include <dlfcn.h>
 #include <fancy.hpp>
+#include <filesystem>
+#include <fstream>
 #include <helper/base64/base64.hpp>
-#include <helper/misc/misc.hpp>
 #include <optional>
+#include <regex>
 
 namespace Soundux::Objects
 {
-    void IconFetcher::setup()
+    bool IconFetcher::setup()
     {
-        auto *libWnck = dlopen("libwnck-3.so.0", RTLD_LAZY);
-        if (libWnck)
-        {
-            isAvailable = true;
-            Fancy::fancy.logTime().success() << "LibWnck found - Icon support is enabled" << std::endl;
-
-            Lib::wnckGetDefaultScreen =
-                reinterpret_cast<decltype(Lib::wnckGetDefaultScreen)>(dlsym(libWnck, "wnck_screen_get_default"));
-            Lib::wnckForceUpdate =
-                reinterpret_cast<decltype(Lib::wnckForceUpdate)>(dlsym(libWnck, "wnck_screen_force_update"));
-            Lib::wnckGetScreenWindows =
-                reinterpret_cast<decltype(Lib::wnckGetScreenWindows)>(dlsym(libWnck, "wnck_screen_get_windows"));
-            Lib::wnckGetWindowPID =
-                reinterpret_cast<decltype(Lib::wnckGetWindowPID)>(dlsym(libWnck, "wnck_window_get_pid"));
-            Lib::wnckGetWindowIcon =
-                reinterpret_cast<decltype(Lib::wnckGetWindowIcon)>(dlsym(libWnck, "wnck_window_get_icon"));
-        }
-        else
+        if (!LibWnck::setup())
         {
             Fancy::fancy.logTime().message() << "LibWnck was not found - Icon support is not available" << std::endl;
-            return;
+            return false;
         }
 
         gdk_init(nullptr, nullptr);
-        screen = Lib::wnckGetDefaultScreen();
+        screen = LibWnck::getDefaultScreen();
+
         if (!screen)
         {
             Fancy::fancy.logTime().warning() << "Failed to get default screen!" << std::endl;
+            return false;
         }
+
+        return true;
+    }
+    std::optional<IconFetcher> IconFetcher::createInstance()
+    {
+        IconFetcher instance;
+        if (instance.setup())
+        {
+            return instance;
+        }
+
+        Fancy::fancy.logTime().failure() << "Could not create IconFetcher instance" << std::endl;
+        return std::nullopt;
+    }
+    std::optional<int> IconFetcher::getPpid(int pid)
+    {
+        std::filesystem::path path("/proc/" + std::to_string(pid));
+        if (std::filesystem::exists(path))
+        {
+            auto statusFile = path / "status";
+            if (std::filesystem::exists(statusFile) && std::filesystem::is_regular_file(statusFile))
+            {
+                static const std::regex pidRegex(R"(PPid:(\ +|\t)(\d+))");
+                std::ifstream statusStream(statusFile);
+
+                std::string line;
+                std::smatch match;
+                while (std::getline(statusStream, line))
+                {
+                    if (std::regex_search(line, match, pidRegex))
+                    {
+                        if (match[2].matched)
+                        {
+                            return std::stoi(match[2]);
+                        }
+                    }
+                }
+
+                Fancy::fancy.logTime().warning() << "Failed to find ppid of " >> pid << std::endl;
+                return std::nullopt;
+            }
+        }
+
+        Fancy::fancy.logTime().warning() << "Failed to find ppid of " >> pid << ", process does not exist" << std::endl;
+        return std::nullopt;
     }
     std::optional<std::string> IconFetcher::getIcon(int pid, bool recursive)
     {
-        if (!isAvailable)
-        {
-            return std::nullopt;
-        }
-
         if (cache.find(pid) != cache.end())
         {
             return cache.at(pid);
         }
 
-        Lib::wnckForceUpdate(screen);
-        auto *windows = Lib::wnckGetScreenWindows(screen);
+        LibWnck::forceUpdate(screen);
+        auto *windows = LibWnck::getScreenWindows(screen);
 
         for (auto *item = windows; item != nullptr; item = item->next)
         {
-            auto *window = reinterpret_cast<Lib::WnckWindow *>(item->data);
-            auto _pid = Lib::wnckGetWindowPID(window);
+            auto *window = reinterpret_cast<LibWnck::Window *>(item->data);
+            auto _pid = LibWnck::getWindowPID(window);
 
             if (pid == _pid)
             {
-                auto *icon = Lib::wnckGetWindowIcon(window);
+                auto *icon = LibWnck::getWindowIcon(window);
 
                 gsize size = 4096;
                 auto *iconBuff = new gchar[size];
@@ -90,7 +117,7 @@ namespace Soundux::Objects
 
         if (recursive)
         {
-            auto parentProcess = Helpers::getPpid(pid);
+            auto parentProcess = getPpid(pid);
             if (parentProcess)
             {
                 auto recursiveResult = getIcon(*parentProcess, false);

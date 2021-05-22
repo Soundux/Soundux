@@ -22,7 +22,7 @@ namespace Soundux
             void onSoundFinished(const PlayingSound &sound) override;
             void onHotKeyReceived(const std::vector<int> &keys) override;
 
-            void onError(const ErrorCode &error) override;
+            void onError(const Enums::ErrorCode &error) override;
             void onSoundPlayed(const PlayingSound &sound) override;
             void onSoundProgressed(const PlayingSound &sound) override;
             void onDownloadProgressed(float progress, const std::string &eta) override;

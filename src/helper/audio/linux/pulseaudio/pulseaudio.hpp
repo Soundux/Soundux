@@ -2,6 +2,8 @@
 #include "../backend.hpp"
 #include "forward.hpp"
 #include <mutex>
+#include <optional>
+#include <var_guard.hpp>
 
 namespace Soundux
 {
@@ -27,25 +29,29 @@ namespace Soundux
 
         class PulseAudio : public AudioBackend
         {
+            friend class AudioBackend;
+
+          private:
             pa_context *context;
             pa_mainloop *mainloop;
             pa_mainloop_api *mainloopApi;
 
             //* ~= The modules we create =~
-            std::uint32_t nullSink;
-            std::uint32_t loopBack;
-            std::uint32_t loopBackSink;
+            std::optional<std::uint32_t> nullSink;
+            std::optional<std::uint32_t> loopBack;
+            std::optional<std::uint32_t> loopBackSink;
 
-            std::uint32_t passthrough;
-            std::uint32_t passthroughSink;
-            std::uint32_t passthroughLoopBack;
+            std::optional<std::uint32_t> passthrough;
+            std::optional<std::uint32_t> passthroughSink;
+            std::optional<std::uint32_t> passthroughLoopBack;
             //* ~= ~~~~~~~~~~~~~~~~~~~~~ =~
 
+            std::string serverName;
             std::string defaultSource;
-            std::shared_ptr<PulseRecordingApp> movedApplication;
-            std::shared_ptr<PulsePlaybackApp> movedPassthroughApplication;
 
-            std::mutex movedAppMutex;
+            sxl::var_guard<std::shared_ptr<PulseRecordingApp>> movedApplication;
+            sxl::var_guard<std::shared_ptr<PulsePlaybackApp>> movedPassthroughApplication;
+
             std::mutex operationMutex;
 
             void unloadLeftOvers();
@@ -56,12 +62,15 @@ namespace Soundux
             void fixPlaybackApps(const std::vector<std::shared_ptr<PlaybackApp>> &);
             void fixRecordingApps(const std::vector<std::shared_ptr<RecordingApp>> &);
 
-          public:
-            PulseAudio() = default;
+          protected:
+            bool setup() override;
 
-            void setup() override;
-            void loadModules(); //! Is not ran by default to avoid problems with switch-on-connect
+          public:
+            //! Is not ran by default to avoid problems with switch-on-connect
+            bool loadModules();
+
             void destroy() override;
+            bool isRunningPipeWire();
 
             bool useAsDefault() override;
             bool revertDefault() override;

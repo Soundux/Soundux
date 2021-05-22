@@ -1,14 +1,10 @@
-#include "core/global/globals.hpp"
-#include "helper/exceptions/crashhandler.hpp"
-#include "ui/impl/webview/webview.hpp"
 #include <InstanceGuard.hpp>
+#include <core/enums/enums.hpp>
+#include <core/global/globals.hpp>
 #include <fancy.hpp>
-
-#if defined(__linux__)
-#include <dlfcn.h>
-#include <helper/audio/linux/pipewire/pipewire.hpp>
-#include <helper/audio/linux/pulse/pulse.hpp>
-#endif
+#include <helper/audio/linux/backend.hpp>
+#include <helper/exceptions/crashhandler.hpp>
+#include <ui/impl/webview/webview.hpp>
 
 #if defined(_WIN32)
 #include "../assets/icon.h"
@@ -18,6 +14,10 @@ int __stdcall WinMain([[maybe_unused]] HINSTANCE hInstrance, [[maybe_unused]] HI
 int main()
 #endif
 {
+    using namespace Soundux::Globals; // NOLINT
+    using namespace Soundux::Objects; // NOLINT
+    using namespace Soundux::Enums;   // NOLINT
+
 #if defined(_WIN32)
     if (std::getenv("SOUNDUX_DEBUG"))
     {
@@ -46,60 +46,46 @@ int main()
         return 1;
     }
 
-    Soundux::Globals::gConfig.load();
-    Soundux::Globals::gData.set(Soundux::Globals::gConfig.data);
-    Soundux::Globals::gSettings = Soundux::Globals::gConfig.settings;
+    gConfig.load();
+    gData.set(gConfig.data);
+    gSettings = gConfig.settings;
 
 #if defined(__linux__)
-    Soundux::Globals::gIcons.setup();
-
-    if (Soundux::Globals::gSettings.audioBackend == Soundux::Objects::BackendType::PulseAudio)
-    {
-        Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PulseAudio>();
-        Soundux::Globals::gAudioBackend->setup();
-
-        auto pulseBackend = std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
-
-        if (pulseBackend && !pulseBackend->switchOnConnectPresent())
-        {
-            pulseBackend->loadModules();
-        }
-    }
-    else
-    {
-        Soundux::Globals::gSettings.audioBackend = Soundux::Objects::BackendType::PipeWire;
-        Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PipeWire>();
-        Soundux::Globals::gAudioBackend->setup();
-    }
-
+    gIcons = gIcons->createInstance();
+    gAudioBackend = AudioBackend::createInstance(gSettings.audioBackend);
 #endif
-    Soundux::Globals::gAudio.setup();
-    Soundux::Globals::gYtdl.setup();
+
+    gAudio.setup();
+    gYtdl.setup();
+
 #if defined(__linux__)
-    if (Soundux::Globals::gSettings.audioBackend == Soundux::Objects::BackendType::PulseAudio &&
-        Soundux::Globals::gConfig.settings.useAsDefaultDevice)
+    if (gAudioBackend && gSettings.audioBackend == BackendType::PulseAudio && gConfig.settings.useAsDefaultDevice)
     {
-        Soundux::Globals::gAudioBackend->useAsDefault();
+        gAudioBackend->useAsDefault();
     }
 #endif
 
-    Soundux::Globals::gGui = std::make_unique<Soundux::Objects::WebView>();
-    Soundux::Globals::gGui->setup();
+    gGui = std::make_unique<Soundux::Objects::WebView>();
+    gGui->setup();
 
 #if defined(_WIN32)
     HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1));
     SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
     SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
 #endif
-    Soundux::Globals::gGui->mainLoop();
 
-    Soundux::Globals::gAudio.destroy();
+    gGui->mainLoop();
+
+    gAudio.destroy();
 #if defined(__linux__)
-    Soundux::Globals::gAudioBackend->destroy();
+    if (gAudioBackend)
+    {
+        gAudioBackend->destroy();
+    }
 #endif
-    Soundux::Globals::gConfig.data.set(Soundux::Globals::gData);
-    Soundux::Globals::gConfig.settings = Soundux::Globals::gSettings;
-    Soundux::Globals::gConfig.save();
+    gConfig.data.set(gData);
+    gConfig.settings = gSettings;
+    gConfig.save();
 
     return 0;
 }

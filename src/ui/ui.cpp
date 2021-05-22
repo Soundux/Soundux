@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <helper/audio/linux/backend.hpp>
 #include <helper/audio/linux/pipewire/pipewire.hpp>
-#include <helper/audio/linux/pulse/pulse.hpp>
+#include <helper/audio/linux/pulseaudio/pulseaudio.hpp>
 #include <helper/misc/misc.hpp>
 #include <nfd.hpp>
 #include <optional>
@@ -101,7 +101,7 @@ namespace Soundux::Objects
         Fancy::fancy.logTime().warning() << "Path " >> tab.path << " does not exist" << std::endl;
         return {};
     }
-    std::optional<Tab> Window::addTab() // NOLINT
+    std::optional<Tab> Window::addTab()
     {
         nfdnchar_t *outpath = {};
         auto result = NFD::PickFolder(outpath, nullptr);
@@ -132,7 +132,7 @@ namespace Soundux::Objects
                 return tab;
             }
             Fancy::fancy.logTime().warning() << "Selected Folder does not exist!" << std::endl;
-            onError(ErrorCode::FolderDoesNotExist);
+            onError(Enums::ErrorCode::FolderDoesNotExist);
         }
         return std::nullopt;
     }
@@ -148,7 +148,10 @@ namespace Soundux::Objects
             }
             if (Globals::gSettings.muteDuringPlayback)
             {
-                Globals::gAudioBackend->muteInput(true);
+                if (Globals::gAudioBackend)
+                {
+                    Globals::gAudioBackend->muteInput(true);
+                }
             }
             if (!Globals::gSettings.pushToTalkKeys.empty())
             {
@@ -165,7 +168,7 @@ namespace Soundux::Objects
                 {
                     return *playingSound;
                 }
-                if (!Globals::gSettings.output.empty())
+                if (!Globals::gSettings.output.empty() && Globals::gAudioBackend)
                 {
                     auto moveSuccess = Globals::gAudioBackend->inputSoundTo(
                         Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output));
@@ -179,7 +182,7 @@ namespace Soundux::Objects
 
                         Fancy::fancy.logTime().failure() << "Failed to move Application " << Globals::gSettings.output
                                                          << " to soundux sink for sound " << id << std::endl;
-                        onError(ErrorCode::FailedToMoveToSink);
+                        onError(Enums::ErrorCode::FailedToMoveToSink);
                         return std::nullopt;
                     }
 
@@ -190,12 +193,12 @@ namespace Soundux::Objects
         else
         {
             Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
-            onError(ErrorCode::SoundNotFound);
+            onError(Enums::ErrorCode::SoundNotFound);
             return std::nullopt;
         }
 
         Fancy::fancy.logTime().failure() << "Failed to play sound " << id << std::endl;
-        onError(ErrorCode::FailedToPlay);
+        onError(Enums::ErrorCode::FailedToPlay);
         return std::nullopt;
     }
 #else
@@ -247,12 +250,12 @@ namespace Soundux::Objects
         else
         {
             Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
-            onError(ErrorCode::SoundNotFound);
+            onError(Enums::ErrorCode::SoundNotFound);
             return std::nullopt;
         }
 
         Fancy::fancy.logTime().failure() << "Failed to play sound " << id << std::endl;
-        onError(ErrorCode::FailedToPlay);
+        onError(Enums::ErrorCode::FailedToPlay);
         return std::nullopt;
     }
 #endif
@@ -286,7 +289,7 @@ namespace Soundux::Objects
         }
 
         Fancy::fancy.logTime().warning() << "Failed to pause sound " << id << std::endl;
-        onError(ErrorCode::FailedToPause);
+        onError(Enums::ErrorCode::FailedToPause);
         return std::nullopt;
     }
     std::optional<PlayingSound> Window::resumeSound(const std::uint32_t &id)
@@ -319,7 +322,7 @@ namespace Soundux::Objects
         }
 
         Fancy::fancy.logTime().warning() << "Failed to resume sound " << id << std::endl;
-        onError(ErrorCode::FailedToResume);
+        onError(Enums::ErrorCode::FailedToResume);
         return std::nullopt;
     }
     std::optional<PlayingSound> Window::seekSound(const std::uint32_t &id, std::uint64_t seekTo)
@@ -352,7 +355,7 @@ namespace Soundux::Objects
         }
 
         Fancy::fancy.logTime().warning() << "Failed to seek sound " << id << " to " << seekTo << std::endl;
-        onError(ErrorCode::FailedToSeek);
+        onError(Enums::ErrorCode::FailedToSeek);
         return std::nullopt;
     }
     std::optional<PlayingSound> Window::repeatSound(const std::uint32_t &id, bool shouldRepeat)
@@ -386,7 +389,7 @@ namespace Soundux::Objects
 
         Fancy::fancy.logTime().failure() << "Failed to set repeat-state of sound " << id << " to " << shouldRepeat
                                          << std::endl;
-        onError(ErrorCode::FailedToRepeat);
+        onError(Enums::ErrorCode::FailedToRepeat);
         return std::nullopt;
     }
     std::vector<Tab> Window::removeTab(const std::uint32_t &id)
@@ -435,15 +438,18 @@ namespace Soundux::Objects
         onAllSoundsFinished();
 
 #if defined(__linux__)
-        if (!Globals::gAudioBackend->stopSoundInput())
+        if (Globals::gAudioBackend)
         {
-            Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
-            onError(ErrorCode::FailedToMoveBack);
-        }
-        if (!Globals::gAudioBackend->stopPassthrough())
-        {
-            Fancy::fancy.logTime().failure() << "Failed to move back current passthrough application" << std::endl;
-            onError(ErrorCode::FailedToMoveBackPassthrough);
+            if (!Globals::gAudioBackend->stopSoundInput())
+            {
+                Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
+                onError(Enums::ErrorCode::FailedToMoveBack);
+            }
+            if (!Globals::gAudioBackend->stopPassthrough())
+            {
+                Fancy::fancy.logTime().failure() << "Failed to move back current passthrough application" << std::endl;
+                onError(Enums::ErrorCode::FailedToMoveBackPassthrough);
+            }
         }
 #endif
     }
@@ -453,75 +459,66 @@ namespace Soundux::Objects
         if (settings.audioBackend != Globals::gSettings.audioBackend)
         {
             stopSounds(true);
-            Globals::gAudioBackend->destroy();
-            if (settings.audioBackend == BackendType::PulseAudio)
-            {
-                Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PulseAudio>();
-                Soundux::Globals::gAudioBackend->setup();
 
-                auto pulseBackend =
-                    std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
-                if (pulseBackend)
-                {
-                    pulseBackend->loadModules();
-                }
-            }
-            else
+            if (Globals::gAudioBackend)
             {
-                Soundux::Globals::gAudioBackend = std::make_shared<Soundux::Objects::PipeWire>();
-                Soundux::Globals::gAudioBackend->setup();
+                Globals::gAudioBackend->destroy();
             }
+            Globals::gAudioBackend = AudioBackend::createInstance(settings.audioBackend);
 
             Globals::gAudio.setup();
         }
-        if (!Globals::gAudio.getPlayingSounds().empty())
+        if (Globals::gAudioBackend)
         {
-            if (settings.muteDuringPlayback && !Globals::gSettings.muteDuringPlayback)
+            if (!Globals::gAudio.getPlayingSounds().empty())
             {
-                if (!Globals::gAudioBackend->muteInput(true))
+                if (settings.muteDuringPlayback && !Globals::gSettings.muteDuringPlayback)
                 {
-                    Fancy::fancy.logTime().failure() << "Failed to mute input" << std::endl;
+                    if (!Globals::gAudioBackend->muteInput(true))
+                    {
+                        Fancy::fancy.logTime().failure() << "Failed to mute input" << std::endl;
+                    }
+                }
+                else if (!settings.muteDuringPlayback && Globals::gSettings.muteDuringPlayback)
+                {
+                    if (!Globals::gAudioBackend->muteInput(false))
+                    {
+                        Fancy::fancy.logTime().failure() << "Failed to un-mute input" << std::endl;
+                    }
                 }
             }
-            else if (!settings.muteDuringPlayback && Globals::gSettings.muteDuringPlayback)
+            if (!settings.useAsDefaultDevice && Globals::gSettings.useAsDefaultDevice)
             {
-                if (!Globals::gAudioBackend->muteInput(false))
+                if (!Globals::gAudioBackend->revertDefault())
                 {
-                    Fancy::fancy.logTime().failure() << "Failed to un-mute input" << std::endl;
+                    Fancy::fancy.logTime().failure() << "Failed to move back default source" << std::endl;
+                    onError(Enums::ErrorCode::FailedToRevertDefaultSource);
                 }
             }
-        }
-        if (!settings.useAsDefaultDevice && Globals::gSettings.useAsDefaultDevice)
-        {
-            if (!Globals::gAudioBackend->revertDefault())
+            else if (settings.useAsDefaultDevice && !Globals::gSettings.useAsDefaultDevice)
             {
-                Fancy::fancy.logTime().failure() << "Failed to move back default source" << std::endl;
-                onError(ErrorCode::FailedToRevertDefaultSource);
+                Globals::gSettings.output = "";
+                if (!Globals::gAudioBackend->stopSoundInput())
+                {
+                    Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
+                    onError(Enums::ErrorCode::FailedToMoveBack);
+                }
+                if (!Globals::gAudioBackend->useAsDefault())
+                {
+                    onError(Enums::ErrorCode::FailedToSetDefaultSource);
+                }
             }
-        }
-        else if (settings.useAsDefaultDevice && !Globals::gSettings.useAsDefaultDevice)
-        {
-            Globals::gSettings.output = "";
-            if (!Globals::gAudioBackend->stopSoundInput())
+            if (settings.output != Globals::gSettings.output)
             {
-                Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
-                onError(ErrorCode::FailedToMoveBack);
-            }
-            if (!Globals::gAudioBackend->useAsDefault())
-            {
-                onError(ErrorCode::FailedToSetDefaultSource);
-            }
-        }
-        if (settings.output != Globals::gSettings.output)
-        {
-            if (!Globals::gAudioBackend->stopSoundInput())
-            {
-                Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
-                onError(ErrorCode::FailedToMoveBack);
-            }
-            if (!settings.output.empty() && !Globals::gAudio.getPlayingSounds().empty())
-            {
-                Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(settings.output));
+                if (!Globals::gAudioBackend->stopSoundInput())
+                {
+                    Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
+                    onError(Enums::ErrorCode::FailedToMoveBack);
+                }
+                if (!settings.output.empty() && !Globals::gAudio.getPlayingSounds().empty())
+                {
+                    Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(settings.output));
+                }
             }
         }
 #endif
@@ -544,7 +541,7 @@ namespace Soundux::Objects
             }
         }
         Fancy::fancy.logTime().failure() << "Failed to refresh tab " << id << " tab does not exist" << std::endl;
-        onError(ErrorCode::TabDoesNotExist);
+        onError(Enums::ErrorCode::TabDoesNotExist);
         return std::nullopt;
     }
     std::optional<Sound> Window::setHotkey(const std::uint32_t &id, const std::vector<int> &hotkeys)
@@ -557,12 +554,8 @@ namespace Soundux::Objects
         }
         Fancy::fancy.logTime().failure() << "Failed to set hotkey for sound " << id << ", sound does not exist"
                                          << std::endl;
-        onError(ErrorCode::FailedToSetHotkey);
+        onError(Enums::ErrorCode::FailedToSetHotkey);
         return std::nullopt;
-    }
-    std::string Window::getHotkeySequence(const std::vector<int> &hotkeys)
-    {
-        return Globals::gHotKeys.getKeySequence(hotkeys);
     }
     std::vector<Tab> Window::changeTabOrder(const std::vector<int> &newOrder)
     {
@@ -583,33 +576,41 @@ namespace Soundux::Objects
         //* once. The backend (gPulse.getRecordingStreams()) will work with multiple instances, so we need to filter out
         //* duplicates here.
 
-        auto streams = Globals::gAudioBackend->getRecordingApps();
         std::vector<std::shared_ptr<IconRecordingApp>> uniqueStreams;
-        for (auto &stream : streams)
-        {
-            auto item = std::find_if(std::begin(uniqueStreams), std::end(uniqueStreams),
-                                     [&](const auto &_stream) { return stream->name == _stream->name; });
-            if (stream && item == std::end(uniqueStreams))
-            {
-                auto iconStream = std::make_shared<IconRecordingApp>(*stream);
-                if (auto pulseApp = std::dynamic_pointer_cast<PulseRecordingApp>(stream); pulseApp)
-                {
-                    auto icon = Soundux::Globals::gIcons.getIcon(static_cast<int>(pulseApp->pid));
-                    if (icon)
-                    {
-                        iconStream->appIcon = *icon;
-                    }
-                }
-                else if (auto pipeWireApp = std::dynamic_pointer_cast<PipeWireRecordingApp>(stream); pipeWireApp)
-                {
-                    auto icon = Soundux::Globals::gIcons.getIcon(static_cast<int>(pipeWireApp->pid));
-                    if (icon)
-                    {
-                        iconStream->appIcon = *icon;
-                    }
-                }
 
-                uniqueStreams.emplace_back(iconStream);
+        if (Globals::gAudioBackend)
+        {
+            auto streams = Globals::gAudioBackend->getRecordingApps();
+            for (auto &stream : streams)
+            {
+                auto item = std::find_if(std::begin(uniqueStreams), std::end(uniqueStreams),
+                                         [&](const auto &_stream) { return stream->name == _stream->name; });
+                if (stream && item == std::end(uniqueStreams))
+                {
+                    auto iconStream = std::make_shared<IconRecordingApp>(*stream);
+                    if (Globals::gIcons)
+                    {
+                        if (auto pulseApp = std::dynamic_pointer_cast<PulseRecordingApp>(stream); pulseApp)
+                        {
+                            auto icon = Soundux::Globals::gIcons->getIcon(static_cast<int>(pulseApp->pid));
+                            if (icon)
+                            {
+                                iconStream->appIcon = *icon;
+                            }
+                        }
+                        else if (auto pipeWireApp = std::dynamic_pointer_cast<PipeWireRecordingApp>(stream);
+                                 pipeWireApp)
+                        {
+                            auto icon = Soundux::Globals::gIcons->getIcon(static_cast<int>(pipeWireApp->pid));
+                            if (icon)
+                            {
+                                iconStream->appIcon = *icon;
+                            }
+                        }
+                    }
+
+                    uniqueStreams.emplace_back(iconStream);
+                }
             }
         }
 
@@ -617,34 +618,42 @@ namespace Soundux::Objects
     }
     std::vector<std::shared_ptr<IconPlaybackApp>> Window::getPlayback()
     {
-        auto streams = Globals::gAudioBackend->getPlaybackApps();
         std::vector<std::shared_ptr<IconPlaybackApp>> uniqueStreams;
 
-        for (auto &stream : streams)
+        if (Globals::gAudioBackend)
         {
-            auto item = std::find_if(std::begin(uniqueStreams), std::end(uniqueStreams),
-                                     [&](const auto &_stream) { return stream->name == _stream->name; });
-            if (stream && item == std::end(uniqueStreams))
-            {
-                auto iconStream = std::make_shared<IconPlaybackApp>(*stream);
-                if (auto pulseApp = std::dynamic_pointer_cast<PulsePlaybackApp>(stream); pulseApp)
-                {
-                    auto icon = Soundux::Globals::gIcons.getIcon(static_cast<int>(pulseApp->pid));
-                    if (icon)
-                    {
-                        iconStream->appIcon = *icon;
-                    }
-                }
-                if (auto pipeWireApp = std::dynamic_pointer_cast<PipeWirePlaybackApp>(stream); pipeWireApp)
-                {
-                    auto icon = Soundux::Globals::gIcons.getIcon(static_cast<int>(pipeWireApp->pid));
-                    if (icon)
-                    {
-                        iconStream->appIcon = *icon;
-                    }
-                }
+            auto streams = Globals::gAudioBackend->getPlaybackApps();
 
-                uniqueStreams.emplace_back(iconStream);
+            for (auto &stream : streams)
+            {
+                auto item = std::find_if(std::begin(uniqueStreams), std::end(uniqueStreams),
+                                         [&](const auto &_stream) { return stream->name == _stream->name; });
+                if (stream && item == std::end(uniqueStreams))
+                {
+                    auto iconStream = std::make_shared<IconPlaybackApp>(*stream);
+
+                    if (Globals::gIcons)
+                    {
+                        if (auto pulseApp = std::dynamic_pointer_cast<PulsePlaybackApp>(stream); pulseApp)
+                        {
+                            auto icon = Soundux::Globals::gIcons->getIcon(static_cast<int>(pulseApp->pid));
+                            if (icon)
+                            {
+                                iconStream->appIcon = *icon;
+                            }
+                        }
+                        if (auto pipeWireApp = std::dynamic_pointer_cast<PipeWirePlaybackApp>(stream); pipeWireApp)
+                        {
+                            auto icon = Soundux::Globals::gIcons->getIcon(static_cast<int>(pipeWireApp->pid));
+                            if (icon)
+                            {
+                                iconStream->appIcon = *icon;
+                            }
+                        }
+                    }
+
+                    uniqueStreams.emplace_back(iconStream);
+                }
             }
         }
 
@@ -652,37 +661,44 @@ namespace Soundux::Objects
     }
     bool Window::startPassthrough(const std::string &name)
     {
-        if (Globals::gSettings.output.empty() ||
-            Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output)))
+        if (Globals::gAudioBackend)
         {
-            if (!Globals::gAudioBackend->passthroughFrom(Globals::gAudioBackend->getPlaybackApp(name)))
+            if (Globals::gSettings.output.empty() ||
+                Globals::gAudioBackend->inputSoundTo(
+                    Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output)))
             {
-                Fancy::fancy.logTime().failure()
-                    << "Failed to move application: " << name << " to passthrough" << std::endl;
-                onError(ErrorCode::FailedToStartPassthrough);
-                return false;
+                if (!Globals::gAudioBackend->passthroughFrom(Globals::gAudioBackend->getPlaybackApp(name)))
+                {
+                    Fancy::fancy.logTime().failure()
+                        << "Failed to move application: " << name << " to passthrough" << std::endl;
+                    onError(Enums::ErrorCode::FailedToStartPassthrough);
+                    return false;
+                }
+                return true;
             }
-            return true;
         }
 
         Fancy::fancy.logTime().failure() << "Failed to start passthrough for application: " << name << std::endl;
-        onError(ErrorCode::FailedToStartPassthrough);
+        onError(Enums::ErrorCode::FailedToStartPassthrough);
         return false;
     }
     void Window::stopPassthrough()
     {
-        if (Globals::gAudio.getPlayingSounds().empty())
+        if (Globals::gAudioBackend)
         {
-            if (!Globals::gAudioBackend->stopSoundInput())
+            if (Globals::gAudio.getPlayingSounds().empty())
             {
-                Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
-                onError(ErrorCode::FailedToMoveBack);
+                if (!Globals::gAudioBackend->stopSoundInput())
+                {
+                    Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
+                    onError(Enums::ErrorCode::FailedToMoveBack);
+                }
             }
-        }
-        if (!Globals::gAudioBackend->stopPassthrough())
-        {
-            Fancy::fancy.logTime().failure() << "Failed to move back current passthrough application" << std::endl;
-            onError(ErrorCode::FailedToMoveBackPassthrough);
+            if (!Globals::gAudioBackend->stopPassthrough())
+            {
+                Fancy::fancy.logTime().failure() << "Failed to move back current passthrough application" << std::endl;
+                onError(Enums::ErrorCode::FailedToMoveBackPassthrough);
+            }
         }
     }
 #else
@@ -705,14 +721,6 @@ namespace Soundux::Objects
             onAllSoundsFinished();
         }
     }
-    std::vector<std::uint32_t> Window::getFavouriteIds()
-    {
-        return Globals::gData.getFavoriteIds();
-    }
-    void Window::markFavourite(const std::uint32_t &id, bool favorite)
-    {
-        Globals::gData.markFavorite(id, favorite);
-    }
     void Window::onAllSoundsFinished()
     {
         if (!Globals::gSettings.pushToTalkKeys.empty())
@@ -721,16 +729,19 @@ namespace Soundux::Objects
         }
 
 #if defined(__linux__)
-        if (Globals::gSettings.muteDuringPlayback)
+        if (Globals::gAudioBackend)
         {
-            Globals::gAudioBackend->muteInput(false);
-        }
-        if (!Globals::gAudioBackend->isCurrentlyPassingThrough())
-        {
-            if (!Globals::gAudioBackend->stopSoundInput())
+            if (Globals::gSettings.muteDuringPlayback)
             {
-                Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
-                onError(ErrorCode::FailedToMoveBack);
+                Globals::gAudioBackend->muteInput(false);
+            }
+            if (!Globals::gAudioBackend->isCurrentlyPassingThrough())
+            {
+                if (!Globals::gAudioBackend->stopSoundInput())
+                {
+                    Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
+                    onError(Enums::ErrorCode::FailedToMoveBack);
+                }
             }
         }
 #endif
@@ -742,7 +753,7 @@ namespace Soundux::Objects
             Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
         }
     }
-    void Window::isOnFavorites(bool state)
+    void Window::setIsOnFavorites(bool state)
     {
         Globals::gData.isOnFavorites = state;
     }
@@ -753,14 +764,14 @@ namespace Soundux::Objects
         {
             if (!Helpers::deleteFile(sound->get().path, Globals::gSettings.deleteToTrash))
             {
-                onError(ErrorCode::FailedToDelete);
+                onError(Enums::ErrorCode::FailedToDelete);
                 return false;
             }
             return true;
         }
 
         Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
-        onError(ErrorCode::SoundNotFound);
+        onError(Enums::ErrorCode::SoundNotFound);
         return false;
     }
 

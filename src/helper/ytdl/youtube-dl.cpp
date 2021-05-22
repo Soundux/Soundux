@@ -44,7 +44,7 @@ namespace Soundux::Objects
             if (json.is_discarded())
             {
                 Fancy::fancy.logTime().warning() << "Failed to parse youtube-dl information" << std::endl;
-                Globals::gGui->onError(ErrorCode::YtdlInvalidJson);
+                Globals::gGui->onError(Enums::ErrorCode::YtdlInvalidJson);
                 return std::nullopt;
             }
 
@@ -66,14 +66,14 @@ namespace Soundux::Objects
         }
 
         Fancy::fancy.logTime().warning() << "Failed to get info from youtube-dl" << std::endl;
-        Globals::gGui->onError(ErrorCode::YtdlInformationUnknown);
+        Globals::gGui->onError(Enums::ErrorCode::YtdlInformationUnknown);
         return std::nullopt;
     }
     bool YoutubeDl::download(const std::string &url)
     {
         if (!isAvailable)
         {
-            Globals::gGui->onError(ErrorCode::YtdlNotFound);
+            Globals::gGui->onError(Enums::ErrorCode::YtdlNotFound);
             return false;
         }
 
@@ -85,7 +85,7 @@ namespace Soundux::Objects
         if (!std::regex_match(url, urlRegex))
         {
             Fancy::fancy.logTime().warning() << "Bad url " >> url << std::endl;
-            Globals::gGui->onError(ErrorCode::YtdlInvalidUrl);
+            Globals::gGui->onError(Enums::ErrorCode::YtdlInvalidUrl);
             return false;
         }
 
@@ -121,7 +121,7 @@ namespace Soundux::Objects
             return rtn;
         }
 
-        Globals::gGui->onError(ErrorCode::TabDoesNotExist);
+        Globals::gGui->onError(Enums::ErrorCode::TabDoesNotExist);
         return false;
     }
     void YoutubeDl::killDownload()

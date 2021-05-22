@@ -1,8 +1,6 @@
-#include "objects.hpp"
-#include "globals.hpp"
+#include "data.hpp"
+#include <core/global/globals.hpp>
 #include <fancy.hpp>
-#include <functional>
-#include <optional>
 
 namespace Soundux::Objects
 {

@@ -1,96 +1,54 @@
-#if defined(__linux__)
 #include "backend.hpp"
+#include "pipewire/pipewire.hpp"
+#include "pulseaudio/pulseaudio.hpp"
+#include <core/enums/enums.hpp>
+#include <core/global/globals.hpp>
 #include <fancy.hpp>
+#include <memory>
 
 namespace Soundux::Objects
 {
-    void AudioBackend::setup()
+    std::shared_ptr<AudioBackend> AudioBackend::createInstance(Enums::BackendType backend)
     {
-        Fancy::fancy.logTime().warning() << "setup(): not implemented (Possibly using null-audiobackend)" << std::endl;
-    }
-    void AudioBackend::destroy()
-    {
-        Fancy::fancy.logTime().warning() << "destroy(): not implemented (Possibly using null-audiobackend)"
-                                         << std::endl;
-    }
-    bool AudioBackend::useAsDefault()
-    {
-        Fancy::fancy.logTime().warning() << "useAsDefault(): not implemented (Possibly using null-audiobackend)"
-                                         << std::endl;
-        return false;
-    }
-    bool AudioBackend::revertDefault()
-    {
-        Fancy::fancy.logTime().warning() << "revertDefault(): not implemented (Possibly using null-audiobackend)"
-                                         << std::endl;
-        return false;
-    }
-    bool AudioBackend::muteInput([[maybe_unused]] bool state)
-    {
-        Fancy::fancy.logTime().warning() << "muteInput(): not implemented (Possibly using null-audiobackend)"
-                                         << std::endl;
-        return false;
-    }
+        std::shared_ptr<AudioBackend> instance;
+        if (backend == Enums::BackendType::PulseAudio)
+        {
+            instance = std::shared_ptr<PulseAudio>(new PulseAudio()); // NOLINT
+            auto pulseInstance = std::dynamic_pointer_cast<PulseAudio>(instance);
 
-    bool AudioBackend::stopPassthrough()
-    {
-        Fancy::fancy.logTime().warning() << "stopPassthrough(): not implemented (Possibly using null-audiobackend)"
-                                         << std::endl;
-        return false;
-    }
-    bool AudioBackend::isCurrentlyPassingThrough()
-    {
-        Fancy::fancy.logTime().warning()
-            << "isCurrentlyPassingThrough(): not implemented (Possibly using null-audiobackend)" << std::endl;
-        return false;
-    }
-    bool AudioBackend::passthroughFrom([[maybe_unused]] std::shared_ptr<PlaybackApp> app) // NOLINT
-    {
-        Fancy::fancy.logTime().warning() << "passthroughFrom(): not implemented (Possibly using null-audiobackend)"
-                                         << std::endl;
-        return false;
-    }
+            if (pulseInstance && pulseInstance->setup())
+            {
+                if (!pulseInstance->switchOnConnectPresent())
+                {
+                    if (pulseInstance->loadModules())
+                    {
+                        return instance;
+                    }
+                }
+                else
+                {
+                    return instance;
+                }
+            }
 
-    bool AudioBackend::stopSoundInput()
-    {
-        Fancy::fancy.logTime().warning() << "stopSoundInput(): not implemented (Possibly using null-audiobackend)"
-                                         << std::endl;
-        return false;
-    }
+            if (pulseInstance && pulseInstance->isRunningPipeWire())
+            {
+                backend = Enums::BackendType::PipeWire;
+                Globals::gSettings.audioBackend = backend;
+            }
+        }
 
-    bool AudioBackend::inputSoundTo([[maybe_unused]] std::shared_ptr<RecordingApp> app) // NOLINT
-    {
-        Fancy::fancy.logTime().warning() << "inputSoundTo(): not implemented (Possibly using null-audiobackend)"
-                                         << std::endl;
-        return false;
-    }
+        if (backend == Enums::BackendType::PipeWire)
+        {
+            instance = std::shared_ptr<PipeWire>(new PipeWire()); // NOLINT
+            if (instance->setup())
+            {
+                return instance;
+            }
+        }
 
-    std::shared_ptr<PlaybackApp> AudioBackend::getPlaybackApp([[maybe_unused]] const std::string &name)
-    {
-        Fancy::fancy.logTime().warning() << "getPlaybackApp(): not implemented (Possibly using null-audiobackend)"
-                                         << std::endl;
+        Fancy::fancy.logTime().failure() << "Failed to create AudioBackend instance" << std::endl;
+        Globals::gSettings.audioBackend = Enums::BackendType::None;
         return nullptr;
-    }
-
-    std::shared_ptr<RecordingApp> AudioBackend::getRecordingApp([[maybe_unused]] const std::string &name)
-    {
-
-        Fancy::fancy.logTime().warning() << "getRecordingApp(): not implemented (Possibly using null-audiobackend)"
-                                         << std::endl;
-        return nullptr;
-    }
-
-    std::vector<std::shared_ptr<PlaybackApp>> AudioBackend::getPlaybackApps()
-    {
-        Fancy::fancy.logTime().warning() << "getPlaybackApps(): not implemented (Possibly using null-audiobackend)"
-                                         << std::endl;
-        return {};
-    }
-    std::vector<std::shared_ptr<RecordingApp>> AudioBackend::getRecordingApps()
-    {
-        Fancy::fancy.logTime().warning() << "getRecordingApps(): not implemented (Possibly using null-audiobackend)"
-                                         << std::endl;
-        return {};
     }
 } // namespace Soundux::Objects
-#endif
