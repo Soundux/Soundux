@@ -11,7 +11,7 @@ namespace Soundux
         bool setup();
 
         //* We declare function pointers here so that we can use dlsym to assign them later.
-#define pulse_forward_decl(function) inline std::add_pointer_t<decltype(pa_##function)> function;
+#define pulse_forward_decl(function) inline std::add_pointer_t<decltype(pa_##function)> function
 
         pulse_forward_decl(context_new);
         pulse_forward_decl(mainloop_new);
