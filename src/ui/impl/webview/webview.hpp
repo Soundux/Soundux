@@ -21,7 +21,7 @@ namespace Soundux
             void fetchTranslations();
 
             void onAllSoundsFinished() override;
-            Settings changeSettings(const Settings &newSettings) override;
+            Settings changeSettings(Settings newSettings) override;
 
           public:
             void show() override;
