@@ -61,8 +61,8 @@ namespace Soundux
 
           protected:
             virtual void setIsOnFavorites(bool);
+            virtual Settings changeSettings(Settings);
             virtual bool deleteSound(const std::uint32_t &);
-            virtual Settings changeSettings(const Settings &);
 
 #if defined(__linux__)
             void stopPassthrough(const std::string &);

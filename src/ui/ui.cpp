@@ -464,7 +464,7 @@ namespace Soundux::Objects
         }
 #endif
     }
-    Settings Window::changeSettings(const Settings &settings)
+    Settings Window::changeSettings(Settings settings)
     {
 #if defined(__linux__)
         auto oldSettings = Globals::gSettings;
@@ -524,6 +524,15 @@ namespace Soundux::Objects
             }
             if (settings.output != oldSettings.output)
             {
+                if (!settings.allowMultipleOutputs && settings.output.size() > 1)
+                {
+                    Fancy::fancy.logTime().warning() << "Allow Multiple Outputs is off but got multiple output apps, "
+                                                        "falling back to first output in list"
+                                                     << std::endl;
+
+                    settings.output = {settings.output.front()};
+                }
+
                 if (!Globals::gAudioBackend->stopSoundInput())
                 {
                     Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
