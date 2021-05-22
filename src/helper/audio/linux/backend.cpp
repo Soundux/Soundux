@@ -1,3 +1,4 @@
+#if defined(__linux__)
 #include "backend.hpp"
 #include "pipewire/pipewire.hpp"
 #include "pulseaudio/pulseaudio.hpp"
@@ -52,3 +53,4 @@ namespace Soundux::Objects
         return nullptr;
     }
 } // namespace Soundux::Objects
+#endif
