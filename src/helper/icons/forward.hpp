@@ -1,3 +1,4 @@
+#if defined(__linux__)
 #pragma once
 #include <gdk/gdk.h>
 
@@ -17,3 +18,4 @@ namespace Soundux
         bool setup();
     } // namespace LibWnck
 } // namespace Soundux
+#endif

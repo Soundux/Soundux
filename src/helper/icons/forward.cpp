@@ -1,3 +1,4 @@
+#if defined(__linux__)
 #include "forward.hpp"
 #include <dlfcn.h>
 #include <fancy.hpp>
@@ -19,3 +20,4 @@ bool Soundux::LibWnck::setup()
 
     return false;
 }
+#endif
