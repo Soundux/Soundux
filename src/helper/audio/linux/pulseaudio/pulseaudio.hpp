@@ -1,6 +1,7 @@
 #if defined(__linux__)
 #include "../backend.hpp"
 #include "forward.hpp"
+#include <map>
 #include <mutex>
 #include <optional>
 #include <var_guard.hpp>
@@ -49,8 +50,8 @@ namespace Soundux
             std::string serverName;
             std::string defaultSource;
 
-            sxl::var_guard<std::shared_ptr<PulseRecordingApp>> movedApplication;
-            sxl::var_guard<std::shared_ptr<PulsePlaybackApp>> movedPassthroughApplication;
+            sxl::var_guard<std::map<std::string, std::shared_ptr<PulseRecordingApp>>> movedApplication;
+            sxl::var_guard<std::map<std::string, std::shared_ptr<PulsePlaybackApp>>> movedPassthroughApplication;
 
             std::mutex operationMutex;
 

@@ -371,17 +371,14 @@ namespace Soundux::Objects
     bool PulseAudio::passthroughFrom(std::shared_ptr<PlaybackApp> app)
     {
         auto movedPassthroughScoped = movedPassthroughApplication.scoped();
-        if (*movedPassthroughScoped && movedPassthroughScoped->get()->name == app->name)
+        if (movedPassthroughScoped->find(app->name) != movedPassthroughApplication->end())
         {
             Fancy::fancy.logTime().message()
                 << "Ignoring sound passthrough request because requested app is already moved" << std::endl;
             return true;
         }
         movedPassthroughScoped.unlock();
-        if (!stopPassthrough())
-        {
-            Fancy::fancy.logTime().warning() << "Failed to stop current passthrough" << std::endl;
-        }
+
         if (!app)
         {
             Fancy::fancy.logTime().warning() << "Tried to passthrough to non existant app" << std::endl;
@@ -416,7 +413,7 @@ namespace Soundux::Objects
         }
 
         movedPassthroughScoped.lock();
-        movedPassthroughScoped = std::dynamic_pointer_cast<PulsePlaybackApp>(app);
+        movedPassthroughScoped->emplace(app->name, std::dynamic_pointer_cast<PulsePlaybackApp>(app));
 
         return true;
     }
@@ -424,31 +421,30 @@ namespace Soundux::Objects
     bool PulseAudio::stopPassthrough()
     {
         auto movedPassthroughScoped = movedPassthroughApplication.scoped();
-        if (*movedPassthroughScoped)
+
+        bool success = true;
+        for (const auto &[movedAppName, movedApp] : *movedPassthroughScoped)
         {
-            bool success = false;
             for (const auto &app : getPlaybackApps())
             {
                 auto pulseApp = std::dynamic_pointer_cast<PulsePlaybackApp>(app);
 
-                if (app->name == movedPassthroughApplication->get()->name)
+                if (app->name == movedAppName)
                 {
                     await(PulseApi::context_move_sink_input_by_index(
-                        context, pulseApp->id, movedPassthroughApplication->get()->sink,
+                        context, pulseApp->id, movedApp->sink,
                         []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
-                            if (success)
+                            if (!success)
                             {
-                                *reinterpret_cast<bool *>(userData) = true;
+                                *reinterpret_cast<bool *>(userData) = false;
                             }
                         },
                         &success));
                 }
-                movedPassthroughApplication->reset();
-                return success;
             }
         }
-
-        return true;
+        movedPassthroughScoped->clear();
+        return success;
     }
     bool PulseAudio::inputSoundTo(std::shared_ptr<RecordingApp> app)
     {
@@ -459,14 +455,12 @@ namespace Soundux::Objects
         }
 
         auto movedAppScoped = movedApplication.scoped();
-        if (*movedAppScoped && movedAppScoped->get()->name == app->name)
+        if (movedAppScoped->find(app->name) != movedAppScoped->end())
         {
             return true;
         }
 
         movedAppScoped.unlock();
-        stopSoundInput();
-
         for (const auto &recordingApp : getRecordingApps())
         {
             auto pulseApp = std::dynamic_pointer_cast<PulseRecordingApp>(recordingApp);
@@ -493,7 +487,7 @@ namespace Soundux::Objects
         }
 
         movedAppScoped.lock();
-        movedAppScoped = std::dynamic_pointer_cast<PulseRecordingApp>(app);
+        movedAppScoped->emplace(app->name, std::dynamic_pointer_cast<PulseRecordingApp>(app));
 
         return true;
     }
@@ -502,15 +496,15 @@ namespace Soundux::Objects
         bool success = true;
 
         auto movedAppScoped = movedApplication.scoped();
-        if (*movedAppScoped)
+        for (const auto &[movedAppName, movedApp] : *movedAppScoped)
         {
             for (const auto &recordingApp : getRecordingApps())
             {
                 auto pulseApp = std::dynamic_pointer_cast<PulseRecordingApp>(recordingApp);
-                if (pulseApp->name == movedAppScoped->get()->name)
+                if (pulseApp->name == movedAppName)
                 {
                     await(PulseApi::context_move_source_output_by_index(
-                        context, pulseApp->id, movedAppScoped->get()->source,
+                        context, pulseApp->id, movedApp->source,
                         []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
                             if (!success)
                             {
@@ -527,7 +521,8 @@ namespace Soundux::Objects
                     }
                 }
             }
-            movedAppScoped->reset();
+
+            movedAppScoped->clear();
         }
 
         return success;
@@ -624,7 +619,7 @@ namespace Soundux::Objects
 
     bool PulseAudio::isCurrentlyPassingThrough()
     {
-        return **movedPassthroughApplication != nullptr;
+        return !movedPassthroughApplication->empty();
     }
 
     bool PulseAudio::switchOnConnectPresent()

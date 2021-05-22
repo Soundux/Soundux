@@ -170,8 +170,19 @@ namespace Soundux::Objects
                 }
                 if (!Globals::gSettings.output.empty() && Globals::gAudioBackend)
                 {
-                    auto moveSuccess = Globals::gAudioBackend->inputSoundTo(
-                        Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output));
+                    if (!Globals::gSettings.allowMultipleOutputs)
+                    {
+                        Globals::gAudioBackend->stopSoundInput();
+                    }
+
+                    bool moveSuccess = true;
+                    for (const auto &outputApp : Globals::gSettings.output)
+                    {
+                        if (!Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
+                        {
+                            moveSuccess = false;
+                        }
+                    }
 
                     if (!moveSuccess)
                     {
@@ -500,7 +511,7 @@ namespace Soundux::Objects
             }
             else if (settings.useAsDefaultDevice && !oldSettings.useAsDefaultDevice)
             {
-                Globals::gSettings.output = "";
+                Globals::gSettings.output.clear();
                 if (!Globals::gAudioBackend->stopSoundInput())
                 {
                     Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
@@ -518,9 +529,13 @@ namespace Soundux::Objects
                     Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
                     onError(Enums::ErrorCode::FailedToMoveBack);
                 }
-                if (!settings.output.empty() && !Globals::gAudio.getPlayingSounds().empty())
+
+                for (const auto &outputApp : settings.output)
                 {
-                    Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(settings.output));
+                    if (!settings.output.empty() && !Globals::gAudio.getPlayingSounds().empty())
+                    {
+                        Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp));
+                    }
                 }
             }
         }
@@ -664,26 +679,30 @@ namespace Soundux::Objects
     }
     bool Window::startPassthrough(const std::string &name)
     {
+        bool success = true;
         if (Globals::gAudioBackend)
         {
-            if (Globals::gSettings.output.empty() ||
-                Globals::gAudioBackend->inputSoundTo(
-                    Globals::gAudioBackend->getRecordingApp(Globals::gSettings.output)))
+            for (const auto &outputApp : Globals::gSettings.output)
             {
-                if (!Globals::gAudioBackend->passthroughFrom(Globals::gAudioBackend->getPlaybackApp(name)))
+                if (Globals::gSettings.output.empty() ||
+                    Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
                 {
-                    Fancy::fancy.logTime().failure()
-                        << "Failed to move application: " << name << " to passthrough" << std::endl;
-                    onError(Enums::ErrorCode::FailedToStartPassthrough);
-                    return false;
+                    if (!Globals::gAudioBackend->passthroughFrom(Globals::gAudioBackend->getPlaybackApp(name)))
+                    {
+                        Fancy::fancy.logTime().failure()
+                            << "Failed to move application: " << name << " to passthrough" << std::endl;
+                        success = false;
+                    }
                 }
-                return true;
+            }
+
+            if (!success)
+            {
+                onError(Enums::ErrorCode::FailedToStartPassthrough);
             }
         }
 
-        Fancy::fancy.logTime().failure() << "Failed to start passthrough for application: " << name << std::endl;
-        onError(Enums::ErrorCode::FailedToStartPassthrough);
-        return false;
+        return success;
     }
     void Window::stopPassthrough()
     {

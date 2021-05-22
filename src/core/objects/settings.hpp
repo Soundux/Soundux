@@ -17,13 +17,14 @@ namespace Soundux
             std::vector<int> pushToTalkKeys;
             std::vector<int> stopHotkey;
 
+            std::vector<std::string> output;
             std::uint32_t selectedTab = 0;
-            std::string output;
 
             float remoteVolume = 1.f;
             float localVolume = 0.5f;
             bool syncVolumes = false;
 
+            bool allowMultipleOutputs = false;
             bool useAsDefaultDevice = false;
             bool muteDuringPlayback = false;
             bool allowOverlapping = true;

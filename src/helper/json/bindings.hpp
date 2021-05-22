@@ -71,23 +71,26 @@ namespace nlohmann
     {
         static void to_json(json &j, const Soundux::Objects::Settings &obj)
         {
-            j = {{"allowOverlapping", obj.allowOverlapping},
-                 {"theme", obj.theme},
-                 {"output", obj.output},
-                 {"viewMode", obj.viewMode},
-                 {"sortMode", obj.sortMode},
-                 {"stopHotkey", obj.stopHotkey},
-                 {"syncVolumes", obj.syncVolumes},
-                 {"selectedTab", obj.selectedTab},
-                 {"audioBackend", obj.audioBackend},
-                 {"deleteToTrash", obj.deleteToTrash},
-                 {"pushToTalkKeys", obj.pushToTalkKeys},
-                 {"tabHotkeysOnly", obj.tabHotkeysOnly},
-                 {"minimizeToTray", obj.minimizeToTray},
-                 {"remoteVolume", obj.remoteVolume},
-                 {"muteDuringPlayback", obj.muteDuringPlayback},
-                 {"useAsDefaultDevice", obj.useAsDefaultDevice},
-                 {"localVolume", obj.localVolume}};
+            j = {
+                {"theme", obj.theme},
+                {"output", obj.output},
+                {"viewMode", obj.viewMode},
+                {"sortMode", obj.sortMode},
+                {"stopHotkey", obj.stopHotkey},
+                {"syncVolumes", obj.syncVolumes},
+                {"selectedTab", obj.selectedTab},
+                {"localVolume", obj.localVolume},
+                {"remoteVolume", obj.remoteVolume},
+                {"audioBackend", obj.audioBackend},
+                {"deleteToTrash", obj.deleteToTrash},
+                {"pushToTalkKeys", obj.pushToTalkKeys},
+                {"tabHotkeysOnly", obj.tabHotkeysOnly},
+                {"minimizeToTray", obj.minimizeToTray},
+                {"allowOverlapping", obj.allowOverlapping},
+                {"muteDuringPlayback", obj.muteDuringPlayback},
+                {"useAsDefaultDevice", obj.useAsDefaultDevice},
+                {"allowMultipleOutputs", obj.allowMultipleOutputs},
+            };
         }
 
         template <typename T> static void getToIfExists(const json &j, const std::string &key, T &member)

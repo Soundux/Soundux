@@ -484,13 +484,12 @@ namespace Soundux::Objects
         {
             return false;
         }
+
         auto pipeWireApp = std::dynamic_pointer_cast<PipeWireRecordingApp>(app);
         if (!pipeWireApp)
         {
             return false;
         }
-
-        stopSoundInput();
 
         bool success = false;
         auto nodes = this->nodes.copy();
@@ -562,8 +561,6 @@ namespace Soundux::Objects
         {
             return false;
         }
-
-        stopPassthrough();
 
         bool success = false;
         auto nodes = this->nodes.copy();
