@@ -70,7 +70,7 @@ namespace Soundux
 
           private:
             std::vector<std::uint32_t> soundInputLinks;
-            std::vector<std::uint32_t> passthroughLinks;
+            std::map<std::string, std::vector<std::uint32_t>> passthroughLinks;
 
           private:
             void sync();
@@ -93,8 +93,10 @@ namespace Soundux
             bool revertDefault() override;
             bool muteInput(bool state) override;
 
-            bool stopPassthrough() override;
+            bool stopAllPassthrough() override;
             bool isCurrentlyPassingThrough() override;
+            std::size_t passedThroughApplications() override;
+            bool stopPassthrough(const std::string &name) override;
             bool passthroughFrom(std::shared_ptr<PlaybackApp> app) override;
 
             bool stopSoundInput() override;

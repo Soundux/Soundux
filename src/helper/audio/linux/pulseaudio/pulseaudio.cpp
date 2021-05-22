@@ -158,7 +158,11 @@ namespace Soundux::Objects
     {
         revertDefault();
         stopSoundInput();
-        stopPassthrough();
+
+        for (const auto &app : **movedPassthroughApplications)
+        {
+            stopPassthrough(app.first);
+        }
 
         if (nullSink)
             await(PulseApi::context_unload_module(context, *nullSink, nullptr, nullptr));
@@ -370,8 +374,8 @@ namespace Soundux::Objects
     }
     bool PulseAudio::passthroughFrom(std::shared_ptr<PlaybackApp> app)
     {
-        auto movedPassthroughScoped = movedPassthroughApplication.scoped();
-        if (movedPassthroughScoped->find(app->name) != movedPassthroughApplication->end())
+        auto movedPassthroughScoped = movedPassthroughApplications.scoped();
+        if (movedPassthroughScoped->find(app->name) != movedPassthroughApplications->end())
         {
             Fancy::fancy.logTime().message()
                 << "Ignoring sound passthrough request because requested app is already moved" << std::endl;
@@ -417,10 +421,9 @@ namespace Soundux::Objects
 
         return true;
     }
-
-    bool PulseAudio::stopPassthrough()
+    bool PulseAudio::stopAllPassthrough()
     {
-        auto movedPassthroughScoped = movedPassthroughApplication.scoped();
+        auto movedPassthroughScoped = movedPassthroughApplications.scoped();
 
         bool success = true;
         for (const auto &[movedAppName, movedApp] : *movedPassthroughScoped)
@@ -444,6 +447,38 @@ namespace Soundux::Objects
             }
         }
         movedPassthroughScoped->clear();
+
+        return success;
+    }
+    bool PulseAudio::stopPassthrough(const std::string &name)
+    {
+        auto movedPassthroughScoped = movedPassthroughApplications.scoped();
+
+        bool success = true;
+        if (movedPassthroughScoped->find(name) != movedPassthroughScoped->end())
+        {
+            auto &app = movedPassthroughScoped->at(name);
+            for (const auto &playbackApp : getPlaybackApps())
+            {
+                auto pulseApp = std::dynamic_pointer_cast<PulsePlaybackApp>(playbackApp);
+
+                if (playbackApp->name == app->name)
+                {
+                    await(PulseApi::context_move_sink_input_by_index(
+                        context, pulseApp->id, app->sink,
+                        []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
+                            if (!success)
+                            {
+                                *reinterpret_cast<bool *>(userData) = false;
+                            }
+                        },
+                        &success));
+                }
+            }
+
+            movedPassthroughScoped->erase(name);
+        }
+
         return success;
     }
     bool PulseAudio::inputSoundTo(std::shared_ptr<RecordingApp> app)
@@ -454,7 +489,7 @@ namespace Soundux::Objects
             return false;
         }
 
-        auto movedAppScoped = movedApplication.scoped();
+        auto movedAppScoped = movedApplications.scoped();
         if (movedAppScoped->find(app->name) != movedAppScoped->end())
         {
             return true;
@@ -495,7 +530,7 @@ namespace Soundux::Objects
     {
         bool success = true;
 
-        auto movedAppScoped = movedApplication.scoped();
+        auto movedAppScoped = movedApplications.scoped();
         for (const auto &[movedAppName, movedApp] : *movedAppScoped)
         {
             for (const auto &recordingApp : getRecordingApps())
@@ -619,7 +654,7 @@ namespace Soundux::Objects
 
     bool PulseAudio::isCurrentlyPassingThrough()
     {
-        return !movedPassthroughApplication->empty();
+        return !movedPassthroughApplications->empty();
     }
 
     bool PulseAudio::switchOnConnectPresent()
@@ -670,6 +705,10 @@ namespace Soundux::Objects
         }
 
         return false;
+    }
+    std::size_t PulseAudio::passedThroughApplications()
+    {
+        return movedPassthroughApplications->size();
     }
 } // namespace Soundux::Objects
 #endif

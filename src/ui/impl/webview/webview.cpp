@@ -179,7 +179,8 @@ namespace Soundux::Objects
         webview->expose(Webview::Function("getPlayback", [this]() { return getPlayback(); }));
         webview->expose(
             Webview::Function("startPassthrough", [this](const std::string &app) { return startPassthrough(app); }));
-        webview->expose(Webview::Function("stopPassthrough", [this]() { stopPassthrough(); }));
+        webview->expose(
+            Webview::Function("stopPassthrough", [this](const std::string &name) { stopPassthrough(name); }));
         webview->expose(Webview::Function("isSwitchOnConnectLoaded", []() {
             auto pulseBackend =
                 std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
