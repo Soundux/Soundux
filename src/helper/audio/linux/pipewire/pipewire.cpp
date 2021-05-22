@@ -484,6 +484,10 @@ namespace Soundux::Objects
         {
             return false;
         }
+        if (soundInputLinks.count(app->name))
+        {
+            return true;
+        }
 
         auto pipeWireApp = std::dynamic_pointer_cast<PipeWireRecordingApp>(app);
         if (!pipeWireApp)
@@ -494,6 +498,11 @@ namespace Soundux::Objects
         bool success = false;
         auto nodes = this->nodes.copy();
         auto ports = this->ports.copy();
+
+        if (!soundInputLinks.count(app->name))
+        {
+            soundInputLinks.emplace(app->name, std::vector<std::uint32_t>{});
+        }
 
         for (const auto &[nodeId, node] : nodes)
         {
@@ -516,7 +525,7 @@ namespace Soundux::Objects
                                 if (link)
                                 {
                                     success = true;
-                                    soundInputLinks.emplace_back(*link);
+                                    soundInputLinks.at(app->name).emplace_back(*link);
                                 }
                             }
                             else if ((port.side == 'L' || port.side == '1') &&
@@ -527,7 +536,7 @@ namespace Soundux::Objects
                                 if (link)
                                 {
                                     success = true;
-                                    soundInputLinks.emplace_back(*link);
+                                    soundInputLinks.at(app->name).emplace_back(*link);
                                 }
                             }
                         }
@@ -541,9 +550,12 @@ namespace Soundux::Objects
 
     bool PipeWire::stopSoundInput()
     {
-        for (const auto &id : soundInputLinks)
+        for (const auto &[appName, links] : soundInputLinks)
         {
-            deleteLink(id);
+            for (const auto &id : links)
+            {
+                deleteLink(id);
+            }
         }
         soundInputLinks.clear();
 

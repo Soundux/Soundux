@@ -69,7 +69,7 @@ namespace Soundux
             void onPortInfo(const pw_port_info *);
 
           private:
-            std::vector<std::uint32_t> soundInputLinks;
+            std::map<std::string, std::vector<std::uint32_t>> soundInputLinks;
             std::map<std::string, std::vector<std::uint32_t>> passthroughLinks;
 
           private:
