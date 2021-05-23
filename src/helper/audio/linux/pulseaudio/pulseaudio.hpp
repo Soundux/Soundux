@@ -4,7 +4,6 @@
 #include <map>
 #include <mutex>
 #include <optional>
-#include <var_guard.hpp>
 
 namespace Soundux
 {
@@ -50,8 +49,8 @@ namespace Soundux
             std::string serverName;
             std::string defaultSource;
 
-            sxl::var_guard<std::map<std::string, std::shared_ptr<PulseRecordingApp>>> movedApplications;
-            sxl::var_guard<std::map<std::string, std::shared_ptr<PulsePlaybackApp>>> movedPassthroughApplications;
+            std::map<std::string, std::uint32_t> movedApplications;
+            std::map<std::string, std::uint32_t> movedPassthroughApplications;
 
             std::mutex operationMutex;
 

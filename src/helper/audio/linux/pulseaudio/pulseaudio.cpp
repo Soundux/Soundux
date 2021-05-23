@@ -158,11 +158,7 @@ namespace Soundux::Objects
     {
         revertDefault();
         stopSoundInput();
-
-        for (const auto &app : **movedPassthroughApplications)
-        {
-            stopPassthrough(app.first);
-        }
+        stopAllPassthrough();
 
         if (nullSink)
             await(PulseApi::context_unload_module(context, *nullSink, nullptr, nullptr));
@@ -374,14 +370,12 @@ namespace Soundux::Objects
     }
     bool PulseAudio::passthroughFrom(std::shared_ptr<PlaybackApp> app)
     {
-        auto movedPassthroughScoped = movedPassthroughApplications.scoped();
-        if (movedPassthroughScoped->count(app->name))
+        if (movedPassthroughApplications.count(app->name))
         {
             Fancy::fancy.logTime().message()
                 << "Ignoring sound passthrough request because requested app is already moved" << std::endl;
             return true;
         }
-        movedPassthroughScoped.unlock();
 
         if (!app)
         {
@@ -416,17 +410,13 @@ namespace Soundux::Objects
             }
         }
 
-        movedPassthroughScoped.lock();
-        movedPassthroughScoped->emplace(app->name, std::dynamic_pointer_cast<PulsePlaybackApp>(app));
-
+        movedPassthroughApplications.emplace(app->name, std::dynamic_pointer_cast<PulsePlaybackApp>(app)->sink);
         return true;
     }
     bool PulseAudio::stopAllPassthrough()
     {
-        auto movedPassthroughScoped = movedPassthroughApplications.scoped();
-
         bool success = true;
-        for (const auto &[movedAppName, movedApp] : *movedPassthroughScoped)
+        for (const auto &[movedAppName, originalSource] : movedPassthroughApplications)
         {
             for (const auto &app : getPlaybackApps())
             {
@@ -435,7 +425,7 @@ namespace Soundux::Objects
                 if (app->name == movedAppName)
                 {
                     await(PulseApi::context_move_sink_input_by_index(
-                        context, pulseApp->id, movedApp->sink,
+                        context, pulseApp->id, originalSource,
                         []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
                             if (!success)
                             {
@@ -446,26 +436,24 @@ namespace Soundux::Objects
                 }
             }
         }
-        movedPassthroughScoped->clear();
+        movedPassthroughApplications.clear();
 
         return success;
     }
     bool PulseAudio::stopPassthrough(const std::string &name)
     {
-        auto movedPassthroughScoped = movedPassthroughApplications.scoped();
-
         bool success = true;
-        if (movedPassthroughScoped->find(name) != movedPassthroughScoped->end())
+        if (movedPassthroughApplications.find(name) != movedPassthroughApplications.end())
         {
-            auto &app = movedPassthroughScoped->at(name);
+            auto &originalSource = movedPassthroughApplications.at(name);
             for (const auto &playbackApp : getPlaybackApps())
             {
                 auto pulseApp = std::dynamic_pointer_cast<PulsePlaybackApp>(playbackApp);
 
-                if (playbackApp->name == app->name)
+                if (playbackApp->name == name)
                 {
                     await(PulseApi::context_move_sink_input_by_index(
-                        context, pulseApp->id, app->sink,
+                        context, pulseApp->id, originalSource,
                         []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
                             if (!success)
                             {
@@ -476,7 +464,7 @@ namespace Soundux::Objects
                 }
             }
 
-            movedPassthroughScoped->erase(name);
+            movedPassthroughApplications.erase(name);
         }
 
         return success;
@@ -489,13 +477,11 @@ namespace Soundux::Objects
             return false;
         }
 
-        auto movedAppScoped = movedApplications.scoped();
-        if (movedAppScoped->find(app->name) != movedAppScoped->end())
+        if (movedApplications.find(app->name) != movedApplications.end())
         {
             return true;
         }
 
-        movedAppScoped.unlock();
         for (const auto &recordingApp : getRecordingApps())
         {
             auto pulseApp = std::dynamic_pointer_cast<PulseRecordingApp>(recordingApp);
@@ -521,17 +507,14 @@ namespace Soundux::Objects
             }
         }
 
-        movedAppScoped.lock();
-        movedAppScoped->emplace(app->name, std::dynamic_pointer_cast<PulseRecordingApp>(app));
-
+        movedApplications.emplace(app->name, std::dynamic_pointer_cast<PulseRecordingApp>(app)->source);
         return true;
     }
     bool PulseAudio::stopSoundInput()
     {
         bool success = true;
 
-        auto movedAppScoped = movedApplications.scoped();
-        for (const auto &[movedAppName, movedApp] : *movedAppScoped)
+        for (const auto &[movedAppName, originalSink] : movedApplications)
         {
             for (const auto &recordingApp : getRecordingApps())
             {
@@ -539,7 +522,7 @@ namespace Soundux::Objects
                 if (pulseApp->name == movedAppName)
                 {
                     await(PulseApi::context_move_source_output_by_index(
-                        context, pulseApp->id, movedApp->source,
+                        context, pulseApp->id, originalSink,
                         []([[maybe_unused]] pa_context *ctx, int success, void *userData) {
                             if (!success)
                             {
@@ -557,7 +540,7 @@ namespace Soundux::Objects
                 }
             }
 
-            movedAppScoped->clear();
+            movedApplications.clear();
         }
 
         return success;
@@ -654,7 +637,7 @@ namespace Soundux::Objects
 
     bool PulseAudio::isCurrentlyPassingThrough()
     {
-        return !movedPassthroughApplications->empty();
+        return !movedPassthroughApplications.empty();
     }
 
     bool PulseAudio::switchOnConnectPresent()
@@ -708,7 +691,7 @@ namespace Soundux::Objects
     }
     std::size_t PulseAudio::passedThroughApplications()
     {
-        return movedPassthroughApplications->size();
+        return movedPassthroughApplications.size();
     }
 } // namespace Soundux::Objects
 #endif
