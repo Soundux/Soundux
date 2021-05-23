@@ -35,6 +35,8 @@ namespace Soundux::Objects
 
         auto path = std::filesystem::canonical(rawPath).parent_path() / "dist" / "index.html";
         tray = std::make_shared<Tray::Tray>("soundux-tray", IDI_ICON1);
+
+        webview->disableAcceleratorKeys(true);
 #endif
 #if defined(__linux__)
         auto path = std::filesystem::canonical("/proc/self/exe").parent_path() / "dist" / "index.html";

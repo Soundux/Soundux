@@ -455,9 +455,9 @@ namespace Soundux::Objects
     }
     Settings Window::changeSettings(const Settings &settings)
     {
-#if defined(__linux__)
         auto oldSettings = Globals::gSettings;
         Globals::gSettings = settings;
+#if defined(__linux__)
 
         if (settings.audioBackend != oldSettings.audioBackend)
         {
