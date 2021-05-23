@@ -233,7 +233,7 @@ namespace Soundux::Objects
             }
 
             auto playingSound = Globals::gAudio.play(*sound);
-            auto playbackDevice = Globals::gAudio.getAudioDevice(Globals::gSettings.output);
+            auto playbackDevice = Globals::gAudio.getAudioDevice(Globals::gSettings.output.front());
 
             if (playbackDevice && !playbackDevice->isDefault)
             {
