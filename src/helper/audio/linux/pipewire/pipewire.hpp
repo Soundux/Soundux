@@ -56,8 +56,9 @@ namespace Soundux
             pw_core *core;
             pw_main_loop *loop;
             pw_context *context;
-
             pw_registry *registry;
+            std::uint32_t version = 0;
+
             spa_hook registryListener;
             pw_registry_events registryEvents;
 
@@ -67,6 +68,7 @@ namespace Soundux
 
             void onNodeInfo(const pw_node_info *);
             void onPortInfo(const pw_port_info *);
+            void onCoreInfo(const pw_core_info *);
 
           private:
             std::map<std::string, std::vector<std::uint32_t>> soundInputLinks;

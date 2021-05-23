@@ -102,12 +102,57 @@ namespace Soundux::Objects
         }
     }
 
+    void PipeWire::onCoreInfo(const pw_core_info *info)
+    {
+        if (info && info->name && info->version && !version)
+        {
+            Fancy::fancy.logTime().message()
+                << "Connected to PipeWire (" << info->name << ") on version " << info->version << std::endl;
+
+            std::string formattedVersion(info->version);
+            formattedVersion.erase(std::remove(formattedVersion.begin(), formattedVersion.end(), '.'),
+                                   formattedVersion.end());
+
+            version = std::stoi(formattedVersion);
+            if (version < 326)
+            {
+                Fancy::fancy.logTime().warning() << "Your PipeWire version is below the minimum required (0.3.26), "
+                                                    "you may experience bugs or crashes"
+                                                 << std::endl;
+            }
+        }
+    }
+
     void PipeWire::onGlobalAdded(void *data, std::uint32_t id, [[maybe_unused]] std::uint32_t perms, const char *type,
                                  [[maybe_unused]] std::uint32_t version, const spa_dict *props)
     {
         auto *thiz = reinterpret_cast<PipeWire *>(data);
         if (thiz && props)
         {
+            if (strcmp(type, PW_TYPE_INTERFACE_Core) == 0)
+            {
+                spa_hook listener;
+                pw_core_events events = {};
+
+                events.info = [](void *data, const pw_core_info *info) {
+                    auto *thiz = reinterpret_cast<PipeWire *>(data);
+                    if (thiz)
+                    {
+                        thiz->onCoreInfo(info);
+                    }
+                };
+                events.version = PW_VERSION_CORE_EVENTS;
+                auto *boundCore = reinterpret_cast<pw_core *>(
+                    pw_registry_bind(thiz->registry, id, type, PW_VERSION_CORE, sizeof(PipeWire)));
+
+                if (boundCore)
+                {
+                    pw_core_add_listener(boundCore, &listener, &events, thiz); // NOLINT
+                    thiz->sync();
+                    spa_hook_remove(&listener);
+                    PipeWireApi::proxy_destroy(reinterpret_cast<pw_proxy *>(boundCore));
+                }
+            }
             if (strcmp(type, PW_TYPE_INTERFACE_Node) == 0)
             {
                 const auto *name = spa_dict_lookup(props, PW_KEY_NODE_NAME);
