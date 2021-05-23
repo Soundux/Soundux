@@ -17,7 +17,7 @@ namespace Soundux
             std::vector<int> pushToTalkKeys;
             std::vector<int> stopHotkey;
 
-            std::vector<std::string> output;
+            std::vector<std::string> outputs;
             std::uint32_t selectedTab = 0;
 
             float remoteVolume = 1.f;

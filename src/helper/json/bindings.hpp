@@ -73,7 +73,7 @@ namespace nlohmann
         {
             j = {
                 {"theme", obj.theme},
-                {"output", obj.output},
+                {"outputs", obj.outputs},
                 {"viewMode", obj.viewMode},
                 {"sortMode", obj.sortMode},
                 {"stopHotkey", obj.stopHotkey},
@@ -107,7 +107,7 @@ namespace nlohmann
         static void from_json(const json &j, Soundux::Objects::Settings &obj)
         {
             get_to_safe(j, "theme", obj.theme);
-            get_to_safe(j, "output", obj.output);
+            get_to_safe(j, "outputs", obj.outputs);
             get_to_safe(j, "sortMode", obj.sortMode);
             get_to_safe(j, "viewMode", obj.viewMode);
             get_to_safe(j, "stopHotkey", obj.stopHotkey);

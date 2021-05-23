@@ -164,11 +164,11 @@ namespace Soundux::Objects
             if (playingSound && remotePlayingSound)
             {
                 groupedSounds->insert({playingSound->id, remotePlayingSound->id});
-                if (Globals::gSettings.output.empty() && playingSound)
+                if (Globals::gSettings.outputs.empty() && playingSound)
                 {
                     return *playingSound;
                 }
-                if (!Globals::gSettings.output.empty() && Globals::gAudioBackend)
+                if (!Globals::gSettings.outputs.empty() && Globals::gAudioBackend)
                 {
                     if (!Globals::gSettings.allowMultipleOutputs)
                     {
@@ -176,7 +176,7 @@ namespace Soundux::Objects
                     }
 
                     bool moveSuccess = true;
-                    for (const auto &outputApp : Globals::gSettings.output)
+                    for (const auto &outputApp : Globals::gSettings.outputs)
                     {
                         if (!Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
                         {
@@ -191,7 +191,7 @@ namespace Soundux::Objects
                         if (remotePlayingSound)
                             stopSound(remotePlayingSound->id);
 
-                        Fancy::fancy.logTime().failure() << "Failed to move Application " << Globals::gSettings.output
+                        Fancy::fancy.logTime().failure() << "Failed to move Application " << Globals::gSettings.outputs
                                                          << " to soundux sink for sound " << id << std::endl;
                         onError(Enums::ErrorCode::FailedToMoveToSink);
                         return std::nullopt;
@@ -273,12 +273,12 @@ namespace Soundux::Objects
     std::optional<PlayingSound> Window::pauseSound(const std::uint32_t &id)
     {
         std::optional<std::uint32_t> remoteSoundId;
-        if (!Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
+        if (!Globals::gSettings.outputs.empty() && !Globals::gSettings.useAsDefaultDevice)
         {
             auto scoped = groupedSounds.scoped();
             if (scoped->find(id) == scoped->end())
             {
-                if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
+                if (!Globals::gSettings.outputs.empty() || !Globals::gSettings.useAsDefaultDevice)
                 {
                     Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
                 }
@@ -306,12 +306,12 @@ namespace Soundux::Objects
     std::optional<PlayingSound> Window::resumeSound(const std::uint32_t &id)
     {
         std::optional<std::uint32_t> remoteSoundId;
-        if (!Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
+        if (!Globals::gSettings.outputs.empty() && !Globals::gSettings.useAsDefaultDevice)
         {
             auto scoped = groupedSounds.scoped();
             if (scoped->find(id) == scoped->end())
             {
-                if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
+                if (!Globals::gSettings.outputs.empty() || !Globals::gSettings.useAsDefaultDevice)
                 {
                     Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
                 }
@@ -339,12 +339,12 @@ namespace Soundux::Objects
     std::optional<PlayingSound> Window::seekSound(const std::uint32_t &id, std::uint64_t seekTo)
     {
         std::optional<std::uint32_t> remoteSoundId;
-        if (!Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
+        if (!Globals::gSettings.outputs.empty() && !Globals::gSettings.useAsDefaultDevice)
         {
             auto scoped = groupedSounds.scoped();
             if (scoped->find(id) == scoped->end())
             {
-                if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
+                if (!Globals::gSettings.outputs.empty() || !Globals::gSettings.useAsDefaultDevice)
                 {
                     Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
                 }
@@ -372,12 +372,12 @@ namespace Soundux::Objects
     std::optional<PlayingSound> Window::repeatSound(const std::uint32_t &id, bool shouldRepeat)
     {
         std::optional<std::uint32_t> remoteSoundId;
-        if (!Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
+        if (!Globals::gSettings.outputs.empty() && !Globals::gSettings.useAsDefaultDevice)
         {
             auto scoped = groupedSounds.scoped();
             if (scoped->find(id) == scoped->end())
             {
-                if (!Globals::gSettings.output.empty() || !Globals::gSettings.useAsDefaultDevice)
+                if (!Globals::gSettings.outputs.empty() || !Globals::gSettings.useAsDefaultDevice)
                 {
                     Fancy::fancy.logTime().warning() << "Failed to find remoteSound of sound " << id << std::endl;
                 }
@@ -411,7 +411,7 @@ namespace Soundux::Objects
     bool Window::stopSound(const std::uint32_t &id)
     {
         std::optional<std::uint32_t> remoteSoundId;
-        if (!Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
+        if (!Globals::gSettings.outputs.empty() && !Globals::gSettings.useAsDefaultDevice)
         {
             auto scoped = groupedSounds.scoped();
             if (scoped->find(id) == scoped->end())
@@ -511,7 +511,7 @@ namespace Soundux::Objects
             }
             else if (settings.useAsDefaultDevice && !oldSettings.useAsDefaultDevice)
             {
-                Globals::gSettings.output.clear();
+                Globals::gSettings.outputs.clear();
                 if (!Globals::gAudioBackend->stopSoundInput())
                 {
                     Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
@@ -522,15 +522,15 @@ namespace Soundux::Objects
                     onError(Enums::ErrorCode::FailedToSetDefaultSource);
                 }
             }
-            if (settings.output != oldSettings.output)
+            if (settings.outputs != oldSettings.outputs)
             {
-                if (!settings.allowMultipleOutputs && settings.output.size() > 1)
+                if (!settings.allowMultipleOutputs && settings.outputs.size() > 1)
                 {
                     Fancy::fancy.logTime().warning() << "Allow Multiple Outputs is off but got multiple output apps, "
                                                         "falling back to first output in list"
                                                      << std::endl;
 
-                    settings.output = {settings.output.front()};
+                    settings.outputs = {settings.outputs.front()};
                 }
 
                 if (!Globals::gAudioBackend->stopSoundInput())
@@ -539,9 +539,9 @@ namespace Soundux::Objects
                     onError(Enums::ErrorCode::FailedToMoveBack);
                 }
 
-                for (const auto &outputApp : settings.output)
+                for (const auto &outputApp : settings.outputs)
                 {
-                    if (!settings.output.empty() && !Globals::gAudio.getPlayingSounds().empty())
+                    if (!settings.outputs.empty() && !Globals::gAudio.getPlayingSounds().empty())
                     {
                         Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp));
                     }
@@ -689,9 +689,9 @@ namespace Soundux::Objects
     bool Window::startPassthrough(const std::string &name)
     {
         bool success = true;
-        if (Globals::gAudioBackend && !Globals::gSettings.output.empty())
+        if (Globals::gAudioBackend && !Globals::gSettings.outputs.empty())
         {
-            for (const auto &outputApp : Globals::gSettings.output)
+            for (const auto &outputApp : Globals::gSettings.outputs)
             {
                 if (!Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
                 {
