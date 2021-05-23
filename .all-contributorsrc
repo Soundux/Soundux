@@ -183,6 +183,15 @@
         "bug",
         "research"
       ]
+    },
+    {
+      "login": "Kylianalex",
+      "name": "Kylianalex",
+      "avatar_url": "https://avatars.githubusercontent.com/u/66625058?v=4",
+      "profile": "https://github.com/Kylianalex",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 2,
