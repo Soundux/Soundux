@@ -97,7 +97,7 @@ namespace nlohmann
         {
             if (j.find(key) != j.end())
             {
-                if (j.at(key).type() == nlohmann::basic_json(T{}).type())
+                if (j.at(key).type_name() == nlohmann::basic_json(T{}).type_name())
                 {
                     j.at(key).get_to(member);
                 }
