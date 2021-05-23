@@ -233,7 +233,7 @@ namespace Soundux::Objects
                 Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
             }
 
-            if (Globals::gSettings.output.empty() && !Globals::gSettings.useAsDefaultDevice)
+            if (Globals::gSettings.outputs.empty() && !Globals::gSettings.useAsDefaultDevice)
             {
                 return Globals::gAudio.play(*sound);
             }
