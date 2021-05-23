@@ -13,6 +13,13 @@ namespace Soundux
             std::shared_ptr<Tray::Tray> tray;
             std::shared_ptr<Webview::Window> webview;
 
+            bool onClose();
+            void exposeFunctions();
+            void onResize(int, int);
+
+            void setupTray();
+            void fetchTranslations();
+
             void onAllSoundsFinished() override;
             Settings changeSettings(const Settings &newSettings) override;
 
@@ -24,6 +31,7 @@ namespace Soundux
 
             void onError(const Enums::ErrorCode &error) override;
             void onSoundPlayed(const PlayingSound &sound) override;
+            void onSettingsChanged(const Settings &settings) override;
             void onSoundProgressed(const PlayingSound &sound) override;
             void onDownloadProgressed(float progress, const std::string &eta) override;
         };

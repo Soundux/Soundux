@@ -56,6 +56,24 @@ namespace Soundux::Objects
         tray = std::make_shared<Tray::Tray>("soundux-tray", iconPath.u8string());
 #endif
 
+        exposeFunctions();
+        fetchTranslations();
+
+        webview->setCloseCallback([this]() { return onClose(); });
+        webview->setResizeCallback([this](int width, int height) { onResize(width, height); });
+
+#if defined(IS_EMBEDDED)
+#if defined(__linux__)
+        webview->setUrl("embedded://" + path.string());
+#elif defined(_WIN32)
+        webview->setUrl("file:///embedded/" + path.string());
+#endif
+#else
+        webview->setUrl("file://" + path.string());
+#endif
+    }
+    void WebView::exposeFunctions()
+    {
         webview->expose(Webview::Function("getSettings", []() { return Globals::gSettings; }));
         webview->expose(Webview::Function("isLinux", []() {
 #if defined(__linux__)
@@ -205,32 +223,24 @@ namespace Soundux::Objects
             }
         }));
 #endif
-
-        webview->setCloseCallback([this]() {
-            if (Globals::gSettings.minimizeToTray)
-            {
-                tray->getEntries().at(1)->setText(translations.show);
-                webview->hide();
-                return true;
-            }
-            return false;
-        });
-
-        webview->setResizeCallback([](int width, int height) {
-            Globals::gData.width = width;
-            Globals::gData.height = height;
-        });
-
-#if defined(IS_EMBEDDED)
-#if defined(__linux__)
-        webview->setUrl("embedded://" + path.string());
-#elif defined(_WIN32)
-        webview->setUrl("file:///embedded/" + path.string());
-#endif
-#else
-        webview->setUrl("file://" + path.string());
-#endif
-
+    }
+    bool WebView::onClose()
+    {
+        if (Globals::gSettings.minimizeToTray)
+        {
+            tray->getEntries().at(1)->setText(translations.show);
+            webview->hide();
+            return true;
+        }
+        return false;
+    }
+    void WebView::onResize(int width, int height)
+    {
+        Globals::gData.width = width;
+        Globals::gData.height = height;
+    }
+    void WebView::fetchTranslations()
+    {
         webview->setNavigateCallback([this]([[maybe_unused]] const std::string &url) {
             static bool once = false;
             if (!once)
@@ -262,42 +272,39 @@ namespace Soundux::Objects
                                                 Webview::JavaScriptFunction("window.getTranslation", "tray.exit"))
                                             .get();
 
-                    tray->addEntry(Tray::Button(translations.exit, [this]() {
-                        tray->exit();
-                        webview->exit();
-                    }));
-                    tray->addEntry(Tray::Button(translations.hide, [this]() {
-                        if (!webview->isHidden())
-                        {
-                            webview->hide();
-                            tray->getEntries().at(1)->setText(translations.show);
-                        }
-                        else
-                        {
-                            webview->show();
-                            tray->getEntries().at(1)->setText(translations.hide);
-                        }
-                    }));
-
-                    auto settings = tray->addEntry(Tray::Submenu(translations.settings));
-                    settings->addEntries(Tray::SyncedToggle(translations.muteDuringPlayback,
-                                                            Globals::gSettings.muteDuringPlayback,
-                                                            [this](bool state) {
-                                                                auto settings = Globals::gSettings;
-                                                                settings.muteDuringPlayback = state;
-                                                                changeSettings(settings);
-                                                            }),
-                                         Tray::SyncedToggle(translations.tabHotkeys, Globals::gSettings.tabHotkeysOnly,
-                                                            [this](bool state) {
-                                                                auto settings = Globals::gSettings;
-                                                                settings.tabHotkeysOnly = state;
-                                                                changeSettings(settings);
-                                                            }));
+                    setupTray();
                 });
 
                 once = true;
             }
         });
+    }
+    void WebView::setupTray()
+    {
+        tray->addEntry(Tray::Button(translations.exit, [this]() {
+            tray->exit();
+            webview->exit();
+        }));
+
+        tray->addEntry(Tray::Button(translations.hide, [this]() {
+            if (!webview->isHidden())
+            {
+                webview->hide();
+                tray->getEntries().at(1)->setText(translations.show);
+            }
+            else
+            {
+                webview->show();
+                tray->getEntries().at(1)->setText(translations.hide);
+            }
+        }));
+
+        auto settings = tray->addEntry(Tray::Submenu(translations.settings));
+        settings->addEntries(
+            Tray::SyncedToggle(translations.muteDuringPlayback, Globals::gSettings.muteDuringPlayback,
+                               [this]([[maybe_unused]] bool state) { changeSettings(Globals::gSettings); }),
+            Tray::SyncedToggle(translations.tabHotkeys, Globals::gSettings.tabHotkeysOnly,
+                               [this]([[maybe_unused]] bool state) { changeSettings(Globals::gSettings); }));
     }
     void WebView::mainLoop()
     {
@@ -346,7 +353,13 @@ namespace Soundux::Objects
     {
         auto rtn = Window::changeSettings(newSettings);
         tray->update();
+
+        onSettingsChanged(newSettings);
         return rtn;
+    }
+    void WebView::onSettingsChanged(const Settings &settings)
+    {
+        webview->callFunction<void>(Webview::JavaScriptFunction("window.updateSettings", settings));
     }
     void WebView::onAllSoundsFinished()
     {

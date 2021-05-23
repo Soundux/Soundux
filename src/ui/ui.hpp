@@ -96,6 +96,7 @@ namespace Soundux
             virtual void onError(const Enums::ErrorCode &) = 0;
             virtual void onSoundPlayed(const PlayingSound &);
             virtual void onSoundFinished(const PlayingSound &);
+            virtual void onSettingsChanged(const Settings &) = 0;
             virtual void onHotKeyReceived(const std::vector<int> &);
             virtual void onSoundProgressed(const PlayingSound &) = 0;
             virtual void onDownloadProgressed(float, const std::string &) = 0;
