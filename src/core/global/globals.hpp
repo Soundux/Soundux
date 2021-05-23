@@ -22,7 +22,7 @@ namespace Soundux
         inline Objects::Data gData;
         inline Objects::Audio gAudio;
 #if defined(__linux__)
-        inline std::optional<Objects::IconFetcher> gIcons;
+        inline std::shared_ptr<Objects::IconFetcher> gIcons;
         inline std::shared_ptr<Objects::AudioBackend> gAudioBackend;
 #endif
         inline Objects::Queue gQueue;

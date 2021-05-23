@@ -29,16 +29,17 @@ namespace Soundux::Objects
 
         return true;
     }
-    std::optional<IconFetcher> IconFetcher::createInstance()
+    std::shared_ptr<IconFetcher> IconFetcher::createInstance()
     {
-        IconFetcher instance;
-        if (instance.setup())
+        auto instance = std::shared_ptr<IconFetcher>(new IconFetcher()); // NOLINT
+
+        if (instance->setup())
         {
             return instance;
         }
 
         Fancy::fancy.logTime().failure() << "Could not create IconFetcher instance" << std::endl;
-        return std::nullopt;
+        return nullptr;
     }
     std::optional<int> IconFetcher::getPpid(int pid)
     {
