@@ -539,9 +539,8 @@ namespace Soundux::Objects
                     }
                 }
             }
-
-            movedApplications.clear();
         }
+        movedApplications.clear();
 
         return success;
     }
