@@ -300,11 +300,16 @@ namespace Soundux::Objects
         }));
 
         auto settings = tray->addEntry(Tray::Submenu(translations.settings));
-        settings->addEntries(
-            Tray::SyncedToggle(translations.muteDuringPlayback, Globals::gSettings.muteDuringPlayback,
-                               [this]([[maybe_unused]] bool state) { changeSettings(Globals::gSettings); }),
-            Tray::SyncedToggle(translations.tabHotkeys, Globals::gSettings.tabHotkeysOnly,
-                               [this]([[maybe_unused]] bool state) { changeSettings(Globals::gSettings); }));
+        settings->addEntries(Tray::SyncedToggle(translations.muteDuringPlayback, Globals::gSettings.muteDuringPlayback,
+                                                [this]([[maybe_unused]] bool state) {
+                                                    changeSettings(Globals::gSettings);
+                                                    onSettingsChanged();
+                                                }),
+                             Tray::SyncedToggle(translations.tabHotkeys, Globals::gSettings.tabHotkeysOnly,
+                                                [this]([[maybe_unused]] bool state) {
+                                                    changeSettings(Globals::gSettings);
+                                                    onSettingsChanged();
+                                                }));
     }
     void WebView::mainLoop()
     {
@@ -354,12 +359,11 @@ namespace Soundux::Objects
         auto rtn = Window::changeSettings(newSettings);
         tray->update();
 
-        onSettingsChanged(newSettings);
         return rtn;
     }
-    void WebView::onSettingsChanged(const Settings &settings)
+    void WebView::onSettingsChanged()
     {
-        webview->callFunction<void>(Webview::JavaScriptFunction("window.updateSettings", settings));
+        webview->callFunction<void>(Webview::JavaScriptFunction("window.updateSettings", Globals::gSettings));
     }
     void WebView::onAllSoundsFinished()
     {
