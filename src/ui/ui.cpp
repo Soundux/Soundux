@@ -175,12 +175,18 @@ namespace Soundux::Objects
                         Globals::gAudioBackend->stopSoundInput();
                     }
 
-                    bool moveSuccess = true;
+                    bool moveSuccess = false;
                     for (const auto &outputApp : Globals::gSettings.outputs)
                     {
-                        if (!Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
+                        if (Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
                         {
-                            moveSuccess = false;
+                            moveSuccess = true;
+                        }
+                        else
+                        {
+                            Fancy::fancy.logTime().failure() << "Failed to move Application " << outputApp
+                                                             << " to soundux sink for sound " << id << std::endl;
+                            onError(Enums::ErrorCode::FailedToMoveToSink);
                         }
                     }
 
@@ -191,7 +197,7 @@ namespace Soundux::Objects
                         if (remotePlayingSound)
                             stopSound(remotePlayingSound->id);
 
-                        Fancy::fancy.logTime().failure() << "Failed to move Application " << Globals::gSettings.outputs
+                        Fancy::fancy.logTime().failure() << "Failed to move Applications " << Globals::gSettings.outputs
                                                          << " to soundux sink for sound " << id << std::endl;
                         onError(Enums::ErrorCode::FailedToMoveToSink);
                         return std::nullopt;
