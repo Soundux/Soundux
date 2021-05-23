@@ -11,12 +11,14 @@
 int __stdcall WinMain([[maybe_unused]] HINSTANCE hInstrance, [[maybe_unused]] HINSTANCE prevInstance,
                       [[maybe_unused]] LPSTR args, [[maybe_unused]] int argc)
 #else
-int main()
+int main(int argc, char **arguments)
 #endif
 {
     using namespace Soundux::Globals; // NOLINT
     using namespace Soundux::Objects; // NOLINT
     using namespace Soundux::Enums;   // NOLINT
+
+    std::vector<std::string> args(arguments, arguments + argc);
 
 #if defined(_WIN32)
     if (std::getenv("SOUNDUX_DEBUG"))
@@ -67,6 +69,15 @@ int main()
 
     gGui = std::make_unique<Soundux::Objects::WebView>();
     gGui->setup();
+
+    if (std::find(args.begin(), args.end(), "--hidden") == args.end())
+    {
+        gGui->show();
+    }
+    else
+    {
+        Fancy::fancy.logTime().message() << "Starting window hidden" << std::endl;
+    }
 
 #if defined(_WIN32)
     HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1));

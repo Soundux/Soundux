@@ -72,6 +72,10 @@ namespace Soundux::Objects
         webview->setUrl("file://" + path.string());
 #endif
     }
+    void WebView::show()
+    {
+        webview->show();
+    }
     void WebView::exposeFunctions()
     {
         webview->expose(Webview::Function("getSettings", []() { return Globals::gSettings; }));
@@ -286,7 +290,7 @@ namespace Soundux::Objects
             webview->exit();
         }));
 
-        tray->addEntry(Tray::Button(translations.hide, [this]() {
+        tray->addEntry(Tray::Button(webview->isHidden() ? translations.show : translations.hide, [this]() {
             if (!webview->isHidden())
             {
                 webview->hide();

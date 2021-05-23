@@ -91,11 +91,12 @@ namespace Soundux
           public:
             virtual ~Window();
             virtual void setup();
+            virtual void show() = 0;
             virtual void mainLoop() = 0;
 
             virtual void onSettingsChanged() = 0;
-            virtual void onError(const Enums::ErrorCode &) = 0;
             virtual void onSoundPlayed(const PlayingSound &);
+            virtual void onError(const Enums::ErrorCode &) = 0;
             virtual void onSoundFinished(const PlayingSound &);
             virtual void onHotKeyReceived(const std::vector<int> &);
             virtual void onSoundProgressed(const PlayingSound &) = 0;

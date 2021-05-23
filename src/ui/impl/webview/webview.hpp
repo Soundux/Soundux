@@ -24,6 +24,7 @@ namespace Soundux
             Settings changeSettings(const Settings &newSettings) override;
 
           public:
+            void show() override;
             void setup() override;
             void mainLoop() override;
             void onSoundFinished(const PlayingSound &sound) override;
