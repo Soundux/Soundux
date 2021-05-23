@@ -299,8 +299,9 @@ namespace Soundux::Objects
             return;
         }
 
-        device->masterVolumeFactor =
-            sound->playbackDevice.isDefault ? Globals::gSettings.localVolume : Globals::gSettings.remoteVolume;
+        device->masterVolumeFactor = sound->playbackDevice.isDefault
+                                         ? static_cast<float>(Globals::gSettings.localVolume) / 100.f
+                                         : static_cast<float>(Globals::gSettings.remoteVolume) / 100.f;
 
         auto readFrames = ma_decoder_read_pcm_frames(sound->raw.decoder, output, frameCount);
         if (sound->shouldSeek)

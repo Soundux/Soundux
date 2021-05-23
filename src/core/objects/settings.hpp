@@ -20,8 +20,8 @@ namespace Soundux
             std::vector<std::string> outputs;
             std::uint32_t selectedTab = 0;
 
-            float remoteVolume = 1.f;
-            float localVolume = 0.5f;
+            int remoteVolume = 100;
+            int localVolume = 50;
             bool syncVolumes = false;
 
             bool allowMultipleOutputs = false;
