@@ -192,6 +192,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "gregersn",
+      "name": "Greger",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1364443?v=4",
+      "profile": "http://gregerstoltnilsen.net/",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 2,
