@@ -38,16 +38,16 @@ jobs:
           args: install openssl -y
 
       - name: Compile Embed-Helper
-        run: "cd src/ui/impl/webview/lib/webviewpp/embed-helper && mkdir build && cd build && cmake .. && cmake --build . --config Release && cd Release && ./embed_helper ../../../../soundux-ui"
+        run: "cd src/ui/impl/webview/lib/webviewpp/embed-helper && mkdir build && cd build && cmake .. && cmake --build . --config RelWithDebInfo && cd RelWithDebInfo && ./embed_helper ../../../../soundux-ui"
 
       - name: Compile
-        run: "mkdir build && cd build && cmake .. -DEMBED_PATH=src/ui/impl/webview/lib/webviewpp/embed-helper/build/Release && cmake --build . --config RelWithDebInfo"
+        run: "mkdir build && cd build && cmake .. -DEMBED_PATH=src/ui/impl/webview/lib/webviewpp/embed-helper/build/RelWithDebInfo && cmake --build . --config RelWithDebInfo"
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v2.2.3
         with:
           name: Release
-          path: build/Release
+          path: build/RelWithDebInfo
 
       - name: Install InnoSetup
         uses: crazy-max/ghaction-chocolatey@v1.5.0
