@@ -140,12 +140,16 @@ namespace Soundux::Objects
                 {
                     if (entry.is_directory())
                     {
-                        const std::filesystem::path &subFolder(entry.path());
+                        auto path = entry.path().u8string();
+                        std::transform(path.begin(), path.end(), path.begin(),
+                                       [](char c) { return c == '\\' ? '/' : c; });
 
-                        if (!subFolder.empty() && !Globals::gData.doesTabExist(subFolder.u8string()))
+                        const std::filesystem::path &subFolder(path);
+
+                        if (!subFolder.empty() && !Globals::gData.doesTabExist(path))
                         {
                             Tab subFolderTab;
-                            subFolderTab.path = subFolder.u8string();
+                            subFolderTab.path = path;
                             subFolderTab.sounds = getTabContent(subFolderTab);
                             subFolderTab.name = subFolder.filename().u8string();
 
