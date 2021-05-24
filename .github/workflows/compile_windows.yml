@@ -8,6 +8,7 @@ on:
       - "**/.all-contributorsrc"
       - "**/upload_full_src.yml"
       - "**/windows_debug.yml"
+      - "**/upload_binaries_to_draft.yml"
   pull_request:
     branches: [master]
 

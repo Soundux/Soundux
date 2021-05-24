@@ -1,42 +1,43 @@
 on:
-    push:
-        branches: [master]
-        paths-ignore:
-            - "**/README.md"
-            - "**/compile_linux.yml"
-            - "**/compile_windows.yml"
-            - "**/build_flatpak.yml"
-            - "**/.all-contributorsrc"
-            - "**/windows_debug.yml"
-    pull_request:
-        branches: [master]
+  push:
+    branches: [master]
+    paths-ignore:
+      - "**/README.md"
+      - "**/compile_linux.yml"
+      - "**/compile_windows.yml"
+      - "**/build_flatpak.yml"
+      - "**/.all-contributorsrc"
+      - "**/windows_debug.yml"
+      - "**/upload_binaries_to_draft.yml"
+  pull_request:
+    branches: [master]
 
 name: Upload source with submodules
 jobs:
-    build-linux:
-        runs-on: ubuntu-20.04
-        strategy:
-            fail-fast: false
-            matrix:
-                language: ["cpp"]
+  build-linux:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["cpp"]
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2.3.4
-              with:
-                  submodules: recursive
-                  path: Soundux
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+        with:
+          submodules: recursive
+          path: Soundux
 
-            - name: Create tarball
-              uses: master-atul/tar-action@v1.0.2
-              with:
-                  command: c
-                  files: |
-                      ./Soundux
-                  outPath: soundux.tar.gz
+      - name: Create tarball
+        uses: master-atul/tar-action@v1.0.2
+        with:
+          command: c
+          files: |
+            ./Soundux
+          outPath: soundux.tar.gz
 
-            - name: Upload
-              uses: actions/upload-artifact@v2.2.3
-              with:
-                  name: Source tarball
-                  path: soundux.tar.gz
+      - name: Upload
+        uses: actions/upload-artifact@v2.2.3
+        with:
+          name: Source tarball
+          path: soundux.tar.gz

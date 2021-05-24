@@ -1,29 +1,30 @@
 on:
-    push:
-        branches: [master]
-        paths-ignore:
-            - "**/README.md"
-            - "**/compile_windows.yml"
-            - "**/compile_linux.yml"
-            - "**/.all-contributorsrc"
-            - "**/upload_full_src.yml"
-            - "**/windows_debug.yml"
-    pull_request:
-        branches: [master]
+  push:
+    branches: [master]
+    paths-ignore:
+      - "**/README.md"
+      - "**/compile_windows.yml"
+      - "**/compile_linux.yml"
+      - "**/.all-contributorsrc"
+      - "**/upload_full_src.yml"
+      - "**/windows_debug.yml"
+      - "**/upload_binaries_to_draft.yml"
+  pull_request:
+    branches: [master]
 
 name: Build Flatpak
 jobs:
-    flatpak-builder:
-        runs-on: ubuntu-20.04
-        container:
-            image: bilelmoussaoui/flatpak-github-actions:gnome-3.38
-            options: --privileged
-        steps:
-            - uses: actions/checkout@v2.3.4
-              with:
-                  submodules: true
-            - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v3
-              with:          
-                  cache-key: flatpak-builder-${{ github.sha }}
-                  bundle: "soundux.flatpak"
-                  manifest-path: "deployment/flatpak/io.github.Soundux.yml"
+  flatpak-builder:
+    runs-on: ubuntu-20.04
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-3.38
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          submodules: true
+      - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v3
+        with:
+          cache-key: flatpak-builder-${{ github.sha }}
+          bundle: "soundux.flatpak"
+          manifest-path: "deployment/flatpak/io.github.Soundux.yml"
