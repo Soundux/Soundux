@@ -45,8 +45,24 @@ jobs:
       - name: Print Latest Release Info
         run: |
           echo "id: ${{ steps.last_release.outputs.id }}"
-          echo "name: ${{ steps.last_release.outputs.name }}"
           echo "tag_name: ${{ steps.last_release.outputs.tag_name }}"
-          echo "created_at: ${{ steps.last_release.outputs.created_atd }}"
           echo "draft: ${{ steps.last_release.outputs.draft }}"
-          echo "prerelease: ${{ steps.last_release.outputs.prerelease }}"
+
+      - name: Prepare Binaries
+        run: |
+          mkdir release
+          mv "./Deb package/soundux.deb" ./release/soundux-${{ steps.last_release.outputs.tag_name }}.deb
+          mv "./Source tarball/soundux.tar.gz" ./release/soundux-${{ steps.last_release.outputs.tag_name }}.tar.gz
+          mv "./soundux/soundux.flatpak" ./release/soundux-${{ steps.last_release.outputs.tag_name }}.flatpak
+          mv "./Installer/setup.exe" ./release/soundux-${{ steps.last_release.outputs.tag_name }}-windows-setup.exe
+          mv "./Release/soundux.exe" ./release/soundux-${{ steps.last_release.outputs.tag_name }}-windows-portable.exe
+
+      - name: List Release Binaries
+        run: "ls -lah release"
+
+      - name: Upload binaries
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: "release/*"
