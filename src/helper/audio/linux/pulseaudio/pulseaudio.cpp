@@ -328,7 +328,7 @@ namespace Soundux::Objects
     }
     bool PulseAudio::revertDefault()
     {
-        if (!defaultSource.empty())
+        if (!defaultSource.empty() && loopBack)
         {
             await(PulseApi::context_unload_module(context, *loopBack, nullptr, nullptr));
 
