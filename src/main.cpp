@@ -1,9 +1,9 @@
 #include <InstanceGuard.hpp>
+#include <backward.hpp>
 #include <core/enums/enums.hpp>
 #include <core/global/globals.hpp>
 #include <fancy.hpp>
 #include <helper/audio/linux/backend.hpp>
-#include <helper/exceptions/crashhandler.hpp>
 #include <ui/impl/webview/webview.hpp>
 
 #if defined(_WIN32)
@@ -53,9 +53,9 @@ int main(int argc, char **arguments)
         Fancy::fancy.logTime().success() << "Enabling debug features" << std::endl;
     }
 
-    CrashHandler::init();
-
+    backward::SignalHandling crashHandler;
     InstanceGuard::InstanceGuard guard("soundux-guard");
+
     if (guard.IsAnotherInstanceRunning())
     {
         Fancy::fancy.logTime().failure() << "Another Instance is already running!" << std::endl;

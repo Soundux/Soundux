@@ -38,3 +38,6 @@
 [submodule "lib/lockpp"]
 	path = lib/lockpp
 	url = https://github.com/Soundux/lockpp
+[submodule "lib/backward-cpp"]
+	path = lib/backward-cpp
+	url = https://github.com/bombela/backward-cpp

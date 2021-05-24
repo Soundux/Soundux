@@ -33,7 +33,7 @@ jobs:
         run: "sudo apt-get update && sudo apt-get install git build-essential cmake libx11-dev libpipewire-0.3-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev libpulse-dev"
 
       - name: Compile
-        run: "mkdir build && cd build && cmake .. && cmake --build . --config Release"
+        run: "mkdir build && cd build && cmake .. && cmake --build . --config RelWithDebInfo"
 
       - name: Build debian package
         run: "cd build && make install DESTDIR=../deployment/debian/soundux && cd ../deployment/debian && dpkg-deb --build soundux"

@@ -74,8 +74,11 @@ add_subdirectory(src/ui/impl/webview/lib/webviewpp EXCLUDE_FROM_ALL)
 add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 add_subdirectory(lib/tiny-process-library EXCLUDE_FROM_ALL)
 add_subdirectory(lib/InstanceGuard/Source EXCLUDE_FROM_ALL)
+add_subdirectory(lib/backward-cpp EXCLUDE_FROM_ALL)
 add_subdirectory(lib/traypp EXCLUDE_FROM_ALL)
 add_subdirectory(lib/lockpp)
+
+add_backward(soundux)
 
 if (WIN32)
     set(OPENSSL_USE_STATIC_LIBS TRUE)
