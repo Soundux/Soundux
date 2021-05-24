@@ -142,7 +142,7 @@ namespace Soundux::Objects
                     {
                         const std::filesystem::path &subFolder(entry.path());
 
-                        if (!subFolder.empty() && !Globals::gData.doesTabExist(subFolder))
+                        if (!subFolder.empty() && !Globals::gData.doesTabExist(subFolder.u8string()))
                         {
                             Tab subFolderTab;
                             subFolderTab.path = subFolder.u8string();
