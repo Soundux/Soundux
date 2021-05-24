@@ -1,4 +1,16 @@
-on: workflow_dispatch
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - "**/README.md"
+      - "**/compile_windows.yml"
+      - "**/build_flatpak.yml"
+      - "**/.all-contributorsrc"
+      - "**/upload_full_src.yml"
+      - "**/windows_debug.yml"
+      - "**/compile_linux.yml"
+  pull_request:
+    branches: [master]
 
 name: Upload Release Binaries
 jobs:
@@ -49,6 +61,7 @@ jobs:
           echo "draft: ${{ steps.last_release.outputs.draft }}"
 
       - name: Prepare Binaries
+        if: ${{ steps.last_release.outputs.draft }}
         run: |
           mkdir release
           mv "./Deb package/soundux.deb" ./release/soundux-${{ steps.last_release.outputs.tag_name }}.deb
@@ -61,6 +74,7 @@ jobs:
         run: "ls -lah release"
 
       - name: Upload binaries
+        if: ${{ steps.last_release.outputs.draft }}
         uses: skx/github-action-publish-binaries@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
