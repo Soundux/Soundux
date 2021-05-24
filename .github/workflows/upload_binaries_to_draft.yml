@@ -61,8 +61,10 @@ jobs:
         run: "ls -lah release"
 
       - name: Upload binaries
+        if: ${{ steps.last_release.outputs.draft }}
         uses: skx/github-action-publish-binaries@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          releaseId: ${{ steps.last_release.outputs.id }}
           args: "release/*"
