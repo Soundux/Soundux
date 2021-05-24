@@ -147,7 +147,7 @@ namespace Soundux::Objects
                             Tab subFolderTab;
                             subFolderTab.path = subFolder.u8string();
                             subFolderTab.sounds = getTabContent(subFolderTab);
-                            subFolderTab.name = std::filesystem::path(subFolder).filename().u8string();
+                            subFolderTab.name = subFolder.filename().u8string();
 
                             if (!subFolderTab.sounds.empty())
                             {
