@@ -205,15 +205,6 @@ namespace Soundux::Objects
             Webview::Function("startPassthrough", [this](const std::string &app) { return startPassthrough(app); }));
         webview->expose(
             Webview::Function("stopPassthrough", [this](const std::string &name) { stopPassthrough(name); }));
-        webview->expose(Webview::Function("isSwitchOnConnectLoaded", []() {
-            auto pulseBackend =
-                std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
-            if (pulseBackend)
-            {
-                return pulseBackend->switchOnConnectPresent();
-            }
-            return false;
-        }));
         webview->expose(Webview::Function("unloadSwitchOnConnect", []() {
             auto pulseBackend =
                 std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
@@ -252,6 +243,14 @@ namespace Soundux::Objects
             static bool once = false;
             if (!once)
             {
+
+                if (auto pulseBackend = std::dynamic_pointer_cast<PulseAudio>(Globals::gAudioBackend); pulseBackend)
+                {
+                    //* We have to call this so that we can trigger an event in the frontend that switchOnConnect was
+                    //* found becausepreviously the UI was not initialized.
+                    pulseBackend->switchOnConnectPresent();
+                }
+
                 auto future = std::make_shared<std::future<void>>();
                 *future = std::async(std::launch::async, [future, this] {
                     translations.settings = webview
@@ -370,11 +369,17 @@ namespace Soundux::Objects
     }
     void WebView::onSettingsChanged()
     {
-        webview->callFunction<void>(Webview::JavaScriptFunction("window.updateSettings", Globals::gSettings));
+        webview->callFunction<void>(
+            Webview::JavaScriptFunction("window.getStore().commit", "setSettings", Globals::gSettings));
     }
     void WebView::onAllSoundsFinished()
     {
         Window::onAllSoundsFinished();
-        webview->callFunction<void>(Webview::JavaScriptFunction("window.onAllStopped"));
+        webview->callFunction<void>(Webview::JavaScriptFunction("window.getStore().commit", "clearCurrentlyPlaying"));
+    }
+    void WebView::onSwitchOnConnectDetected(bool state)
+    {
+        webview->callFunction<void>(
+            Webview::JavaScriptFunction("window.getStore().commit", "setSwitchOnConnectLoaded", state));
     }
 } // namespace Soundux::Objects

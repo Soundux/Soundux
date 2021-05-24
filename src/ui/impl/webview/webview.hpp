@@ -31,6 +31,7 @@ namespace Soundux
             void onHotKeyReceived(const std::vector<int> &keys) override;
 
             void onSettingsChanged() override;
+            void onSwitchOnConnectDetected(bool state) override;
             void onError(const Enums::ErrorCode &error) override;
             void onSoundPlayed(const PlayingSound &sound) override;
             void onSoundProgressed(const PlayingSound &sound) override;

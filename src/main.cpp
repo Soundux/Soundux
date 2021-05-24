@@ -3,8 +3,11 @@
 #include <core/enums/enums.hpp>
 #include <core/global/globals.hpp>
 #include <fancy.hpp>
-#include <helper/audio/linux/backend.hpp>
 #include <ui/impl/webview/webview.hpp>
+
+#if defined(__linux__)
+#include <helper/audio/linux/backend.hpp>
+#endif
 
 #if defined(_WIN32)
 #include "../assets/icon.h"

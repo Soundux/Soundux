@@ -1,6 +1,7 @@
 #if defined(__linux__)
 #include "pulseaudio.hpp"
 #include "forward.hpp"
+#include <core/global/globals.hpp>
 #include <cstring>
 #include <exception>
 #include <fancy.hpp>
@@ -656,6 +657,14 @@ namespace Soundux::Objects
             },
             &isPresent));
 
+        if (isPresent)
+        {
+            if (Globals::gGui)
+            {
+                Globals::gGui->onSwitchOnConnectDetected(true);
+            }
+        }
+
         return isPresent;
     }
 
@@ -671,6 +680,11 @@ namespace Soundux::Objects
                     {
                         Fancy::fancy.logTime().message() << "Unloading: " << info->index << std::endl;
                         PulseApi::context_unload_module(ctx, info->index, nullptr, nullptr);
+
+                        if (Globals::gGui)
+                        {
+                            Globals::gGui->onSwitchOnConnectDetected(false);
+                        }
                     }
                 }
             },
