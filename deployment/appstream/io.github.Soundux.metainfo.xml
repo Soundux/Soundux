@@ -55,6 +55,17 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.2.6" date="2021-05-24">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2.6</url>
+      <description>
+        <ul>
+          <li>Recursive Folder adding</li>
+          <li>Crashes with PulseAudio</li>
+          <li>Fix Icons</li>
+          <li>Bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.5" date="2021-05-24">
       <url>https://github.com/Soundux/Soundux/releases/tag/0.2.5</url>
       <description>

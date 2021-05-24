@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
-project(soundux VERSION 0.2.5 DESCRIPTION "")
+project(soundux VERSION 0.2.6 DESCRIPTION "A crossplatform soundboard")
 
-set(FULL_VERSION_STRING "0.2.5")
+set(FULL_VERSION_STRING "0.2.6")
 option(EMBED_PATH "The path used for embedding" "OFF")
 option(USE_FLATPAK "Allows the program to run under flatpak" OFF)
 
