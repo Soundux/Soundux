@@ -13,25 +13,24 @@ jobs:
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: compile_windows.yml
-          name: windows_binaries
+
       - name: Download Deb Artifact
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: compile_linux.yml
-          name: deb_package
+
       - name: Download Flatpak Artifact
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: build_flatpak.yml
-          name: flatpak
+
       - name: Download Tar Ball Artifact
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: upload_full_src.yml
-          name: source_tar_ball
 
       - name: List downloaded binaries
         run: "ls -lah"
