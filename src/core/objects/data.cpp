@@ -195,4 +195,9 @@ namespace Soundux::Objects
 
         return rtn;
     }
+    bool Data::doesTabExist(const std::string &path)
+    {
+        auto it = std::find_if(tabs.begin(), tabs.end(), [&](const auto &tab) { return tab.path == path; });
+        return it != tabs.end();
+    }
 } // namespace Soundux::Objects

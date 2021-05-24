@@ -118,7 +118,6 @@ namespace Soundux::Objects
 
             if (std::filesystem::exists(path))
             {
-                Tab tab;
 #if defined(_WIN32)
                 auto rootPath = Helpers::narrow(path);
 #else
@@ -127,11 +126,15 @@ namespace Soundux::Objects
 
                 std::vector<Tab> tabs;
 
-                Tab rootTab;
-                rootTab.path = rootPath;
-                rootTab.sounds = getTabContent(tab);
-                rootTab.name = std::filesystem::path(rootPath).filename().u8string();
-                tabs.emplace_back(Globals::gData.addTab(std::move(rootTab)));
+                if (!Globals::gData.doesTabExist(rootPath))
+                {
+                    Tab rootTab;
+                    rootTab.path = rootPath;
+                    rootTab.sounds = getTabContent(rootTab);
+                    rootTab.name = std::filesystem::path(rootPath).filename().u8string();
+
+                    tabs.emplace_back(Globals::gData.addTab(std::move(rootTab)));
+                }
 
                 for (const auto &entry : std::filesystem::directory_iterator(rootPath))
                 {
@@ -139,16 +142,16 @@ namespace Soundux::Objects
                     {
                         const std::filesystem::path &subFolder(entry.path());
 
-                        if (!subFolder.empty())
+                        if (!subFolder.empty() && !Globals::gData.doesTabExist(subFolder))
                         {
                             Tab subFolderTab;
-                            tab.path = subFolder.u8string();
-                            tab.sounds = getTabContent(tab);
-                            tab.name = std::filesystem::path(subFolder).filename().u8string();
+                            subFolderTab.path = subFolder.u8string();
+                            subFolderTab.sounds = getTabContent(subFolderTab);
+                            subFolderTab.name = std::filesystem::path(subFolder).filename().u8string();
 
-                            if (!tab.sounds.empty())
+                            if (!subFolderTab.sounds.empty())
                             {
-                                tabs.emplace_back(Globals::gData.addTab(std::move(tab)));
+                                tabs.emplace_back(Globals::gData.addTab(std::move(subFolderTab)));
                             }
                         }
                     }

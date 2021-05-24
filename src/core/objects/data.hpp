@@ -27,6 +27,7 @@ namespace Soundux
 
             std::vector<Tab> getTabs() const;
             void setTabs(const std::vector<Tab> &);
+            bool doesTabExist(const std::string &);
             std::optional<Tab> setTab(const std::uint32_t &, const Tab &);
 
             Tab addTab(Tab);
