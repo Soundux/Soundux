@@ -70,7 +70,7 @@ namespace Soundux
 #endif
 
           protected:
-            virtual std::optional<Tab> addTab();
+            virtual std::vector<Tab> addTab();
             virtual std::vector<Tab> removeTab(const std::uint32_t &);
             virtual std::optional<Tab> refreshTab(const std::uint32_t &);
             virtual std::vector<Tab> changeTabOrder(const std::vector<int> &);

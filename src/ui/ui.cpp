@@ -101,7 +101,7 @@ namespace Soundux::Objects
         Fancy::fancy.logTime().warning() << "Path " >> tab.path << " does not exist" << std::endl;
         return {};
     }
-    std::optional<Tab> Window::addTab()
+    std::vector<Tab> Window::addTab()
     {
         nfdnchar_t *outpath = {};
         auto result = NFD::PickFolder(outpath, nullptr);
@@ -120,21 +120,47 @@ namespace Soundux::Objects
             {
                 Tab tab;
 #if defined(_WIN32)
-                tab.path = Helpers::narrow(path);
+                auto rootPath = Helpers::narrow(path);
 #else
-                tab.path = path;
+                const auto &rootPath = path;
 #endif
-                tab.sounds = getTabContent(tab);
-                tab.name = std::filesystem::path(path).filename().u8string();
 
-                tab = Globals::gData.addTab(std::move(tab));
+                std::vector<Tab> tabs;
 
-                return tab;
+                Tab rootTab;
+                rootTab.path = rootPath;
+                rootTab.sounds = getTabContent(tab);
+                rootTab.name = std::filesystem::path(rootPath).filename().u8string();
+                tabs.emplace_back(Globals::gData.addTab(std::move(rootTab)));
+
+                for (const auto &entry : std::filesystem::directory_iterator(rootPath))
+                {
+                    if (entry.is_directory())
+                    {
+                        const std::filesystem::path &subFolder(entry.path());
+
+                        if (!subFolder.empty())
+                        {
+                            Tab subFolderTab;
+                            tab.path = subFolder.u8string();
+                            tab.sounds = getTabContent(tab);
+                            tab.name = std::filesystem::path(subFolder).filename().u8string();
+
+                            if (!tab.sounds.empty())
+                            {
+                                tabs.emplace_back(Globals::gData.addTab(std::move(tab)));
+                            }
+                        }
+                    }
+                }
+
+                return tabs;
             }
             Fancy::fancy.logTime().warning() << "Selected Folder does not exist!" << std::endl;
             onError(Enums::ErrorCode::FolderDoesNotExist);
         }
-        return std::nullopt;
+
+        return {};
     }
 #if defined(__linux__)
     std::optional<PlayingSound> Window::playSound(const std::uint32_t &id)
