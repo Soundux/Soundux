@@ -33,4 +33,4 @@ jobs:
           workflow: upload_full_src.yml
 
       - name: List downloaded binaries
-        run: "ls -lah"
+        run: "find ."
