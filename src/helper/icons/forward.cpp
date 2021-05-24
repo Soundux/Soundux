@@ -5,7 +5,8 @@
 
 bool Soundux::LibWnck::setup()
 {
-    auto *libWnck = dlopen("libwnck-3.so", RTLD_LAZY);
+    auto *libWnck = dlopen("libwnck-3.so.0", RTLD_LAZY);
+
     if (libWnck)
     {
         getWindowPID = reinterpret_cast<decltype(getWindowPID)>(dlsym(libWnck, "wnck_window_get_pid"));
