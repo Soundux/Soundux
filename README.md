@@ -37,6 +37,10 @@
     <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+Flatpak%22">
       <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20Flatpak?label=flatpak%20build&style=flat-square" alt="Flatpak Build" />
     </a>
+    <hr>
+  <a href="https://hosted.weblate.org/engage/soundux/">
+<img src="https://hosted.weblate.org/widgets/soundux/-/frontend/287x66-black.png" alt="Translation status" />
+</a>
   </p>
 </div>
 
