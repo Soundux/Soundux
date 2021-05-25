@@ -9,7 +9,7 @@ Contributions are welcome! Here's how you can help:
 
 ## Translations
 
-## via Weblate (prefered)
+## via Weblate (preferred)
 
 1. Visit [our Weblate page](https://hosted.weblate.org/projects/soundux/frontend/)
 2. Login / Register
