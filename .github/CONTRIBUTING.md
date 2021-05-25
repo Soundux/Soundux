@@ -11,8 +11,8 @@ Contributions are welcome! Here's how you can help:
 
 ## via Weblate (prefered)
 
-1. Visit [our Weblate repository](https://weblate.soundux.rocks/projects/soundux/frontend/)
-2. Login via GitHub
+1. Visit [our Weblate page](https://hosted.weblate.org/projects/soundux/frontend/)
+2. Login / Register
 3. Start translating!
     - If you are adding a translation which language or territory specific version doesn't exist yet click on **Start new translation**
     - If there already is a translation for your language and you want to correct a string just on the language and make your change
