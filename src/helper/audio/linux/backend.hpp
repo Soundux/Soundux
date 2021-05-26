@@ -2,6 +2,7 @@
 #if defined(__linux__)
 #include <core/enums/enums.hpp>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -39,8 +40,8 @@ namespace Soundux
             virtual bool revertDefault() = 0;
             virtual bool muteInput(bool) = 0;
 
-            virtual bool isCurrentlyPassingThrough() = 0;
-            virtual std::size_t passedThroughApplications() = 0;
+            virtual std::set<std::string> currentlyInputApps() = 0;
+            virtual std::set<std::string> currentlyPassedThrough() = 0;
 
             virtual bool stopAllPassthrough() = 0;
             virtual bool stopPassthrough(const std::string &) = 0;

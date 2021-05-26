@@ -668,9 +668,25 @@ namespace Soundux::Objects
         return success;
     }
 
-    bool PipeWire::isCurrentlyPassingThrough()
+    std::set<std::string> PipeWire::currentlyInputApps()
     {
-        return !passthroughLinks.empty();
+        std::set<std::string> rtn;
+        for (const auto &[app, links] : soundInputLinks)
+        {
+            rtn.emplace(app);
+        }
+
+        return rtn;
+    }
+    std::set<std::string> PipeWire::currentlyPassedThrough()
+    {
+        std::set<std::string> rtn;
+        for (const auto &[app, links] : passthroughLinks)
+        {
+            rtn.emplace(app);
+        }
+
+        return rtn;
     }
 
     bool PipeWire::stopPassthrough(const std::string &name)
@@ -700,11 +716,6 @@ namespace Soundux::Objects
 
         passthroughLinks.clear();
         return true;
-    }
-
-    std::size_t PipeWire::passedThroughApplications()
-    {
-        return passthroughLinks.size();
     }
 } // namespace Soundux::Objects
 #endif

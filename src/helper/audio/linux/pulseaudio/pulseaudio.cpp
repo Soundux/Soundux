@@ -635,11 +635,6 @@ namespace Soundux::Objects
         return success;
     }
 
-    bool PulseAudio::isCurrentlyPassingThrough()
-    {
-        return !movedPassthroughApplications.empty();
-    }
-
     bool PulseAudio::switchOnConnectPresent()
     {
         bool isPresent = false;
@@ -702,9 +697,26 @@ namespace Soundux::Objects
 
         return false;
     }
-    std::size_t PulseAudio::passedThroughApplications()
+
+    std::set<std::string> PulseAudio::currentlyInputApps()
     {
-        return movedPassthroughApplications.size();
+        std::set<std::string> rtn;
+        for (const auto &[app, original] : movedApplications)
+        {
+            rtn.emplace(app);
+        }
+
+        return rtn;
+    }
+    std::set<std::string> PulseAudio::currentlyPassedThrough()
+    {
+        std::set<std::string> rtn;
+        for (const auto &[app, original] : movedPassthroughApplications)
+        {
+            rtn.emplace(app);
+        }
+
+        return rtn;
     }
 } // namespace Soundux::Objects
 #endif

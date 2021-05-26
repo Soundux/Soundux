@@ -76,9 +76,10 @@ namespace Soundux
             bool revertDefault() override;
             bool muteInput(bool state) override;
 
+            std::set<std::string> currentlyInputApps() override;
+            std::set<std::string> currentlyPassedThrough() override;
+
             bool stopAllPassthrough() override;
-            bool isCurrentlyPassingThrough() override;
-            std::size_t passedThroughApplications() override;
             bool stopPassthrough(const std::string &name) override;
             bool passthroughFrom(std::shared_ptr<PlaybackApp> app) override;
 
