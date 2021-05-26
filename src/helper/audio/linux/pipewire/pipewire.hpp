@@ -16,12 +16,20 @@ namespace Soundux
 {
     namespace Objects
     {
+        enum class Side
+        {
+            UNDEFINED,
+            LEFT,
+            RIGHT,
+            MONO,
+        };
+
         struct Port
         {
-            char side;
             std::uint32_t id;
             std::string portAlias;
             spa_direction direction;
+            Side side = Side::UNDEFINED;
             std::uint32_t parentNode = 0;
         };
 

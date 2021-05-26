@@ -91,9 +91,22 @@ namespace Soundux::Objects
             {
                 self.parentNode = std::stol(nodeId);
             }
-            if (const auto *portName = spa_dict_lookup(info->props, "port.name"); portName)
+            if (const auto *rawPortName = spa_dict_lookup(info->props, "port.name"); rawPortName)
             {
-                self.side = std::string(portName).back();
+                auto portName = std::string(rawPortName);
+
+                if (portName.back() == '1' || portName.back() == 'L')
+                {
+                    self.side = Side::LEFT;
+                }
+                else if (portName.back() == '2' || portName.back() == 'R')
+                {
+                    self.side = Side::RIGHT;
+                }
+                else if (portName.find("MONO", portName.size() - 4) != std::string::npos)
+                {
+                    self.side = Side::MONO;
+                }
             }
             if (const auto *portAlias = spa_dict_lookup(info->props, "port.alias"); portAlias)
             {
@@ -562,19 +575,10 @@ namespace Soundux::Objects
                     {
                         if (nodePort.direction == SPA_DIRECTION_INPUT)
                         {
-                            if ((port.side == 'R' || port.side == '2') &&
-                                (nodePort.side == 'R' || nodePort.side == '2'))
-                            {
-                                auto link = linkPorts(nodePortId, portId);
+                            if (nodePort.side == Side::UNDEFINED || port.side == Side::UNDEFINED)
+                                continue;
 
-                                if (link)
-                                {
-                                    success = true;
-                                    soundInputLinks.at(app->name).emplace_back(*link);
-                                }
-                            }
-                            else if ((port.side == 'L' || port.side == '1') &&
-                                     (nodePort.side == 'L' || nodePort.side == '1'))
+                            if (nodePort.side == port.side || nodePort.side == Side::MONO)
                             {
                                 auto link = linkPorts(nodePortId, portId);
 
@@ -640,21 +644,12 @@ namespace Soundux::Objects
                 {
                     for (const auto &[nodePortId, nodePort] : node.ports)
                     {
+                        if (nodePort.side == Side::UNDEFINED || port.side == Side::UNDEFINED)
+                            continue;
+
                         if (nodePort.direction == SPA_DIRECTION_OUTPUT)
                         {
-                            if ((port.side == 'R' || port.side == '2') &&
-                                (nodePort.side == 'R' || nodePort.side == '2'))
-                            {
-                                auto link = linkPorts(portId, nodePortId);
-
-                                if (link)
-                                {
-                                    success = true;
-                                    passthroughLinks.at(app->name).emplace_back(*link);
-                                }
-                            }
-                            else if ((port.side == 'L' || port.side == '1') &&
-                                     (nodePort.side == 'L' || nodePort.side == '1'))
+                            if (nodePort.side == port.side || nodePort.side == Side::MONO)
                             {
                                 auto link = linkPorts(portId, nodePortId);
 
