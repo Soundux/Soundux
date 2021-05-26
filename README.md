@@ -71,7 +71,7 @@ Please refer to your distro instructions on how to install
 - Webkit2gtk
 - libappindicator3
 - [youtube-dl](https://youtube-dl.org/) & [ffmpeg](https://www.ffmpeg.org/) (optional, for downloader support)
-## 🪟 Windows
+## <img src="https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg" height="20"/> Windows
 - [VB-CABLE](https://vb-audio.com/Cable/) (Our installer automatically installs VB-CABLE)
 - [Webview2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) (Is also shipped with the installer)
 - [youtube-dl](https://youtube-dl.org/) & [ffmpeg](https://www.ffmpeg.org/) (optional, for downloader support)
@@ -80,27 +80,27 @@ Please refer to your distro instructions on how to install
 
 ## 🐧 Linux
 
-### ❤️ Arch Linux and derivatives
+### <img src="https://www.vectorlogo.zone/logos/archlinux/archlinux-icon.svg" height="20"/> Arch Linux and derivatives
 You can install our package with your AUR helper of choice which will automatically compile and install the latest release version
 ```sh
 yay -S soundux
 ```
 We also provide a `soundux-git` package which compiles from the master branch
 
-### 🗃️ Ubuntu and derivatives
+### <img src="https://www.vectorlogo.zone/logos/ubuntu/ubuntu-icon.svg" height="20"/> Ubuntu and derivatives
 You can install Soundux via [pacstall](https://github.com/Henryws/pacstall)
 ```sh
 sudo pacstall -I soundux
 ```
 
-### 🗃️ Fedora
+### <img src="https://www.vectorlogo.zone/logos/getfedora/getfedora-icon.svg" height="20"> Fedora
 Soundux can be installed via this [COPR repository](https://copr.fedorainfracloud.org/coprs/rivenirvana/soundux/)
 ```sh
 sudo dnf copr enable rivenirvana/soundux
 sudo dnf install soundux
 ```
 
-### 📜 Distro-agnostic packages
+### <img src="https://www.vectorlogo.zone/logos/linuxfoundation/linuxfoundation-icon.svg" height="20" /> Distro-agnostic packages
 You can grab the latest release from the Snap Store or Flathub
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/soundux)
@@ -109,7 +109,7 @@ You can grab the latest release from the Snap Store or Flathub
   <img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/>
 </a>
 
-## 🪟 Windows
+## <img src="https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg" height="20"/> Windows
 Download our installer or portable from [the latest release](https://github.com/Soundux/Soundux/releases/latest)
 
 # 🪛 Compilation
@@ -127,18 +127,18 @@ This list may not be accurate. Contact me if you find missing dependencies so th
 - G++ >= 9
   - Some distros still have G++ versions < 9 in their repos, using them will result in a build failure (for more information refer to [#71](https://github.com/Soundux/Soundux/issues/71)).
 
-#### 📜 Debian/Ubuntu and derivatives
+#### <img src="https://www.vectorlogo.zone/logos/debian/debian-icon.svg" height="20"/> Debian / <img src="https://www.vectorlogo.zone/logos/ubuntu/ubuntu-icon.svg" height="20"/> Ubuntu and derivatives
 ```sh
 sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev libappindicator3-dev libssl-dev libpulse-dev libpipewire-0.3-dev
 ```
 > If you're on Ubuntu 20.04 or lower you might have to add the PipeWire PPA:
 > `sudo add-apt-repository ppa:pipewire-debian/pipewire-upstream`
-#### 📜 Fedora and derivatives
+#### <img src="https://www.vectorlogo.zone/logos/getfedora/getfedora-icon.svg" height="20"> Fedora and derivatives
 ```sh
 sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel libappindicator-gtk3-devel pulseaudio-libs-devel pipewire-devel
 ```
 
-### 🪟 Windows
+### <img src="https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg" height="20"/> Windows
 - Nuget
 - MSVC
 - CMake
