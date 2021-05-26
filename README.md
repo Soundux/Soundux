@@ -93,6 +93,13 @@ You can install Soundux via [pacstall](https://github.com/Henryws/pacstall)
 sudo pacstall -I soundux
 ```
 
+### 🗃️ Fedora
+Soundux can be installed via this [COPR repository](https://copr.fedorainfracloud.org/coprs/rivenirvana/soundux/)
+```sh
+sudo dnf copr enable rivenirvana/soundux
+sudo dnf install soundux
+```
+
 ### 📜 Distro-agnostic packages
 You can grab the latest release from the Snap Store or Flathub
 
