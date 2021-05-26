@@ -203,11 +203,6 @@ namespace Soundux::Objects
                 }
                 if (!Globals::gSettings.outputs.empty() && Globals::gAudioBackend)
                 {
-                    if (!Globals::gSettings.allowMultipleOutputs)
-                    {
-                        Globals::gAudioBackend->stopSoundInput();
-                    }
-
                     bool moveSuccess = false;
                     for (const auto &outputApp : Globals::gSettings.outputs)
                     {
@@ -759,7 +754,8 @@ namespace Soundux::Objects
     {
         if (Globals::gAudioBackend)
         {
-            if (Globals::gAudio.getPlayingSounds().empty() && Globals::gAudioBackend->passedThroughApplications() == 1)
+            if (Globals::gAudio.getPlayingSounds().empty() &&
+                Globals::gAudioBackend->currentlyPassedThrough().size() == 1)
             {
                 if (!Globals::gAudioBackend->stopSoundInput())
                 {
@@ -809,7 +805,7 @@ namespace Soundux::Objects
             {
                 Globals::gAudioBackend->muteInput(false);
             }
-            if (!Globals::gAudioBackend->isCurrentlyPassingThrough())
+            if (Globals::gAudioBackend->currentlyPassedThrough().empty())
             {
                 if (!Globals::gAudioBackend->stopSoundInput())
                 {
