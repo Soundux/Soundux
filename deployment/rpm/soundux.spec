@@ -1,51 +1,66 @@
-Name: soundux
-Version: 0.2.6
-Release: 1%{?dist}
-Summary: A cross-platform soundboard
+%global debug_package   %{nil}
+%global repo_url        https://github.com/Soundux/Soundux
 
-Group: Applications/System
-License: GPL
-URL: https://%{name}.rocks
+Name:           soundux
+Version:        0.2.6
+Release:        1%{?dist}
+Summary:        A cross-platform soundboard
 
-Source0: https://github.com/Soundux/Soundux/releases/download/%{version}/%{name}-%{version}.tar.gz
+License:        GPLv3+
+URL:            https://soundux.rocks
+Source0:        %{repo_url}/releases/download/%{version}/%{name}-%{version}.tar.gz
 
-BuildRequires: git webkit2gtk3-devel ninja-build gtk3-devel libwnck3-devel pulseaudio-libs-devel pipewire-devel libappindicator-gtk3-devel libXi-devel clang llvm cmake openssl-devel
-Requires: webkit2gtk3 libwnck3 libappindicator-gtk3 redhat-lsb-core
-Suggests: ffmpeg youtube-dl
+BuildRequires:  cmake >= 3.1
+BuildRequires:  clang llvm ninja-build
+BuildRequires:  gtk3-devel
+BuildRequires:  libappindicator-gtk3-devel
+BuildRequires:  libwnck3-devel
+BuildRequires:  libXi-devel
+BuildRequires:  openssl-devel
+BuildRequires:  pipewire-devel
+BuildRequires:  pulseaudio-libs-devel
+BuildRequires:  webkit2gtk3-devel
+BuildRequires:  desktop-file-utils libappstream-glib
+
+Requires:       libappindicator-gtk3
+Requires:       libwnck3
+Requires:       (pulseaudio or pipewire-pulse)
+Requires:       pulseaudio-utils
+Requires:       redhat-lsb-core
+Requires:       webkit2gtk3
+Recommends:     ffmpeg youtube-dl
 
 %description
 A universal soundboard that uses PulseAudio modules or PipeWire linking
 
-%global debug_package %{nil}
-
 %prep
 %autosetup -n Soundux
 
-
 %build
-git submodule update --init --recursive
 mkdir -p build
 cd build
-cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
+cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
 ninja
-
 
 %install
 cd build
 DESTDIR=%{buildroot} ninja install
-mkdir -p %{buildroot}/usr/bin
-ln -s /opt/soundux/soundux %{buildroot}/usr/bin/soundux
+mkdir -p %{buildroot}%{_bindir}
+ln -s /opt/soundux/soundux %{buildroot}%{_bindir}/%{name}
 
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.xml
 
 %files
 %license LICENSE
 %doc README.md
 /opt/%{name}
-/usr/bin/soundux
-/usr/share/applications/soundux.desktop
-/usr/share/pixmaps/soundux.png
-/usr/share/metainfo/io.github.Soundux.metainfo.xml
-
+%{_bindir}/soundux
+%{_datadir}/applications/*.desktop
+%{_datadir}/pixmaps/*.png
+%{_metainfodir}/*.xml
 
 %changelog
-
+* Wed May 26 2021 Arvin Verain <acverain@up.edu.ph> - 0.2.6-1
+- Initial COPR package
