@@ -65,7 +65,7 @@ These are required to run the program
 
 ## 🐧 Linux
 Please refer to your distro instructions on how to install
-- [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio) / [pipewire](https://pipewire.org/)
+- [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio) / [pipewire](https://pipewire.org/) >= 0.3.26
 - Xorg
 - Libwnck3 (optional, for icon support)
 - Webkit2gtk
@@ -88,7 +88,7 @@ yay -S soundux
 We also provide a `soundux-git` package which compiles from the master branch
 
 ### <img src="https://www.vectorlogo.zone/logos/ubuntu/ubuntu-icon.svg" height="20"/> Ubuntu and derivatives
-You can install Soundux via [pacstall](https://github.com/Henryws/pacstall)
+You can install Soundux via [pacstall](https://github.com/pacstall/pacstall)
 ```sh
 sudo pacstall -I soundux
 ```
@@ -117,7 +117,6 @@ Download our installer or portable from [the latest release](https://github.com/
 ## 🔗 Build Dependencies
 
 ### 🐧 Linux
-This list may not be accurate. Contact me if you find missing dependencies so that I can update this list
 - Webkit2gtk
 - PulseAudio development headers
 - PipeWire development headers
