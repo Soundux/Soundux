@@ -25,7 +25,6 @@ BuildRequires:  desktop-file-utils libappstream-glib
 Requires:       libappindicator-gtk3
 Requires:       libwnck3
 Requires:       (pulseaudio or pipewire-pulse)
-Requires:       pulseaudio-utils
 Requires:       redhat-lsb-core
 Requires:       webkit2gtk3
 Recommends:     ffmpeg youtube-dl
