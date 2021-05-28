@@ -502,6 +502,22 @@ namespace Soundux::Objects
     {
         auto oldSettings = Globals::gSettings;
         Globals::gSettings = settings;
+        if (!Globals::gAudio.getPlayingSounds().empty())
+        {
+            for (const auto &sound : Globals::gAudio.getPlayingSounds())
+            {
+                if (sound.playbackDevice.isDefault)
+                {
+                    sound.raw.device.load()->masterVolumeFactor =
+                        static_cast<float>(Globals::gSettings.localVolume) / 100.f;
+                }
+                else
+                {
+                    sound.raw.device.load()->masterVolumeFactor =
+                        static_cast<float>(Globals::gSettings.remoteVolume) / 100.f;
+                }
+            }
+        }
 #if defined(__linux__)
 
         if (settings.audioBackend != oldSettings.audioBackend)
