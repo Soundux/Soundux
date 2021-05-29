@@ -27,6 +27,7 @@ namespace Soundux
             std::string path;
 
             std::vector<Sound> sounds;
+            Enums::SortMode sortMode = Enums::SortMode::ModifiedDate_Descending;
         };
     } // namespace Objects
 } // namespace Soundux
