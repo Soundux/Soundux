@@ -5,6 +5,7 @@ sdk: org.gnome.Sdk
 command: soundux
 finish-args:
   - --device=all
+  - --device=shm
   - --share=network
   - --socket=pulseaudio
   - --socket=x11
