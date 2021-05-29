@@ -75,7 +75,6 @@ namespace nlohmann
                 {"theme", obj.theme},
                 {"outputs", obj.outputs},
                 {"viewMode", obj.viewMode},
-                {"sortMode", obj.sortMode},
                 {"stopHotkey", obj.stopHotkey},
                 {"syncVolumes", obj.syncVolumes},
                 {"selectedTab", obj.selectedTab},
@@ -108,7 +107,6 @@ namespace nlohmann
         {
             get_to_safe(j, "theme", obj.theme);
             get_to_safe(j, "outputs", obj.outputs);
-            get_to_safe(j, "sortMode", obj.sortMode);
             get_to_safe(j, "viewMode", obj.viewMode);
             get_to_safe(j, "stopHotkey", obj.stopHotkey);
             get_to_safe(j, "localVolume", obj.localVolume);
@@ -130,7 +128,11 @@ namespace nlohmann
     {
         static void to_json(json &j, const Soundux::Objects::Tab &obj)
         {
-            j = {{"id", obj.id}, {"name", obj.name}, {"path", obj.path}, {"sounds", obj.sounds}};
+            j = {{"id", obj.id},
+                 {"name", obj.name},
+                 {"path", obj.path},
+                 {"sounds", obj.sounds},
+                 {"sortMode", obj.sortMode}};
         }
         static void from_json(const json &j, Soundux::Objects::Tab &obj)
         {
@@ -138,6 +140,11 @@ namespace nlohmann
             j.at("name").get_to(obj.name);
             j.at("path").get_to(obj.path);
             j.at("sounds").get_to(obj.sounds);
+
+            if (j.find("sortMode") != j.end())
+            {
+                j.at("sortMode").get_to(obj.sortMode);
+            }
         }
     };
     template <> struct adl_serializer<Soundux::Objects::Data>

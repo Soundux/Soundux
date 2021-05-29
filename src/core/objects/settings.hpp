@@ -9,7 +9,6 @@ namespace Soundux
     {
         struct Settings
         {
-            Enums::SortMode sortMode = Enums::SortMode::ModifiedDate_Descending;
             Enums::BackendType audioBackend = Enums::BackendType::PulseAudio;
             Enums::ViewMode viewMode = Enums::ViewMode::List;
             Enums::Theme theme = Enums::Theme::System;

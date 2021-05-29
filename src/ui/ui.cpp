@@ -95,6 +95,30 @@ namespace Soundux::Objects
                 rtn.emplace_back(sound);
             }
 
+            switch (tab.sortMode)
+            {
+            case Enums::SortMode::ModifiedDate_Descending:
+                std::sort(rtn.begin(), rtn.end(), [](const auto &first, const auto &second) {
+                    return first.modifiedDate > second.modifiedDate;
+                });
+                break;
+            case Enums::SortMode::ModifiedDate_Ascending:
+                std::sort(rtn.begin(), rtn.end(), [](const auto &first, const auto &second) {
+                    return first.modifiedDate < second.modifiedDate;
+                });
+                break;
+            case Enums::SortMode::Alphabetical_Descending:
+                std::sort(rtn.begin(), rtn.end(), [](const auto &first, const auto &second) {
+                    return first.modifiedDate > second.modifiedDate;
+                });
+                break;
+            case Enums::SortMode::Alphabetical_Ascending:
+                std::sort(rtn.begin(), rtn.end(), [](const auto &first, const auto &second) {
+                    return first.modifiedDate < second.modifiedDate;
+                });
+                break;
+            }
+
             return rtn;
         }
 
@@ -502,6 +526,7 @@ namespace Soundux::Objects
     {
         auto oldSettings = Globals::gSettings;
         Globals::gSettings = settings;
+
         if (!Globals::gAudio.getPlayingSounds().empty())
         {
             for (const auto &sound : Globals::gAudio.getPlayingSounds())
@@ -518,8 +543,8 @@ namespace Soundux::Objects
                 }
             }
         }
-#if defined(__linux__)
 
+#if defined(__linux__)
         if (settings.audioBackend != oldSettings.audioBackend)
         {
             stopSounds(true);
@@ -618,6 +643,25 @@ namespace Soundux::Objects
             }
         }
         Fancy::fancy.logTime().failure() << "Failed to refresh tab " << id << " tab does not exist" << std::endl;
+        onError(Enums::ErrorCode::TabDoesNotExist);
+        return std::nullopt;
+    }
+    std::optional<Tab> Window::setSortMode(const std::uint32_t &id, Enums::SortMode sortMode)
+    {
+        auto tab = Globals::gData.getTab(id);
+        if (tab)
+        {
+            tab->sortMode = sortMode;
+            tab->sounds = getTabContent(*tab);
+            auto newTab = Globals::gData.setTab(id, *tab);
+            if (newTab)
+            {
+                return newTab;
+            }
+        }
+
+        Fancy::fancy.logTime().failure() << "Failed to change sortMode for tab " << id << " tab does not exist"
+                                         << std::endl;
         onError(Enums::ErrorCode::TabDoesNotExist);
         return std::nullopt;
     }
