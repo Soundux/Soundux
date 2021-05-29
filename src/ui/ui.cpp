@@ -108,14 +108,12 @@ namespace Soundux::Objects
                 });
                 break;
             case Enums::SortMode::Alphabetical_Descending:
-                std::sort(rtn.begin(), rtn.end(), [](const auto &first, const auto &second) {
-                    return first.modifiedDate > second.modifiedDate;
-                });
+                std::sort(rtn.begin(), rtn.end(),
+                          [](const auto &first, const auto &second) { return first.name > second.name; });
                 break;
             case Enums::SortMode::Alphabetical_Ascending:
-                std::sort(rtn.begin(), rtn.end(), [](const auto &first, const auto &second) {
-                    return first.modifiedDate < second.modifiedDate;
-                });
+                std::sort(rtn.begin(), rtn.end(),
+                          [](const auto &first, const auto &second) { return first.name < second.name; });
                 break;
             }
 
