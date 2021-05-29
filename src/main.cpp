@@ -1,8 +1,8 @@
-#include <InstanceGuard.hpp>
 #include <backward.hpp>
 #include <core/enums/enums.hpp>
 #include <core/global/globals.hpp>
 #include <fancy.hpp>
+#include <guard.hpp>
 #include <ui/impl/webview/webview.hpp>
 
 #if defined(__linux__)
@@ -57,9 +57,9 @@ int main(int argc, char **arguments)
     }
 
     backward::SignalHandling crashHandler;
-    InstanceGuard::InstanceGuard guard("soundux-guard");
+    Instance::Guard guard("soundux-guard");
 
-    if (guard.IsAnotherInstanceRunning())
+    if (guard.isAnotherRunning())
     {
         Fancy::fancy.logTime().failure() << "Another Instance is already running!" << std::endl;
         return 1;
