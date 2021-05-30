@@ -125,11 +125,10 @@ namespace Soundux::Objects
     }
     std::vector<Tab> Window::addTab()
     {
-        static std::string lastPath =
 #if defined(_WIN32)
-            std::getenv("USERPROFILE"); // NOLINT
+        static std::wstring lastPath = Helpers::widen(std::getenv("USERPROFILE")); // NOLINT
 #else
-            std::getenv("HOME"); // NOLINT
+        static std::string lastPath = std::getenv("HOME"); // NOLINT
 #endif
 
         nfdnchar_t *outpath = {};
@@ -153,7 +152,7 @@ namespace Soundux::Objects
                 const auto &rootPath = path;
 #endif
                 std::vector<Tab> tabs;
-                lastPath = std::filesystem::path(rootPath).parent_path().u8string();
+                lastPath = std::filesystem::path(rootPath).parent_path();
 
                 if (!Globals::gData.doesTabExist(rootPath))
                 {
