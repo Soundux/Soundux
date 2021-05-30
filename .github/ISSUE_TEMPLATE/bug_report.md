@@ -17,7 +17,7 @@ Steps to reproduce the behavior:
 4. See error
 
 **Console output** <!-- REQUIRED -->
-<!-- Please specify **the entire** console output up to the point where the problem occurs. You can enable the console on Windows by starting Soundux from a terminal where the environment variable SOUNDUX_DEBUG=1 is set -->
+<!-- Please specify **the entire** console output up to the point where the problem occurs. See https://github.com/Soundux/Soundux/wiki/Debugging on how to start Soundux with debug features enabled -->
 ```
 Paste output here
 ```
@@ -29,7 +29,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop:** <!-- Please complete the following information, REQUIRED -->
-- Environment: [Windows Installer/Portable or Linux Flathub/Snap/AUR/self-compiled]
+- Environment: [Windows Installer/Portable or Linux Flathub/Snap/AUR/DEB/RPM/COPR/self-compiled]
  - Version [Version number or commit]
  <!-- REMOVE THIS LINE IF USING LINUX
  - Distribution: 
