@@ -125,8 +125,10 @@ namespace Soundux::Objects
     }
     std::vector<Tab> Window::addTab()
     {
+        static std::string lastPath;
+
         nfdnchar_t *outpath = {};
-        auto result = NFD::PickFolder(outpath, nullptr);
+        auto result = NFD::PickFolder(outpath, lastPath.empty() ? nullptr : lastPath.c_str());
 
         if (result == NFD_OKAY)
         {
@@ -145,7 +147,7 @@ namespace Soundux::Objects
 #else
                 const auto &rootPath = path;
 #endif
-
+                lastPath = path;
                 std::vector<Tab> tabs;
 
                 if (!Globals::gData.doesTabExist(rootPath))
