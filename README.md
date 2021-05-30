@@ -134,7 +134,7 @@ sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.
 > `sudo add-apt-repository ppa:pipewire-debian/pipewire-upstream`
 #### <img src="https://www.vectorlogo.zone/logos/getfedora/getfedora-icon.svg" height="20"> Fedora and derivatives
 ```sh
-sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel libappindicator-gtk3-devel pulseaudio-libs-devel pipewire-devel
+sudo dnf install git webkit2gtk3 cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel libappindicator-gtk3-devel pulseaudio-libs-devel pipewire-devel
 ```
 
 ### <img src="https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg" height="20"/> Windows
