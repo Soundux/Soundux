@@ -68,8 +68,8 @@ namespace Soundux
           public:
             static std::shared_ptr<WinSound> createInstance();
 
-            bool setupVBCable();
             bool isVBCableProperlySetup();
+            bool setupVBCable(const std::optional<RecordingDevice> &);
 
             std::optional<RecordingDevice> getMic();
 

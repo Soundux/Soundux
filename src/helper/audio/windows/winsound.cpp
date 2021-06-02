@@ -185,7 +185,7 @@ namespace Soundux
                 }
                 if (Globals::gGui)
                 {
-                    Globals::gGui->onError(Enums::ErrorCode::NeedAdministratorPrivileges);
+                    Globals::gGui->onAdminRequired();
                 }
                 Fancy::fancy.logTime().warning() << "Failed to set listen state for " << name << std::endl;
                 return false;
@@ -226,7 +226,7 @@ namespace Soundux
                             << "Access Denied: You need Administrator privileges to perfrom this action" << std::endl;
                         if (Globals::gGui)
                         {
-                            Globals::gGui->onError(Enums::ErrorCode::NeedAdministratorPrivileges);
+                            Globals::gGui->onAdminRequired();
                         }
                     }
                     Fancy::fancy.logTime().warning() << "Failed to write destination for " << name << std::endl;
@@ -322,7 +322,7 @@ namespace Soundux
             std::string lowerGuid = guid;
             std::transform(lowerGuid.begin(), lowerGuid.end(), lowerGuid.begin(), [](char c) { return tolower(c); });
 
-            for (const auto &device : getRecordingDevices())
+            for (auto &device : getRecordingDevices())
             {
                 std::string deviceGuid = device.getGUID();
 
@@ -369,8 +369,9 @@ namespace Soundux
 
             return false;
         }
-        bool WinSound::setupVBCable()
+        bool WinSound::setupVBCable(const std::optional<RecordingDevice> &deviceOverride)
         {
+            defaultRecordingDevice = deviceOverride;
             if (isVBCableProperlySetup())
             {
                 return true;
