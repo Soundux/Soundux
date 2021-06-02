@@ -40,6 +40,56 @@ namespace Soundux
             }
             std::transform(guid.begin(), guid.end(), guid.begin(), [](char c) { return tolower(c); });
         }
+        bool WinSound::setup()
+        {
+            CoInitialize(nullptr);
+            IMMDeviceEnumerator *rawEnumerator = nullptr;
+            if (!FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER,
+                                         __uuidof(IMMDeviceEnumerator), reinterpret_cast<void **>(&rawEnumerator))))
+            {
+                enumerator = std::shared_ptr<IMMDeviceEnumerator>(
+                    rawEnumerator, [](IMMDeviceEnumerator *enumPtr) { enumPtr->Release(); });
+
+                IMMDevice *defaultDevice = nullptr;
+                enumerator->GetDefaultAudioEndpoint(eCapture, eMultimedia, &defaultDevice);
+                defaultRecordingDevice = RecordingDevice(defaultDevice);
+
+                if (defaultRecordingDevice)
+                {
+                    if (defaultRecordingDevice->getName().find("VB-Audio") != std::string::npos)
+                    {
+                        for (const auto &recordingDevice : getRecordingDevices())
+                        {
+                            if (recordingDevice.isListeningToDevice())
+                            {
+                                auto device = getPlaybackDevice(recordingDevice.getDevicePlayingThrough());
+                                if (device->getName().find("VB-Audio") != std::string::npos)
+                                {
+                                    defaultRecordingDevice = recordingDevice;
+                                }
+                            }
+                        }
+                        if (defaultRecordingDevice->getName().find("VB-Audio") != std::string::npos)
+                        {
+                            for (const auto &recordingDevice : getRecordingDevices())
+                            {
+                                if (recordingDevice.getName().find("VB-Audio") == std::string::npos)
+                                {
+                                    defaultRecordingDevice = recordingDevice;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return true;
+            }
+
+            Fancy::fancy.logTime().failure() << "Failed to create enumerator" << std::endl;
+            return false;
+        }
+
         std::string Device::getGUID() const
         {
             return guid;
@@ -219,53 +269,6 @@ namespace Soundux
             Fancy::fancy.logTime().warning() << "Failed to get destination for " << name << std::endl;
             return "";
         }
-
-        bool WinSound::setup()
-        {
-            CoInitialize(nullptr);
-            IMMDeviceEnumerator *rawEnumerator = nullptr;
-            if (!FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER,
-                                         __uuidof(IMMDeviceEnumerator), reinterpret_cast<void **>(&rawEnumerator))))
-            {
-                enumerator = std::shared_ptr<IMMDeviceEnumerator>(
-                    rawEnumerator, [](IMMDeviceEnumerator *enumPtr) { enumPtr->Release(); });
-
-                IMMDevice *defaultDevice = nullptr;
-                enumerator->GetDefaultAudioEndpoint(eCapture, eMultimedia, &defaultDevice);
-                defaultRecordingDevice = RecordingDevice(defaultDevice);
-
-                if (defaultRecordingDevice->getName().find("VB-Audio") != std::string::npos)
-                {
-                    for (const auto &recordingDevice : getRecordingDevices())
-                    {
-                        if (recordingDevice.isListeningToDevice())
-                        {
-                            auto device = getPlaybackDevice(recordingDevice.getDevicePlayingThrough());
-                            if (device->getName().find("VB-Audio") != std::string::npos)
-                            {
-                                defaultRecordingDevice = recordingDevice;
-                            }
-                        }
-                    }
-                    if (defaultRecordingDevice->getName().find("VB-Audio") != std::string::npos)
-                    {
-                        for (const auto &recordingDevice : getRecordingDevices())
-                        {
-                            if (recordingDevice.getName().find("VB-Audio") == std::string::npos)
-                            {
-                                defaultRecordingDevice = recordingDevice;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                return true;
-            }
-
-            Fancy::fancy.logTime().failure() << "Failed to create enumerator" << std::endl;
-            return false;
-        }
         std::shared_ptr<WinSound> WinSound::createInstance()
         {
             auto instance = std::shared_ptr<WinSound>(new WinSound()); // NOLINT
@@ -276,7 +279,6 @@ namespace Soundux
 
             return nullptr;
         }
-
         std::vector<RecordingDevice> WinSound::getRecordingDevices()
         {
             IMMDeviceCollection *devices = nullptr;
@@ -374,7 +376,7 @@ namespace Soundux
                 return true;
             }
 
-            if (defaultRecordingDevice)
+            if (defaultRecordingDevice && defaultRecordingDevice->getName().find("VB-Audio") == std::string::npos)
             {
                 if (defaultRecordingDevice->listenToDevice(true))
                 {

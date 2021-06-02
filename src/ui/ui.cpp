@@ -284,6 +284,13 @@ namespace Soundux::Objects
             {
                 stopSounds();
             }
+            if (Globals::gSettings.muteDuringPlayback)
+            {
+                if (Globals::gWinSound && Globals::gWinSound->getMic())
+                {
+                    Globals::gWinSound->getMic()->mute(true);
+                }
+            }
             if (!Globals::gSettings.pushToTalkKeys.empty())
             {
                 Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
@@ -627,6 +634,27 @@ namespace Soundux::Objects
                 }
             }
         }
+#elif defined(_WIN32)
+        if (Globals::gWinSound)
+        {
+            if (!Globals::gAudio.getPlayingSounds().empty())
+            {
+                if (settings.muteDuringPlayback && !oldSettings.muteDuringPlayback)
+                {
+                    if (Globals::gWinSound->getMic())
+                    {
+                        Globals::gWinSound->getMic()->mute(true);
+                    }
+                }
+                else if (!settings.muteDuringPlayback && oldSettings.muteDuringPlayback)
+                {
+                    if (Globals::gWinSound->getMic())
+                    {
+                        Globals::gWinSound->getMic()->mute(false);
+                    }
+                }
+            }
+        }
 #endif
         return Globals::gSettings;
     }
@@ -877,6 +905,11 @@ namespace Soundux::Objects
                     onError(Enums::ErrorCode::FailedToMoveBack);
                 }
             }
+        }
+#elif defined(_WIN32)
+        if (Globals::gWinSound && Globals::gWinSound->getMic())
+        {
+            Globals::gWinSound->getMic()->mute(false);
         }
 #endif
     }
