@@ -2,7 +2,6 @@
 #include <core/enums/enums.hpp>
 #include <core/global/globals.hpp>
 #include <fancy.hpp>
-#include <guard.hpp>
 #include <ui/impl/webview/webview.hpp>
 
 #if defined(__linux__)
@@ -57,9 +56,9 @@ int main(int argc, char **arguments)
     }
 
     backward::SignalHandling crashHandler;
-    Instance::Guard guard("soundux-guard");
+    gGuard = std::make_shared<Instance::Guard>("soundux-guard");
 
-    if (guard.isAnotherRunning())
+    if (gGuard->isAnotherRunning())
     {
         Fancy::fancy.logTime().failure() << "Another Instance is already running!" << std::endl;
         return 1;
