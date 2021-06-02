@@ -55,17 +55,23 @@ namespace Soundux
             std::string getDevicePlayingThrough() const;
 
             void mute(bool) const;
-            void listenToDevice(bool) const;
-            void playbackThrough(const PlaybackDevice &) const;
+            bool listenToDevice(bool) const;
+            bool playbackThrough(const PlaybackDevice &) const;
         };
 
         class WinSound
         {
             bool setup();
             std::shared_ptr<IMMDeviceEnumerator> enumerator;
+            std::optional<RecordingDevice> defaultRecordingDevice;
 
           public:
             static std::shared_ptr<WinSound> createInstance();
+
+            bool setupVBCable();
+            bool isVBCableProperlySetup();
+
+            std::optional<RecordingDevice> getMic();
 
             std::vector<PlaybackDevice> getPlaybackDevices();
             std::vector<RecordingDevice> getRecordingDevices();

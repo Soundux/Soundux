@@ -1,8 +1,8 @@
-#include <mmdeviceapi.h>
 #if defined(_WIN32)
 #include "winsound.hpp"
 #include <Shlwapi.h>
 #include <algorithm>
+#include <core/global/globals.hpp>
 #include <endpointvolume.h>
 #include <fancy.hpp>
 #include <functiondiscoverykeys_devpkey.h>
@@ -38,6 +38,7 @@ namespace Soundux
             {
                 guid = Helpers::narrow(guidProp.pwszVal);
             }
+            std::transform(guid.begin(), guid.end(), guid.begin(), [](char c) { return tolower(c); });
         }
         std::string Device::getGUID() const
         {
@@ -106,18 +107,22 @@ namespace Soundux
                                         reinterpret_cast<void **>(&endpointVolume))))
             {
                 Fancy::fancy.logTime().warning() << "Failed to set mute state for " << name << std::endl;
+                if (Globals::gGui)
+                {
+                    Globals::gGui->onError(Enums::ErrorCode::FailedToMute);
+                }
                 return;
             }
 
             endpointVolume->SetMute(state, nullptr);
         }
-        void RecordingDevice::listenToDevice(bool state) const
+        bool RecordingDevice::listenToDevice(bool state) const
         {
             if (!device)
             {
                 Fancy::fancy.logTime().failure()
                     << "Failed to set listen to this device, device was invalid" << std::endl;
-                return;
+                return false;
             }
 
             IPropertyStore *store = nullptr;
@@ -128,8 +133,12 @@ namespace Soundux
                     Fancy::fancy.logTime().warning()
                         << "Access Denied: You need Administrator privileges to perfrom this action" << std::endl;
                 }
+                if (Globals::gGui)
+                {
+                    Globals::gGui->onError(Enums::ErrorCode::NeedAdministratorPrivileges);
+                }
                 Fancy::fancy.logTime().warning() << "Failed to set listen state for " << name << std::endl;
-                return;
+                return false;
             }
 
             PROPVARIANT listenProp;
@@ -137,13 +146,14 @@ namespace Soundux
             listenProp.boolVal = state ? -1 : 0;
 
             store->SetValue(PKEY_Device_ListenToThisDevice, listenProp);
+            return true;
         }
-        void RecordingDevice::playbackThrough(const PlaybackDevice &destination) const
+        bool RecordingDevice::playbackThrough(const PlaybackDevice &destination) const
         {
             if (!device)
             {
                 Fancy::fancy.logTime().failure() << "Failed to set destination, device was invalid" << std::endl;
-                return;
+                return false;
             }
 
             IPropertyStore *store = nullptr;
@@ -157,20 +167,28 @@ namespace Soundux
                 StrCpyW(destValRaw, destVal.c_str());
                 listenProp.pwszVal = destValRaw;
 
+                bool success = true;
                 if (auto res = store->SetValue(PKEY_Device_PlaybackThrough, listenProp); FAILED(res))
                 {
                     if (res == E_ACCESSDENIED)
                     {
                         Fancy::fancy.logTime().warning()
                             << "Access Denied: You need Administrator privileges to perfrom this action" << std::endl;
+                        if (Globals::gGui)
+                        {
+                            Globals::gGui->onError(Enums::ErrorCode::NeedAdministratorPrivileges);
+                        }
                     }
                     Fancy::fancy.logTime().warning() << "Failed to write destination for " << name << std::endl;
+                    success = false;
                 }
 
                 delete[] destValRaw;
+                return success;
             }
 
             Fancy::fancy.logTime().warning() << "Failed to set destination for " << name << std::endl;
+            return false;
         }
         std::string RecordingDevice::getDevicePlayingThrough() const
         {
@@ -206,16 +224,47 @@ namespace Soundux
         {
             CoInitialize(nullptr);
             IMMDeviceEnumerator *rawEnumerator = nullptr;
-            if (FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER,
-                                        __uuidof(IMMDeviceEnumerator), reinterpret_cast<void **>(&rawEnumerator))))
+            if (!FAILED(CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER,
+                                         __uuidof(IMMDeviceEnumerator), reinterpret_cast<void **>(&rawEnumerator))))
             {
                 enumerator = std::shared_ptr<IMMDeviceEnumerator>(
                     rawEnumerator, [](IMMDeviceEnumerator *enumPtr) { enumPtr->Release(); });
-                Fancy::fancy.logTime().failure() << "Failed to create enumerator" << std::endl;
-                return false;
+
+                IMMDevice *defaultDevice = nullptr;
+                enumerator->GetDefaultAudioEndpoint(eCapture, eMultimedia, &defaultDevice);
+                defaultRecordingDevice = RecordingDevice(defaultDevice);
+
+                if (defaultRecordingDevice->getName().find("VB-Audio") != std::string::npos)
+                {
+                    for (const auto &recordingDevice : getRecordingDevices())
+                    {
+                        if (recordingDevice.isListeningToDevice())
+                        {
+                            auto device = getPlaybackDevice(recordingDevice.getDevicePlayingThrough());
+                            if (device->getName().find("VB-Audio") != std::string::npos)
+                            {
+                                defaultRecordingDevice = recordingDevice;
+                            }
+                        }
+                    }
+                    if (defaultRecordingDevice->getName().find("VB-Audio") != std::string::npos)
+                    {
+                        for (const auto &recordingDevice : getRecordingDevices())
+                        {
+                            if (recordingDevice.getName().find("VB-Audio") == std::string::npos)
+                            {
+                                defaultRecordingDevice = recordingDevice;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                return true;
             }
 
-            return true;
+            Fancy::fancy.logTime().failure() << "Failed to create enumerator" << std::endl;
+            return false;
         }
         std::shared_ptr<WinSound> WinSound::createInstance()
         {
@@ -268,15 +317,12 @@ namespace Soundux
         }
         std::optional<RecordingDevice> WinSound::getRecordingDevice(const std::string &guid)
         {
+            std::string lowerGuid = guid;
+            std::transform(lowerGuid.begin(), lowerGuid.end(), lowerGuid.begin(), [](char c) { return tolower(c); });
+
             for (const auto &device : getRecordingDevices())
             {
-                std::string lowerGuid = guid;
                 std::string deviceGuid = device.getGUID();
-
-                std::transform(lowerGuid.begin(), lowerGuid.end(), lowerGuid.begin(),
-                               [](char c) { return tolower(c); });
-                std::transform(deviceGuid.begin(), deviceGuid.end(), deviceGuid.begin(),
-                               [](char c) { return tolower(c); });
 
                 if (lowerGuid == deviceGuid)
                 {
@@ -288,15 +334,11 @@ namespace Soundux
         }
         std::optional<PlaybackDevice> WinSound::getPlaybackDevice(const std::string &guid)
         {
+            std::string lowerGuid = guid;
+            std::transform(lowerGuid.begin(), lowerGuid.end(), lowerGuid.begin(), [](char c) { return tolower(c); });
             for (const auto &device : getPlaybackDevices())
             {
-                std::string lowerGuid = guid;
                 std::string deviceGuid = device.getGUID();
-
-                std::transform(lowerGuid.begin(), lowerGuid.end(), lowerGuid.begin(),
-                               [](char c) { return tolower(c); });
-                std::transform(deviceGuid.begin(), deviceGuid.end(), deviceGuid.begin(),
-                               [](char c) { return tolower(c); });
 
                 if (lowerGuid == deviceGuid)
                 {
@@ -305,6 +347,55 @@ namespace Soundux
             }
 
             return std::nullopt;
+        }
+        bool WinSound::isVBCableProperlySetup()
+        {
+            for (const auto &recordingDevice : getRecordingDevices())
+            {
+                if (recordingDevice.isListeningToDevice())
+                {
+                    if (recordingDevice.getName().find("VB-Audio") == std::string::npos)
+                    {
+                        auto playbackDevice = getPlaybackDevice(recordingDevice.getDevicePlayingThrough());
+                        if (playbackDevice && playbackDevice->getName().find("VB-Audio") != std::string::npos)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+        bool WinSound::setupVBCable()
+        {
+            if (isVBCableProperlySetup())
+            {
+                return true;
+            }
+
+            if (defaultRecordingDevice)
+            {
+                if (defaultRecordingDevice->listenToDevice(true))
+                {
+                    for (const auto &playbackDevice : getPlaybackDevices())
+                    {
+                        if (playbackDevice.getName().find("VB-Audio") != std::string::npos)
+                        {
+                            if (defaultRecordingDevice->playbackThrough(playbackDevice))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+        std::optional<RecordingDevice> WinSound::getMic()
+        {
+            return defaultRecordingDevice;
         }
     } // namespace Objects
 } // namespace Soundux

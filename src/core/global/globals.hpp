@@ -2,6 +2,8 @@
 #include <helper/audio/audio.hpp>
 #if defined(__linux__)
 #include <helper/audio/linux/backend.hpp>
+#elif defined(_WIN32)
+#include <helper/audio/windows/winsound.hpp>
 #endif
 #include <core/config/config.hpp>
 #include <core/hotkeys/hotkeys.hpp>
@@ -24,6 +26,8 @@ namespace Soundux
 #if defined(__linux__)
         inline std::shared_ptr<Objects::IconFetcher> gIcons;
         inline std::shared_ptr<Objects::AudioBackend> gAudioBackend;
+#elif defined(_WIN32)
+        inline std::shared_ptr<Objects::WinSound> gWinSound;
 #endif
         inline Objects::Queue gQueue;
         inline Objects::Config gConfig;
