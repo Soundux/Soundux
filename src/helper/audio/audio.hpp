@@ -66,10 +66,10 @@ namespace Soundux
             std::optional<PlayingSound> seek(const std::uint32_t &, std::uint64_t);
             std::optional<PlayingSound> play(const Objects::Sound &, const std::optional<AudioDevice> & = std::nullopt);
 
-            std::vector<AudioDevice> getAudioDevices();
             std::vector<Objects::PlayingSound> getPlayingSounds();
 
 #if defined(_WIN32)
+            std::vector<AudioDevice> getAudioDevices();
             std::optional<AudioDevice> getAudioDevice(const std::string &);
 #endif
 
