@@ -4,6 +4,7 @@
 #include <fancy.hpp>
 #include <filesystem>
 #include <helper/audio/linux/pulseaudio/pulseaudio.hpp>
+#include <helper/audio/windows/winsound.hpp>
 #include <helper/json/bindings.hpp>
 #include <helper/systeminfo/systeminfo.hpp>
 #include <helper/version/check.hpp>
@@ -179,6 +180,55 @@ namespace Soundux::Objects
                 Fancy::fancy.logTime().warning() << "Failed to find tab with id " << id << std::endl;
             }
         }));
+        webview->expose(Webview::Function("restartAsAdmin", [this] {
+            Globals::gGuard.reset();
+            wchar_t selfPath[MAX_PATH];
+            GetModuleFileNameW(nullptr, selfPath, MAX_PATH);
+            ShellExecuteW(nullptr, L"runas", selfPath, nullptr, nullptr, SW_SHOWNORMAL);
+
+            webview->exit();
+        }));
+        webview->expose(Webview::Function("isVBCableProperlySetup", [] {
+            if (Globals::gWinSound)
+            {
+                return Globals::gWinSound->isVBCableProperlySetup();
+            }
+
+            Fancy::fancy.logTime().failure() << "Windows Sound Backend not found" << std::endl;
+            return false;
+        }));
+        webview->expose(Webview::Function("setupVBCable", [](const std::string &micOverride) {
+            if (Globals::gWinSound)
+            {
+                return Globals::gWinSound->setupVBCable(Globals::gWinSound->getRecordingDevice(micOverride));
+            }
+
+            Fancy::fancy.logTime().failure() << "Windows Sound Backend not found" << std::endl;
+            return false;
+        }));
+        webview->expose(Webview::Function(
+            "getRecordingDevices", []() -> std::pair<std::vector<RecordingDevice>, std::optional<RecordingDevice>> {
+                if (Globals::gWinSound)
+                {
+                    auto devices = Globals::gWinSound->getRecordingDevices();
+                    for (auto it = devices.begin(); it != devices.end();)
+                    {
+                        if (it->getName().find("VB-Audio") != std::string::npos)
+                        {
+                            it = devices.erase(it);
+                        }
+                        else
+                        {
+                            ++it;
+                        }
+                    }
+
+                    return std::make_pair(devices, Globals::gWinSound->getMic());
+                }
+
+                Fancy::fancy.logTime().failure() << "Windows Sound Backend not found" << std::endl;
+                return {};
+            }));
 #endif
 #if defined(__linux__)
         webview->expose(Webview::Function("openUrl", [](const std::string &url) {
@@ -384,5 +434,10 @@ namespace Soundux::Objects
     {
         webview->callFunction<void>(
             Webview::JavaScriptFunction("window.getStore().commit", "setSwitchOnConnectLoaded", state));
+    }
+    void WebView::onAdminRequired()
+    {
+        webview->callFunction<void>(
+            Webview::JavaScriptFunction("window.getStore().commit", "setAdministrativeModal", true));
     }
 } // namespace Soundux::Objects
