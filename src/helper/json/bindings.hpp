@@ -24,9 +24,17 @@ namespace nlohmann
             {
                 j["localVolume"] = *obj.localVolume;
             }
+            else
+            {
+                j["localVolume"] = nullptr;
+            }
             if (obj.remoteVolume)
             {
                 j["remoteVolume"] = *obj.remoteVolume;
+            }
+            else
+            {
+                j["remoteVolume"] = nullptr;
             }
         }
         static void from_json(const json &j, Soundux::Objects::Sound &obj)
@@ -42,11 +50,17 @@ namespace nlohmann
             }
             if (j.find("localVolume") != j.end())
             {
-                obj.localVolume = j.at("localVolume").get<int>();
+                if (j.at("localVolume").is_number())
+                {
+                    obj.localVolume = j.at("localVolume").get<int>();
+                }
             }
             if (j.find("remoteVolume") != j.end())
             {
-                obj.remoteVolume = j.at("remoteVolume").get<int>();
+                if (j.at("remoteVolume").is_number())
+                {
+                    obj.remoteVolume = j.at("remoteVolume").get<int>();
+                }
             }
         }
     };
