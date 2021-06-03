@@ -8,7 +8,6 @@
 #include <helper/systeminfo/systeminfo.hpp>
 #include <helper/version/check.hpp>
 #include <helper/ytdl/youtube-dl.hpp>
-#include <optional>
 
 #ifdef _WIN32
 #include "../../assets/icon.h"
