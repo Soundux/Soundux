@@ -1,5 +1,6 @@
 #pragma once
 #include <core/enums/enums.hpp>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,6 +19,9 @@ namespace Soundux
 
             std::vector<int> hotkeys;
             std::uint64_t modifiedDate;
+
+            std::optional<int> localVolume;
+            std::optional<int> remoteVolume;
         };
 
         struct Tab

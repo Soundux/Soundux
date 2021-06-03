@@ -91,11 +91,25 @@ namespace Soundux::Objects
 
         if (playbackDevice)
         {
-            device->masterVolumeFactor = static_cast<float>(Globals::gSettings.remoteVolume) / 100.f;
+            if (sound.remoteVolume)
+            {
+                device->masterVolumeFactor = static_cast<float>(*sound.remoteVolume) / 100.f;
+            }
+            else
+            {
+                device->masterVolumeFactor = static_cast<float>(Globals::gSettings.remoteVolume) / 100.f;
+            }
         }
         else
         {
-            device->masterVolumeFactor = static_cast<float>(Globals::gSettings.localVolume) / 100.f;
+            if (sound.localVolume)
+            {
+                device->masterVolumeFactor = static_cast<float>(*sound.localVolume) / 100.f;
+            }
+            else
+            {
+                device->masterVolumeFactor = static_cast<float>(Globals::gSettings.localVolume) / 100.f;
+            }
         }
 
         if (ma_device_start(device) != MA_SUCCESS)

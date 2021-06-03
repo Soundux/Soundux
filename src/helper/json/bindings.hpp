@@ -9,14 +9,25 @@ namespace nlohmann
     {
         static void to_json(json &j, const Soundux::Objects::Sound &obj)
         {
-            j = {{"name", obj.name},
-                 {"hotkeys", obj.hotkeys},
-                 {"hotkeySequence",
-                  Soundux::Globals::gHotKeys.getKeySequence(obj.hotkeys)}, //* For frontend and config readability
-                 {"id", obj.id},
-                 {"path", obj.path},
-                 {"isFavorite", obj.isFavorite},
-                 {"modifiedDate", obj.modifiedDate}};
+            j = {
+                {"name", obj.name},
+                {"hotkeys", obj.hotkeys},
+                {"hotkeySequence",
+                 Soundux::Globals::gHotKeys.getKeySequence(obj.hotkeys)}, //* For frontend and config readability
+                {"id", obj.id},
+                {"path", obj.path},
+                {"isFavorite", obj.isFavorite},
+                {"modifiedDate", obj.modifiedDate},
+            };
+
+            if (obj.localVolume)
+            {
+                j["localVolume"] = *obj.localVolume;
+            }
+            if (obj.remoteVolume)
+            {
+                j["remoteVolume"] = *obj.remoteVolume;
+            }
         }
         static void from_json(const json &j, Soundux::Objects::Sound &obj)
         {
@@ -28,6 +39,14 @@ namespace nlohmann
             if (j.find("isFavorite") != j.end())
             {
                 j.at("isFavorite").get_to(obj.isFavorite);
+            }
+            if (j.find("localVolume") != j.end())
+            {
+                obj.localVolume = j.at("localVolume").get<int>();
+            }
+            if (j.find("remoteVolume") != j.end())
+            {
+                obj.remoteVolume = j.at("remoteVolume").get<int>();
             }
         }
     };

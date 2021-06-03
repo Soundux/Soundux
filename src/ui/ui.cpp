@@ -519,25 +519,64 @@ namespace Soundux::Objects
         }
 #endif
     }
+    std::optional<Sound> Window::setCustomVolume(const std::uint32_t &id, const std::optional<int> &localVolume,
+                                                 const std::optional<int> &remoteVolume)
+    {
+        auto sound = Globals::gData.getSound(id);
+        if (sound)
+        {
+            sound->get().localVolume = localVolume;
+            sound->get().remoteVolume = remoteVolume;
+
+            for (auto &playingSound : Globals::gAudio.getPlayingSounds())
+            {
+                if (playingSound.sound.id == sound->get().id)
+                {
+                    int newVolume = 0;
+                    if (playingSound.playbackDevice.isDefault)
+                    {
+                        newVolume = localVolume ? *localVolume : Globals::gSettings.localVolume;
+                    }
+                    else
+                    {
+                        newVolume = remoteVolume ? *remoteVolume : Globals::gSettings.remoteVolume;
+                    }
+
+                    playingSound.raw.device.load()->masterVolumeFactor = static_cast<float>(newVolume) / 100.f;
+                }
+            }
+
+            return *sound;
+        }
+
+        Fancy::fancy.logTime().failure() << "Failed to set custom volume for sound " << id << ", sound does not exist"
+                                         << std::endl;
+        onError(Enums::ErrorCode::FailedToSetCustomVolume);
+        return std::nullopt;
+    }
     Settings Window::changeSettings(Settings settings)
     {
         auto oldSettings = Globals::gSettings;
         Globals::gSettings = settings;
 
-        if (!Globals::gAudio.getPlayingSounds().empty())
+        if ((settings.localVolume != oldSettings.localVolume || settings.remoteVolume != oldSettings.remoteVolume) &&
+            !Globals::gAudio.getPlayingSounds().empty())
         {
-            for (const auto &sound : Globals::gAudio.getPlayingSounds())
+            for (const auto &playingSound : Globals::gAudio.getPlayingSounds())
             {
-                if (sound.playbackDevice.isDefault)
+                int newVolume = 0;
+                const auto &sound = playingSound.sound;
+
+                if (playingSound.playbackDevice.isDefault)
                 {
-                    sound.raw.device.load()->masterVolumeFactor =
-                        static_cast<float>(Globals::gSettings.localVolume) / 100.f;
+                    newVolume = sound.localVolume ? *sound.localVolume : Globals::gSettings.localVolume;
                 }
                 else
                 {
-                    sound.raw.device.load()->masterVolumeFactor =
-                        static_cast<float>(Globals::gSettings.remoteVolume) / 100.f;
+                    newVolume = sound.remoteVolume ? *sound.remoteVolume : Globals::gSettings.remoteVolume;
                 }
+
+                playingSound.raw.device.load()->masterVolumeFactor = static_cast<float>(newVolume) / 100.f;
             }
         }
 
