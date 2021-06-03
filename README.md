@@ -38,12 +38,12 @@
       <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20Flatpak?label=flatpak%20build&style=flat-square" alt="Flatpak Build" />
     </a>
     <hr>
-  <a href="https://discord.com/invite/4HwSGN4Ec2">
-    <img src="https://invidget.switchblade.xyz/4HwSGN4Ec2" alt="Discord Invite"/>
-  </a
+    <a href="https://discord.com/invite/4HwSGN4Ec2">
+      <img src="https://invidget.switchblade.xyz/4HwSGN4Ec2" alt="Discord Invite"/>
+    </a>
     <a href="https://hosted.weblate.org/engage/soundux/">
-<img src="https://hosted.weblate.org/widgets/soundux/-/frontend/multi-green.svg" alt="Translation status" />
-</a>
+      <img src="https://hosted.weblate.org/widgets/soundux/-/frontend/multi-green.svg" alt="Translation status" />
+    </a>
   </p>
 </div>
 
