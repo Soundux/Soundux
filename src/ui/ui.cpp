@@ -519,38 +519,51 @@ namespace Soundux::Objects
         }
 #endif
     }
-    std::optional<Sound> Window::setCustomVolume(const std::uint32_t &id, const std::optional<int> &localVolume,
-                                                 const std::optional<int> &remoteVolume)
+    std::optional<Sound> Window::setCustomLocalVolume(const std::uint32_t &id, const std::optional<int> &localVolume)
     {
         auto sound = Globals::gData.getSound(id);
         if (sound)
         {
             sound->get().localVolume = localVolume;
-            sound->get().remoteVolume = remoteVolume;
 
             for (auto &playingSound : Globals::gAudio.getPlayingSounds())
             {
-                if (playingSound.sound.id == sound->get().id)
+                if (playingSound.sound.id == sound->get().id && playingSound.playbackDevice.isDefault)
                 {
-                    int newVolume = 0;
-                    if (playingSound.playbackDevice.isDefault)
-                    {
-                        newVolume = localVolume ? *localVolume : Globals::gSettings.localVolume;
-                    }
-                    else
-                    {
-                        newVolume = remoteVolume ? *remoteVolume : Globals::gSettings.remoteVolume;
-                    }
-
-                    playingSound.raw.device.load()->masterVolumeFactor = static_cast<float>(newVolume) / 100.f;
+                    playingSound.raw.device.load()->masterVolumeFactor =
+                        static_cast<float>(localVolume ? *localVolume : Globals::gSettings.localVolume) / 100.f;
                 }
             }
 
             return *sound;
         }
 
-        Fancy::fancy.logTime().failure() << "Failed to set custom volume for sound " << id << ", sound does not exist"
-                                         << std::endl;
+        Fancy::fancy.logTime().failure() << "Failed to set custom local volume for sound " << id
+                                         << ", sound does not exist" << std::endl;
+        onError(Enums::ErrorCode::FailedToSetCustomVolume);
+        return std::nullopt;
+    }
+    std::optional<Sound> Window::setCustomRemoteVolume(const std::uint32_t &id, const std::optional<int> &remoteVolume)
+    {
+        auto sound = Globals::gData.getSound(id);
+        if (sound)
+        {
+            sound->get().remoteVolume = remoteVolume;
+
+            for (auto &playingSound : Globals::gAudio.getPlayingSounds())
+            {
+                if (playingSound.sound.id == sound->get().id && !playingSound.playbackDevice.isDefault)
+                {
+                    playingSound.raw.device.load()->masterVolumeFactor =
+                        static_cast<float>(remoteVolume ? *remoteVolume : Globals::gSettings.remoteVolume) / 100.f;
+                }
+            }
+
+            return *sound;
+        }
+
+        Fancy::fancy.logTime().failure() << "Failed to set custom remote volume for sound " << id
+                                         << ", sound does not exist" << std::endl;
         onError(Enums::ErrorCode::FailedToSetCustomVolume);
         return std::nullopt;
     }

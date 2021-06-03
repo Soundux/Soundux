@@ -159,10 +159,14 @@ namespace Soundux::Objects
             "updateCheck", [this](Webview::Promise promise) { promise.resolve(VersionCheck::getStatus()); }));
         webview->expose(Webview::Function("isOnFavorites", [this](bool state) { setIsOnFavorites(state); }));
         webview->expose(Webview::Function("deleteSound", [this](std::uint32_t id) { return deleteSound(id); }));
-        webview->expose(
-            Webview::Function("setCustomVolume",
-                              [this](const std::uint32_t &id, const std::optional<int> &local,
-                                     const std::optional<int> &remote) { return setCustomVolume(id, local, remote); }));
+        webview->expose(Webview::Function("setCustomLocalVolume",
+                                          [this](const std::uint32_t &id, const std::optional<int> &volume) {
+                                              return setCustomLocalVolume(id, volume);
+                                          }));
+        webview->expose(Webview::Function("setCustomRemoteVolume",
+                                          [this](const std::uint32_t &id, const std::optional<int> &volume) {
+                                              return setCustomRemoteVolume(id, volume);
+                                          }));
 
 #if !defined(__linux__)
         webview->expose(Webview::Function("getOutputs", [this]() { return getOutputs(); }));
