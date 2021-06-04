@@ -50,7 +50,7 @@ namespace Soundux
     {
         int wsz = MultiByteToWideChar(65001, 0, s.c_str(), -1, nullptr, 0);
         if (!wsz)
-            return std::wstring();
+            return {};
 
         std::wstring out(wsz, 0);
         out.resize(wsz - 1);
@@ -63,7 +63,7 @@ namespace Soundux
         int wsz = WideCharToMultiByte(65001, 0, s.c_str(), -1, nullptr, 0, nullptr, nullptr);
 
         if (!wsz)
-            return std::string();
+            return {};
 
         std::string out(wsz, 0);
         out.resize(wsz - 1);

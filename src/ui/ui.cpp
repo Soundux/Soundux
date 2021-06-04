@@ -154,7 +154,11 @@ namespace Soundux::Objects
                 const auto &rootPath = path;
 #endif
                 std::vector<Tab> tabs;
-                lastPath = std::filesystem::path(rootPath).parent_path();
+                lastPath = std::filesystem::path(path).parent_path();
+#if defined(_WIN32)
+                std::transform(lastPath.begin(), lastPath.end(), lastPath.begin(),
+                               [](wchar_t c) { return c == '/' ? '\\' : c; });
+#endif
 
                 if (!Globals::gData.doesTabExist(rootPath))
                 {
@@ -166,7 +170,7 @@ namespace Soundux::Objects
                     tabs.emplace_back(Globals::gData.addTab(std::move(rootTab)));
                 }
 
-                for (const auto &entry : std::filesystem::directory_iterator(rootPath))
+                for (const auto &entry : std::filesystem::directory_iterator(path))
                 {
                     if (entry.is_directory())
                     {
