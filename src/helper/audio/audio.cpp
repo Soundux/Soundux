@@ -393,6 +393,17 @@ namespace Soundux::Objects
 
         ma_context_uninit(&context);
 
+        for (auto it = playBackDevices.begin(); it != playBackDevices.end(); it++)
+        {
+            if (it->name.find("VB-Audio") != std::string::npos)
+            {
+                if (it != playBackDevices.begin())
+                {
+                    std::iter_swap(playBackDevices.begin(), it);
+                }
+            }
+        }
+
         return playBackDevices;
     }
 #if defined(_WIN32)

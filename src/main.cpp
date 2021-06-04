@@ -2,7 +2,6 @@
 #include <core/enums/enums.hpp>
 #include <core/global/globals.hpp>
 #include <fancy.hpp>
-#include <guard.hpp>
 #include <ui/impl/webview/webview.hpp>
 
 #if defined(__linux__)
@@ -38,7 +37,7 @@ int main(int argc, char **arguments)
 #endif
 
 #if defined(_WIN32)
-    if (std::getenv("SOUNDUX_DEBUG"))
+    if (std::getenv("SOUNDUX_DEBUG")) // NOLINT
     {
         AllocConsole();
         freopen_s(reinterpret_cast<FILE **>(stdin), "CONIN$", "r", stdin);
@@ -57,9 +56,9 @@ int main(int argc, char **arguments)
     }
 
     backward::SignalHandling crashHandler;
-    Instance::Guard guard("soundux-guard");
+    gGuard = std::make_shared<Instance::Guard>("soundux-guard");
 
-    if (guard.isAnotherRunning())
+    if (gGuard->isAnotherRunning())
     {
         Fancy::fancy.logTime().failure() << "Another Instance is already running!" << std::endl;
         return 1;
@@ -70,8 +69,10 @@ int main(int argc, char **arguments)
     gSettings = gConfig.settings;
 
 #if defined(__linux__)
-    gIcons = gIcons->createInstance();
+    gIcons = IconFetcher::createInstance();
     gAudioBackend = AudioBackend::createInstance(gSettings.audioBackend);
+#elif defined(_WIN32)
+    gWinSound = WinSound::createInstance();
 #endif
 
     gAudio.setup();
@@ -97,7 +98,7 @@ int main(int argc, char **arguments)
     }
 
 #if defined(_WIN32)
-    HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1));
+    HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1)); // NOLINT
     SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
     SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
 #endif

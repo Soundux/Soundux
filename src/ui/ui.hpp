@@ -97,6 +97,7 @@ namespace Soundux
             virtual void show() = 0;
             virtual void mainLoop() = 0;
 
+            virtual void onAdminRequired() = 0;
             virtual void onSettingsChanged() = 0;
             virtual void onSwitchOnConnectDetected(bool) = 0;
             virtual void onSoundPlayed(const PlayingSound &);

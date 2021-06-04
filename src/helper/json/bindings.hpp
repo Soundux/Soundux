@@ -1,5 +1,6 @@
 #pragma once
 #include <core/global/globals.hpp>
+#include <helper/audio/windows/winsound.hpp>
 #include <helper/version/check.hpp>
 #include <nlohmann/json.hpp>
 
@@ -260,6 +261,34 @@ namespace nlohmann
                 j.at("name").get_to(obj->name);
                 j.at("appIcon").get_to(obj->appIcon);
                 j.at("application").get_to(obj->application);
+            }
+        }
+    };
+#elif defined(_WIN32)
+    template <> struct adl_serializer<Soundux::Objects::RecordingDevice>
+    {
+        static void to_json(json &j, const Soundux::Objects::RecordingDevice &obj)
+        {
+            j = {
+                {"name", obj.getName()},
+                {"guid", obj.getGUID()},
+            };
+        }
+    };
+    template <> struct adl_serializer<std::optional<Soundux::Objects::RecordingDevice>>
+    {
+        static void to_json(json &j, const std::optional<Soundux::Objects::RecordingDevice> &obj)
+        {
+            if (obj)
+            {
+                j = {
+                    {"name", obj->getName()},
+                    {"guid", obj->getGUID()},
+                };
+            }
+            else
+            {
+                j = "null";
             }
         }
     };

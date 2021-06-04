@@ -281,6 +281,16 @@ namespace Soundux::Objects
             {
                 stopSounds();
             }
+            if (Globals::gSettings.muteDuringPlayback)
+            {
+                if (Globals::gWinSound && Globals::gWinSound->getMic())
+                {
+                    if (!Globals::gWinSound->getMic()->mute(true))
+                    {
+                        onError(Enums::ErrorCode::FailedToMute);
+                    }
+                }
+            }
             if (!Globals::gSettings.pushToTalkKeys.empty())
             {
                 Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
@@ -304,28 +314,21 @@ namespace Soundux::Objects
                 }
 
                 if (playingSound)
-                {
                     stopSound(playingSound->id);
-                }
-                if (remotePlayingSound)
-                {
-                    stopSound(remotePlayingSound->id);
-                }
 
+                if (remotePlayingSound)
+                    stopSound(remotePlayingSound->id);
+
+                Fancy::fancy.logTime().failure() << "Failed to play sound " << id << std::endl;
+                onError(Enums::ErrorCode::FailedToPlay);
                 return std::nullopt;
             }
 
             return *playingSound;
         }
-        else
-        {
-            Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
-            onError(Enums::ErrorCode::SoundNotFound);
-            return std::nullopt;
-        }
 
-        Fancy::fancy.logTime().failure() << "Failed to play sound " << id << std::endl;
-        onError(Enums::ErrorCode::FailedToPlay);
+        Fancy::fancy.logTime().failure() << "Sound " << id << " not found" << std::endl;
+        onError(Enums::ErrorCode::SoundNotFound);
         return std::nullopt;
     }
 #endif
@@ -674,6 +677,33 @@ namespace Soundux::Objects
                 }
             }
         }
+#elif defined(_WIN32)
+        if (Globals::gWinSound)
+        {
+            if (!Globals::gAudio.getPlayingSounds().empty())
+            {
+                if (settings.muteDuringPlayback && !oldSettings.muteDuringPlayback)
+                {
+                    if (Globals::gWinSound->getMic())
+                    {
+                        if (!Globals::gWinSound->getMic()->mute(true))
+                        {
+                            onError(Enums::ErrorCode::FailedToMute);
+                        }
+                    }
+                }
+                else if (!settings.muteDuringPlayback && oldSettings.muteDuringPlayback)
+                {
+                    if (Globals::gWinSound->getMic())
+                    {
+                        if (!Globals::gWinSound->getMic()->mute(false))
+                        {
+                            onError(Enums::ErrorCode::FailedToMute);
+                        }
+                    }
+                }
+            }
+        }
 #endif
         return Globals::gSettings;
     }
@@ -923,6 +953,14 @@ namespace Soundux::Objects
                 {
                     onError(Enums::ErrorCode::FailedToMoveBack);
                 }
+            }
+        }
+#elif defined(_WIN32)
+        if (Globals::gWinSound && Globals::gWinSound->getMic())
+        {
+            if (!Globals::gWinSound->getMic()->mute(false))
+            {
+                onError(Enums::ErrorCode::FailedToMute);
             }
         }
 #endif
