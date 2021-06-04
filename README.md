@@ -222,6 +222,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/rivenirvana"><img src="https://avatars.githubusercontent.com/u/43519644?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Arvin Verain</b></sub></a><br /><a href="#platform-rivenirvana" title="Packaging/porting to new platform">📦</a></td>
+    <td align="center"><a href="http://einfacheinalex.eu"><img src="https://avatars.githubusercontent.com/u/20642291?v=4?s=50" width="50px;" alt=""/><br /><sub><b>EinfachEinAlex</b></sub></a><br /><a href="https://github.com/Soundux/Soundux/commits?author=EinfachEinAlex" title="Code">💻</a></td>
   </tr>
 </table>
 
