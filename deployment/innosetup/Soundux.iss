@@ -157,8 +157,8 @@ begin
 end;
 
 [Run]
-Filename: "{tmp}\MicrosoftEdgeWebView2RuntimeInstallerX64.exe"; WorkingDir: "{tmp}"; Flags: 64bit; Description: "Install Microsoft Edge WebView2 Runtime"; Components: MicrosoftEdgeWebView2Runtime
-Filename: "{tmp}\VBCABLE_Setup_x64.exe"; WorkingDir: "{tmp}"; Flags: 64bit; Description: "Install VB Cable"; Components: VBCable
+Filename: "{tmp}\MicrosoftEdgeWebView2RuntimeInstallerX64.exe"; Parameters: "/silent /install"; WorkingDir: "{tmp}"; Flags: 64bit; Description: "Install Microsoft Edge WebView2 Runtime"; Components: MicrosoftEdgeWebView2Runtime
+Filename: "{tmp}\VBCABLE_Setup_x64.exe"; Parameters: "-h -i"; WorkingDir: "{tmp}"; Flags: 64bit; Description: "Install VB Cable"; Components: VBCable
 Filename: "{app}\{#MyAppExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"
 
 [Components]
