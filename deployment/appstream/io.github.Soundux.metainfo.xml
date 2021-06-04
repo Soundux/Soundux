@@ -55,6 +55,23 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.2.7" date="2021-06-04">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2.7</url>
+      <description>
+        <ul>
+          <li>Mono Support for PipeWire</li>
+          <li>Add Tab opens on last folder and initially opens in home folder</li>
+          <li>Fix audio playing at 100% in the beginning</li>
+          <li>New Translations (Greek, Dutch, French)</li>
+          <li>Fixed Space not working in search</li>
+          <li>Faster sorting, Per Tab sorting</li>
+          <li>Added minimum PipeWire version</li>
+          <li>Arrow Keys to navigate tabs</li>
+          <li>Set Volume individually</li>
+          <li>UI Improvements</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.6" date="2021-05-24">
       <url>https://github.com/Soundux/Soundux/releases/tag/0.2.6</url>
       <description>
