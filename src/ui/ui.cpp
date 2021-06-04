@@ -993,7 +993,33 @@ namespace Soundux::Objects
         onError(Enums::ErrorCode::SoundNotFound);
         return false;
     }
+    bool Window::toggleSoundPlayback()
+    {
+        bool shouldPause = true;
+        for (const auto &sound : Globals::gAudio.getPlayingSounds())
+        {
+            if (sound.paused)
+            {
+                shouldPause = false;
+                break;
+            }
+        }
 
+        auto scoped = groupedSounds.scoped();
+        for (const auto &[local, remote] : *scoped)
+        {
+            if (shouldPause)
+            {
+                pauseSound(local);
+            }
+            else
+            {
+                resumeSound(local);
+            }
+        }
+
+        return shouldPause;
+    }
 #if defined(__linux__)
     IconRecordingApp::IconRecordingApp(const RecordingApp &base)
     {

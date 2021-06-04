@@ -77,6 +77,7 @@ namespace Soundux
             virtual std::optional<Tab> setSortMode(const std::uint32_t &, Enums::SortMode);
 
           protected:
+            virtual bool toggleSoundPlayback();
             virtual void stopSounds(bool = false);
             virtual bool stopSound(const std::uint32_t &);
 

@@ -168,6 +168,7 @@ namespace Soundux::Objects
                                           [this](const std::uint32_t &id, const std::optional<int> &volume) {
                                               return setCustomRemoteVolume(id, volume);
                                           }));
+        webview->expose(Webview::Function("toggleSoundPlayback", [this]() { return toggleSoundPlayback(); }));
 
 #if !defined(__linux__)
         webview->expose(Webview::Function("getOutputs", [this]() { return getOutputs(); }));
