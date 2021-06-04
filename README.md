@@ -112,7 +112,7 @@ You can grab the latest release from the Snap Store or Flathub
 ## <img src="https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg" height="20"/> Windows
 Download our installer or portable from [the latest release](https://github.com/Soundux/Soundux/releases/latest)
 
-# 🪛 Compilation
+# 🔨 Compilation
 
 ## 🔗 Build Dependencies
 
