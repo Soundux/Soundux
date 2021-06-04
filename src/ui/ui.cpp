@@ -86,6 +86,8 @@ namespace Soundux::Objects
                     sound.id = oldSound->id;
                     sound.hotkeys = oldSound->hotkeys;
                     sound.isFavorite = oldSound->isFavorite;
+                    sound.localVolume = oldSound->localVolume;
+                    sound.remoteVolume = oldSound->remoteVolume;
                 }
                 else
                 {
