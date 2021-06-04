@@ -959,11 +959,14 @@ namespace Soundux::Objects
             }
         }
 #elif defined(_WIN32)
-        if (Globals::gWinSound && Globals::gWinSound->getMic())
+        if (Globals::gSettings.muteDuringPlayback)
         {
-            if (!Globals::gWinSound->getMic()->mute(false))
+            if (Globals::gWinSound && Globals::gWinSound->getMic())
             {
-                onError(Enums::ErrorCode::FailedToMute);
+                if (!Globals::gWinSound->getMic()->mute(false))
+                {
+                    onError(Enums::ErrorCode::FailedToMute);
+                }
             }
         }
 #endif
