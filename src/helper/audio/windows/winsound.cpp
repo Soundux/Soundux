@@ -144,12 +144,12 @@ namespace Soundux
 
             return false;
         }
-        void RecordingDevice::mute(bool state) const
+        bool RecordingDevice::mute(bool state) const
         {
             if (!device)
             {
                 Fancy::fancy.logTime().failure() << "Failed to set mute state, device was invalid" << std::endl;
-                return;
+                return false;
             }
 
             IAudioEndpointVolume *endpointVolume = nullptr;
@@ -157,14 +157,11 @@ namespace Soundux
                                         reinterpret_cast<void **>(&endpointVolume))))
             {
                 Fancy::fancy.logTime().warning() << "Failed to set mute state for " << name << std::endl;
-                if (Globals::gGui)
-                {
-                    Globals::gGui->onError(Enums::ErrorCode::FailedToMute);
-                }
-                return;
+                return false;
             }
 
             endpointVolume->SetMute(state, nullptr);
+            return true;
         }
         bool RecordingDevice::listenToDevice(bool state) const
         {

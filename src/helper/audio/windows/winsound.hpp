@@ -54,7 +54,7 @@ namespace Soundux
             bool isListeningToDevice() const;
             std::string getDevicePlayingThrough() const;
 
-            void mute(bool) const;
+            bool mute(bool) const;
             bool listenToDevice(bool) const;
             bool playbackThrough(const PlaybackDevice &) const;
         };
