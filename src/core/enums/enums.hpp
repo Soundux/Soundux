@@ -27,8 +27,8 @@ namespace Soundux
             YtdlInvalidJson,
             YtdlInformationUnknown,
             FailedToDelete,
-            FailedToSetCustomVolume,
             FailedToMute,
+            FailedToSetCustomVolume,
         };
 
         enum class SortMode : std::uint8_t
