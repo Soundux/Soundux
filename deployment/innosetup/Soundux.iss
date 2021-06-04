@@ -66,6 +66,8 @@ Source: "{tmp}\VBCABLE_Driver_Pack43.zip"; DestDir: "{app}"; Flags: external del
 Source: "{tmp}\MicrosoftEdgeWebView2RuntimeInstallerX64.exe"; DestDir: "{tmp}"; Flags: external deleteafterinstall; Components: MicrosoftEdgeWebView2Runtime
 Source: "{tmp}\youtube-dl.exe"; DestDir: "{app}"; Flags: external ignoreversion; Components: FfmpegYouTubeDL
 Source: "{tmp}\ffmpeg.exe"; DestDir: "{app}"; Flags: external ignoreversion; Components: FfmpegYouTubeDL
+Source: "{tmp}\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: external deleteafterinstall; Components: FfmpegYouTubeDL
+Source: "{tmp}\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: external deleteafterinstall; Components: FfmpegYouTubeDL
 
 [Dirs]
 Name: "{app}"; Permissions: users-full
@@ -77,6 +79,23 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: 
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
 
 [Code]
+#IFDEF UNICODE
+  #DEFINE AW "W"
+#ELSE
+  #DEFINE AW "A"
+#ENDIF
+
+type
+  INSTALLSTATE = Longint;
+const
+  INSTALLSTATE_INVALIDARG = -2;  { An invalid parameter was passed to the function. }
+  INSTALLSTATE_UNKNOWN = -1;     { The product is neither advertised or installed. }
+  INSTALLSTATE_ADVERTISED = 1;   { The product is advertised but not installed. }
+  INSTALLSTATE_ABSENT = 2;       { The product is installed for a different user. }
+  INSTALLSTATE_DEFAULT = 5;      { The product is installed for the current user. }
+
+VC_2010_REDIST_X86 = '{196BB40D-1578-3D01-B289-BEFC77A11A1E}';
+VC_2010_REDIST_X64 = '{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}';
 
 function IsWebView2NotInstalled: boolean;
 begin
@@ -84,12 +103,25 @@ begin
     'SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView');
 end;
 
+function MsiQueryProductState(szProduct: string): INSTALLSTATE;
+  external 'MsiQueryProductState{#AW}@msi.dll stdcall';
+
+function VCVersionInstalled(const ProductID: string): Boolean;
+begin
+  Result := MsiQueryProductState(ProductID) = INSTALLSTATE_DEFAULT;
+end;
+
+function VCRedistNeedsInstall: Boolean;
+begin
+  Result := not (VCVersionInstalled(VC_2010_REDIST_X86) and VCVersionInstalled(VC_2010_REDIST_X64));
+end;
+
 
 const
   SHCONTCH_NOPROGRESSBOX = 4;
   SHCONTCH_RESPONDYESTOALL = 16;
 
-procedure UnZip(ZipPath, TargetPath: string); 
+procedure UnZip(ZipPath, TargetPath: string);
 var
   Shell: Variant;
   ZipFile: Variant;
@@ -137,6 +169,9 @@ begin
     if WizardIsComponentSelected('FfmpegYouTubeDL') then begin
       DownloadPage.Add('https://github.com/eugeneware/ffmpeg-static/releases/download/b4.3.2/win32-x64', 'ffmpeg.exe', '')
       DownloadPage.Add('https://github.com/ytdl-org/youtube-dl/releases/download/2021.05.16/youtube-dl.exe', 'youtube-dl.exe', '')
+
+      DownloadPage.Add('https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x86.exe', 'vcredist_x86.exe', '')
+      DownloadPage.Add('https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x64.exe', 'vcredist_x64.exe', '')
     end;
     DownloadPage.Show;
     try
@@ -157,8 +192,10 @@ begin
 end;
 
 [Run]
-Filename: "{tmp}\MicrosoftEdgeWebView2RuntimeInstallerX64.exe"; WorkingDir: "{tmp}"; Flags: 64bit; Description: "Install Microsoft Edge WebView2 Runtime"; Components: MicrosoftEdgeWebView2Runtime
-Filename: "{tmp}\VBCABLE_Setup_x64.exe"; WorkingDir: "{tmp}"; Flags: 64bit; Description: "Install VB Cable"; Components: VBCable
+Filename: "{tmp}\MicrosoftEdgeWebView2RuntimeInstallerX64.exe"; Parameters: "/silent /install"; WorkingDir: "{tmp}"; Flags: 64bit; Description: "Install Microsoft Edge WebView2 Runtime"; Components: MicrosoftEdgeWebView2Runtime
+Filename: "{tmp}\VBCABLE_Setup_x64.exe"; Parameters: "-h -i"; WorkingDir: "{tmp}"; Flags: 64bit; Description: "Install VB Cable"; Components: VBCable
+Filename: "{tmp}\vcredist_x86.exe"; Check: VCRedistNeedsInstall; Components: FfmpegYouTubeDL
+Filename: "{tmp}\vcredist_x64.exe"; Check: VCRedistNeedsInstall; Components: FfmpegYouTubeDL
 Filename: "{app}\{#MyAppExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"
 
 [Components]
