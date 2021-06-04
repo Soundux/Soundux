@@ -66,8 +66,8 @@ Source: "{tmp}\VBCABLE_Driver_Pack43.zip"; DestDir: "{app}"; Flags: external del
 Source: "{tmp}\MicrosoftEdgeWebView2RuntimeInstallerX64.exe"; DestDir: "{tmp}"; Flags: external deleteafterinstall; Components: MicrosoftEdgeWebView2Runtime
 Source: "{tmp}\youtube-dl.exe"; DestDir: "{app}"; Flags: external ignoreversion; Components: FfmpegYouTubeDL
 Source: "{tmp}\ffmpeg.exe"; DestDir: "{app}"; Flags: external ignoreversion; Components: FfmpegYouTubeDL
-Source: "{tmp}\vcredist_x86.exe"; DestDir: {tmp}; Flags: external deleteafterinstall; Components: FfmpegYouTubeDL
-Source: "{tmp}\vcredist_x64.exe"; DestDir: {tmp}; Flags: external deleteafterinstall; Components: FfmpegYouTubeDL
+Source: "{tmp}\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: external deleteafterinstall; Components: FfmpegYouTubeDL
+Source: "{tmp}\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: external deleteafterinstall; Components: FfmpegYouTubeDL
 
 [Dirs]
 Name: "{app}"; Permissions: users-full
