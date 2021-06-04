@@ -2,6 +2,7 @@
 #include "winsound.hpp"
 #include <Shlwapi.h>
 #include <algorithm>
+#include <core/global/globals.hpp>
 #include <endpointvolume.h>
 #include <fancy.hpp>
 #include <functiondiscoverykeys_devpkey.h>
