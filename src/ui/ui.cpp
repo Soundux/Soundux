@@ -489,6 +489,7 @@ namespace Soundux::Objects
         if (remoteSoundId)
         {
             Globals::gAudio.stop(*remoteSoundId);
+            groupedSounds->erase(id);
         }
 
         if (Globals::gAudio.getPlayingSounds().empty())
@@ -508,7 +509,9 @@ namespace Soundux::Objects
         {
             Globals::gAudio.stopAll();
         }
+
         onAllSoundsFinished();
+        groupedSounds->clear();
 
 #if defined(__linux__)
         if (Globals::gAudioBackend)
