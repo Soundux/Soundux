@@ -284,7 +284,6 @@ namespace Soundux::Objects
     {
         if (!defaultSource.empty())
         {
-
             await(PulseApi::context_unload_module(context, *loopBack, nullptr, nullptr));
 
             await(PulseApi::context_load_module(
@@ -439,13 +438,18 @@ namespace Soundux::Objects
         }
         movedPassthroughApplications.clear();
 
+        if (!success)
+        {
+            Fancy::fancy.logTime().warning() << "Failed to move back one or more applications" << std::endl;
+        }
+
         return success;
     }
     bool PulseAudio::stopPassthrough(const std::string &name)
     {
-        bool success = true;
         if (movedPassthroughApplications.find(name) != movedPassthroughApplications.end())
         {
+            bool success = true;
             auto &originalSource = movedPassthroughApplications.at(name);
             for (const auto &playbackApp : getPlaybackApps())
             {
@@ -466,9 +470,14 @@ namespace Soundux::Objects
             }
 
             movedPassthroughApplications.erase(name);
+            if (!success)
+            {
+                Fancy::fancy.logTime().warning() << "Failed to move back passthrough for " << name << std::endl;
+            }
         }
 
-        return success;
+        Fancy::fancy.logTime().warning() << "Could not find moved application " << name << std::endl;
+        return false;
     }
     bool PulseAudio::inputSoundTo(std::shared_ptr<RecordingApp> app)
     {

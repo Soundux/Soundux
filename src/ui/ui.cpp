@@ -86,6 +86,8 @@ namespace Soundux::Objects
                     sound.id = oldSound->id;
                     sound.hotkeys = oldSound->hotkeys;
                     sound.isFavorite = oldSound->isFavorite;
+                    sound.localVolume = oldSound->localVolume;
+                    sound.remoteVolume = oldSound->remoteVolume;
                 }
                 else
                 {
@@ -211,7 +213,10 @@ namespace Soundux::Objects
             {
                 if (Globals::gAudioBackend)
                 {
-                    Globals::gAudioBackend->muteInput(true);
+                    if (!Globals::gAudioBackend->muteInput(true))
+                    {
+                        onError(Enums::ErrorCode::FailedToMute);
+                    }
                 }
             }
             if (!Globals::gSettings.pushToTalkKeys.empty())
@@ -238,12 +243,6 @@ namespace Soundux::Objects
                         {
                             moveSuccess = true;
                         }
-                        else
-                        {
-                            Fancy::fancy.logTime().failure() << "Failed to move Application " << outputApp
-                                                             << " to soundux sink for sound " << id << std::endl;
-                            onError(Enums::ErrorCode::FailedToMoveToSink);
-                        }
                     }
 
                     if (!moveSuccess)
@@ -253,8 +252,6 @@ namespace Soundux::Objects
                         if (remotePlayingSound)
                             stopSound(remotePlayingSound->id);
 
-                        Fancy::fancy.logTime().failure() << "Failed to move Applications " << Globals::gSettings.outputs
-                                                         << " to soundux sink for sound " << id << std::endl;
                         onError(Enums::ErrorCode::FailedToMoveToSink);
                         return std::nullopt;
                     }
@@ -518,36 +515,86 @@ namespace Soundux::Objects
         {
             if (!Globals::gAudioBackend->stopSoundInput())
             {
-                Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
                 onError(Enums::ErrorCode::FailedToMoveBack);
             }
             if (!Globals::gAudioBackend->stopAllPassthrough())
             {
-                Fancy::fancy.logTime().failure() << "Failed to move back current passthrough applications" << std::endl;
                 onError(Enums::ErrorCode::FailedToMoveBackPassthrough);
             }
         }
 #endif
+    }
+    std::optional<Sound> Window::setCustomLocalVolume(const std::uint32_t &id, const std::optional<int> &localVolume)
+    {
+        auto sound = Globals::gData.getSound(id);
+        if (sound)
+        {
+            sound->get().localVolume = localVolume;
+
+            for (auto &playingSound : Globals::gAudio.getPlayingSounds())
+            {
+                if (playingSound.sound.id == sound->get().id && playingSound.playbackDevice.isDefault)
+                {
+                    playingSound.raw.device.load()->masterVolumeFactor =
+                        static_cast<float>(localVolume ? *localVolume : Globals::gSettings.localVolume) / 100.f;
+                }
+            }
+
+            return *sound;
+        }
+
+        Fancy::fancy.logTime().failure() << "Failed to set custom local volume for sound " << id
+                                         << ", sound does not exist" << std::endl;
+        onError(Enums::ErrorCode::FailedToSetCustomVolume);
+        return std::nullopt;
+    }
+    std::optional<Sound> Window::setCustomRemoteVolume(const std::uint32_t &id, const std::optional<int> &remoteVolume)
+    {
+        auto sound = Globals::gData.getSound(id);
+        if (sound)
+        {
+            sound->get().remoteVolume = remoteVolume;
+
+            for (auto &playingSound : Globals::gAudio.getPlayingSounds())
+            {
+                if (playingSound.sound.id == sound->get().id && !playingSound.playbackDevice.isDefault)
+                {
+                    playingSound.raw.device.load()->masterVolumeFactor =
+                        static_cast<float>(remoteVolume ? *remoteVolume : Globals::gSettings.remoteVolume) / 100.f;
+                }
+            }
+
+            return *sound;
+        }
+
+        Fancy::fancy.logTime().failure() << "Failed to set custom remote volume for sound " << id
+                                         << ", sound does not exist" << std::endl;
+        onError(Enums::ErrorCode::FailedToSetCustomVolume);
+        return std::nullopt;
     }
     Settings Window::changeSettings(Settings settings)
     {
         auto oldSettings = Globals::gSettings;
         Globals::gSettings = settings;
 
-        if (!Globals::gAudio.getPlayingSounds().empty())
+        if ((settings.localVolume != oldSettings.localVolume || settings.remoteVolume != oldSettings.remoteVolume) &&
+            !Globals::gAudio.getPlayingSounds().empty())
         {
-            for (const auto &sound : Globals::gAudio.getPlayingSounds())
+            for (const auto &playingSound : Globals::gAudio.getPlayingSounds())
             {
-                if (sound.playbackDevice.isDefault)
+                int newVolume = 0;
+                const auto &sound = playingSound.sound;
+
+                if (playingSound.playbackDevice.isDefault)
                 {
-                    sound.raw.device.load()->masterVolumeFactor =
-                        static_cast<float>(Globals::gSettings.localVolume) / 100.f;
+                    newVolume = sound.localVolume ? *sound.localVolume : Globals::gSettings.localVolume;
                 }
                 else
                 {
-                    sound.raw.device.load()->masterVolumeFactor =
-                        static_cast<float>(Globals::gSettings.remoteVolume) / 100.f;
+                    newVolume = sound.remoteVolume ? *sound.remoteVolume : Globals::gSettings.remoteVolume;
                 }
+
+                playingSound.raw.device.load()->masterVolumeFactor = static_cast<float>(newVolume) / 100.f;
             }
         }
 
@@ -572,14 +619,14 @@ namespace Soundux::Objects
                 {
                     if (!Globals::gAudioBackend->muteInput(true))
                     {
-                        Fancy::fancy.logTime().failure() << "Failed to mute input" << std::endl;
+                        onError(Enums::ErrorCode::FailedToMute);
                     }
                 }
                 else if (!settings.muteDuringPlayback && oldSettings.muteDuringPlayback)
                 {
                     if (!Globals::gAudioBackend->muteInput(false))
                     {
-                        Fancy::fancy.logTime().failure() << "Failed to un-mute input" << std::endl;
+                        onError(Enums::ErrorCode::FailedToMute);
                     }
                 }
             }
@@ -587,7 +634,6 @@ namespace Soundux::Objects
             {
                 if (!Globals::gAudioBackend->revertDefault())
                 {
-                    Fancy::fancy.logTime().failure() << "Failed to move back default source" << std::endl;
                     onError(Enums::ErrorCode::FailedToRevertDefaultSource);
                 }
             }
@@ -596,7 +642,6 @@ namespace Soundux::Objects
                 Globals::gSettings.outputs.clear();
                 if (!Globals::gAudioBackend->stopSoundInput())
                 {
-                    Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
                     onError(Enums::ErrorCode::FailedToMoveBack);
                 }
                 if (!Globals::gAudioBackend->useAsDefault())
@@ -617,7 +662,6 @@ namespace Soundux::Objects
 
                 if (!Globals::gAudioBackend->stopSoundInput())
                 {
-                    Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
                     onError(Enums::ErrorCode::FailedToMoveBack);
                 }
 
@@ -625,7 +669,10 @@ namespace Soundux::Objects
                 {
                     if (!settings.outputs.empty() && !Globals::gAudio.getPlayingSounds().empty())
                     {
-                        Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp));
+                        if (!Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
+                        {
+                            onError(Enums::ErrorCode::FailedToMoveToSink);
+                        }
                     }
                 }
             }
@@ -823,6 +870,7 @@ namespace Soundux::Objects
             {
                 if (!Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
                 {
+                    onError(Enums::ErrorCode::FailedToMoveToSink);
                     success = false;
                 }
             }
@@ -831,12 +879,11 @@ namespace Soundux::Objects
             {
                 if (!Globals::gAudioBackend->passthroughFrom(Globals::gAudioBackend->getPlaybackApp(name)))
                 {
-                    Fancy::fancy.logTime().failure()
-                        << "Failed to move application: " << name << " to passthrough" << std::endl;
                     success = false;
                 }
             }
-            else
+
+            if (!success)
             {
                 onError(Enums::ErrorCode::FailedToStartPassthrough);
             }
@@ -853,14 +900,12 @@ namespace Soundux::Objects
             {
                 if (!Globals::gAudioBackend->stopSoundInput())
                 {
-                    Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
                     onError(Enums::ErrorCode::FailedToMoveBack);
                 }
             }
 
             if (!Globals::gAudioBackend->stopPassthrough(name))
             {
-                Fancy::fancy.logTime().failure() << "Failed to move back current passthrough application" << std::endl;
                 onError(Enums::ErrorCode::FailedToMoveBackPassthrough);
             }
         }
@@ -897,13 +942,15 @@ namespace Soundux::Objects
         {
             if (Globals::gSettings.muteDuringPlayback)
             {
-                Globals::gAudioBackend->muteInput(false);
+                if (!Globals::gAudioBackend->muteInput(false))
+                {
+                    onError(Enums::ErrorCode::FailedToMute);
+                }
             }
             if (Globals::gAudioBackend->currentlyPassedThrough().empty())
             {
                 if (!Globals::gAudioBackend->stopSoundInput())
                 {
-                    Fancy::fancy.logTime().failure() << "Failed to move back current application" << std::endl;
                     onError(Enums::ErrorCode::FailedToMoveBack);
                 }
             }

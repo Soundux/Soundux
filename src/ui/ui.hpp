@@ -88,6 +88,8 @@ namespace Soundux
             virtual std::optional<PlayingSound> seekSound(const std::uint32_t &, std::uint64_t);
 
             virtual std::optional<Sound> setHotkey(const std::uint32_t &, const std::vector<int> &);
+            virtual std::optional<Sound> setCustomLocalVolume(const std::uint32_t &, const std::optional<int> &);
+            virtual std::optional<Sound> setCustomRemoteVolume(const std::uint32_t &, const std::optional<int> &);
 
           public:
             virtual ~Window();

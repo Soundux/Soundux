@@ -27,6 +27,7 @@ namespace Soundux
             YtdlInvalidJson,
             YtdlInformationUnknown,
             FailedToDelete,
+            FailedToSetCustomVolume,
             FailedToMute,
         };
 

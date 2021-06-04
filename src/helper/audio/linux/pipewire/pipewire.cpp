@@ -305,13 +305,7 @@ namespace Soundux::Objects
 
         sync();
 
-        if (!createNullSink())
-        {
-            Fancy::fancy.logTime().failure() << "Failed to create null sink" << std::endl;
-            return false;
-        }
-
-        return true;
+        return createNullSink();
     }
 
     void PipeWire::destroy()
@@ -335,6 +329,7 @@ namespace Soundux::Objects
 
         if (!proxy)
         {
+            Fancy::fancy.logTime().failure() << "Failed to create null sink node" << std::endl;
             PipeWireApi::properties_free(props);
             return false;
         }
@@ -379,6 +374,7 @@ namespace Soundux::Objects
 
         if (!proxy)
         {
+            Fancy::fancy.logTime().warning() << "Failed to create link from " << in << " to " << out << std::endl;
             PipeWireApi::properties_free(props);
             return std::nullopt;
         }
@@ -391,8 +387,8 @@ namespace Soundux::Objects
         linkEvent.bound = [](void *data, std::uint32_t id) {
             *reinterpret_cast<std::optional<std::uint32_t> *>(data) = id;
         };
-        linkEvent.error = [](void *data, [[maybe_unused]] int a, [[maybe_unused]] int b,
-                             [[maybe_unused]] const char *message) {
+        linkEvent.error = [](void *data, [[maybe_unused]] int a, [[maybe_unused]] int b, const char *message) {
+            Fancy::fancy.logTime().warning() << "Failed to create link: " << message << std::endl;
             *reinterpret_cast<std::optional<std::uint32_t> *>(data) = std::nullopt;
         };
 
@@ -540,6 +536,7 @@ namespace Soundux::Objects
     {
         if (!app)
         {
+            Fancy::fancy.logTime().warning() << "Invalid app" << std::endl;
             return false;
         }
         if (soundInputLinks.count(app->name))
@@ -550,6 +547,7 @@ namespace Soundux::Objects
         auto pipeWireApp = std::dynamic_pointer_cast<PipeWireRecordingApp>(app);
         if (!pipeWireApp)
         {
+            Fancy::fancy.logTime().warning() << "Supplied app was not a Recording App" << std::endl;
             return false;
         }
 
@@ -594,6 +592,11 @@ namespace Soundux::Objects
             }
         }
 
+        if (!success)
+        {
+            Fancy::fancy.logTime().warning() << "Could not find ports for app " << app->name << std::endl;
+        }
+
         return success;
     }
 
@@ -615,12 +618,14 @@ namespace Soundux::Objects
     {
         if (!app)
         {
+            Fancy::fancy.logTime().warning() << "Invalid app" << std::endl;
             return false;
         }
 
         auto pipeWireApp = std::dynamic_pointer_cast<PipeWirePlaybackApp>(app);
         if (!pipeWireApp)
         {
+            Fancy::fancy.logTime().warning() << "Supplied app was not a Playback App" << std::endl;
             return false;
         }
 
@@ -665,6 +670,11 @@ namespace Soundux::Objects
             }
         }
 
+        if (!success)
+        {
+            Fancy::fancy.logTime().warning() << "Could not find ports for app " << app->name << std::endl;
+        }
+
         return success;
     }
 
@@ -697,11 +707,15 @@ namespace Soundux::Objects
             {
                 deleteLink(id);
             }
+
             passthroughLinks.erase(name);
-            return true;
+        }
+        else
+        {
+            Fancy::fancy.logTime().warning() << "Could not find links for application " << name << std::endl;
         }
 
-        return false;
+        return true;
     }
 
     bool PipeWire::stopAllPassthrough()
