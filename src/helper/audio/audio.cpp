@@ -347,7 +347,6 @@ namespace Soundux::Objects
             }
         }
     }
-#if defined(_WIN32)
     std::vector<AudioDevice> Audio::getAudioDevices()
     {
         std::string defaultName;
@@ -407,6 +406,7 @@ namespace Soundux::Objects
 
         return playBackDevices;
     }
+#if defined(_WIN32)
     std::optional<AudioDevice> Audio::getAudioDevice(const std::string &name)
     {
         for (const auto &device : getAudioDevices())
