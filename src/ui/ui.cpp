@@ -1005,8 +1005,8 @@ namespace Soundux::Objects
             }
         }
 
-        auto scoped = groupedSounds.scoped();
-        for (const auto &[local, remote] : *scoped)
+        auto soundsCopy = groupedSounds.copy();
+        for (const auto &[local, remote] : soundsCopy)
         {
             if (shouldPause)
             {
