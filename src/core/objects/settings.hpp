@@ -1,6 +1,7 @@
 #pragma once
 #include <core/enums/enums.hpp>
 #include <core/hotkeys/keys.hpp>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,8 +18,8 @@ namespace Soundux
             std::vector<Key> pushToTalkKeys;
             std::vector<Key> stopHotkey;
 
-            Key remoteVolumeKnob;
-            Key localVolumeKnob;
+            std::optional<Key> remoteVolumeKnob;
+            std::optional<Key> localVolumeKnob;
 
             std::vector<std::string> outputs;
             std::uint32_t selectedTab = 0;

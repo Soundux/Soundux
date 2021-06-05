@@ -5,8 +5,45 @@
 #include <helper/version/check.hpp>
 #include <nlohmann/json.hpp>
 
+namespace Soundux
+{
+    namespace traits
+    {
+        template <typename T> struct is_optional
+        {
+          private:
+            static std::uint8_t test(...);
+            template <typename O> static auto test(std::optional<O> *) -> std::uint16_t;
+
+          public:
+            static const bool value = sizeof(test(reinterpret_cast<std::decay_t<T> *>(0))) == sizeof(std::uint16_t);
+        };
+    } // namespace traits
+} // namespace Soundux
+
 namespace nlohmann
 {
+    template <typename T> struct adl_serializer<std::optional<T>>
+    {
+        static void to_json(json &j, const std::optional<T> &obj)
+        {
+            if (obj)
+            {
+                j = *obj;
+            }
+            else
+            {
+                j = nullptr;
+            }
+        }
+        static void from_json(const json &j, const std::optional<T> &obj)
+        {
+            if (!j.is_null())
+            {
+                obj = j.get<T>();
+            }
+        }
+    }; // namespace nlohmann
     template <> struct adl_serializer<Soundux::Objects::Key>
     {
         static void to_json(json &j, const Soundux::Objects::Key &obj)
@@ -39,25 +76,10 @@ namespace nlohmann
                 {"id", obj.id},
                 {"path", obj.path},
                 {"isFavorite", obj.isFavorite},
+                {"localVolume", obj.localVolume},
+                {"remoteVolume", obj.remoteVolume},
                 {"modifiedDate", obj.modifiedDate},
             };
-
-            if (obj.localVolume)
-            {
-                j["localVolume"] = *obj.localVolume;
-            }
-            else
-            {
-                j["localVolume"] = nullptr;
-            }
-            if (obj.remoteVolume)
-            {
-                j["remoteVolume"] = *obj.remoteVolume;
-            }
-            else
-            {
-                j["remoteVolume"] = nullptr;
-            }
         }
         static void from_json(const json &j, Soundux::Objects::Sound &obj)
         {
@@ -153,9 +175,22 @@ namespace nlohmann
         {
             if (j.find(key) != j.end())
             {
-                if (j.at(key).type_name() == nlohmann::basic_json(T{}).type_name())
+                if constexpr (Soundux::traits::is_optional<T>::value)
                 {
-                    j.at(key).get_to(member);
+                    if (j.at(key).type_name() == nlohmann::basic_json(typename T::value_type{}).type_name())
+                    {
+                        if (!j.at(key).is_null())
+                        {
+                            member = j.at(key).get<typename T::value_type>();
+                        }
+                    }
+                }
+                else
+                {
+                    if (j.at(key).type_name() == nlohmann::basic_json(T{}).type_name())
+                    {
+                        j.at(key).get_to(member);
+                    }
                 }
             }
         }
@@ -298,23 +333,6 @@ namespace nlohmann
                 {"name", obj.getName()},
                 {"guid", obj.getGUID()},
             };
-        }
-    };
-    template <> struct adl_serializer<std::optional<Soundux::Objects::RecordingDevice>>
-    {
-        static void to_json(json &j, const std::optional<Soundux::Objects::RecordingDevice> &obj)
-        {
-            if (obj)
-            {
-                j = {
-                    {"name", obj->getName()},
-                    {"guid", obj->getGUID()},
-                };
-            }
-            else
-            {
-                j = "null";
-            }
         }
     };
 #endif

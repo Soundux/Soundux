@@ -7,7 +7,6 @@ namespace Soundux
     {
         enum class KeyType : std::uint8_t
         {
-            Undefined,
             Keyboard,
             Mouse,
             Midi
@@ -18,8 +17,8 @@ namespace Soundux
     {
         struct Key
         {
-            int key = 0;
-            Enums::KeyType type = Enums::KeyType::Undefined;
+            int key;
+            Enums::KeyType type;
 
             virtual ~Key() = default;
             bool operator==(const Key &) const;
