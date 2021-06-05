@@ -1,10 +1,11 @@
 #pragma once
+#include <cstdint>
 
 namespace Soundux
 {
     namespace Enums
     {
-        enum class KeyType
+        enum class KeyType : std::uint8_t
         {
             Keyboard,
             Mouse,

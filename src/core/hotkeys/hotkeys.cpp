@@ -29,7 +29,7 @@ namespace Soundux
             rtn = std::shared_ptr<X11>(new X11()); // NOLINT
 #endif
             rtn->setup();
-            return nullptr;
+            return rtn;
         }
 
         void Hotkeys::setup()
