@@ -19,7 +19,7 @@ namespace Soundux
 
           private:
             void listen();
-            bool setup() override;
+            void setup() override;
 
           public:
             ~X11();

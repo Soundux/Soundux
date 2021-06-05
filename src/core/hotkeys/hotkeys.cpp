@@ -28,14 +28,11 @@ namespace Soundux
 #if defined(__linux__)
             rtn = std::shared_ptr<X11>(new X11()); // NOLINT
 #endif
-            if (rtn->setup())
-            {
-                return rtn;
-            }
-
+            rtn->setup();
             return nullptr;
         }
-        bool Hotkeys::setup()
+
+        void Hotkeys::setup()
         {
             try
             {
@@ -49,13 +46,14 @@ namespace Soundux
                     }
 
                     auto byte0 = message[0];
-                    auto byte1 = message[0];
-                    auto byte2 = message[0];
+                    auto byte1 = message[1];
+                    auto byte2 = message[2];
 
                     MidiKey key;
                     key.byte0 = byte0;
                     key.key = byte1;
                     key.byte2 = byte2;
+                    key.type = Enums::KeyType::Midi;
 
                     if (byte0 == 144)
                     {
@@ -65,21 +63,39 @@ namespace Soundux
                     {
                         onKeyUp(key);
                     }
+                    else if (byte0 == 176)
+                    {
+                        if (shouldNotifyKnob)
+                        {
+                            Globals::gGui->onHotKeyReceived({key}); // NOLINT
+                        }
+                        if (key == Globals::gSettings.localVolumeKnob)
+                        {
+                            Globals::gSettings.localVolume = (byte2 / 127) * 100;
+                            Globals::gGui->onSettingsChanged();
+                        }
+                        else if (key == Globals::gSettings.remoteVolumeKnob)
+                        {
+                            Globals::gSettings.remoteVolume = (byte2 / 127) * 100;
+                            Globals::gGui->onSettingsChanged();
+                        }
+                    }
                 });
                 midi.ignore_types(false, false, false);
             }
             catch (const libremidi::midi_exception &e)
             {
                 Fancy::fancy.logTime().failure() << "Failed to initialize libremidi: " << e.what() << std::endl;
-                return false;
             }
-
-            return true;
         }
         void Hotkeys::notify(bool state)
         {
             pressedKeys.clear();
             shouldNotify = state;
+        }
+        void Hotkeys::requestKnob(bool state)
+        {
+            shouldNotifyKnob = state;
         }
         void Hotkeys::onKeyUp(const Key &key)
         {

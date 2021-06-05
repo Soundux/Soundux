@@ -1,5 +1,6 @@
 #pragma once
 #include <core/enums/enums.hpp>
+#include <core/hotkeys/keys.hpp>
 #include <string>
 #include <vector>
 
@@ -7,8 +8,6 @@ namespace Soundux
 {
     namespace Objects
     {
-        struct Key;
-
         struct Settings
         {
             Enums::BackendType audioBackend = Enums::BackendType::PulseAudio;
@@ -17,6 +16,9 @@ namespace Soundux
 
             std::vector<Key> pushToTalkKeys;
             std::vector<Key> stopHotkey;
+
+            Key remoteVolumeKnob;
+            Key localVolumeKnob;
 
             std::vector<std::string> outputs;
             std::uint32_t selectedTab = 0;

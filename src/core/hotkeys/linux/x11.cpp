@@ -11,14 +11,14 @@
 
 namespace Soundux::Objects
 {
-    bool X11::setup()
+    void X11::setup()
     {
-        if (!Hotkeys::setup())
-        {
-            Fancy::fancy.logTime().warning() << "Failed to initialize Midi Listener" << std::endl;
-        }
+        Hotkeys::setup();
+        listener = std::thread([this] { listen(); });
+    }
 
-        XInitThreads();
+    void X11::listen()
+    {
         auto *displayEnv = std::getenv("DISPLAY"); // NOLINT
         auto *x11Display = XOpenDisplay(displayEnv);
 
@@ -28,7 +28,6 @@ namespace Soundux::Objects
             if (!(x11Display = XOpenDisplay(":0")))
             {
                 Fancy::fancy.logTime().failure() << "Could not open X11 Display" << std::endl;
-                return false;
             }
         }
         else
@@ -41,15 +40,8 @@ namespace Soundux::Objects
         if (!XQueryExtension(display, "XInputExtension", &major_op, &event_rtn, &ext_rtn))
         {
             Fancy::fancy.logTime().failure() << "Failed to find XInputExtension" << std::endl;
-            return false;
         }
 
-        listener = std::thread([this] { listen(); });
-        return true;
-    }
-
-    void X11::listen()
-    {
         Window root = DefaultRootWindow(display); // NOLINT
 
         XIEventMask mask;

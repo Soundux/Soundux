@@ -169,6 +169,8 @@ namespace Soundux::Objects
                                               return setCustomRemoteVolume(id, volume);
                                           }));
         webview->expose(Webview::Function("toggleSoundPlayback", [this]() { return toggleSoundPlayback(); }));
+        webview->expose(
+            Webview::Function("requestKnob", [this](bool state) { Globals::gHotKeys->requestKnob(state); }));
 
 #if !defined(__linux__)
         webview->expose(Webview::Function("getOutputs", [this]() { return getOutputs(); }));

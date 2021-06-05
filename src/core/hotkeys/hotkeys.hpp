@@ -15,17 +15,19 @@ namespace Soundux
 
           protected:
             Hotkeys() = default;
-            virtual bool setup();
+            virtual void setup();
 
           protected:
             std::vector<Key> pressedKeys;
             std::atomic<bool> shouldNotify = false;
+            std::atomic<bool> shouldNotifyKnob = false;
 
           public:
             static std::shared_ptr<Hotkeys> createInstance();
 
           public:
             virtual void notify(bool);
+            virtual void requestKnob(bool);
 
             virtual void onKeyUp(const Key &);
             virtual void onKeyDown(const Key &);
