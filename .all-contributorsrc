@@ -221,6 +221,15 @@
         "research",
         "test"
       ]
+    },
+    {
+      "login": "MeblIkea",
+      "name": "MeblIkea",
+      "avatar_url": "https://avatars.githubusercontent.com/u/69876322?v=4",
+      "profile": "https://discord.gg/ubmTQnuM3Z",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 2,
