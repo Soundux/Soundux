@@ -11,11 +11,7 @@ namespace Soundux::Objects
             while (!queue.empty())
             {
                 auto front = queue.begin();
-
-                lock.unlock();
                 front->function();
-                lock.lock();
-
                 queue.erase(front);
             }
         }
