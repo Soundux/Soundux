@@ -72,12 +72,12 @@ namespace Soundux
                         if (key == Globals::gSettings.localVolumeKnob)
                         {
                             Globals::gSettings.localVolume = (byte2 / 127) * 100;
-                            Globals::gGui->onSettingsChanged();
+                            Globals::gGui->onLocalVolumeChanged();
                         }
                         else if (key == Globals::gSettings.remoteVolumeKnob)
                         {
                             Globals::gSettings.remoteVolume = (byte2 / 127) * 100;
-                            Globals::gGui->onSettingsChanged();
+                            Globals::gGui->onRemoteVolumeChanged();
                         }
                     }
                 });

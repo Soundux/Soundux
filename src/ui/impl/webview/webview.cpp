@@ -445,4 +445,14 @@ namespace Soundux::Objects
         webview->callFunction<void>(
             Webview::JavaScriptFunction("window.getStore().commit", "setAdministrativeModal", true));
     }
+    void WebView::onLocalVolumeChanged()
+    {
+        webview->callFunction<void>(
+            Webview::JavaScriptFunction("window.getStore().commit", "setLocalVolume", Globals::gSettings.localVolume));
+    }
+    void WebView::onRemoteVolumeChanged()
+    {
+        webview->callFunction<void>(Webview::JavaScriptFunction("window.getStore().commit", "setRemoteVolume",
+                                                                Globals::gSettings.remoteVolume));
+    }
 } // namespace Soundux::Objects

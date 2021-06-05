@@ -32,6 +32,8 @@ namespace Soundux
 
             void onAdminRequired() override;
             void onSettingsChanged() override;
+            void onLocalVolumeChanged() override;
+            void onRemoteVolumeChanged() override;
             void onSwitchOnConnectDetected(bool state) override;
             void onError(const Enums::ErrorCode &error) override;
             void onSoundPlayed(const PlayingSound &sound) override;

@@ -100,6 +100,8 @@ namespace Soundux
 
             virtual void onAdminRequired() = 0;
             virtual void onSettingsChanged() = 0;
+            virtual void onLocalVolumeChanged() = 0;
+            virtual void onRemoteVolumeChanged() = 0;
             virtual void onSwitchOnConnectDetected(bool) = 0;
             virtual void onSoundPlayed(const PlayingSound &);
             virtual void onError(const Enums::ErrorCode &) = 0;
