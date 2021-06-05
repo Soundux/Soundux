@@ -77,6 +77,7 @@ namespace Soundux
             virtual std::optional<Tab> setSortMode(const std::uint32_t &, Enums::SortMode);
 
           protected:
+            virtual void onVolumeChanged();
             virtual bool toggleSoundPlayback();
             virtual void stopSounds(bool = false);
             virtual bool stopSound(const std::uint32_t &);
@@ -100,8 +101,8 @@ namespace Soundux
 
             virtual void onAdminRequired() = 0;
             virtual void onSettingsChanged() = 0;
-            virtual void onLocalVolumeChanged() = 0;
-            virtual void onRemoteVolumeChanged() = 0;
+            virtual void onLocalVolumeChanged(int) = 0;
+            virtual void onRemoteVolumeChanged(int) = 0;
             virtual void onSwitchOnConnectDetected(bool) = 0;
             virtual void onSoundPlayed(const PlayingSound &);
             virtual void onError(const Enums::ErrorCode &) = 0;

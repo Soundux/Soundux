@@ -575,30 +575,33 @@ namespace Soundux::Objects
         onError(Enums::ErrorCode::FailedToSetCustomVolume);
         return std::nullopt;
     }
+    void Window::onVolumeChanged()
+    {
+        for (const auto &playingSound : Globals::gAudio.getPlayingSounds())
+        {
+            int newVolume = 0;
+            const auto &sound = playingSound.sound;
+
+            if (playingSound.playbackDevice.isDefault)
+            {
+                newVolume = sound.localVolume ? *sound.localVolume : Globals::gSettings.localVolume;
+            }
+            else
+            {
+                newVolume = sound.remoteVolume ? *sound.remoteVolume : Globals::gSettings.remoteVolume;
+            }
+
+            playingSound.raw.device.load()->masterVolumeFactor = static_cast<float>(newVolume) / 100.f;
+        }
+    }
     Settings Window::changeSettings(Settings settings)
     {
         auto oldSettings = Globals::gSettings;
         Globals::gSettings = settings;
 
-        if ((settings.localVolume != oldSettings.localVolume || settings.remoteVolume != oldSettings.remoteVolume) &&
-            !Globals::gAudio.getPlayingSounds().empty())
+        if ((settings.localVolume != oldSettings.localVolume || settings.remoteVolume != oldSettings.remoteVolume))
         {
-            for (const auto &playingSound : Globals::gAudio.getPlayingSounds())
-            {
-                int newVolume = 0;
-                const auto &sound = playingSound.sound;
-
-                if (playingSound.playbackDevice.isDefault)
-                {
-                    newVolume = sound.localVolume ? *sound.localVolume : Globals::gSettings.localVolume;
-                }
-                else
-                {
-                    newVolume = sound.remoteVolume ? *sound.remoteVolume : Globals::gSettings.remoteVolume;
-                }
-
-                playingSound.raw.device.load()->masterVolumeFactor = static_cast<float>(newVolume) / 100.f;
-            }
+            onVolumeChanged();
         }
 
 #if defined(__linux__)

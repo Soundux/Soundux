@@ -71,17 +71,21 @@ namespace Soundux
                         }
                         else
                         {
+                            auto newVolume = static_cast<int>((static_cast<float>(byte2) / 127.f) * 100);
+
                             if (Globals::gSettings.localVolumeKnob && key == Globals::gSettings.localVolumeKnob)
                             {
-                                Globals::gSettings.localVolume =
-                                    static_cast<int>((static_cast<float>(byte2) / 127.f) * 100);
-                                Globals::gGui->onLocalVolumeChanged();
+                                Globals::gSettings.localVolume = newVolume;
+                                Globals::gGui->onVolumeChanged();
+
+                                Globals::gQueue.push([=]() { Globals::gGui->onLocalVolumeChanged(newVolume); });
                             }
                             else if (Globals::gSettings.remoteVolumeKnob && key == Globals::gSettings.remoteVolumeKnob)
                             {
-                                Globals::gSettings.remoteVolume =
-                                    static_cast<int>((static_cast<float>(byte2) / 127.f) * 100);
-                                Globals::gGui->onRemoteVolumeChanged();
+                                Globals::gSettings.remoteVolume = newVolume;
+                                Globals::gGui->onVolumeChanged();
+
+                                Globals::gQueue.push([=]() { Globals::gGui->onRemoteVolumeChanged(newVolume); });
                             }
                         }
                     }

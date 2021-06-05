@@ -10,29 +10,37 @@ namespace Soundux::Objects
             cv.wait(lock, [&]() { return !queue.empty() || stop; });
             while (!queue.empty())
             {
-                auto front = std::move(*queue.begin());
+                auto front = queue.begin();
 
                 lock.unlock();
-                front.second();
+                front->function();
                 lock.lock();
 
-                queue.erase(front.first);
+                queue.erase(front);
             }
         }
     }
-
     void Queue::push_unique(std::uint64_t id, std::function<void()> function)
     {
         {
             std::lock_guard lock(queueMutex);
-            if (queue.find(id) != queue.end())
+            if (std::find_if(queue.begin(), queue.end(),
+                             [&id](const auto &entry) { return entry.id && *entry.id == id; }) != queue.end())
             {
                 return;
             }
         }
 
         std::unique_lock lock(queueMutex);
-        queue.emplace(id, std::move(function));
+        queue.emplace_back(Call{std::move(function), id});
+        lock.unlock();
+
+        cv.notify_one();
+    }
+    void Queue::push(std::function<void()> function)
+    {
+        std::unique_lock lock(queueMutex);
+        queue.emplace_back(Call{std::move(function), std::nullopt});
         lock.unlock();
 
         cv.notify_one();
