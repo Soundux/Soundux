@@ -9,6 +9,7 @@
 #include <helper/systeminfo/systeminfo.hpp>
 #include <helper/version/check.hpp>
 #include <helper/ytdl/youtube-dl.hpp>
+#include <javascript/function.hpp>
 
 #ifdef _WIN32
 #include "../../assets/icon.h"
@@ -128,6 +129,8 @@ namespace Soundux::Objects
         webview->expose(Webview::Function("getHotkeySequence", [this](const std::vector<Key> &keys) {
             return Globals::gHotKeys->getKeySequence(keys);
         }));
+        webview->expose(
+            Webview::Function("getKeyName", [this](const Key &key) { return Globals::gHotKeys->getKeyName(key); }));
         webview->expose(Webview::Function("removeTab", [this](std::uint32_t id) { return removeTab(id); }));
         webview->expose(Webview::Function("refreshTab", [this](std::uint32_t id) { return refreshTab(id); }));
         webview->expose(Webview::Function(
