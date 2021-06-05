@@ -140,6 +140,8 @@ namespace nlohmann
                 {"pushToTalkKeys", obj.pushToTalkKeys},
                 {"tabHotkeysOnly", obj.tabHotkeysOnly},
                 {"minimizeToTray", obj.minimizeToTray},
+                {"localVolumeKnob", obj.localVolumeKnob},
+                {"remoteVolumeKnob", obj.remoteVolumeKnob},
                 {"allowOverlapping", obj.allowOverlapping},
                 {"muteDuringPlayback", obj.muteDuringPlayback},
                 {"useAsDefaultDevice", obj.useAsDefaultDevice},
@@ -173,6 +175,8 @@ namespace nlohmann
             get_to_safe(j, "pushToTalkKeys", obj.pushToTalkKeys);
             get_to_safe(j, "minimizeToTray", obj.minimizeToTray);
             get_to_safe(j, "tabHotkeysOnly", obj.tabHotkeysOnly);
+            get_to_safe(j, "localVolumeKnob", obj.localVolumeKnob);
+            get_to_safe(j, "remoteVolumeKnob", obj.remoteVolumeKnob);
             get_to_safe(j, "allowOverlapping", obj.allowOverlapping);
             get_to_safe(j, "useAsDefaultDevice", obj.useAsDefaultDevice);
             get_to_safe(j, "muteDuringPlayback", obj.muteDuringPlayback);
