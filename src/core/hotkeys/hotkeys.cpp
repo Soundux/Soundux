@@ -69,17 +69,20 @@ namespace Soundux
                         {
                             Globals::gGui->onHotKeyReceived({key}); // NOLINT
                         }
-                        if (Globals::gSettings.localVolumeKnob && key == Globals::gSettings.localVolumeKnob)
+                        else
                         {
-                            Globals::gSettings.localVolume =
-                                static_cast<int>((static_cast<float>(byte2) / 127.f) * 100);
-                            Globals::gGui->onLocalVolumeChanged();
-                        }
-                        else if (Globals::gSettings.remoteVolumeKnob && key == Globals::gSettings.remoteVolumeKnob)
-                        {
-                            Globals::gSettings.remoteVolume =
-                                static_cast<int>((static_cast<float>(byte2) / 127.f) * 100);
-                            Globals::gGui->onRemoteVolumeChanged();
+                            if (Globals::gSettings.localVolumeKnob && key == Globals::gSettings.localVolumeKnob)
+                            {
+                                Globals::gSettings.localVolume =
+                                    static_cast<int>((static_cast<float>(byte2) / 127.f) * 100);
+                                Globals::gGui->onLocalVolumeChanged();
+                            }
+                            else if (Globals::gSettings.remoteVolumeKnob && key == Globals::gSettings.remoteVolumeKnob)
+                            {
+                                Globals::gSettings.remoteVolume =
+                                    static_cast<int>((static_cast<float>(byte2) / 127.f) * 100);
+                                Globals::gGui->onRemoteVolumeChanged();
+                            }
                         }
                     }
                 });
