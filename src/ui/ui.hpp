@@ -88,7 +88,7 @@ namespace Soundux
             virtual std::optional<PlayingSound> repeatSound(const std::uint32_t &, bool);
             virtual std::optional<PlayingSound> seekSound(const std::uint32_t &, std::uint64_t);
 
-            virtual std::optional<Sound> setHotkey(const std::uint32_t &, const std::vector<int> &);
+            virtual std::optional<Sound> setHotkey(const std::uint32_t &, const std::vector<Key> &);
             virtual std::optional<Sound> setCustomLocalVolume(const std::uint32_t &, const std::optional<int> &);
             virtual std::optional<Sound> setCustomRemoteVolume(const std::uint32_t &, const std::optional<int> &);
 
@@ -104,7 +104,7 @@ namespace Soundux
             virtual void onSoundPlayed(const PlayingSound &);
             virtual void onError(const Enums::ErrorCode &) = 0;
             virtual void onSoundFinished(const PlayingSound &);
-            virtual void onHotKeyReceived(const std::vector<int> &);
+            virtual void onHotKeyReceived(const std::vector<Key> &);
             virtual void onSoundProgressed(const PlayingSound &) = 0;
             virtual void onDownloadProgressed(float, const std::string &) = 0;
         };

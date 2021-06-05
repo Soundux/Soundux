@@ -122,11 +122,11 @@ namespace Soundux::Objects
         webview->expose(Webview::Function("stopSounds", [this]() { stopSounds(); }));
         webview->expose(Webview::Function("changeSettings",
                                           [this](const Settings &newSettings) { return changeSettings(newSettings); }));
-        webview->expose(Webview::Function("requestHotkey", [](bool state) { Globals::gHotKeys.shouldNotify(state); }));
+        webview->expose(Webview::Function("requestHotkey", [](bool state) { Globals::gHotKeys->notify(state); }));
         webview->expose(Webview::Function(
-            "setHotkey", [this](std::uint32_t id, const std::vector<int> &keys) { return setHotkey(id, keys); }));
-        webview->expose(Webview::Function("getHotkeySequence", [this](const std::vector<int> &keys) {
-            return Globals::gHotKeys.getKeySequence(keys);
+            "setHotkey", [this](std::uint32_t id, const std::vector<Key> &keys) { return setHotkey(id, keys); }));
+        webview->expose(Webview::Function("getHotkeySequence", [this](const std::vector<Key> &keys) {
+            return Globals::gHotKeys->getKeySequence(keys);
         }));
         webview->expose(Webview::Function("removeTab", [this](std::uint32_t id) { return removeTab(id); }));
         webview->expose(Webview::Function("refreshTab", [this](std::uint32_t id) { return refreshTab(id); }));
@@ -387,15 +387,10 @@ namespace Soundux::Objects
         }
         Fancy::fancy.logTime().message() << "UI exited" << std::endl;
     }
-    void WebView::onHotKeyReceived(const std::vector<int> &keys)
+    void WebView::onHotKeyReceived(const std::vector<Key> &keys)
     {
-        std::string hotkeySequence;
-        for (const auto &key : keys)
-        {
-            hotkeySequence += Globals::gHotKeys.getKeyName(key) + " + ";
-        }
-        webview->callFunction<void>(Webview::JavaScriptFunction(
-            "window.hotkeyReceived", hotkeySequence.substr(0, hotkeySequence.length() - 3), keys));
+        webview->callFunction<void>(
+            Webview::JavaScriptFunction("window.hotkeyReceived", Globals::gHotKeys->getKeySequence(keys), keys));
     }
     void WebView::onSoundFinished(const PlayingSound &sound)
     {

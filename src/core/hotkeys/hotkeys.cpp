@@ -1,6 +1,9 @@
 #include "hotkeys.hpp"
+#include "keys.hpp"
+#include "linux/x11.hpp"
 #include <core/global/globals.hpp>
 #include <cstdint>
+#include <fancy.hpp>
 
 namespace Soundux
 {
@@ -19,38 +22,90 @@ namespace Soundux
     } // namespace traits
     namespace Objects
     {
-        void Hotkeys::init()
+        std::shared_ptr<Hotkeys> Hotkeys::createInstance()
         {
-            listener = std::thread([this] { listen(); });
+            std::shared_ptr<Hotkeys> rtn;
+#if defined(__linux__)
+            rtn = std::shared_ptr<X11>(new X11()); // NOLINT
+#endif
+            if (rtn->setup())
+            {
+                return rtn;
+            }
+
+            return nullptr;
         }
-        void Hotkeys::shouldNotify(bool status)
+        bool Hotkeys::setup()
+        {
+            try
+            {
+                midi.open_port();
+                midi.set_callback([this](const libremidi::message &message) {
+                    if (message.size() < 3)
+                    {
+                        Fancy::fancy.logTime().failure()
+                            << "Midi Message contains less than 3 bytes, can't parse information";
+                        return;
+                    }
+
+                    auto byte0 = message[0];
+                    auto byte1 = message[0];
+                    auto byte2 = message[0];
+
+                    MidiKey key;
+                    key.byte0 = byte0;
+                    key.key = byte1;
+                    key.byte2 = byte2;
+
+                    if (byte0 == 144)
+                    {
+                        onKeyDown(key);
+                    }
+                    else if (byte0 == 128)
+                    {
+                        onKeyUp(key);
+                    }
+                });
+                midi.ignore_types(false, false, false);
+            }
+            catch (const libremidi::midi_exception &e)
+            {
+                Fancy::fancy.logTime().failure() << "Failed to initialize libremidi: " << e.what() << std::endl;
+                return false;
+            }
+
+            return true;
+        }
+        void Hotkeys::notify(bool state)
         {
             pressedKeys.clear();
-            notify = status;
+            shouldNotify = state;
         }
-        void Hotkeys::onKeyUp(int key)
+        void Hotkeys::onKeyUp(const Key &key)
         {
-            if (notify && !pressedKeys.empty() &&
-                std::find(pressedKeys.begin(), pressedKeys.end(), key) != pressedKeys.end())
+            if (std::find(pressedKeys.begin(), pressedKeys.end(), key) != pressedKeys.end())
             {
-                Globals::gGui->onHotKeyReceived(pressedKeys);
-                pressedKeys.clear();
-            }
-            else
-            {
-                pressedKeys.erase(std::remove_if(pressedKeys.begin(), pressedKeys.end(),
-                                                 [key](const auto &item) { return key == item; }),
-                                  pressedKeys.end());
+                if (shouldNotify)
+                {
+                    Globals::gGui->onHotKeyReceived(pressedKeys);
+                    pressedKeys.clear();
+                }
+                else
+                {
+                    pressedKeys.erase(std::remove_if(pressedKeys.begin(), pressedKeys.end(),
+                                                     [&](const auto &keyItem) { return key == keyItem; }),
+                                      pressedKeys.end());
+                }
             }
         }
-        bool isCloseMatch(const std::vector<int> &pressedKeys, const std::vector<int> &keys)
+        bool isCloseMatch(const std::vector<Key> &pressedKeys, const std::vector<Key> &keys)
         {
             if (pressedKeys.size() >= keys.size())
             {
                 bool allMatched = true;
                 for (const auto &key : keys)
                 {
-                    if (std::find(pressedKeys.begin(), pressedKeys.end(), key) == pressedKeys.end())
+                    if (std::find(pressedKeys.begin(), pressedKeys.end(), key) == pressedKeys.end()) // NOLINT
                     {
                         allMatched = false;
                     }
@@ -59,7 +114,7 @@ namespace Soundux
             }
             return false;
         }
-        template <typename T> std::optional<Sound> getBestMatch(const T &list, const std::vector<int> &pressedKeys)
+        template <typename T> std::optional<Sound> getBestMatch(const T &list, const std::vector<Key> &pressedKeys)
         {
             std::optional<Sound> rtn;
 
@@ -79,7 +134,7 @@ namespace Soundux
                 if (sound.hotkeys.empty())
                     continue;
 
-                if (sound.hotkeys == pressedKeys)
+                if (pressedKeys == sound.hotkeys)
                 {
                     rtn = sound;
                     break;
@@ -97,78 +152,81 @@ namespace Soundux
             }
             return rtn;
         }
-        void Hotkeys::onKeyDown(int key)
+        void Hotkeys::onKeyDown(const Key &key)
         {
-            if (std::find(keysToPress.begin(), keysToPress.end(), key) != keysToPress.end())
-            {
-                return;
-            }
-            if (std::find(pressedKeys.begin(), pressedKeys.end(), key) == pressedKeys.end())
-            {
-                pressedKeys.emplace_back(key);
-            }
-            else
+            if (std::find(pressedKeys.begin(), pressedKeys.end(), key) != pressedKeys.end())
             {
                 return;
             }
 
-            if (notify)
+            pressedKeys.emplace_back(key);
+            if (!shouldNotify)
             {
-                return;
-            }
-
-            if (!Globals::gSettings.stopHotkey.empty() && (pressedKeys == Globals::gSettings.stopHotkey ||
-                                                           isCloseMatch(pressedKeys, Globals::gSettings.stopHotkey)))
-            {
-                Globals::gGui->stopSounds();
-                return;
-            }
-
-            std::optional<Sound> bestMatch;
-
-            if (Globals::gSettings.tabHotkeysOnly)
-            {
-                if (Globals::gData.isOnFavorites)
+                if (!Globals::gSettings.stopHotkey.empty() &&
+                    (Globals::gSettings.stopHotkey == pressedKeys ||
+                     isCloseMatch(pressedKeys, Globals::gSettings.stopHotkey)))
                 {
-                    auto sounds = Globals::gData.getFavorites();
-                    bestMatch = getBestMatch(sounds, pressedKeys);
+                    Globals::gGui->stopSounds();
+                    return;
+                }
+
+                std::optional<Sound> bestMatch;
+
+                if (Globals::gSettings.tabHotkeysOnly)
+                {
+                    if (Globals::gData.isOnFavorites)
+                    {
+                        auto sounds = Globals::gData.getFavorites();
+                        bestMatch = getBestMatch(sounds, pressedKeys);
+                    }
+                    else
+                    {
+                        auto tab = Globals::gData.getTab(Globals::gSettings.selectedTab);
+                        if (tab)
+                        {
+                            bestMatch = getBestMatch(tab->sounds, pressedKeys);
+                        }
+                    }
                 }
                 else
                 {
-                    auto tab = Globals::gData.getTab(Globals::gSettings.selectedTab);
-                    if (tab)
+                    auto scopedSounds = Globals::gSounds.scoped();
+                    bestMatch = getBestMatch(*scopedSounds, pressedKeys);
+                }
+
+                if (bestMatch)
+                {
+                    auto pSound = Globals::gGui->playSound(bestMatch->id);
+                    if (pSound)
                     {
-                        bestMatch = getBestMatch(tab->sounds, pressedKeys);
+                        Globals::gGui->onSoundPlayed(*pSound);
                     }
                 }
             }
-            else
+        }
+        std::string Hotkeys::getKeyName(const Key &key)
+        {
+            if (key.type == Enums::KeyType::Midi)
             {
-                auto scopedSounds = Globals::gSounds.scoped();
-                bestMatch = getBestMatch(*scopedSounds, pressedKeys);
+                return "MIDI_" + std::to_string(key.key);
             }
 
-            if (bestMatch)
-            {
-                auto pSound = Globals::gGui->playSound(bestMatch->id);
-                if (pSound)
-                {
-                    Globals::gGui->onSoundPlayed(*pSound);
-                }
-            }
+            return "";
         }
-        std::string Hotkeys::getKeySequence(const std::vector<int> &keys)
+        std::string Hotkeys::getKeySequence(const std::vector<Key> &keys)
         {
             std::string rtn;
-            for (const auto &key : keys)
+
+            for (auto it = keys.begin(); it != keys.end(); ++it)
             {
-                rtn += getKeyName(key) + " + ";
+                rtn += getKeyName(*it);
+                if (std::distance(it, keys.end()) > 1)
+                {
+                    rtn += " + ";
+                }
             }
-            if (!rtn.empty())
-            {
-                return rtn.substr(0, rtn.length() - 3);
-            }
-            return "";
+
+            return rtn;
         }
     } // namespace Objects
 } // namespace Soundux

@@ -41,3 +41,6 @@
 [submodule "lib/guardpp"]
 	path = lib/guardpp
 	url = https://github.com/Soundux/guardpp
+[submodule "lib/libremidi"]
+	path = lib/libremidi
+	url = https://github.com/Soundux/libremidi

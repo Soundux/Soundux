@@ -28,7 +28,7 @@ namespace Soundux
             void setup() override;
             void mainLoop() override;
             void onSoundFinished(const PlayingSound &sound) override;
-            void onHotKeyReceived(const std::vector<int> &keys) override;
+            void onHotKeyReceived(const std::vector<Key> &keys) override;
 
             void onAdminRequired() override;
             void onSettingsChanged() override;

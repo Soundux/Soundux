@@ -1,11 +1,32 @@
 #pragma once
 #include <core/global/globals.hpp>
+#include <core/hotkeys/keys.hpp>
 #include <helper/audio/windows/winsound.hpp>
 #include <helper/version/check.hpp>
 #include <nlohmann/json.hpp>
 
 namespace nlohmann
 {
+    template <> struct adl_serializer<Soundux::Objects::Key>
+    {
+        static void to_json(json &j, const Soundux::Objects::Key &obj)
+        {
+            j = {{"key", obj.key}, {"type", obj.type}};
+        }
+        static void from_json(const json &j, Soundux::Objects::Key &obj)
+        {
+            if (j.find("type") != j.end())
+            {
+                j.at("key").get_to(obj.key);
+                j.at("type").get_to(obj.type);
+            }
+            else
+            {
+                j.get_to(obj.key);
+                obj.type = Soundux::Enums::KeyType::Keyboard;
+            }
+        }
+    }; // namespace nlohmann
     template <> struct adl_serializer<Soundux::Objects::Sound>
     {
         static void to_json(json &j, const Soundux::Objects::Sound &obj)
@@ -14,7 +35,7 @@ namespace nlohmann
                 {"name", obj.name},
                 {"hotkeys", obj.hotkeys},
                 {"hotkeySequence",
-                 Soundux::Globals::gHotKeys.getKeySequence(obj.hotkeys)}, //* For frontend and config readability
+                 Soundux::Globals::gHotKeys->getKeySequence(obj.hotkeys)}, //* For frontend and config readability
                 {"id", obj.id},
                 {"path", obj.path},
                 {"isFavorite", obj.isFavorite},

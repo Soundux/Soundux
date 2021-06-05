@@ -7,21 +7,23 @@ namespace Soundux
 {
     namespace Objects
     {
+        struct Key;
+
         struct Settings
         {
             Enums::BackendType audioBackend = Enums::BackendType::PulseAudio;
             Enums::ViewMode viewMode = Enums::ViewMode::List;
             Enums::Theme theme = Enums::Theme::System;
 
-            std::vector<int> pushToTalkKeys;
-            std::vector<int> stopHotkey;
+            std::vector<Key> pushToTalkKeys;
+            std::vector<Key> stopHotkey;
 
             std::vector<std::string> outputs;
             std::uint32_t selectedTab = 0;
 
+            bool syncVolumes = false;
             int remoteVolume = 100;
             int localVolume = 50;
-            bool syncVolumes = false;
 
             bool allowMultipleOutputs = false;
             bool useAsDefaultDevice = false;

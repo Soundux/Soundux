@@ -1,7 +1,8 @@
 #pragma once
+#include "keys.hpp"
 #include <atomic>
+#include <libremidi/libremidi.hpp>
 #include <string>
-#include <thread>
 #include <vector>
 
 namespace Soundux
@@ -10,33 +11,30 @@ namespace Soundux
     {
         class Hotkeys
         {
-            std::thread listener;
-            std::atomic<bool> kill = false;
-            std::atomic<bool> notify = false;
+            libremidi::midi_in midi;
 
-            std::vector<int> pressedKeys;
-            std::vector<int> keysToPress;
-#if defined(_WIN32)
-            std::thread keyPressThread;
-            std::atomic<bool> shouldPressKeys = false;
-#endif
+          protected:
+            Hotkeys() = default;
+            virtual bool setup();
 
-          private:
-            void listen();
+          protected:
+            std::vector<Key> pressedKeys;
+            std::atomic<bool> shouldNotify = false;
 
           public:
-            void init();
-            void stop();
-            void shouldNotify(bool);
+            static std::shared_ptr<Hotkeys> createInstance();
 
-            void onKeyUp(int);
-            void onKeyDown(int);
+          public:
+            virtual void notify(bool);
 
-            void pressKeys(const std::vector<int> &);
-            void releaseKeys(const std::vector<int> &);
+            virtual void onKeyUp(const Key &);
+            virtual void onKeyDown(const Key &);
 
-            std::string getKeyName(const int &);
-            std::string getKeySequence(const std::vector<int> &);
+            virtual void pressKeys(const std::vector<Key> &) = 0;
+            virtual void releaseKeys(const std::vector<Key> &) = 0;
+
+            virtual std::string getKeyName(const Key &);
+            virtual std::string getKeySequence(const std::vector<Key> &);
         };
     } // namespace Objects
 } // namespace Soundux

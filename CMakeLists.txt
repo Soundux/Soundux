@@ -74,6 +74,7 @@ add_subdirectory(lib/nativefiledialog-extended EXCLUDE_FROM_ALL)
 add_subdirectory(lib/tiny-process-library EXCLUDE_FROM_ALL)
 add_subdirectory(lib/backward-cpp EXCLUDE_FROM_ALL)
 add_subdirectory(lib/traypp EXCLUDE_FROM_ALL)
+add_subdirectory(lib/libremidi)
 add_subdirectory(lib/guardpp)
 add_subdirectory(lib/lockpp)
 
@@ -89,7 +90,7 @@ set(HTTPLIB_REQUIRE_OPENSSL ON)
 add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
 target_include_directories(soundux SYSTEM PRIVATE "lib/cpp-httplib")
 
-target_link_libraries(soundux PRIVATE webview nfd tiny-process-library tray guard httplib lockpp)
+target_link_libraries(soundux PRIVATE webview nfd tiny-process-library tray guard httplib lockpp libremidi)
 
 if (${EMBED_PATH} STREQUAL "OFF")
     message("Web-content will not be embedded") 
