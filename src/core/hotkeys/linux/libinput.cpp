@@ -149,8 +149,9 @@ namespace Soundux::Objects
     void CustomInput::pressKeys(const std::vector<int> &keys)
     {
         keysToPress = keys;
-        for (const auto &key : keys)
+        for (int key : keys)
         {
+            key -= 8; // converting xserver keycode to linux keycode
             for (const auto &device : selectedDevices)
             {
                 if (!device.grabbed)
@@ -165,8 +166,9 @@ namespace Soundux::Objects
     void CustomInput::releaseKeys(const std::vector<int> &keys)
     {
         keysToPress.clear();
-        for (const auto &key : keys)
+        for (int key : keys)
         {
+            key -= 8; // converting xserver keycode to linux keycode
             for (const auto &device : selectedDevices)
             {
                 if (!device.grabbed)
