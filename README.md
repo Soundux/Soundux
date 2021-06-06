@@ -112,7 +112,7 @@ You can grab the latest release from the Snap Store or Flathub
 ## <img src="https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg" height="20"/> Windows
 Download our installer or portable from [the latest release](https://github.com/Soundux/Soundux/releases/latest)
 
-# 🪛 Compilation
+# 🔨 Compilation
 
 ## 🔗 Build Dependencies
 
@@ -223,6 +223,13 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/rivenirvana"><img src="https://avatars.githubusercontent.com/u/43519644?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Arvin Verain</b></sub></a><br /><a href="#platform-rivenirvana" title="Packaging/porting to new platform">📦</a></td>
     <td align="center"><a href="http://einfacheinalex.eu/"><img src="https://avatars.githubusercontent.com/u/20642291?v=4?s=50" width="50px;" alt=""/><br /><sub><b>EinfachEinAlex</b></sub></a><br /><a href="https://github.com/Soundux/Soundux/commits?author=EinfachEinAlex" title="Code">💻</a> <a href="#research-EinfachEinAlex" title="Research">🔬</a> <a href="https://github.com/Soundux/Soundux/commits?author=EinfachEinAlex" title="Tests">⚠️</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://discord.gg/ubmTQnuM3Z"><img src="https://avatars.githubusercontent.com/u/69876322?v=4?s=50" width="50px;" alt=""/><br /><sub><b>MeblIkea</b></sub></a><br /><a href="#translation-MeblIkea" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://nathanbonnemains.squill.fr/"><img src="https://avatars.githubusercontent.com/u/45366162?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Nathan Bonnemains</b></sub></a><br /><a href="#translation-NathanBnm" title="Translation">🌍</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/lucasvbeek"><img src="https://avatars.githubusercontent.com/u/29404838?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Lucas van Beek</b></sub></a><br /><a href="#translation-lucasvbeek" title="Translation">🌍</a></td>
   </tr>
 </table>
 

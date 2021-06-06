@@ -221,6 +221,33 @@
         "research",
         "test"
       ]
+    },
+    {
+      "login": "MeblIkea",
+      "name": "MeblIkea",
+      "avatar_url": "https://avatars.githubusercontent.com/u/69876322?v=4",
+      "profile": "https://discord.gg/ubmTQnuM3Z",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "NathanBnm",
+      "name": "Nathan Bonnemains",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45366162?v=4",
+      "profile": "https://nathanbonnemains.squill.fr/",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "lucasvbeek",
+      "name": "Lucas van Beek",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29404838?v=4",
+      "profile": "https://github.com/lucasvbeek",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 2,
