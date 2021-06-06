@@ -158,7 +158,11 @@ namespace Soundux::Objects
         {
             for (const auto &device : selectedDevices)
             {
-                pressKey(key, device);
+                if (!device.grabbed)
+                {
+                    pressKey(key, device);
+                    break;
+                }
             }
         }
     }
@@ -170,7 +174,11 @@ namespace Soundux::Objects
         {
             for (const auto &device : selectedDevices)
             {
-                releaseKey(key, device);
+                if (!device.grabbed)
+                {
+                    releaseKey(key, device);
+                    break;
+                }
             }
         }
     }
