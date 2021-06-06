@@ -154,7 +154,7 @@ namespace Soundux::Objects
             key -= 8; // converting xserver keycode to linux keycode
             for (const auto &device : selectedDevices)
             {
-                if (!device.grabbed)
+                if (!device.grabbed && libinput_device_keyboard_has_key(reinterpret_cast<libinput_device*>(device.data), key))
                 {
                     pressKey(key, device);
                     break;
@@ -171,7 +171,7 @@ namespace Soundux::Objects
             key -= 8; // converting xserver keycode to linux keycode
             for (const auto &device : selectedDevices)
             {
-                if (!device.grabbed)
+                if (!device.grabbed && libinput_device_keyboard_has_key(reinterpret_cast<libinput_device*>(device.data), key))
                 {
                     releaseKey(key, device);
                     break;
