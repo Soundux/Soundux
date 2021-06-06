@@ -6,7 +6,7 @@
 #include <helper/audio/windows/winsound.hpp>
 #endif
 #include <core/config/config.hpp>
-#include <core/hotkeys/hotkeys.hpp>
+#include <core/hotkeys/input.hpp>
 #include <core/objects/data.hpp>
 #include <core/objects/objects.hpp>
 #include <core/objects/settings.hpp>
@@ -34,6 +34,7 @@ namespace Soundux
         inline Objects::Config gConfig;
         inline Objects::YoutubeDl gYtdl;
         inline Objects::Hotkeys gHotKeys;
+        inline Objects::CustomInput gInput;
         inline Objects::Settings gSettings;
         inline std::unique_ptr<Objects::Window> gGui;
 
