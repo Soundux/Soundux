@@ -1,19 +1,12 @@
 #if defined(__linux__) && __has_include(<libinput.h>)
 #include "../input.hpp"
-#include <chrono>
-#include <cstdlib>
-#include <errno.h>
+#include <core/global/globals.hpp>
 #include <fcntl.h>
 #include <fstream>
-#include <functional>
 #include <libinput.h>
 #include <libudev.h>
 #include <linux/input.h>
 #include <map>
-#include <thread>
-#include <unistd.h>
-
-#include <core/global/globals.hpp>
 
 using namespace std::chrono_literals;
 
