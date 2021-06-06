@@ -13,6 +13,8 @@
 #include <thread>
 #include <unistd.h>
 
+#include <core/global/globals.hpp>
+
 using namespace std::chrono_literals;
 
 using open_function_t = int (*)(const char *, int, void *);
@@ -117,11 +119,11 @@ namespace Soundux::Objects
                     {
                         if (keyState == LIBINPUT_KEY_STATE_RELEASED)
                         {
-                            hotkeys->onKeyUp(key + 8); // xserver add 8 to linux key codes
+                            Globals::gHotKeys.onKeyUp(key + 8); // xserver add 8 to linux key codes
                         }
                         else if (keyState == LIBINPUT_KEY_STATE_PRESSED)
                         {
-                            hotkeys->onKeyDown(key + 8); // xserver add 8 to linux key codes
+                            Globals::gHotKeys.onKeyDown(key + 8); // xserver add 8 to linux key codes
                         }
                     }
                 }

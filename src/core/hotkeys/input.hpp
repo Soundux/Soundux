@@ -28,8 +28,6 @@ namespace Soundux
             std::vector<int> pressedKeys;
             std::vector<int> keysToPress;
 
-            Hotkeys *hotkeys;
-
           private:
             void listen();
 
@@ -37,8 +35,6 @@ namespace Soundux
             bool releaseKey(int, const InputDevice &);
 
           public:
-            CustomInput(Hotkeys &hotkeysClass) : hotkeys(&hotkeysClass) {}
-
             bool init();
             void stop();
             void shouldNotify(bool);
