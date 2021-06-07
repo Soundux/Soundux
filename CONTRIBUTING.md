@@ -57,4 +57,4 @@ After reporting, you should try to answer any questions or clarifications, as th
 
 ## Donations
 
-We are on [Ko-Fi](https://ko-fi.com/soundux)
+We are on [Ko-fi](https://ko-fi.com/soundux)
