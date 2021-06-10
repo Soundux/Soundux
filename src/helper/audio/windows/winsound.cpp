@@ -374,6 +374,21 @@ namespace Soundux
                 return true;
             }
 
+            bool vbCableFound = false;
+            for (const auto &device : getPlaybackDevices())
+            {
+                if (device.getName().find("VB-Audio") != std::string::npos)
+                {
+                    vbCableFound = true;
+                    break;
+                }
+            }
+
+            if (!vbCableFound)
+            {
+                return false;
+            }
+
             if (defaultRecordingDevice && defaultRecordingDevice->getName().find("VB-Audio") == std::string::npos)
             {
                 if (defaultRecordingDevice->listenToDevice(true))
