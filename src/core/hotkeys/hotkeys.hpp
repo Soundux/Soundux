@@ -1,7 +1,15 @@
 #pragma once
 #include "keys.hpp"
 #include <atomic>
+
+#pragma push_macro("max")
+#pragma push_macro("min")
+#undef min
+#undef max
 #include <libremidi/libremidi.hpp>
+#pragma pop_macro("min")
+#pragma pop_macro("max")
+
 #include <string>
 #include <vector>
 

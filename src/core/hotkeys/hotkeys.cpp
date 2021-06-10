@@ -1,6 +1,7 @@
 #include "hotkeys.hpp"
 #include "keys.hpp"
 #include "linux/x11.hpp"
+#include "windows/windows.hpp"
 #include <core/global/globals.hpp>
 #include <cstdint>
 #include <fancy.hpp>
@@ -27,6 +28,8 @@ namespace Soundux
             std::shared_ptr<Hotkeys> rtn;
 #if defined(__linux__)
             rtn = std::shared_ptr<X11>(new X11()); // NOLINT
+#elif defined(_WIN32)
+            rtn = std::shared_ptr<WindowsHotkeys>(new WindowsHotkeys()); // NOLINT
 #endif
             rtn->setup();
             return rtn;

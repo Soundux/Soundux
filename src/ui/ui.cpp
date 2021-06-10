@@ -297,7 +297,7 @@ namespace Soundux::Objects
             }
             if (!Globals::gSettings.pushToTalkKeys.empty())
             {
-                Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
+                Globals::gHotKeys->pressKeys(Globals::gSettings.pushToTalkKeys);
             }
 
             if (Globals::gSettings.outputs.empty() && !Globals::gSettings.useAsDefaultDevice)
