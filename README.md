@@ -230,6 +230,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/lucasvbeek"><img src="https://avatars.githubusercontent.com/u/29404838?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Lucas van Beek</b></sub></a><br /><a href="#translation-lucasvbeek" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/underhood"><img src="https://avatars.githubusercontent.com/u/6674623?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Timotej S.</b></sub></a><br /><a href="https://github.com/Soundux/Soundux/issues?q=author%3Aunderhood" title="Bug reports">🐛</a> <a href="https://github.com/Soundux/Soundux/commits?author=underhood" title="Tests">⚠️</a></td>
   </tr>
 </table>
 
