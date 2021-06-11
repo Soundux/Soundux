@@ -1,13 +1,13 @@
-# Contributing
+# ✍️ Contributing
 
 Contributions are welcome! Here's how you can help:
 
-  - [Translations](#translations)
-  - [Code](#code)
-  - [Issues](#issues)
-  - [Donations](#donations)
+  - [Translations](#📚-translations)
+  - [Code](#📑-code)
+  - [Issues](#🆘-issues)
+  - [Donations](#🎁-donations)
 
-## Translations
+## 📚 Translations
 
 ## via Weblate (preferred)
 
@@ -33,7 +33,11 @@ Contributions are welcome! Here's how you can help:
 
 4. Once you are happy with your translation, submit a pull request.
 
-## Code
+## 📑 Code
+
+Before you start contributing please make sure to do the following things:
+- Check if a branch exists, that already contains the changes you want to work on
+- Please may also contact us <sup><sub>_(We'll reply as fast as we can!)_</sub></sup> before you start working on something because we may already work on the same thing but just haven't pushed any of those changes yet
 
 1. [Fork](https://github.com/Soundux/Soundux/fork) the repository and [clone](https://help.github.com/articles/cloning-a-repository/) your fork.
 2. Start coding!
@@ -48,13 +52,13 @@ Contributions are welcome! Here's how you can help:
      - Open the pull request.
      - Add a short description explaining briefly what you've done (or if it's a work-in-progress - what you need to do)
 
-## Issues
+## 🆘 Issues
 
 1. Do a quick search in the [existing issues](https://github.com/Soundux/Soundux/issues?q=is%3Aissue+) to check if the issue has already been reported.
 2. [Open an issue](https://github.com/Soundux/Soundux/issues/new/choose) and fill in the template
 
 After reporting, you should try to answer any questions or clarifications, as this will help determine the cause of the issue.
 
-## Donations
+## 🎁 Donations
 
 We are on [Ko-fi](https://ko-fi.com/soundux)
