@@ -9,7 +9,7 @@ Contributions are welcome! Here's how you can help:
 
 ## 📚 Translations
 
-## via Weblate (preferred)
+### Weblate (preferred)
 
 1. Visit [our Weblate page](https://hosted.weblate.org/engage/soundux/)
 2. Login / Register
@@ -17,7 +17,7 @@ Contributions are welcome! Here's how you can help:
     - If you are adding a translation which language or territory specific version doesn't exist yet click on **Start new translation**
     - If there already is a translation for your language, and you want to correct a string just click on the language and make your change
 
-## via PR
+### Pull Request
 
 1. [Fork the frontend](https://github.com/Soundux/soundux-ui/fork) [or website](https://github.com/Soundux/soundux.github.io/fork) and [clone](https://help.github.com/articles/cloning-a-repository/) your fork.
 2. Start translating!
