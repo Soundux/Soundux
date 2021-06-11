@@ -43,13 +43,7 @@ bool Soundux::PulseApi::setup()
     load(operation_get_state);
     return true;
 #else
-    auto *libpulse = dlopen("libpulse.so", RTLD_LAZY);
-    if (!libpulse)
-    {
-        //* For Ubuntu
-        libpulse = dlopen("/usr/lib/x86_64-linux-gnu/libpulse.so.0", RTLD_LAZY);
-    }
-
+    auto *libpulse = dlopen("libpulse.so.0", RTLD_LAZY);
     if (libpulse)
     {
         try
