@@ -248,6 +248,16 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "underhood",
+      "name": "Timotej S.",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6674623?v=4",
+      "profile": "https://github.com/underhood",
+      "contributions": [
+        "bug",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 2,
