@@ -177,7 +177,7 @@ The project started as a **Sound**board for Lin**ux**
 The code is licensed under [GPLv3](LICENSE)
 
 # ✍️ Contributing
-The contribution guidelines can be found [here](https://github.com/Soundux/Soundux/blob/master/CONTRIBUTING.md), please check them out if you're planning to contribute!
+The contribution guidelines can be found [here](CONTRIBUTING.md), please check them out if you're planning to contribute!
 
 # ✨ Contributors
 

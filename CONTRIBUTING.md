@@ -2,10 +2,10 @@
 
 Contributions are welcome! Here's how you can help:
 
-  - [Translations](#📚-translations)
-  - [Code](#📑-code)
-  - [Issues](#🆘-issues)
-  - [Donations](#🎁-donations)
+  - [Translations](#-translations)
+  - [Code](#-code)
+  - [Issues](#-issues)
+  - [Donations](#-donations)
 
 ## 📚 Translations
 
