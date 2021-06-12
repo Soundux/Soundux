@@ -15,7 +15,8 @@ namespace Soundux::Objects
     void Window::setup()
     {
         NFD::Init();
-        Globals::gHotKeys.init();
+        Globals::gHotKeys = Hotkeys::createInstance();
+
         for (auto &tab : Globals::gData.getTabs())
         {
             tab.sounds = getTabContent(tab);
@@ -25,7 +26,6 @@ namespace Soundux::Objects
     Window::~Window()
     {
         NFD::Quit();
-        Globals::gHotKeys.stop();
     }
     std::vector<Sound> Window::getTabContent(const Tab &tab) const
     {
@@ -225,7 +225,7 @@ namespace Soundux::Objects
             }
             if (!Globals::gSettings.pushToTalkKeys.empty())
             {
-                Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
+                Globals::gHotKeys->pressKeys(Globals::gSettings.pushToTalkKeys);
             }
 
             auto playingSound = Globals::gAudio.play(*sound);
@@ -297,7 +297,7 @@ namespace Soundux::Objects
             }
             if (!Globals::gSettings.pushToTalkKeys.empty())
             {
-                Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
+                Globals::gHotKeys->pressKeys(Globals::gSettings.pushToTalkKeys);
             }
 
             if (Globals::gSettings.outputs.empty() && !Globals::gSettings.useAsDefaultDevice)
@@ -579,30 +579,33 @@ namespace Soundux::Objects
         onError(Enums::ErrorCode::FailedToSetCustomVolume);
         return std::nullopt;
     }
+    void Window::onVolumeChanged()
+    {
+        for (const auto &playingSound : Globals::gAudio.getPlayingSounds())
+        {
+            int newVolume = 0;
+            const auto &sound = playingSound.sound;
+
+            if (playingSound.playbackDevice.isDefault)
+            {
+                newVolume = sound.localVolume ? *sound.localVolume : Globals::gSettings.localVolume;
+            }
+            else
+            {
+                newVolume = sound.remoteVolume ? *sound.remoteVolume : Globals::gSettings.remoteVolume;
+            }
+
+            playingSound.raw.device.load()->masterVolumeFactor = static_cast<float>(newVolume) / 100.f;
+        }
+    }
     Settings Window::changeSettings(Settings settings)
     {
         auto oldSettings = Globals::gSettings;
         Globals::gSettings = settings;
 
-        if ((settings.localVolume != oldSettings.localVolume || settings.remoteVolume != oldSettings.remoteVolume) &&
-            !Globals::gAudio.getPlayingSounds().empty())
+        if ((settings.localVolume != oldSettings.localVolume || settings.remoteVolume != oldSettings.remoteVolume))
         {
-            for (const auto &playingSound : Globals::gAudio.getPlayingSounds())
-            {
-                int newVolume = 0;
-                const auto &sound = playingSound.sound;
-
-                if (playingSound.playbackDevice.isDefault)
-                {
-                    newVolume = sound.localVolume ? *sound.localVolume : Globals::gSettings.localVolume;
-                }
-                else
-                {
-                    newVolume = sound.remoteVolume ? *sound.remoteVolume : Globals::gSettings.remoteVolume;
-                }
-
-                playingSound.raw.device.load()->masterVolumeFactor = static_cast<float>(newVolume) / 100.f;
-            }
+            onVolumeChanged();
         }
 
 #if defined(__linux__)
@@ -714,9 +717,9 @@ namespace Soundux::Objects
 #endif
         return Globals::gSettings;
     }
-    void Window::onHotKeyReceived([[maybe_unused]] const std::vector<int> &keys)
+    void Window::onHotKeyReceived([[maybe_unused]] const std::vector<Key> &keys)
     {
-        Globals::gHotKeys.shouldNotify(false);
+        Globals::gHotKeys->notify(false);
     }
     std::optional<Tab> Window::refreshTab(const std::uint32_t &id)
     {
@@ -753,7 +756,7 @@ namespace Soundux::Objects
         onError(Enums::ErrorCode::TabDoesNotExist);
         return std::nullopt;
     }
-    std::optional<Sound> Window::setHotkey(const std::uint32_t &id, const std::vector<int> &hotkeys)
+    std::optional<Sound> Window::setHotkey(const std::uint32_t &id, const std::vector<Key> &hotkeys)
     {
         auto sound = Globals::gData.getSound(id);
         if (sound)
@@ -941,7 +944,7 @@ namespace Soundux::Objects
     {
         if (!Globals::gSettings.pushToTalkKeys.empty())
         {
-            Globals::gHotKeys.releaseKeys(Globals::gSettings.pushToTalkKeys);
+            Globals::gHotKeys->releaseKeys(Globals::gSettings.pushToTalkKeys);
         }
 
 #if defined(__linux__)
@@ -979,7 +982,7 @@ namespace Soundux::Objects
     {
         if (!Globals::gSettings.pushToTalkKeys.empty())
         {
-            Globals::gHotKeys.pressKeys(Globals::gSettings.pushToTalkKeys);
+            Globals::gHotKeys->pressKeys(Globals::gSettings.pushToTalkKeys);
         }
     }
     void Window::setIsOnFavorites(bool state)
