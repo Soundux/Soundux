@@ -148,7 +148,8 @@ namespace Soundux
 
             for (const auto &_sound : list)
             {
-                const auto &sound = [&] {
+                const auto &sound = [&]() constexpr
+                {
                     if constexpr (traits::is_pair<std::decay_t<decltype(_sound)>>::value)
                     {
                         return _sound.second.get();
@@ -157,7 +158,8 @@ namespace Soundux
                     {
                         return _sound;
                     }
-                }();
+                }
+                ();
 
                 if (sound.hotkeys.empty())
                     continue;
