@@ -18,13 +18,7 @@ template <typename T> void loadFunc(void *so, T &function, const std::string &na
 
 bool Soundux::PipeWireApi::setup()
 {
-    auto *libpulse = dlopen("libpipewire-0.3.so", RTLD_LAZY);
-    if (!libpulse)
-    {
-        //* For Ubuntu
-        libpulse = dlopen("/usr/lib/x86_64-linux-gnu/libpipewire-0.3.so.0", RTLD_LAZY);
-    }
-
+    auto *libpulse = dlopen("libpipewire-0.3.so.0", RTLD_LAZY);
     if (libpulse)
     {
         try

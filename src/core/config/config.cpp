@@ -62,6 +62,8 @@ namespace Soundux::Objects
 
             std::ifstream configStream(path);
             std::string content((std::istreambuf_iterator<char>(configStream)), std::istreambuf_iterator<char>());
+            configStream.close();
+
             auto json = nlohmann::json::parse(content, nullptr, false);
             if (json.is_discarded())
             {
@@ -85,11 +87,10 @@ namespace Soundux::Objects
                     std::filesystem::rename(
                         path,
                         configFile.parent_path() /
-                            ("soundux_config_old_" +
+                            ("config_old_" +
                              std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) + ".json"));
                 }
             }
-            configStream.close();
         }
         catch (const std::exception &e)
         {
