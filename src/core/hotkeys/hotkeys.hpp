@@ -1,7 +1,4 @@
 #pragma once
-#include "keys.hpp"
-#include <atomic>
-
 #pragma push_macro("max")
 #pragma push_macro("min")
 #undef min
@@ -10,6 +7,8 @@
 #pragma pop_macro("min")
 #pragma pop_macro("max")
 
+#include "keys.hpp"
+#include <atomic>
 #include <string>
 #include <vector>
 
