@@ -3,6 +3,7 @@
 #include "forward.hpp"
 #include <fancy.hpp>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <optional>
 #include <stdexcept>
 
@@ -166,6 +167,42 @@ namespace Soundux::Objects
                     PipeWireApi::proxy_destroy(reinterpret_cast<pw_proxy *>(boundCore));
                 }
             }
+            if (strcmp(type, PW_TYPE_INTERFACE_Metadata) == 0)
+            {
+                spa_hook listener;
+                pw_metadata_events events = {};
+
+                events.property = [](void *userdata, [[maybe_unused]] std::uint32_t id, const char *key,
+                                     [[maybe_unused]] const char *type, const char *value) -> int {
+                    auto *thiz = reinterpret_cast<PipeWire *>(userdata);
+                    if (thiz && key && value)
+                    {
+                        if (strcmp(key, "default.audio.source") == 0)
+                        {
+                            auto parsedValue = nlohmann::json::parse(value, nullptr, false);
+                            if (!parsedValue.is_discarded() && parsedValue.count("name"))
+                            {
+                                auto name = parsedValue["name"].get<std::string>();
+
+                                thiz->defaultMicrophone = name;
+                                Fancy::fancy.logTime().message() << "Found default device: " << name << std::endl;
+                            }
+                        }
+                    }
+                    return 0;
+                };
+
+                auto *boundMetaData = reinterpret_cast<pw_metadata *>(
+                    pw_registry_bind(thiz->registry, id, type, PW_VERSION_METADATA, sizeof(PipeWire)));
+
+                if (boundMetaData)
+                {
+                    pw_metadata_add_listener(boundMetaData, &listener, &events, thiz); // NOLINT
+                    thiz->sync();
+                    spa_hook_remove(&listener);
+                    PipeWireApi::proxy_destroy(reinterpret_cast<pw_proxy *>(boundMetaData));
+                }
+            }
             if (strcmp(type, PW_TYPE_INTERFACE_Node) == 0)
             {
                 const auto *name = spa_dict_lookup(props, PW_KEY_NODE_NAME);
@@ -176,6 +213,7 @@ namespace Soundux::Objects
 
                 Node node;
                 node.id = id;
+                node.rawName = name;
 
                 spa_hook listener;
                 pw_node_events events = {};
@@ -304,6 +342,11 @@ namespace Soundux::Objects
         pw_registry_add_listener(registry, &registryListener, &registryEvents, this); // NOLINT
 
         sync();
+
+        if (defaultMicrophone.empty())
+        {
+            Fancy::fancy.logTime().warning() << "Failed to retrieve default microphone" << std::endl;
+        }
 
         return createNullSink();
     }
@@ -525,10 +568,43 @@ namespace Soundux::Objects
 
     bool PipeWire::muteInput(bool state)
     {
-        // TODO(pipewire): Maybe we could delete any link from the microphone to the output app and recreate it?
-        Fancy::fancy.logTime().warning() << "Fix Me: muteInput() is not yet implemented on pipewire" << std::endl;
+        // TODO(pipewire): Research if it's possible to mute the device instead of the node.
+        auto copy = nodes.copy();
+        for (const auto &node : copy)
+        {
+            if (node.second.rawName == defaultMicrophone)
+            {
+                auto *boundNode = reinterpret_cast<pw_node *>(pw_registry_bind(
+                    registry, node.second.id, PW_TYPE_INTERFACE_Node, PW_VERSION_NODE, sizeof(PipeWire)));
 
-        (void)state;
+                if (boundNode)
+                {
+                    char buffer[1024];
+                    spa_pod_builder b;
+                    spa_pod_builder_init(&b, buffer, sizeof(buffer));
+
+                    spa_pod_frame f[1];
+                    spa_pod *param{};
+
+                    spa_pod_builder_push_object(&b, &f[0], SPA_TYPE_OBJECT_Props, SPA_PARAM_Props);
+                    spa_pod_builder_add(&b, SPA_PROP_mute, SPA_POD_Bool(state), 0);
+
+                    param = static_cast<spa_pod *>(spa_pod_builder_pop(&b, &f[0]));
+                    if (pw_node_set_param(boundNode, SPA_PARAM_Props, 0, param) < 0) // NOLINT
+                    {
+                        return false;
+                    }
+
+                    PipeWireApi::proxy_destroy(reinterpret_cast<pw_proxy *>(boundNode));
+                    sync();
+
+                    return true;
+                }
+
+                break;
+            }
+        }
+
         return false;
     }
 

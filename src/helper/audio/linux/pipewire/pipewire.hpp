@@ -2,8 +2,13 @@
 #include "../backend.hpp"
 #include <map>
 #include <optional>
-#include <pipewire/pipewire.h>
 #include <var_guard.hpp>
+
+#include <pipewire/extensions/metadata.h>
+#include <pipewire/global.h>
+#include <pipewire/pipewire.h>
+#include <spa/param/props.h>
+#include <spa/pod/builder.h>
 
 // TODO(pipewire):
 //* From the pipewire news of 0.3.26
@@ -38,6 +43,7 @@ namespace Soundux
             std::uint32_t id;
             std::string name;
             std::uint32_t pid;
+            std::string rawName;
             bool isMonitor = false;
             std::string applicationBinary;
             std::map<std::uint32_t, Port> ports;
@@ -66,6 +72,7 @@ namespace Soundux
             pw_context *context;
             pw_registry *registry;
             std::uint32_t version = 0;
+            std::string defaultMicrophone;
 
             spa_hook registryListener;
             pw_registry_events registryEvents;
