@@ -47,7 +47,9 @@ namespace Soundux
             //* ~= ~~~~~~~~~~~~~~~~~~~~~ =~
 
             std::string serverName;
+
             std::string defaultSource;
+            std::optional<std::uint32_t> defaultSourceId;
 
             std::map<std::string, std::uint32_t> movedApplications;
             std::map<std::string, std::uint32_t> movedPassthroughApplications;

@@ -144,7 +144,8 @@ namespace Soundux::Objects
 
         fetchLoopBackSinkId();
 
-        if (!nullSink || !loopBack || !loopBackSink || !passthrough || !passthroughSink || !passthroughLoopBack)
+        if (!nullSink || !loopBack || !loopBackSink || !passthrough || !passthroughSink || !passthroughLoopBack ||
+            !defaultSourceId)
         {
             unloadLeftOvers();
             return false;
@@ -192,6 +193,17 @@ namespace Soundux::Objects
                 {
                     reinterpret_cast<PulseAudio *>(userData)->defaultSource = info->default_source_name;
                     reinterpret_cast<PulseAudio *>(userData)->serverName = info->server_name;
+                }
+            },
+            this));
+        await(PulseApi::context_get_sink_input_info_list(
+            context,
+            []([[maybe_unused]] pa_context *ctx, const pa_sink_input_info *info, [[maybe_unused]] int eol,
+               void *userData) {
+                auto *thiz = reinterpret_cast<PulseAudio *>(userData);
+                if (info && info->name == thiz->defaultSource)
+                {
+                    thiz->defaultSourceId = info->index;
                 }
             },
             this));
@@ -630,7 +642,7 @@ namespace Soundux::Objects
         bool success = false;
 
         await(PulseApi::context_set_sink_input_mute(
-            context, *loopBackSink, state,
+            context, *defaultSourceId, state,
             +[]([[maybe_unused]] pa_context *ctx, int success, void *userData) {
                 *reinterpret_cast<bool *>(userData) = success;
             },
