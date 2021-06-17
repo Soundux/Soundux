@@ -168,7 +168,7 @@ begin
     end;
     if WizardIsComponentSelected('FfmpegYouTubeDL') then begin
       DownloadPage.Add('https://github.com/eugeneware/ffmpeg-static/releases/download/b4.3.2/win32-x64', 'ffmpeg.exe', '')
-      DownloadPage.Add('https://github.com/ytdl-org/youtube-dl/releases/download/2021.05.16/youtube-dl.exe', 'youtube-dl.exe', '')
+      DownloadPage.Add('https://github.com/ytdl-org/youtube-dl/releases/download/2021.06.06/youtube-dl.exe', 'youtube-dl.exe', '')
 
       DownloadPage.Add('https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x86.exe', 'vcredist_x86.exe', '')
       DownloadPage.Add('https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x64.exe', 'vcredist_x64.exe', '')
