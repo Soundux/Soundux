@@ -120,8 +120,8 @@ namespace Soundux
             bool stopSoundInput() override;
             bool inputSoundTo(std::shared_ptr<RecordingApp> app) override;
 
-            std::shared_ptr<PlaybackApp> getPlaybackApp(const std::string &name) override;
-            std::shared_ptr<RecordingApp> getRecordingApp(const std::string &name) override;
+            std::shared_ptr<PlaybackApp> getPlaybackApp(const std::string &app) override;
+            std::shared_ptr<RecordingApp> getRecordingApp(const std::string &app) override;
 
             std::vector<std::shared_ptr<PlaybackApp>> getPlaybackApps() override;
             std::vector<std::shared_ptr<RecordingApp>> getRecordingApps() override;

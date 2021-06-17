@@ -514,12 +514,12 @@ namespace Soundux::Objects
         return rtn;
     }
 
-    std::shared_ptr<PlaybackApp> PipeWire::getPlaybackApp(const std::string &name)
+    std::shared_ptr<PlaybackApp> PipeWire::getPlaybackApp(const std::string &app)
     {
         auto scopedNodes = nodes.scoped();
         for (const auto &[nodeId, node] : *scopedNodes)
         {
-            if (node.name == name)
+            if (node.applicationBinary == app)
             {
                 PipeWirePlaybackApp app;
                 app.pid = node.pid;
@@ -533,12 +533,12 @@ namespace Soundux::Objects
         return nullptr;
     }
 
-    std::shared_ptr<RecordingApp> PipeWire::getRecordingApp(const std::string &name)
+    std::shared_ptr<RecordingApp> PipeWire::getRecordingApp(const std::string &app)
     {
         auto scopedNodes = nodes.scoped();
         for (const auto &[nodeId, node] : *scopedNodes)
         {
-            if (node.name == name)
+            if (node.applicationBinary == app)
             {
                 PipeWireRecordingApp app;
                 app.pid = node.pid;
