@@ -14,6 +14,7 @@ namespace Soundux
             Enums::BackendType audioBackend = Enums::BackendType::PulseAudio;
             Enums::ViewMode viewMode = Enums::ViewMode::List;
             Enums::Theme theme = Enums::Theme::System;
+            std::optional<std::string> language;
 
             std::vector<Key> pushToTalkKeys;
             std::vector<Key> stopHotkey;

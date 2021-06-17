@@ -152,6 +152,7 @@ namespace nlohmann
                 {"theme", obj.theme},
                 {"outputs", obj.outputs},
                 {"viewMode", obj.viewMode},
+                {"language", obj.language},
                 {"stopHotkey", obj.stopHotkey},
                 {"syncVolumes", obj.syncVolumes},
                 {"selectedTab", obj.selectedTab},
@@ -199,6 +200,7 @@ namespace nlohmann
         {
             get_to_safe(j, "theme", obj.theme);
             get_to_safe(j, "outputs", obj.outputs);
+            get_to_safe(j, "language", obj.language);
             get_to_safe(j, "viewMode", obj.viewMode);
             get_to_safe(j, "stopHotkey", obj.stopHotkey);
             get_to_safe(j, "localVolume", obj.localVolume);
