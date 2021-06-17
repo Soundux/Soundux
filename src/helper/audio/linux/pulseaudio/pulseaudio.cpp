@@ -242,9 +242,9 @@ namespace Soundux::Objects
 
                     app.id = info->index;
                     app.sink = info->sink;
-                    app.application = PulseApi::proplist_gets(info->proplist, "application.name");
-                    app.name = PulseApi::proplist_gets(info->proplist, "application.process.binary");
+                    app.name = PulseApi::proplist_gets(info->proplist, "application.name");
                     app.pid = std::stoi(PulseApi::proplist_gets(info->proplist, "application.process.id"));
+                    app.application = PulseApi::proplist_gets(info->proplist, "application.process.binary");
                     reinterpret_cast<decltype(rtn) *>(userData)->emplace_back(std::make_shared<PulsePlaybackApp>(app));
                 }
             },
@@ -270,9 +270,9 @@ namespace Soundux::Objects
 
                     app.id = info->index;
                     app.source = info->source;
-                    app.application = PulseApi::proplist_gets(info->proplist, "application.name");
-                    app.name = PulseApi::proplist_gets(info->proplist, "application.process.binary");
+                    app.name = PulseApi::proplist_gets(info->proplist, "application.name");
                     app.pid = std::stoi(PulseApi::proplist_gets(info->proplist, "application.process.id"));
+                    app.application = PulseApi::proplist_gets(info->proplist, "application.process.binary");
                     reinterpret_cast<decltype(rtn) *>(userData)->emplace_back(std::make_shared<PulseRecordingApp>(app));
                 }
             },
@@ -370,7 +370,7 @@ namespace Soundux::Objects
     }
     bool PulseAudio::passthroughFrom(std::shared_ptr<PlaybackApp> app)
     {
-        if (movedPassthroughApplications.count(app->name))
+        if (movedPassthroughApplications.count(app->application))
         {
             Fancy::fancy.logTime().message()
                 << "Ignoring sound passthrough request because requested app is already moved" << std::endl;
@@ -387,7 +387,7 @@ namespace Soundux::Objects
         {
             auto pulsePlayback = std::dynamic_pointer_cast<PulsePlaybackApp>(playbackApp);
 
-            if (playbackApp->name == app->name)
+            if (playbackApp->application == app->application)
             {
                 bool success = true;
 
@@ -410,19 +410,19 @@ namespace Soundux::Objects
             }
         }
 
-        movedPassthroughApplications.emplace(app->name, std::dynamic_pointer_cast<PulsePlaybackApp>(app)->sink);
+        movedPassthroughApplications.emplace(app->application, std::dynamic_pointer_cast<PulsePlaybackApp>(app)->sink);
         return true;
     }
     bool PulseAudio::stopAllPassthrough()
     {
         bool success = true;
-        for (const auto &[movedAppName, originalSource] : movedPassthroughApplications)
+        for (const auto &[movedAppBinary, originalSource] : movedPassthroughApplications)
         {
             for (const auto &app : getPlaybackApps())
             {
                 auto pulseApp = std::dynamic_pointer_cast<PulsePlaybackApp>(app);
 
-                if (app->name == movedAppName)
+                if (app->application == movedAppBinary)
                 {
                     await(PulseApi::context_move_sink_input_by_index(
                         context, pulseApp->id, originalSource,
@@ -445,17 +445,17 @@ namespace Soundux::Objects
 
         return success;
     }
-    bool PulseAudio::stopPassthrough(const std::string &name)
+    bool PulseAudio::stopPassthrough(const std::string &app)
     {
-        if (movedPassthroughApplications.find(name) != movedPassthroughApplications.end())
+        if (movedPassthroughApplications.find(app) != movedPassthroughApplications.end())
         {
             bool success = true;
-            auto &originalSource = movedPassthroughApplications.at(name);
+            auto &originalSource = movedPassthroughApplications.at(app);
             for (const auto &playbackApp : getPlaybackApps())
             {
                 auto pulseApp = std::dynamic_pointer_cast<PulsePlaybackApp>(playbackApp);
 
-                if (playbackApp->name == name)
+                if (playbackApp->application == app)
                 {
                     await(PulseApi::context_move_sink_input_by_index(
                         context, pulseApp->id, originalSource,
@@ -469,14 +469,14 @@ namespace Soundux::Objects
                 }
             }
 
-            movedPassthroughApplications.erase(name);
+            movedPassthroughApplications.erase(app);
             if (!success)
             {
-                Fancy::fancy.logTime().warning() << "Failed to move back passthrough for " << name << std::endl;
+                Fancy::fancy.logTime().warning() << "Failed to move back passthrough for " << app << std::endl;
             }
         }
 
-        Fancy::fancy.logTime().warning() << "Could not find moved application " << name << std::endl;
+        Fancy::fancy.logTime().warning() << "Could not find moved application " << app << std::endl;
         return false;
     }
     bool PulseAudio::inputSoundTo(std::shared_ptr<RecordingApp> app)
@@ -487,7 +487,7 @@ namespace Soundux::Objects
             return false;
         }
 
-        if (movedApplications.find(app->name) != movedApplications.end())
+        if (movedApplications.find(app->application) != movedApplications.end())
         {
             return true;
         }
@@ -496,7 +496,7 @@ namespace Soundux::Objects
         {
             auto pulseApp = std::dynamic_pointer_cast<PulseRecordingApp>(recordingApp);
 
-            if (pulseApp->name == app->name)
+            if (pulseApp->application == app->application)
             {
                 bool success = true;
                 await(PulseApi::context_move_source_output_by_name(
@@ -511,25 +511,25 @@ namespace Soundux::Objects
 
                 if (!success)
                 {
-                    Fancy::fancy.logTime().warning() << "Failed to move " + pulseApp->name << "(" << pulseApp->id
+                    Fancy::fancy.logTime().warning() << "Failed to move " + pulseApp->application << "(" << pulseApp->id
                                                      << ") to soundux sink" << std::endl;
                 }
             }
         }
 
-        movedApplications.emplace(app->name, std::dynamic_pointer_cast<PulseRecordingApp>(app)->source);
+        movedApplications.emplace(app->application, std::dynamic_pointer_cast<PulseRecordingApp>(app)->source);
         return true;
     }
     bool PulseAudio::stopSoundInput()
     {
         bool success = true;
 
-        for (const auto &[movedAppName, originalSink] : movedApplications)
+        for (const auto &[movedAppBinary, originalSink] : movedApplications)
         {
             for (const auto &recordingApp : getRecordingApps())
             {
                 auto pulseApp = std::dynamic_pointer_cast<PulseRecordingApp>(recordingApp);
-                if (pulseApp->name == movedAppName)
+                if (pulseApp->application == movedAppBinary)
                 {
                     await(PulseApi::context_move_source_output_by_index(
                         context, pulseApp->id, originalSink,
@@ -554,11 +554,11 @@ namespace Soundux::Objects
 
         return success;
     }
-    std::shared_ptr<PlaybackApp> PulseAudio::getPlaybackApp(const std::string &name)
+    std::shared_ptr<PlaybackApp> PulseAudio::getPlaybackApp(const std::string &application)
     {
         for (auto app : getPlaybackApps())
         {
-            if (app->name == name)
+            if (app->application == application)
             {
                 return app;
             }
@@ -566,11 +566,11 @@ namespace Soundux::Objects
 
         return nullptr;
     }
-    std::shared_ptr<RecordingApp> PulseAudio::getRecordingApp(const std::string &name)
+    std::shared_ptr<RecordingApp> PulseAudio::getRecordingApp(const std::string &application)
     {
         for (auto app : getRecordingApps())
         {
-            if (app->name == name)
+            if (app->application == application)
             {
                 return app;
             }

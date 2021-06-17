@@ -80,7 +80,7 @@ namespace Soundux
             std::set<std::string> currentlyPassedThrough() override;
 
             bool stopAllPassthrough() override;
-            bool stopPassthrough(const std::string &name) override;
+            bool stopPassthrough(const std::string &app) override;
             bool passthroughFrom(std::shared_ptr<PlaybackApp> app) override;
 
             bool stopSoundInput() override;
@@ -89,8 +89,8 @@ namespace Soundux
             void unloadSwitchOnConnect();
             bool switchOnConnectPresent();
 
-            std::shared_ptr<PlaybackApp> getPlaybackApp(const std::string &name) override;
-            std::shared_ptr<RecordingApp> getRecordingApp(const std::string &name) override;
+            std::shared_ptr<PlaybackApp> getPlaybackApp(const std::string &application) override;
+            std::shared_ptr<RecordingApp> getRecordingApp(const std::string &application) override;
 
             std::vector<std::shared_ptr<PlaybackApp>> getPlaybackApps() override;
             std::vector<std::shared_ptr<RecordingApp>> getRecordingApps() override;

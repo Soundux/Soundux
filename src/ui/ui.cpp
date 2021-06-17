@@ -795,6 +795,11 @@ namespace Soundux::Objects
             auto streams = Globals::gAudioBackend->getRecordingApps();
             for (auto &stream : streams)
             {
+                if (stream->application.find("soundux") != std::string::npos)
+                {
+                    continue;
+                }
+
                 auto item = std::find_if(std::begin(uniqueStreams), std::end(uniqueStreams),
                                          [&](const auto &_stream) { return stream->name == _stream->name; });
                 if (stream && item == std::end(uniqueStreams))
@@ -838,6 +843,11 @@ namespace Soundux::Objects
 
             for (auto &stream : streams)
             {
+                if (stream->application.find("soundux") != std::string::npos)
+                {
+                    continue;
+                }
+
                 auto item = std::find_if(std::begin(uniqueStreams), std::end(uniqueStreams),
                                          [&](const auto &_stream) { return stream->name == _stream->name; });
                 if (stream && item == std::end(uniqueStreams))

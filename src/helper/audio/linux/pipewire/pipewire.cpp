@@ -71,11 +71,11 @@ namespace Soundux::Objects
             //* Yes this is swapped. (For compatibility reasons)
             if (const auto *appName = spa_dict_lookup(info->props, "application.name"); appName)
             {
-                self.applicationBinary = appName;
+                self.name = appName;
             }
             if (const auto *binary = spa_dict_lookup(info->props, "application.process.binary"); binary)
             {
-                self.name = binary;
+                self.applicationBinary = binary;
             }
         }
     }
@@ -409,7 +409,7 @@ namespace Soundux::Objects
         auto scopedNodes = nodes.scoped();
         for (const auto &[nodeId, node] : *scopedNodes)
         {
-            if (!node.applicationBinary.empty() && !node.isMonitor)
+            if (!node.name.empty() && !node.isMonitor)
             {
                 bool hasInput = false;
                 for (const auto &[portId, port] : node.ports)
@@ -444,7 +444,7 @@ namespace Soundux::Objects
         auto scopedNodes = nodes.scoped();
         for (const auto &[nodeId, node] : *scopedNodes)
         {
-            if (!node.applicationBinary.empty() && !node.isMonitor)
+            if (!node.name.empty() && !node.isMonitor)
             {
                 bool hasOutput = false;
                 for (const auto &[portId, port] : node.ports)
@@ -539,7 +539,7 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().warning() << "Invalid app" << std::endl;
             return false;
         }
-        if (soundInputLinks.count(app->name))
+        if (soundInputLinks.count(app->application))
         {
             return true;
         }
@@ -555,14 +555,14 @@ namespace Soundux::Objects
         auto nodes = this->nodes.copy();
         auto ports = this->ports.copy();
 
-        if (!soundInputLinks.count(app->name))
+        if (!soundInputLinks.count(app->application))
         {
-            soundInputLinks.emplace(app->name, std::vector<std::uint32_t>{});
+            soundInputLinks.emplace(app->application, std::vector<std::uint32_t>{});
         }
 
         for (const auto &[nodeId, node] : nodes)
         {
-            if (node.name != app->name)
+            if (node.applicationBinary != app->application)
                 continue;
 
             for (const auto &[portId, port] : ports)
@@ -583,7 +583,7 @@ namespace Soundux::Objects
                                 if (link)
                                 {
                                     success = true;
-                                    soundInputLinks.at(app->name).emplace_back(*link);
+                                    soundInputLinks.at(app->application).emplace_back(*link);
                                 }
                             }
                         }
@@ -594,7 +594,7 @@ namespace Soundux::Objects
 
         if (!success)
         {
-            Fancy::fancy.logTime().warning() << "Could not find ports for app " << app->name << std::endl;
+            Fancy::fancy.logTime().warning() << "Could not find ports for app " << app->application << std::endl;
         }
 
         return success;
@@ -602,7 +602,7 @@ namespace Soundux::Objects
 
     bool PipeWire::stopSoundInput()
     {
-        for (const auto &[appName, links] : soundInputLinks)
+        for (const auto &[appBinary, links] : soundInputLinks)
         {
             for (const auto &id : links)
             {
@@ -633,14 +633,14 @@ namespace Soundux::Objects
         auto nodes = this->nodes.copy();
         auto ports = this->ports.copy();
 
-        if (!passthroughLinks.count(app->name))
+        if (!passthroughLinks.count(app->application))
         {
-            passthroughLinks.emplace(app->name, std::vector<std::uint32_t>{});
+            passthroughLinks.emplace(app->application, std::vector<std::uint32_t>{});
         }
 
         for (const auto &[nodeId, node] : nodes)
         {
-            if (node.name != app->name)
+            if (node.applicationBinary != app->application)
                 continue;
 
             for (const auto &[portId, port] : ports)
@@ -661,7 +661,7 @@ namespace Soundux::Objects
                                 if (link)
                                 {
                                     success = true;
-                                    passthroughLinks.at(app->name).emplace_back(*link);
+                                    passthroughLinks.at(app->application).emplace_back(*link);
                                 }
                             }
                         }
@@ -672,7 +672,7 @@ namespace Soundux::Objects
 
         if (!success)
         {
-            Fancy::fancy.logTime().warning() << "Could not find ports for app " << app->name << std::endl;
+            Fancy::fancy.logTime().warning() << "Could not find ports for app " << app->application << std::endl;
         }
 
         return success;
@@ -699,20 +699,20 @@ namespace Soundux::Objects
         return rtn;
     }
 
-    bool PipeWire::stopPassthrough(const std::string &name)
+    bool PipeWire::stopPassthrough(const std::string &app)
     {
-        if (passthroughLinks.find(name) != passthroughLinks.end())
+        if (passthroughLinks.find(app) != passthroughLinks.end())
         {
-            for (const auto &id : passthroughLinks.at(name))
+            for (const auto &id : passthroughLinks.at(app))
             {
                 deleteLink(id);
             }
 
-            passthroughLinks.erase(name);
+            passthroughLinks.erase(app);
         }
         else
         {
-            Fancy::fancy.logTime().warning() << "Could not find links for application " << name << std::endl;
+            Fancy::fancy.logTime().warning() << "Could not find links for application " << app << std::endl;
         }
 
         return true;
@@ -720,7 +720,7 @@ namespace Soundux::Objects
 
     bool PipeWire::stopAllPassthrough()
     {
-        for (const auto &[appName, links] : passthroughLinks)
+        for (const auto &[appBinary, links] : passthroughLinks)
         {
             for (const auto &id : links)
             {

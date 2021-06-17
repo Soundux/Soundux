@@ -107,7 +107,7 @@ namespace Soundux
             std::set<std::string> currentlyPassedThrough() override;
 
             bool stopAllPassthrough() override;
-            bool stopPassthrough(const std::string &name) override;
+            bool stopPassthrough(const std::string &app) override;
             bool passthroughFrom(std::shared_ptr<PlaybackApp> app) override;
 
             bool stopSoundInput() override;
