@@ -58,9 +58,49 @@ namespace Soundux::Objects
         }
 
         unloadLeftOvers();
+        unloadProblematic();
         fetchDefaultSource();
 
-        return !(defaultSource.empty() || serverName.empty() || isRunningPipeWire());
+        if (defaultSource.empty() || serverName.empty() || isRunningPipeWire())
+        {
+            return false;
+        }
+
+        return loadModules();
+    }
+    void PulseAudio::unloadProblematic()
+    {
+        await(PulseApi::context_get_module_info_list(
+            context,
+            []([[maybe_unused]] pa_context *ctx, const pa_module_info *info, [[maybe_unused]] int eol, void *userData) {
+                if (info && info->name && userData)
+                {
+                    auto name = std::string(info->name);
+                    auto *thiz = reinterpret_cast<PulseAudio *>(userData);
+
+                    if (name.find("switch-on-connect") != std::string::npos ||
+                        name.find("role-cork") != std::string::npos)
+                    {
+                        PulseModule module;
+                        module.name = name;
+
+                        if (info->argument)
+                            module.arguments = info->argument;
+
+                        thiz->unloadedModules.emplace_back(module);
+                        Fancy::fancy.logTime().message() << "Unloading problematic module: " << name << std::endl;
+                    }
+                }
+            },
+            this));
+    }
+    void PulseAudio::reloadProblematic()
+    {
+        for (auto &module : unloadedModules)
+        {
+            Fancy::fancy.logTime().message() << "Loading back module: " << module.name << std::endl;
+            PulseApi::context_load_module(context, module.name.c_str(), module.arguments.c_str(), nullptr, nullptr);
+        }
     }
     bool PulseAudio::loadModules()
     {
@@ -656,56 +696,6 @@ namespace Soundux::Objects
         return success;
     }
 
-    bool PulseAudio::switchOnConnectPresent()
-    {
-        bool isPresent = false;
-        await(PulseApi::context_get_module_info_list(
-            context,
-            []([[maybe_unused]] pa_context *ctx, const pa_module_info *info, [[maybe_unused]] int eol, void *userData) {
-                if (info && info->name)
-                {
-                    if (std::string(info->name).find("switch-on-connect") != std::string::npos)
-                    {
-                        *reinterpret_cast<bool *>(userData) = true;
-                        Fancy::fancy.logTime().warning() << "Switch on connect found: " << info->index << std::endl;
-                    }
-                }
-            },
-            &isPresent));
-
-        if (isPresent)
-        {
-            if (Globals::gGui)
-            {
-                Globals::gGui->onSwitchOnConnectDetected(true);
-            }
-        }
-
-        return isPresent;
-    }
-
-    void PulseAudio::unloadSwitchOnConnect()
-    {
-        await(PulseApi::context_get_module_info_list(
-            context,
-            []([[maybe_unused]] pa_context *ctx, const pa_module_info *info, [[maybe_unused]] int eol,
-               [[maybe_unused]] void *userData) {
-                if (info && info->name)
-                {
-                    if (std::string(info->name).find("switch-on-connect") != std::string::npos)
-                    {
-                        Fancy::fancy.logTime().message() << "Unloading: " << info->index << std::endl;
-                        PulseApi::context_unload_module(ctx, info->index, nullptr, nullptr);
-
-                        if (Globals::gGui)
-                        {
-                            Globals::gGui->onSwitchOnConnectDetected(false);
-                        }
-                    }
-                }
-            },
-            nullptr));
-    }
     bool PulseAudio::isRunningPipeWire()
     {
         //* The stuff we do here does is broken on pipewire-pulse, use the native backend instead.

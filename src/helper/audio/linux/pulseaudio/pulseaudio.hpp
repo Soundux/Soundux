@@ -27,6 +27,12 @@ namespace Soundux
             ~PulseRecordingApp() override = default;
         };
 
+        struct PulseModule
+        {
+            std::string name;
+            std::string arguments;
+        };
+
         class PulseAudio : public AudioBackend
         {
             friend class AudioBackend;
@@ -47,6 +53,7 @@ namespace Soundux
             //* ~= ~~~~~~~~~~~~~~~~~~~~~ =~
 
             std::string serverName;
+            std::vector<PulseModule> unloadedModules;
 
             std::string defaultSource;
             std::optional<std::uint32_t> defaultSourceId;
@@ -56,10 +63,14 @@ namespace Soundux
 
             std::mutex operationMutex;
 
+            bool loadModules();
             void unloadLeftOvers();
             void fetchDefaultSource();
             void fetchLoopBackSinkId();
             void await(pa_operation *);
+
+            void unloadProblematic();
+            void reloadProblematic();
 
             void fixPlaybackApps(const std::vector<std::shared_ptr<PlaybackApp>> &);
             void fixRecordingApps(const std::vector<std::shared_ptr<RecordingApp>> &);
@@ -68,9 +79,6 @@ namespace Soundux
             bool setup() override;
 
           public:
-            //! Is not ran by default to avoid problems with switch-on-connect
-            bool loadModules();
-
             void destroy() override;
             bool isRunningPipeWire();
 
@@ -87,9 +95,6 @@ namespace Soundux
 
             bool stopSoundInput() override;
             bool inputSoundTo(std::shared_ptr<RecordingApp> app) override;
-
-            void unloadSwitchOnConnect();
-            bool switchOnConnectPresent();
 
             std::shared_ptr<PlaybackApp> getPlaybackApp(const std::string &application) override;
             std::shared_ptr<RecordingApp> getRecordingApp(const std::string &application) override;
