@@ -215,6 +215,8 @@ namespace Soundux::Objects
             await(PulseApi::context_unload_module(context, *passthroughSink, nullptr, nullptr));
         if (passthroughLoopBack)
             await(PulseApi::context_unload_module(context, *passthroughLoopBack, nullptr, nullptr));
+
+        reloadProblematic();
     }
     void PulseAudio::await(pa_operation *operation)
     {
