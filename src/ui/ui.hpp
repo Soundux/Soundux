@@ -1,14 +1,12 @@
 #pragma once
 #include <core/objects/settings.hpp>
-#include <helper/audio/audio.hpp>
+#include <helper/audio/sound/sound.hpp>
 #if defined(__linux__)
 #include <helper/audio/linux/backend.hpp>
 #endif
-#include <atomic>
-#include <cstdint>
-#include <queue>
+#include <lock.hpp>
+#include <map>
 #include <string>
-#include <var_guard.hpp>
 
 namespace Soundux
 {
@@ -34,7 +32,10 @@ namespace Soundux
             friend class Hotkeys;
 
           protected:
-            sxl::var_guard<std::map<std::uint32_t, std::uint32_t>> groupedSounds;
+            using SoundPair = std::pair<std::shared_ptr<PlayingSound>, std::shared_ptr<PlayingSound>>;
+            sxl::lock<std::map<std::uint32_t, SoundPair>> groupedSounds;
+            AudioDevice defaultPlayback;
+            AudioDevice remotePlayback;
 
             struct
             {
@@ -77,17 +78,18 @@ namespace Soundux
             virtual std::optional<Tab> setSortMode(const std::uint32_t &, Enums::SortMode);
 
           protected:
+            void setDevices();
+            virtual void stopSounds();
             virtual void onVolumeChanged();
             virtual bool toggleSoundPlayback();
-            virtual void stopSounds(bool = false);
             virtual bool stopSound(const std::uint32_t &);
 
           protected:
-            virtual std::optional<PlayingSound> playSound(const std::uint32_t &);
-            virtual std::optional<PlayingSound> pauseSound(const std::uint32_t &);
-            virtual std::optional<PlayingSound> resumeSound(const std::uint32_t &);
-            virtual std::optional<PlayingSound> repeatSound(const std::uint32_t &, bool);
-            virtual std::optional<PlayingSound> seekSound(const std::uint32_t &, std::uint64_t);
+            virtual std::shared_ptr<PlayingSound> playSound(const std::uint32_t &);
+            virtual std::shared_ptr<PlayingSound> pauseSound(const std::uint32_t &);
+            virtual std::shared_ptr<PlayingSound> resumeSound(const std::uint32_t &);
+            virtual std::shared_ptr<PlayingSound> repeatSound(const std::uint32_t &, bool);
+            virtual std::shared_ptr<PlayingSound> seekSound(const std::uint32_t &, std::uint64_t);
 
             virtual std::optional<Sound> setHotkey(const std::uint32_t &, const std::vector<Key> &);
             virtual std::optional<Sound> setCustomLocalVolume(const std::uint32_t &, const std::optional<int> &);
@@ -103,12 +105,13 @@ namespace Soundux
             virtual void onSettingsChanged() = 0;
             virtual void onLocalVolumeChanged(int) = 0;
             virtual void onRemoteVolumeChanged(int) = 0;
-            virtual void onSoundPlayed(const PlayingSound &);
             virtual void onError(const Enums::ErrorCode &) = 0;
-            virtual void onSoundFinished(const PlayingSound &);
             virtual void onHotKeyReceived(const std::vector<Key> &);
-            virtual void onSoundProgressed(const PlayingSound &) = 0;
             virtual void onDownloadProgressed(float, const std::string &) = 0;
+
+            virtual void onSoundPlayed(const std::shared_ptr<PlayingSound> &);
+            virtual void onSoundFinished(const std::shared_ptr<PlayingSound> &);
+            virtual void onSoundProgressed(const std::shared_ptr<PlayingSound> &) = 0;
         };
     } // namespace Objects
 } // namespace Soundux

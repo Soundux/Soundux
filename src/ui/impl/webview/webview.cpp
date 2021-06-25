@@ -373,21 +373,27 @@ namespace Soundux::Objects
         webview->callFunction<void>(
             Webview::JavaScriptFunction("window.hotkeyReceived", Globals::gHotKeys->getKeySequence(keys), keys));
     }
-    void WebView::onSoundFinished(const PlayingSound &sound)
+    void WebView::onSoundFinished(const std::shared_ptr<PlayingSound> &sound)
     {
         Window::onSoundFinished(sound);
-        if (sound.playbackDevice.isDefault)
+        if (sound && sound->getPlaybackDevice().isDefault)
         {
-            webview->callFunction<void>(Webview::JavaScriptFunction("window.finishSound", sound));
+            webview->callFunction<void>(Webview::JavaScriptFunction("window.finishSound", *sound));
         }
     }
-    void WebView::onSoundPlayed(const PlayingSound &sound)
+    void WebView::onSoundPlayed(const std::shared_ptr<PlayingSound> &sound)
     {
-        webview->callFunction<void>(Webview::JavaScriptFunction("window.onSoundPlayed", sound));
+        if (sound)
+        {
+            webview->callFunction<void>(Webview::JavaScriptFunction("window.onSoundPlayed", *sound));
+        }
     }
-    void WebView::onSoundProgressed(const PlayingSound &sound)
+    void WebView::onSoundProgressed(const std::shared_ptr<PlayingSound> &sound)
     {
-        webview->callFunction<void>(Webview::JavaScriptFunction("window.updateSound", sound));
+        if (sound)
+        {
+            webview->callFunction<void>(Webview::JavaScriptFunction("window.updateSound", *sound));
+        }
     }
     void WebView::onDownloadProgressed(float progress, const std::string &eta)
     {

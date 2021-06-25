@@ -220,8 +220,8 @@ namespace Soundux
                 }
                 else
                 {
-                    auto scopedSounds = Globals::gSounds.scoped();
-                    bestMatch = getBestMatch(*scopedSounds, pressedKeys);
+                    auto gSounds = Globals::gSounds.read();
+                    bestMatch = getBestMatch(*gSounds, pressedKeys);
                 }
 
                 if (bestMatch)
@@ -229,7 +229,7 @@ namespace Soundux
                     auto pSound = Globals::gGui->playSound(bestMatch->id);
                     if (pSound)
                     {
-                        Globals::gGui->onSoundPlayed(*pSound);
+                        Globals::gGui->onSoundPlayed(pSound);
                     }
                 }
             }

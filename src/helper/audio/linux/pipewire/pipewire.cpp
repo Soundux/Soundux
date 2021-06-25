@@ -56,9 +56,10 @@ namespace Soundux::Objects
 
     void PipeWire::onNodeInfo(const pw_node_info *info)
     {
-        if (info && (~nodes).find(info->id) != (~nodes).end())
+        auto &nodes = this->nodes.unsafe();
+        if (info && nodes.find(info->id) != nodes.end())
         {
-            auto &self = (~nodes).at(info->id);
+            auto &self = nodes.at(info->id);
 
             if (const auto *pid = spa_dict_lookup(info->props, "application.process.id"); pid)
             {
@@ -83,9 +84,10 @@ namespace Soundux::Objects
 
     void PipeWire::onPortInfo(const pw_port_info *info)
     {
-        if (info && (~ports).find(info->id) != (~ports).end())
+        auto &ports = this->ports.unsafe();
+        if (info && ports.find(info->id) != ports.end())
         {
-            auto &self = (~ports).at(info->id);
+            auto &self = ports.at(info->id);
             self.direction = info->direction;
 
             if (const auto *nodeId = spa_dict_lookup(info->props, "node.id"); nodeId)
@@ -231,7 +233,8 @@ namespace Soundux::Objects
 
                 if (boundNode)
                 {
-                    thiz->nodes->emplace(id, node);
+                    //* We lock the mutex here, because we only need access to `nodes` as soon as sync is called.
+                    thiz->nodes.write()->emplace(id, node);
                     pw_node_add_listener(boundNode, &listener, &events, thiz); // NOLINT
                     thiz->sync();
                     spa_hook_remove(&listener);
@@ -260,22 +263,22 @@ namespace Soundux::Objects
 
                 if (boundPort)
                 {
-                    thiz->ports->emplace(id, port);
+                    thiz->ports.write()->emplace(id, port);
                     pw_port_add_listener(boundPort, &listener, &events, thiz); // NOLINT
                     thiz->sync();
                     spa_hook_remove(&listener);
                     PipeWireApi::proxy_destroy(reinterpret_cast<pw_proxy *>(boundPort));
 
-                    auto scopedNodes = thiz->nodes.scoped();
-                    auto scopedPorts = thiz->ports.scoped();
-                    if (scopedPorts->find(id) != scopedPorts->end())
+                    auto nodes = thiz->nodes.write();
+                    auto ports = thiz->ports.write();
+                    if (ports->find(id) != ports->end())
                     {
-                        auto &port = scopedPorts->at(id);
-                        if (port.parentNode > 0 && scopedNodes->find(port.parentNode) != scopedNodes->end())
+                        auto &port = ports->at(id);
+                        if (port.parentNode > 0 && nodes->find(port.parentNode) != nodes->end())
                         {
-                            auto &node = scopedNodes->at(port.parentNode);
+                            auto &node = nodes->at(port.parentNode);
                             node.ports.emplace(id, port);
-                            scopedPorts->erase(id);
+                            ports->erase(id);
                         }
                     }
                 }
@@ -288,16 +291,16 @@ namespace Soundux::Objects
         auto *thiz = reinterpret_cast<PipeWire *>(data);
         if (thiz)
         {
-            auto scopedNodes = thiz->nodes.scoped();
-            if (scopedNodes->find(id) != scopedNodes->end())
+            auto nodes = thiz->nodes.write();
+            if (nodes->find(id) != nodes->end())
             {
-                scopedNodes->erase(id);
+                nodes->erase(id);
             }
 
-            auto scopedPorts = thiz->ports.scoped();
-            if (scopedPorts->find(id) != scopedPorts->end())
+            auto ports = thiz->ports.write();
+            if (ports->find(id) != ports->end())
             {
-                scopedPorts->erase(id);
+                ports->erase(id);
             }
         }
     }
@@ -449,8 +452,8 @@ namespace Soundux::Objects
         sync();
         std::vector<std::shared_ptr<RecordingApp>> rtn;
 
-        auto scopedNodes = nodes.scoped();
-        for (const auto &[nodeId, node] : *scopedNodes)
+        auto nodes = this->nodes.read();
+        for (const auto &[nodeId, node] : *nodes)
         {
             if (!node.name.empty() && !node.isMonitor)
             {
@@ -484,8 +487,8 @@ namespace Soundux::Objects
         sync();
         std::vector<std::shared_ptr<PlaybackApp>> rtn;
 
-        auto scopedNodes = nodes.scoped();
-        for (const auto &[nodeId, node] : *scopedNodes)
+        auto nodes = this->nodes.read();
+        for (const auto &[nodeId, node] : *nodes)
         {
             if (!node.name.empty() && !node.isMonitor)
             {
@@ -516,8 +519,8 @@ namespace Soundux::Objects
 
     std::shared_ptr<PlaybackApp> PipeWire::getPlaybackApp(const std::string &app)
     {
-        auto scopedNodes = nodes.scoped();
-        for (const auto &[nodeId, node] : *scopedNodes)
+        auto nodes = this->nodes.read();
+        for (const auto &[nodeId, node] : *nodes)
         {
             if (node.applicationBinary == app)
             {
@@ -535,8 +538,8 @@ namespace Soundux::Objects
 
     std::shared_ptr<RecordingApp> PipeWire::getRecordingApp(const std::string &app)
     {
-        auto scopedNodes = nodes.scoped();
-        for (const auto &[nodeId, node] : *scopedNodes)
+        auto nodes = this->nodes.read();
+        for (const auto &[nodeId, node] : *nodes)
         {
             if (node.applicationBinary == app)
             {

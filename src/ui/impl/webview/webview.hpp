@@ -27,7 +27,6 @@ namespace Soundux
             void show() override;
             void setup() override;
             void mainLoop() override;
-            void onSoundFinished(const PlayingSound &sound) override;
             void onHotKeyReceived(const std::vector<Key> &keys) override;
 
             void onAdminRequired() override;
@@ -35,9 +34,11 @@ namespace Soundux
             void onLocalVolumeChanged(int volume) override;
             void onRemoteVolumeChanged(int volume) override;
             void onError(const Enums::ErrorCode &error) override;
-            void onSoundPlayed(const PlayingSound &sound) override;
-            void onSoundProgressed(const PlayingSound &sound) override;
             void onDownloadProgressed(float progress, const std::string &eta) override;
+
+            void onSoundPlayed(const std::shared_ptr<PlayingSound> &sound) override;
+            void onSoundFinished(const std::shared_ptr<PlayingSound> &sound) override;
+            void onSoundProgressed(const std::shared_ptr<PlayingSound> &sound) override;
         };
     } // namespace Objects
 } // namespace Soundux

@@ -1,8 +1,8 @@
 #if defined(__linux__)
 #include "../backend.hpp"
+#include <lock.hpp>
 #include <map>
 #include <optional>
-#include <var_guard.hpp>
 
 #include <pipewire/extensions/metadata.h>
 #include <pipewire/global.h>
@@ -78,8 +78,8 @@ namespace Soundux
             pw_registry_events registryEvents;
 
           private:
-            sxl::var_guard<std::map<std::uint32_t, Node>> nodes;
-            sxl::var_guard<std::map<std::uint32_t, Port>> ports;
+            sxl::lock<std::map<std::uint32_t, Node>> nodes;
+            sxl::lock<std::map<std::uint32_t, Port>> ports;
 
             void onNodeInfo(const pw_node_info *);
             void onPortInfo(const pw_port_info *);
