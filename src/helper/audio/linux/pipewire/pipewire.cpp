@@ -60,6 +60,8 @@ namespace Soundux::Objects
         if (info && nodes.find(info->id) != nodes.end())
         {
             auto &self = nodes.at(info->id);
+            self.inputPorts = info->n_input_ports;
+            self.outputPorts = info->n_output_ports;
 
             if (const auto *pid = spa_dict_lookup(info->props, "application.process.id"); pid)
             {
@@ -70,7 +72,6 @@ namespace Soundux::Objects
                 self.isMonitor = true;
             }
 
-            //* Yes this is swapped. (For compatibility reasons)
             if (const auto *appName = spa_dict_lookup(info->props, "application.name"); appName)
             {
                 self.name = appName;
@@ -78,42 +79,6 @@ namespace Soundux::Objects
             if (const auto *binary = spa_dict_lookup(info->props, "application.process.binary"); binary)
             {
                 self.applicationBinary = binary;
-            }
-        }
-    }
-
-    void PipeWire::onPortInfo(const pw_port_info *info)
-    {
-        auto &ports = this->ports.unsafe();
-        if (info && ports.find(info->id) != ports.end())
-        {
-            auto &self = ports.at(info->id);
-            self.direction = info->direction;
-
-            if (const auto *nodeId = spa_dict_lookup(info->props, "node.id"); nodeId)
-            {
-                self.parentNode = std::stol(nodeId);
-            }
-            if (const auto *rawPortName = spa_dict_lookup(info->props, "port.name"); rawPortName)
-            {
-                auto portName = std::string(rawPortName);
-
-                if (portName.back() == '1' || portName.back() == 'L')
-                {
-                    self.side = Side::LEFT;
-                }
-                else if (portName.back() == '2' || portName.back() == 'R')
-                {
-                    self.side = Side::RIGHT;
-                }
-                else if (portName.find("MONO", portName.size() - 4) != std::string::npos)
-                {
-                    self.side = Side::MONO;
-                }
-            }
-            if (const auto *portAlias = spa_dict_lookup(info->props, "port.alias"); portAlias)
-            {
-                self.portAlias = std::string(portAlias);
             }
         }
     }
@@ -208,7 +173,7 @@ namespace Soundux::Objects
             if (strcmp(type, PW_TYPE_INTERFACE_Node) == 0)
             {
                 const auto *name = spa_dict_lookup(props, PW_KEY_NODE_NAME);
-                if (name && strstr(name, "soundux"))
+                if (name && strcmp(name, "soundux") == 0)
                 {
                     return;
                 }
@@ -241,48 +206,6 @@ namespace Soundux::Objects
                     PipeWireApi::proxy_destroy(reinterpret_cast<pw_proxy *>(boundNode));
                 }
             }
-            if (strcmp(type, PW_TYPE_INTERFACE_Port) == 0)
-            {
-                Port port;
-                port.id = id;
-
-                spa_hook listener;
-                pw_port_events events = {};
-
-                events.info = [](void *data, const pw_port_info *info) {
-                    auto *thiz = reinterpret_cast<PipeWire *>(data);
-                    if (thiz)
-                    {
-                        thiz->onPortInfo(info);
-                    }
-                };
-                events.version = PW_VERSION_PORT_EVENTS;
-
-                auto *boundPort =
-                    reinterpret_cast<pw_port *>(pw_registry_bind(thiz->registry, id, type, version, sizeof(PipeWire)));
-
-                if (boundPort)
-                {
-                    thiz->ports.write()->emplace(id, port);
-                    pw_port_add_listener(boundPort, &listener, &events, thiz); // NOLINT
-                    thiz->sync();
-                    spa_hook_remove(&listener);
-                    PipeWireApi::proxy_destroy(reinterpret_cast<pw_proxy *>(boundPort));
-
-                    auto nodes = thiz->nodes.write();
-                    auto ports = thiz->ports.write();
-                    if (ports->find(id) != ports->end())
-                    {
-                        auto &port = ports->at(id);
-                        if (port.parentNode > 0 && nodes->find(port.parentNode) != nodes->end())
-                        {
-                            auto &node = nodes->at(port.parentNode);
-                            node.ports.emplace(id, port);
-                            ports->erase(id);
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -295,12 +218,6 @@ namespace Soundux::Objects
             if (nodes->find(id) != nodes->end())
             {
                 nodes->erase(id);
-            }
-
-            auto ports = thiz->ports.write();
-            if (ports->find(id) != ports->end())
-            {
-                ports->erase(id);
             }
         }
     }
@@ -407,13 +324,15 @@ namespace Soundux::Objects
         return true;
     }
 
-    std::optional<int> PipeWire::linkPorts(std::uint32_t in, std::uint32_t out)
+    std::optional<int> PipeWire::createLink(std::uint32_t in, std::uint32_t out)
     {
         pw_properties *props = PipeWireApi::properties_new(nullptr, nullptr);
 
         PipeWireApi::properties_set(props, PW_KEY_APP_NAME, "soundux");
-        PipeWireApi::properties_setf(props, PW_KEY_LINK_INPUT_PORT, "%u", in);
-        PipeWireApi::properties_setf(props, PW_KEY_LINK_OUTPUT_PORT, "%u", out);
+        PipeWireApi::properties_setf(props, PW_KEY_LINK_INPUT_PORT, "%i", -1);
+        PipeWireApi::properties_setf(props, PW_KEY_LINK_OUTPUT_PORT, "%i", -1);
+        PipeWireApi::properties_set(props, PW_KEY_LINK_INPUT_NODE, std::to_string(in).c_str());
+        PipeWireApi::properties_set(props, PW_KEY_LINK_OUTPUT_NODE, std::to_string(out).c_str());
 
         auto *proxy = reinterpret_cast<pw_proxy *>(
             pw_core_create_object(core, "link-factory", PW_TYPE_INTERFACE_Link, PW_VERSION_LINK, &props->dict, 0));
@@ -433,9 +352,9 @@ namespace Soundux::Objects
         linkEvent.bound = [](void *data, std::uint32_t id) {
             *reinterpret_cast<std::optional<std::uint32_t> *>(data) = id;
         };
-        linkEvent.error = [](void *data, [[maybe_unused]] int a, [[maybe_unused]] int b, const char *message) {
-            Fancy::fancy.logTime().warning() << "Failed to create link: " << message << std::endl;
-            *reinterpret_cast<std::optional<std::uint32_t> *>(data) = std::nullopt;
+        linkEvent.error = []([[maybe_unused]] void *data, int seq, int res, const char *message) {
+            Fancy::fancy.logTime().warning()
+                << "An error occurred while creating a link(" << seq << ":" << res << "): " << message << std::endl;
         };
 
         PipeWireApi::proxy_add_listener(proxy, &listener, &linkEvent, &result);
@@ -457,21 +376,10 @@ namespace Soundux::Objects
         {
             if (!node.name.empty() && !node.isMonitor)
             {
-                bool hasInput = false;
-                for (const auto &[portId, port] : node.ports)
-                {
-                    if (port.direction == SPA_DIRECTION_INPUT)
-                    {
-                        hasInput = true;
-                        break;
-                    }
-                }
-
-                if (hasInput)
+                if (node.inputPorts)
                 {
                     PipeWireRecordingApp app;
-                    app.pid = node.pid;
-                    app.nodeId = nodeId;
+                    app.node = node;
                     app.name = node.name;
                     app.application = node.applicationBinary;
                     rtn.emplace_back(std::make_shared<PipeWireRecordingApp>(app));
@@ -492,21 +400,10 @@ namespace Soundux::Objects
         {
             if (!node.name.empty() && !node.isMonitor)
             {
-                bool hasOutput = false;
-                for (const auto &[portId, port] : node.ports)
-                {
-                    if (port.direction == SPA_DIRECTION_OUTPUT)
-                    {
-                        hasOutput = true;
-                        break;
-                    }
-                }
-
-                if (hasOutput)
+                if (node.outputPorts)
                 {
                     PipeWirePlaybackApp app;
-                    app.pid = node.pid;
-                    app.nodeId = nodeId;
+                    app.node = node;
                     app.name = node.name;
                     app.application = node.applicationBinary;
                     rtn.emplace_back(std::make_shared<PipeWirePlaybackApp>(app));
@@ -515,44 +412,6 @@ namespace Soundux::Objects
         }
 
         return rtn;
-    }
-
-    std::shared_ptr<PlaybackApp> PipeWire::getPlaybackApp(const std::string &app)
-    {
-        auto nodes = this->nodes.read();
-        for (const auto &[nodeId, node] : *nodes)
-        {
-            if (node.applicationBinary == app)
-            {
-                PipeWirePlaybackApp app;
-                app.pid = node.pid;
-                app.nodeId = nodeId;
-                app.name = node.name;
-                app.application = node.applicationBinary;
-                return std::make_shared<PipeWirePlaybackApp>(app);
-            }
-        }
-
-        return nullptr;
-    }
-
-    std::shared_ptr<RecordingApp> PipeWire::getRecordingApp(const std::string &app)
-    {
-        auto nodes = this->nodes.read();
-        for (const auto &[nodeId, node] : *nodes)
-        {
-            if (node.applicationBinary == app)
-            {
-                PipeWireRecordingApp app;
-                app.pid = node.pid;
-                app.nodeId = nodeId;
-                app.name = node.name;
-                app.application = node.applicationBinary;
-                return std::make_shared<PipeWireRecordingApp>(app);
-            }
-        }
-
-        return nullptr;
     }
 
     bool PipeWire::useAsDefault()
@@ -611,69 +470,52 @@ namespace Soundux::Objects
         return false;
     }
 
-    bool PipeWire::inputSoundTo(std::shared_ptr<RecordingApp> app)
+    bool PipeWire::inputSoundTo(const std::string &app)
     {
-        if (!app)
+        sync();
+
+        if (app.empty())
         {
             Fancy::fancy.logTime().warning() << "Invalid app" << std::endl;
             return false;
         }
-        if (soundInputLinks.count(app->application))
+
+        if (soundInputLinks.count(app))
         {
             return true;
         }
 
-        auto pipeWireApp = std::dynamic_pointer_cast<PipeWireRecordingApp>(app);
-        if (!pipeWireApp)
-        {
-            Fancy::fancy.logTime().warning() << "Supplied app was not a Recording App" << std::endl;
-            return false;
-        }
-
         bool success = false;
         auto nodes = this->nodes.copy();
-        auto ports = this->ports.copy();
-
-        if (!soundInputLinks.count(app->application))
-        {
-            soundInputLinks.emplace(app->application, std::vector<std::uint32_t>{});
-        }
+        std::vector<std::uint32_t> createdLinks;
 
         for (const auto &[nodeId, node] : nodes)
         {
-            if (node.applicationBinary != app->application)
-                continue;
-
-            for (const auto &[portId, port] : ports)
+            if (node.rawName == "soundux_sink")
             {
-                if (port.direction == SPA_DIRECTION_OUTPUT && port.portAlias.find("soundux") != std::string::npos)
+                for (const auto &[appNodeId, appNode] : nodes)
                 {
-                    for (const auto &[nodePortId, nodePort] : node.ports)
+                    if (appNode.applicationBinary == app && appNode.inputPorts)
                     {
-                        if (nodePort.direction == SPA_DIRECTION_INPUT)
+                        auto link = createLink(appNodeId, nodeId);
+
+                        if (link)
                         {
-                            if (nodePort.side == Side::UNDEFINED || port.side == Side::UNDEFINED)
-                                continue;
-
-                            if (nodePort.side == port.side || nodePort.side == Side::MONO)
-                            {
-                                auto link = linkPorts(nodePortId, portId);
-
-                                if (link)
-                                {
-                                    success = true;
-                                    soundInputLinks.at(app->application).emplace_back(*link);
-                                }
-                            }
+                            success = true;
+                            createdLinks.emplace_back(*link);
                         }
                     }
                 }
             }
         }
 
-        if (!success)
+        if (success)
         {
-            Fancy::fancy.logTime().warning() << "Could not find ports for app " << app->application << std::endl;
+            soundInputLinks.emplace(app, createdLinks);
+        }
+        else
+        {
+            Fancy::fancy.logTime().warning() << "Could not link app " << app << std::endl;
         }
 
         return success;
@@ -693,65 +535,47 @@ namespace Soundux::Objects
         return true;
     }
 
-    bool PipeWire::passthroughFrom(std::shared_ptr<PlaybackApp> app)
+    bool PipeWire::passthroughFrom(const std::string &app)
     {
-        if (!app)
+        sync();
+
+        if (app.empty())
         {
             Fancy::fancy.logTime().warning() << "Invalid app" << std::endl;
             return false;
         }
 
-        auto pipeWireApp = std::dynamic_pointer_cast<PipeWirePlaybackApp>(app);
-        if (!pipeWireApp)
-        {
-            Fancy::fancy.logTime().warning() << "Supplied app was not a Playback App" << std::endl;
-            return false;
-        }
-
         bool success = false;
         auto nodes = this->nodes.copy();
-        auto ports = this->ports.copy();
-
-        if (!passthroughLinks.count(app->application))
-        {
-            passthroughLinks.emplace(app->application, std::vector<std::uint32_t>{});
-        }
+        std::vector<std::uint32_t> createdLinks;
 
         for (const auto &[nodeId, node] : nodes)
         {
-            if (node.applicationBinary != app->application)
-                continue;
-
-            for (const auto &[portId, port] : ports)
+            if (node.rawName == "soundux_sink")
             {
-                if (port.direction == SPA_DIRECTION_INPUT && port.portAlias.find("soundux") != std::string::npos)
+                for (const auto &[appNodeId, appNode] : nodes)
                 {
-                    for (const auto &[nodePortId, nodePort] : node.ports)
+                    if (appNode.applicationBinary == app && appNode.outputPorts)
                     {
-                        if (nodePort.side == Side::UNDEFINED || port.side == Side::UNDEFINED)
-                            continue;
+                        auto link = createLink(nodeId, appNodeId);
 
-                        if (nodePort.direction == SPA_DIRECTION_OUTPUT)
+                        if (link)
                         {
-                            if (nodePort.side == port.side || nodePort.side == Side::MONO)
-                            {
-                                auto link = linkPorts(portId, nodePortId);
-
-                                if (link)
-                                {
-                                    success = true;
-                                    passthroughLinks.at(app->application).emplace_back(*link);
-                                }
-                            }
+                            success = true;
+                            createdLinks.emplace_back(*link);
                         }
                     }
                 }
             }
         }
 
-        if (!success)
+        if (success)
         {
-            Fancy::fancy.logTime().warning() << "Could not find ports for app " << app->application << std::endl;
+            passthroughLinks.emplace(app, createdLinks);
+        }
+        else
+        {
+            Fancy::fancy.logTime().warning() << "Could not link app " << app << std::endl;
         }
 
         return success;

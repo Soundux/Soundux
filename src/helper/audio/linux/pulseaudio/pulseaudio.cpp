@@ -422,26 +422,27 @@ namespace Soundux::Objects
 
         return true;
     }
-    bool PulseAudio::passthroughFrom(std::shared_ptr<PlaybackApp> app)
+    bool PulseAudio::passthroughFrom(const std::string &app)
     {
-        if (movedPassthroughApplications.count(app->application))
+        if (movedPassthroughApplications.count(app))
         {
             Fancy::fancy.logTime().message()
                 << "Ignoring sound passthrough request because requested app is already moved" << std::endl;
             return true;
         }
 
-        if (!app)
+        if (app.empty())
         {
             Fancy::fancy.logTime().warning() << "Tried to passthrough to non existant app" << std::endl;
             return false;
         }
 
+        std::uint32_t originalSink = 0;
         for (const auto &playbackApp : getPlaybackApps())
         {
             auto pulsePlayback = std::dynamic_pointer_cast<PulsePlaybackApp>(playbackApp);
 
-            if (playbackApp->application == app->application)
+            if (playbackApp->application == app)
             {
                 bool success = true;
 
@@ -461,10 +462,12 @@ namespace Soundux::Objects
                         << "Failed top move " << pulsePlayback->id << " to passthrough" << std::endl;
                     return false;
                 }
+
+                originalSink = pulsePlayback->sink;
             }
         }
 
-        movedPassthroughApplications.emplace(app->application, std::dynamic_pointer_cast<PulsePlaybackApp>(app)->sink);
+        movedPassthroughApplications.emplace(app, originalSink);
         return true;
     }
     bool PulseAudio::stopAllPassthrough()
@@ -533,24 +536,25 @@ namespace Soundux::Objects
         Fancy::fancy.logTime().warning() << "Could not find moved application " << app << std::endl;
         return false;
     }
-    bool PulseAudio::inputSoundTo(std::shared_ptr<RecordingApp> app)
+    bool PulseAudio::inputSoundTo(const std::string &app)
     {
-        if (!app)
+        if (app.empty())
         {
             Fancy::fancy.logTime().warning() << "Tried to input sound to non existant app" << std::endl;
             return false;
         }
 
-        if (movedApplications.find(app->application) != movedApplications.end())
+        if (movedApplications.find(app) != movedApplications.end())
         {
             return true;
         }
 
+        std::uint32_t originalSource = 0;
         for (const auto &recordingApp : getRecordingApps())
         {
             auto pulseApp = std::dynamic_pointer_cast<PulseRecordingApp>(recordingApp);
 
-            if (pulseApp->application == app->application)
+            if (pulseApp->application == app)
             {
                 bool success = true;
                 await(PulseApi::context_move_source_output_by_name(
@@ -568,10 +572,14 @@ namespace Soundux::Objects
                     Fancy::fancy.logTime().warning() << "Failed to move " + pulseApp->application << "(" << pulseApp->id
                                                      << ") to soundux sink" << std::endl;
                 }
+                else
+                {
+                    originalSource = pulseApp->source;
+                }
             }
         }
 
-        movedApplications.emplace(app->application, std::dynamic_pointer_cast<PulseRecordingApp>(app)->source);
+        movedApplications.emplace(app, originalSource);
         return true;
     }
     bool PulseAudio::stopSoundInput()
@@ -607,30 +615,6 @@ namespace Soundux::Objects
         movedApplications.clear();
 
         return success;
-    }
-    std::shared_ptr<PlaybackApp> PulseAudio::getPlaybackApp(const std::string &application)
-    {
-        for (auto app : getPlaybackApps())
-        {
-            if (app->application == application)
-            {
-                return app;
-            }
-        }
-
-        return nullptr;
-    }
-    std::shared_ptr<RecordingApp> PulseAudio::getRecordingApp(const std::string &application)
-    {
-        for (auto app : getRecordingApps())
-        {
-            if (app->application == application)
-            {
-                return app;
-            }
-        }
-
-        return nullptr;
     }
 
     void PulseAudio::fixPlaybackApps(const std::vector<std::shared_ptr<PlaybackApp>> &originalPlayback)

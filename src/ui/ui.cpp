@@ -258,7 +258,7 @@ namespace Soundux::Objects
                     bool moveSuccess = false;
                     for (const auto &outputApp : Globals::gSettings.outputs)
                     {
-                        if (Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
+                        if (Globals::gAudioBackend->inputSoundTo(outputApp))
                         {
                             moveSuccess = true;
                         }
@@ -661,7 +661,7 @@ namespace Soundux::Objects
 
                     if (!settings.outputs.empty() && !groupedSounds->empty())
                     {
-                        if (!Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
+                        if (!Globals::gAudioBackend->inputSoundTo(outputApp))
                         {
                             onError(Enums::ErrorCode::FailedToMoveToSink);
                         }
@@ -800,7 +800,7 @@ namespace Soundux::Objects
                         else if (auto pipeWireApp = std::dynamic_pointer_cast<PipeWireRecordingApp>(stream);
                                  pipeWireApp)
                         {
-                            auto icon = Soundux::Globals::gIcons->getIcon(static_cast<int>(pipeWireApp->pid));
+                            auto icon = Soundux::Globals::gIcons->getIcon(static_cast<int>(pipeWireApp->node.pid));
                             if (icon)
                             {
                                 iconStream->appIcon = *icon;
@@ -848,7 +848,7 @@ namespace Soundux::Objects
                         }
                         if (auto pipeWireApp = std::dynamic_pointer_cast<PipeWirePlaybackApp>(stream); pipeWireApp)
                         {
-                            auto icon = Soundux::Globals::gIcons->getIcon(static_cast<int>(pipeWireApp->pid));
+                            auto icon = Soundux::Globals::gIcons->getIcon(static_cast<int>(pipeWireApp->node.pid));
                             if (icon)
                             {
                                 iconStream->appIcon = *icon;
@@ -870,7 +870,7 @@ namespace Soundux::Objects
         {
             for (const auto &outputApp : Globals::gSettings.outputs)
             {
-                if (!Globals::gAudioBackend->inputSoundTo(Globals::gAudioBackend->getRecordingApp(outputApp)))
+                if (!Globals::gAudioBackend->inputSoundTo(outputApp))
                 {
                     onError(Enums::ErrorCode::FailedToMoveToSink);
                     success = false;
@@ -879,7 +879,7 @@ namespace Soundux::Objects
 
             if (success)
             {
-                if (!Globals::gAudioBackend->passthroughFrom(Globals::gAudioBackend->getPlaybackApp(name)))
+                if (!Globals::gAudioBackend->passthroughFrom(name))
                 {
                     success = false;
                 }

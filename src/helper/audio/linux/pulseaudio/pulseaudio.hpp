@@ -91,13 +91,10 @@ namespace Soundux
 
             bool stopAllPassthrough() override;
             bool stopPassthrough(const std::string &app) override;
-            bool passthroughFrom(std::shared_ptr<PlaybackApp> app) override;
+            bool passthroughFrom(const std::string &app) override;
 
             bool stopSoundInput() override;
-            bool inputSoundTo(std::shared_ptr<RecordingApp> app) override;
-
-            std::shared_ptr<PlaybackApp> getPlaybackApp(const std::string &application) override;
-            std::shared_ptr<RecordingApp> getRecordingApp(const std::string &application) override;
+            bool inputSoundTo(const std::string &app) override;
 
             std::vector<std::shared_ptr<PlaybackApp>> getPlaybackApps() override;
             std::vector<std::shared_ptr<RecordingApp>> getRecordingApps() override;
