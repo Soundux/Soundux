@@ -21,6 +21,7 @@ body:
   attributes:
    label: 🖥️ Console Output
    description: Everything that was printed to the console up until the problem occured. For more information see [Debugging](https://github.com/Soundux/Soundux/wiki/Debugging)
+   render: ""
   validations:
    required: true
 
