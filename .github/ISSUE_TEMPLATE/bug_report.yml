@@ -56,3 +56,17 @@ body:
    description: "If you're using linux or a special windows version please state it here"
   validations:
    required: false
+
+- type: checkboxes
+  attributes:
+    label: ✅ I confirm that...
+    description: You may select more than one.
+    options:
+      - label: I have collected all the required information and read all the comments in this document
+        required: true
+      - label: I searched for an existing bug report for this issue
+        required: true
+      - label: the problem does occur with the reproduction steps I provided
+        required: true
+      - label: what I described is indeed a problem
+        required: true
