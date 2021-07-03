@@ -1,0 +1,58 @@
+name: Bug Report
+description: Create a report to help us improve Soundux
+labels: ["bug"]
+
+body:
+- type: textarea
+  attributes:
+   label: ✍️ Bug Description
+   description: A clear and concise description of what the bug is.
+  validations:
+   required: true
+
+- type: textarea
+  attributes:
+   label: 🔁 Steps to reproduce
+   description: Steps to reproduce the behavior.
+  validations:
+   required: true
+
+- type: textarea
+  attributes:
+   label: 🖥️ Console Output
+   description: Everything that was printed to the console up until the problem occured. For more information see [Debugging](https://github.com/Soundux/Soundux/wiki/Debugging)
+  validations:
+   required: true
+
+- type: textarea
+  attributes:
+   label: ❔ Expected behaviour
+   description: A clear and concise description of what you expected to happen.
+  validations:
+   required: false
+   
+- type: textarea
+  attributes:
+   label: 👀 Screenshots
+   description: If applicable, add screenshots to help explain your problem.
+  validations:
+   required: false
+
+- type: dropdown
+  attributes: 
+   label: 🖥️ Operating System
+   description: The operating system the problem occured on.
+   options:
+    - Linux
+    - Windows 11
+    - Windows 10
+    - Windows 8.1
+  validations:
+   required: true
+   
+- type: input
+  attributes:
+   label: 🖥️ Distribution
+   description: "If you're using linux or a special windows version please state it here"
+  validations:
+   required: false
