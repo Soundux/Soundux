@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Setup Node.js environment
-        uses: actions/setup-node@v2.2.0
+        uses: actions/setup-node@v2.3.0
 
       - name: Setup NuGet.exe for use with actions
         uses: NuGet/setup-nuget@v1.0.5
