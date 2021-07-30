@@ -6,21 +6,22 @@
 
 namespace Soundux::Objects
 {
-    using Helpers::exec;
-
     const std::regex YoutubeDl::urlRegex(
         R"(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*))");
 
     void YoutubeDl::setup()
     {
         TinyProcessLib::Process ytdlVersion(
-            "youtube-dl --version", "", [](const char * /**/, std::size_t /**/) { /*Hide stdout*/ },
-            [](const char * /**/, std::size_t /**/) { /* Hide stderr*/ });
-        isAvailable = ytdlVersion.get_exit_status() == 0;
+            "youtube-dl --version", "", []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {},
+            []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {});
+        TinyProcessLib::Process ffmpegVersion(
+            "ffmpeg -version", "", []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {},
+            []([[maybe_unused]] const char *message, [[maybe_unused]] std::size_t size) {});
 
+        isAvailable = ytdlVersion.get_exit_status() == 0 && ffmpegVersion.get_exit_status() == 0;
         if (!isAvailable)
         {
-            Fancy::fancy.logTime().warning() << "Youtube-Dl is not available!" << std::endl;
+            Fancy::fancy.logTime().warning() << "youtube-dl or ffmpeg is not available!" << std::endl;
         }
     }
     std::optional<nlohmann::json> YoutubeDl::getInfo(const std::string &url) const
@@ -36,43 +37,43 @@ namespace Soundux::Objects
             return std::nullopt;
         }
 
-        std::string result;
-        if (exec("youtube-dl -i -j \"" + url + "\"", result))
+        auto [result, success] = Helpers::getResultCompact("youtube-dl -i -j \"" + url + "\"");
+        if (success)
         {
             auto json = nlohmann::json::parse(result, nullptr, false);
             if (json.is_discarded())
             {
                 Fancy::fancy.logTime().warning() << "Failed to parse youtube-dl information" << std::endl;
-                Globals::gGui->onError(ErrorCode::YtdlInvalidJson);
+                Globals::gGui->onError(Enums::ErrorCode::YtdlInvalidJson);
                 return std::nullopt;
             }
 
             nlohmann::json j;
-            if (json.find("thumbnails") != json.end() && json.find("title") != json.end() &&
-                json.find("uploader") != json.end())
+            if (json.find("thumbnails") != json.end())
+            {
+                j["thumbnails"] = json.at("thumbnails");
+            }
+            if (json.find("title") != json.end())
             {
                 j["title"] = json.at("title");
+            }
+            if (json.find("uploader") != json.end())
+            {
                 j["uploader"] = json.at("uploader");
-                j["thumbnails"] = json.at("thumbnails");
-
-                return j;
             }
 
-            Fancy::fancy.logTime().warning()
-                << "Failed to get required information from youtube-dl output" << std::endl;
-            Globals::gGui->onError(ErrorCode::YtdlBadInformation);
-            return std::nullopt;
+            return j;
         }
 
         Fancy::fancy.logTime().warning() << "Failed to get info from youtube-dl" << std::endl;
-        Globals::gGui->onError(ErrorCode::YtdlInformationUnknown);
+        Globals::gGui->onError(Enums::ErrorCode::YtdlInformationUnknown);
         return std::nullopt;
     }
     bool YoutubeDl::download(const std::string &url)
     {
         if (!isAvailable)
         {
-            Globals::gGui->onError(ErrorCode::YtdlNotFound);
+            Globals::gGui->onError(Enums::ErrorCode::YtdlNotFound);
             return false;
         }
 
@@ -84,7 +85,7 @@ namespace Soundux::Objects
         if (!std::regex_match(url, urlRegex))
         {
             Fancy::fancy.logTime().warning() << "Bad url " >> url << std::endl;
-            Globals::gGui->onError(ErrorCode::YtdlInvalidUrl);
+            Globals::gGui->onError(Enums::ErrorCode::YtdlInvalidUrl);
             return false;
         }
 
@@ -98,7 +99,7 @@ namespace Soundux::Objects
                 currentDownload.reset();
             }
 
-            currentDownload.emplace("youtube-dl --extract-audio --audio-format mp3 \"" + url + "\" -o \"" +
+            currentDownload.emplace("youtube-dl --extract-audio --audio-format mp3 --no-mtime \"" + url + "\" -o \"" +
                                         currentTab->path + "/%(title)s.%(ext)s" + "\"",
                                     "", [](const char *rawData, std::size_t dataLen) {
                                         std::string data(rawData, dataLen);
@@ -113,13 +114,14 @@ namespace Soundux::Objects
                                             }
                                         }
                                     });
+
             Fancy::fancy.logTime().success() << "Started download of " >> url << std::endl;
             auto rtn = currentDownload->get_exit_status() == 0;
             currentDownload.reset();
             return rtn;
         }
 
-        Globals::gGui->onError(ErrorCode::TabDoesNotExist);
+        Globals::gGui->onError(Enums::ErrorCode::TabDoesNotExist);
         return false;
     }
     void YoutubeDl::killDownload()

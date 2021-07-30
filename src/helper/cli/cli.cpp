@@ -31,11 +31,15 @@ namespace Soundux
                          << "to launch Soundux normally just type: \"soundux\" without arguments" << std::endl;
         }
 
-        bool CommandLineInterface::parseProgramArguments(int argc, const char **args)
+        bool CommandLineInterface::parseProgramArguments(const std::vector<std::string> &args)
         {
-            if (argc >= 2)
+            if (args.size() >= 2)
             {
-                const std::string_view firstArg = args[1];
+                const std::string &firstArg = args[1];
+                if (firstArg == "--hidden") // ignoring CLI if the user just want to launch Soundux without gui
+                {
+                    return false;
+                }
                 if (firstArg == "--help" || firstArg == "-help" || firstArg == "help")
                 {
                     displayHelp();
@@ -50,14 +54,14 @@ namespace Soundux
                     return true;
                 }
                 auto execFunction = it->second.execFunction;
-                return execFunction(argc, args);
+                return execFunction(args);
             }
             return false;
         }
 
-        bool CommandLineInterface::playSoundCommand(int argc, const char **args)
+        bool CommandLineInterface::playSoundCommand(const std::vector<std::string> &args)
         {
-            if (argc < 3)
+            if (args.size() < 3)
             {
                 Fancy::fancy.failure() << "Missing argument for command playsound" << std::endl;
                 displayHelp();
@@ -78,19 +82,19 @@ namespace Soundux
             return true;
         }
 
-        bool CommandLineInterface::stopSoundsCommand(int, const char **)
+        bool CommandLineInterface::stopSoundsCommand(const std::vector<std::string> &)
         {
             Globals::gClient.stopSounds();
             return true;
         }
 
-        bool CommandLineInterface::hideCommand(int, const char **)
+        bool CommandLineInterface::hideCommand(const std::vector<std::string> &)
         {
             Globals::gClient.hideWindow();
             return true;
         }
 
-        bool CommandLineInterface::showCommand(int, const char **)
+        bool CommandLineInterface::showCommand(const std::vector<std::string> &)
         {
             Globals::gClient.showWindow();
             return true;

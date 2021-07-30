@@ -4,6 +4,10 @@
     <br>
     <h6>A cross-platform soundboard 🔊</h6>
     <br>
+        <a href="https://github.com/Soundux/Soundux/releases">
+      <img src="https://img.shields.io/github/release/Soundux/Soundux.svg?style=flat-square" alt="Latest Stable Release" />
+    </a>
+    <br>
     <a href="https://github.com/Soundux/Soundux/stargazers">
       <img src="https://img.shields.io/github/stars/Soundux/soundux?style=flat-square" alt="GitHub Repo stars">
     </a>
@@ -14,14 +18,14 @@
       <img src="https://img.shields.io/github/issues-pr-raw/Soundux/soundux?label=pulls&style=flat-square" alt="GitHub pull requests">
     </a>
     <br>
-    <a href="https://github.com/Soundux/Soundux/releases">
-      <img src="https://img.shields.io/github/release/Soundux/Soundux.svg?style=flat-square" alt="Latest Stable Release" />
+    <a href="https://github.com/Soundux/Soundux/blob/master/LICENSE">
+      <img src="https://img.shields.io/github/license/Soundux/Soundux.svg?style=flat-square" alt="License" />
     </a>
     <a href="https://discord.gg/4HwSGN4Ec2">
       <img src="https://img.shields.io/discord/697348809591750706?label=discord&style=flat-square" alt="Discord" />
     </a>
-    <a href="https://github.com/Soundux/Soundux/blob/master/LICENSE">
-      <img src="https://img.shields.io/github/license/Soundux/Soundux.svg?style=flat-square" alt="License" />
+    <a href="https://matrix.to/#/!XlIlRgKzoRavKnurkt:matrix.org">
+      <img src="https://img.shields.io/badge/chat-matrix%20space-blue?style=flat-square" alt="Matrix" />
     </a>
     <br>
     <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+on+Windows%22">
@@ -32,6 +36,13 @@
     </a>
     <a href="https://github.com/Soundux/Soundux/actions?query=workflow%3A%22Build+Flatpak%22">
       <img src="https://img.shields.io/github/workflow/status/Soundux/Soundux/Build%20Flatpak?label=flatpak%20build&style=flat-square" alt="Flatpak Build" />
+    </a>
+    <hr>
+    <a href="https://discord.com/invite/4HwSGN4Ec2">
+      <img src="https://invidget.switchblade.xyz/4HwSGN4Ec2" alt="Discord Invite"/>
+    </a>
+    <a href="https://hosted.weblate.org/engage/soundux/">
+      <img src="https://hosted.weblate.org/widgets/soundux/-/frontend/multi-green.svg" alt="Translation status" />
     </a>
   </p>
 </div>
@@ -54,13 +65,13 @@ These are required to run the program
 
 ## 🐧 Linux
 Please refer to your distro instructions on how to install
-- [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio)
+- [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio) / [pipewire](https://pipewire.org/) >= 0.3.26
 - Xorg
 - Libwnck3 (optional, for icon support)
 - Webkit2gtk
 - libappindicator3
 - [youtube-dl](https://youtube-dl.org/) & [ffmpeg](https://www.ffmpeg.org/) (optional, for downloader support)
-## 🪟 Windows
+## <img src="https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg" height="20"/> Windows
 - [VB-CABLE](https://vb-audio.com/Cable/) (Our installer automatically installs VB-CABLE)
 - [Webview2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) (Is also shipped with the installer)
 - [youtube-dl](https://youtube-dl.org/) & [ffmpeg](https://www.ffmpeg.org/) (optional, for downloader support)
@@ -69,14 +80,27 @@ Please refer to your distro instructions on how to install
 
 ## 🐧 Linux
 
-### ❤️ Arch Linux and derivatives
+### <img src="https://www.vectorlogo.zone/logos/archlinux/archlinux-icon.svg" height="20"/> Arch Linux and derivatives
 You can install our package with your AUR helper of choice which will automatically compile and install the latest release version
 ```sh
 yay -S soundux
 ```
 We also provide a `soundux-git` package which compiles from the master branch
 
-### 📜 Other distros
+### <img src="https://www.vectorlogo.zone/logos/ubuntu/ubuntu-icon.svg" height="20"/> Ubuntu and derivatives
+You can install Soundux via [pacstall](https://github.com/pacstall/pacstall)
+```sh
+sudo pacstall -I soundux
+```
+
+### <img src="https://www.vectorlogo.zone/logos/getfedora/getfedora-icon.svg" height="20"> Fedora
+Soundux can be installed via this [COPR repository](https://copr.fedorainfracloud.org/coprs/rivenirvana/soundux/)
+```sh
+sudo dnf copr enable rivenirvana/soundux
+sudo dnf install soundux
+```
+
+### <img src="https://www.vectorlogo.zone/logos/linuxfoundation/linuxfoundation-icon.svg" height="20" /> Distro-agnostic packages
 You can grab the latest release from the Snap Store or Flathub
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/soundux)
@@ -85,32 +109,35 @@ You can grab the latest release from the Snap Store or Flathub
   <img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/>
 </a>
 
-## 🪟 Windows
+## <img src="https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg" height="20"/> Windows
 Download our installer or portable from [the latest release](https://github.com/Soundux/Soundux/releases/latest)
 
-# 🪛 Compilation
+# 🔨 Compilation
 
 ## 🔗 Build Dependencies
 
 ### 🐧 Linux
-This list may not be accurate. Contact me if you find missing dependencies so that I can update this list
 - Webkit2gtk
+- PulseAudio development headers
+- PipeWire development headers
 - X11 client-side development headers
 - libappindicator3 development headers
 - OpenSSL development headers
 - G++ >= 9
   - Some distros still have G++ versions < 9 in their repos, using them will result in a build failure (for more information refer to [#71](https://github.com/Soundux/Soundux/issues/71)).
 
-#### 📜 Debian/Ubuntu and derivatives
+#### <img src="https://www.vectorlogo.zone/logos/debian/debian-icon.svg" height="20"/> Debian / <img src="https://www.vectorlogo.zone/logos/ubuntu/ubuntu-icon.svg" height="20"/> Ubuntu and derivatives
 ```sh
-sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev libappindicator3-dev libssl-dev
+sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev libappindicator3-dev libssl-dev libpulse-dev libpipewire-0.3-dev
 ```
-#### 📜 Fedora and derivatives
+> If you're on Ubuntu 20.04 or lower you might have to add the PipeWire PPA:
+> `sudo add-apt-repository ppa:pipewire-debian/pipewire-upstream`
+#### <img src="https://www.vectorlogo.zone/logos/getfedora/getfedora-icon.svg" height="20"> Fedora and derivatives
 ```sh
-sudo dnf install git webkit2gtk3 pulseaudio-utils cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel libappindicator-gtk3-devel
+sudo dnf install git webkit2gtk3 cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel libappindicator-gtk3-devel pulseaudio-libs-devel pipewire-devel
 ```
 
-### 🪟 Windows
+### <img src="https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg" height="20"/> Windows
 - Nuget
 - MSVC
 - CMake
@@ -149,6 +176,9 @@ The project started as a **Sound**board for Lin**ux**
 # 🗒️ License
 The code is licensed under [GPLv3](LICENSE)
 
+# ✍️ Contributing
+The contribution guidelines can be found [here](CONTRIBUTING.md), please check them out if you're planning to contribute!
+
 # ✨ Contributors
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -180,6 +210,30 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/moggesmith10"><img src="https://avatars.githubusercontent.com/u/33375517?v=4?s=50" width="50px;" alt=""/><br /><sub><b>moggesmith10</b></sub></a><br /><a href="#ideas-moggesmith10" title="Ideas, Planning, & Feedback">🤔</a></td>
     <td align="center"><a href="https://belmoussaoui.com/"><img src="https://avatars.githubusercontent.com/u/7660997?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Bilal Elmoussaoui</b></sub></a><br /><a href="#platform-bilelmoussaoui" title="Packaging/porting to new platform">📦</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/thomasfinstad"><img src="https://avatars.githubusercontent.com/u/5358752?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Thomas Finstad Larsen</b></sub></a><br /><a href="#ideas-thomasfinstad" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="http://arthurmelton.me"><img src="https://avatars.githubusercontent.com/u/29708070?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Arthur Melton</b></sub></a><br /><a href="#ideas-AMTitan" title="Ideas, Planning, & Feedback">🤔</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/serkan-maker"><img src="https://avatars.githubusercontent.com/u/63740626?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Serkan ÖNDER</b></sub></a><br /><a href="#translation-serkan-maker" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/pizzadude"><img src="https://avatars.githubusercontent.com/u/1454420?v=4?s=50" width="50px;" alt=""/><br /><sub><b>PizzaDude</b></sub></a><br /><a href="https://github.com/Soundux/Soundux/issues?q=author%3Apizzadude" title="Bug reports">🐛</a> <a href="#research-pizzadude" title="Research">🔬</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/Kylianalex"><img src="https://avatars.githubusercontent.com/u/66625058?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Kylianalex</b></sub></a><br /><a href="https://github.com/Soundux/Soundux/issues?q=author%3AKylianalex" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="http://gregerstoltnilsen.net/"><img src="https://avatars.githubusercontent.com/u/1364443?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Greger</b></sub></a><br /><a href="https://github.com/Soundux/Soundux/issues?q=author%3Agregersn" title="Bug reports">🐛</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/rivenirvana"><img src="https://avatars.githubusercontent.com/u/43519644?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Arvin Verain</b></sub></a><br /><a href="#platform-rivenirvana" title="Packaging/porting to new platform">📦</a></td>
+    <td align="center"><a href="http://einfacheinalex.eu/"><img src="https://avatars.githubusercontent.com/u/20642291?v=4?s=50" width="50px;" alt=""/><br /><sub><b>EinfachEinAlex</b></sub></a><br /><a href="https://github.com/Soundux/Soundux/commits?author=EinfachEinAlex" title="Code">💻</a> <a href="#research-EinfachEinAlex" title="Research">🔬</a> <a href="https://github.com/Soundux/Soundux/commits?author=EinfachEinAlex" title="Tests">⚠️</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://discord.gg/ubmTQnuM3Z"><img src="https://avatars.githubusercontent.com/u/69876322?v=4?s=50" width="50px;" alt=""/><br /><sub><b>MeblIkea</b></sub></a><br /><a href="#translation-MeblIkea" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://nathanbonnemains.squill.fr/"><img src="https://avatars.githubusercontent.com/u/45366162?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Nathan Bonnemains</b></sub></a><br /><a href="#translation-NathanBnm" title="Translation">🌍</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/lucasvbeek"><img src="https://avatars.githubusercontent.com/u/29404838?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Lucas van Beek</b></sub></a><br /><a href="#translation-lucasvbeek" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/underhood"><img src="https://avatars.githubusercontent.com/u/6674623?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Timotej S.</b></sub></a><br /><a href="https://github.com/Soundux/Soundux/issues?q=author%3Aunderhood" title="Bug reports">🐛</a> <a href="https://github.com/Soundux/Soundux/commits?author=underhood" title="Tests">⚠️</a></td>
   </tr>
 </table>
 

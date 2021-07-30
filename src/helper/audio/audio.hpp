@@ -1,11 +1,14 @@
 #pragma once
-#include <core/global/objects.hpp>
+#include <atomic>
+#include <core/objects/objects.hpp>
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <miniaudio.h>
+#include <mutex>
 #include <optional>
-#include <shared_mutex>
 #include <string>
+#include <var_guard.hpp>
 
 namespace Soundux
 {
@@ -19,67 +22,67 @@ namespace Soundux
         };
         struct PlayingSound
         {
-            ma_device *rawDevice;
-            ma_decoder *rawDecoder;
-            std::uint64_t seekTo = 0;
+            AudioDevice playbackDevice;
+
+            struct
+            {
+                std::atomic<ma_device *> device;
+                std::atomic<ma_decoder *> decoder;
+            } raw;
+
             std::uint64_t length = 0;
-            std::uint64_t readInMs = 0;
             std::uint64_t lengthInMs = 0;
             std::uint64_t readFrames = 0;
             std::uint64_t sampleRate = 0;
-            bool shouldNotReport = false;
 
+            std::atomic<bool> paused = false;
+            std::atomic<bool> repeat = false;
+            std::atomic<bool> shouldSeek = false;
+            std::atomic<std::uint64_t> seekTo = 0;
+            std::atomic<std::uint64_t> readInMs = 0;
+
+            Sound sound;
+            std::uint32_t id;
             std::uint64_t buffer = 0;
 
-            std::uint32_t id;
-            Sound sound;
-            bool paused = false;
-            bool repeat = false;
-            bool shouldSeek = false;
+            PlayingSound() = default;
+            PlayingSound(const PlayingSound &);
+            PlayingSound &operator=(const PlayingSound &other);
         };
         class Audio
         {
-            std::uint32_t playingSoundIdCounter;
+            sxl::var_guard<std::map<std::uint32_t, std::shared_ptr<PlayingSound>>, std::recursive_mutex> playingSounds;
 
-            std::shared_mutex soundsMutex;
-            std::map<ma_device *, PlayingSound> playingSounds;
+            void onFinished(PlayingSound);
+            void onSoundSeeked(PlayingSound *, std::uint64_t);
+            void onSoundProgressed(PlayingSound *, std::uint64_t);
 
-            std::shared_mutex deviceMutex;
-            std::map<std::string, AudioDevice> devices;
-
-            std::vector<AudioDevice> fetchAudioDevices();
             static void data_callback(ma_device *device, void *output, const void *input, std::uint32_t frameCount);
 
-            void onFinished(ma_device *);
-            void onSoundSeeked(ma_device *, std::uint64_t);
-            void onSoundProgressed(ma_device *, std::uint64_t);
-
-            float getVolume(const std::string &);
-            std::optional<PlayingSound> getPlayingSound(ma_device *);
-
           public:
-            void stopAll();
-            bool stop(const std::uint32_t &);
             std::optional<PlayingSound> pause(const std::uint32_t &);
             std::optional<PlayingSound> resume(const std::uint32_t &);
             std::optional<PlayingSound> repeat(const std::uint32_t &, bool);
             std::optional<PlayingSound> seek(const std::uint32_t &, std::uint64_t);
-            std::optional<PlayingSound> play(const Objects::Sound &, const std::optional<AudioDevice> & = std::nullopt,
-                                             bool = false);
+            std::optional<PlayingSound> play(const Objects::Sound &, const std::optional<AudioDevice> & = std::nullopt);
 
+            std::vector<AudioDevice> getAudioDevices();
             std::vector<Objects::PlayingSound> getPlayingSounds();
 
-            void refreshAudioDevices();
-            std::vector<AudioDevice> getAudioDevices();
-            std::optional<std::reference_wrapper<AudioDevice>> getAudioDevice(const std::string &);
+#if defined(_WIN32)
+            std::optional<AudioDevice> getAudioDevice(const std::string &);
+#endif
 
             void setup();
             void destroy();
 
+            void stopAll();
+            bool stop(const std::uint32_t &);
+
 #if defined(__linux__)
-            AudioDevice sinkAudioDevice;
+            std::optional<AudioDevice> nullSink;
 #endif
-            AudioDevice defaultOutputDevice;
+            AudioDevice defaultPlayback;
         };
     } // namespace Objects
 } // namespace Soundux

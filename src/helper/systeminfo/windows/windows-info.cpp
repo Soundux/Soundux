@@ -7,9 +7,8 @@
 
 std::string SystemInfo::getSystemInfo()
 {
-    std::string result;
-
-    if (Soundux::Helpers::exec("cmd /c ver", result))
+    auto [result, success] = Soundux::Helpers::getResultCompact("cmd /c ver");
+    if (success)
     {
         if (result.empty())
         {

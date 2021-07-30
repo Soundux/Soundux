@@ -10,7 +10,7 @@
   "commit": true,
   "commitConvention": "none",
   "contributors": [
-      {
+    {
       "login": "Curve",
       "name": "Noah",
       "avatar_url": "https://avatars.githubusercontent.com/u/37805707?v=4",
@@ -146,7 +146,120 @@
       "contributions": [
         "platform"
       ]
+    },
+    {
+      "login": "thomasfinstad",
+      "name": "Thomas Finstad Larsen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5358752?v=4",
+      "profile": "https://github.com/thomasfinstad",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "AMTitan",
+      "name": "Arthur Melton",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29708070?v=4",
+      "profile": "http://arthurmelton.me",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "serkan-maker",
+      "name": "Serkan ÖNDER",
+      "avatar_url": "https://avatars.githubusercontent.com/u/63740626?v=4",
+      "profile": "https://github.com/serkan-maker",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "pizzadude",
+      "name": "PizzaDude",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1454420?v=4",
+      "profile": "https://github.com/pizzadude",
+      "contributions": [
+        "bug",
+        "research"
+      ]
+    },
+    {
+      "login": "Kylianalex",
+      "name": "Kylianalex",
+      "avatar_url": "https://avatars.githubusercontent.com/u/66625058?v=4",
+      "profile": "https://github.com/Kylianalex",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "gregersn",
+      "name": "Greger",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1364443?v=4",
+      "profile": "http://gregerstoltnilsen.net/",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "rivenirvana",
+      "name": "Arvin Verain",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43519644?v=4",
+      "profile": "https://github.com/rivenirvana",
+      "contributions": [
+        "platform"
+      ]
+    },
+    {
+      "login": "EinfachEinAlex",
+      "name": "EinfachEinAlex",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20642291?v=4",
+      "profile": "http://einfacheinalex.eu/",
+      "contributions": [
+        "code",
+        "research",
+        "test"
+      ]
+    },
+    {
+      "login": "MeblIkea",
+      "name": "MeblIkea",
+      "avatar_url": "https://avatars.githubusercontent.com/u/69876322?v=4",
+      "profile": "https://discord.gg/ubmTQnuM3Z",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "NathanBnm",
+      "name": "Nathan Bonnemains",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45366162?v=4",
+      "profile": "https://nathanbonnemains.squill.fr/",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "lucasvbeek",
+      "name": "Lucas van Beek",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29404838?v=4",
+      "profile": "https://github.com/lucasvbeek",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "underhood",
+      "name": "Timotej S.",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6674623?v=4",
+      "profile": "https://github.com/underhood",
+      "contributions": [
+        "bug",
+        "test"
+      ]
     }
   ],
-  "contributorsPerLine": 2
+  "contributorsPerLine": 2,
+  "skipCi": true
 }

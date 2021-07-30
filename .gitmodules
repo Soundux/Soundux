@@ -10,9 +10,6 @@
 [submodule "lib/nativefiledialog-extended"]
 	path = lib/nativefiledialog-extended
 	url = https://github.com/btzy/nativefiledialog-extended
-[submodule "lib/InstanceGuard"]
-	path = lib/InstanceGuard
-	url = https://github.com/Grandbrain/InstanceGuard
 [submodule "src/ui/impl/webview/lib/soundux-ui"]
 	path = src/ui/impl/webview/lib/soundux-ui
 	url = https://github.com/Soundux/soundux-ui/
@@ -32,3 +29,18 @@
 [submodule "deployment/flatpak/shared-modules"]
 	path = deployment/flatpak/shared-modules
 	url = https://github.com/flathub/shared-modules
+[submodule "lib/semver"]
+	path = lib/semver
+	url = https://github.com/Neargye/semver
+[submodule "lib/lockpp"]
+	path = lib/lockpp
+	url = https://github.com/Soundux/lockpp
+[submodule "lib/backward-cpp"]
+	path = lib/backward-cpp
+	url = https://github.com/bombela/backward-cpp
+[submodule "lib/guardpp"]
+	path = lib/guardpp
+	url = https://github.com/Soundux/guardpp
+[submodule "lib/libremidi"]
+	path = lib/libremidi
+	url = https://github.com/Soundux/libremidi

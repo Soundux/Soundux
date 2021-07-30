@@ -1,5 +1,6 @@
 #pragma once
-#include <core/global/objects.hpp>
+#include <core/objects/data.hpp>
+#include <core/objects/settings.hpp>
 #include <string>
 
 namespace Soundux

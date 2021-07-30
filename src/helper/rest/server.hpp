@@ -1,6 +1,13 @@
 #pragma once
 
-#include <httplib.h>
+#include <memory>
+#include <thread>
+
+// forward to avoid strange compilation errors
+namespace httplib
+{
+    class Server;
+}
 
 namespace Soundux
 {
@@ -8,7 +15,7 @@ namespace Soundux
     {
         class SounduxServer
         {
-            httplib::Server m_Server;
+            std::shared_ptr<httplib::Server> m_Server;
             std::thread m_ListenThread;
 
           public:

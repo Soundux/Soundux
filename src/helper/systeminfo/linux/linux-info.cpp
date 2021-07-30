@@ -5,8 +5,9 @@
 
 std::string SystemInfo::getSystemInfo()
 {
-    std::string result;
-    if (Soundux::Helpers::exec("lsb_release -a", result))
+    auto [result, success] = Soundux::Helpers::getResultCompact("lsb_release -a");
+
+    if (success)
     {
         if (result.empty())
         {
@@ -26,7 +27,7 @@ std::string SystemInfo::getSystemInfo()
     }
     else
     {
-        Fancy::fancy.logTime() << "XDG_CURRENT_DESKTOP not set" << std::endl;
+        Fancy::fancy.logTime().warning() << "XDG_CURRENT_DESKTOP not set" << std::endl;
     }
 
     auto *sessionType = std::getenv("XDG_SESSION_TYPE"); // NOLINT
@@ -36,7 +37,7 @@ std::string SystemInfo::getSystemInfo()
     }
     else
     {
-        Fancy::fancy.logTime() << "XDG_SESSION_TYPE not set" << std::endl;
+        Fancy::fancy.logTime().warning() << "XDG_SESSION_TYPE not set" << std::endl;
     }
 
     return result;

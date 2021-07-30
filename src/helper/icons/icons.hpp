@@ -1,32 +1,28 @@
 #if defined(__linux__)
 #pragma once
-#include <gdk/gdk.h>
+#include "forward.hpp"
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 
 namespace Soundux
 {
-    namespace Lib
-    {
-        struct WnckScreen;
-        struct WnckWindow;
-        inline WnckScreen *(*wnckGetDefaultScreen)();
-        inline void (*wnckForceUpdate)(WnckScreen *);
-        inline int (*wnckGetWindowPID)(WnckWindow *);
-        inline GList *(*wnckGetScreenWindows)(WnckScreen *);
-        inline GdkPixbuf *(*wnckGetWindowIcon)(WnckWindow *);
-    } // namespace Lib
     namespace Objects
     {
         class IconFetcher
         {
-            Lib::WnckScreen *screen;
-            bool isAvailable = false;
+            LibWnck::Screen *screen;
             std::map<int, std::string> cache;
 
+          private:
+            IconFetcher() = default;
+
+            bool setup();
+            std::optional<int> getPpid(int pid);
+
           public:
-            void setup();
+            static std::shared_ptr<IconFetcher> createInstance();
             std::optional<std::string> getIcon(int pid, bool recursive = true);
         };
     } // namespace Objects

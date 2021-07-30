@@ -5,7 +5,12 @@
 #include <filesystem>
 #include <fstream>
 #include <optional>
+
+#pragma push_macro("UNICOCDE")
+#undef UNICODE
 #include <process.hpp>
+#pragma pop_macro("UNICOCDE")
+
 #include <regex>
 #include <system_error>
 
@@ -15,32 +20,42 @@
 #include <stringapiset.h>
 #endif
 
-namespace Soundux::Helpers
+namespace Soundux
 {
-    std::vector<std::string> splitByNewLine(const std::string &str)
+    bool Helpers::run(const std::string &command)
     {
-        std::vector<std::string> result;
-        std::stringstream ss(str);
-        for (std::string line; std::getline(ss, line, '\n');)
-        {
-            result.emplace_back(line);
-        }
-        return result;
+        TinyProcessLib::Process process(command);
+        return process.get_exit_status() == 0;
     }
-    bool exec(const std::string &command, std::string &result)
+    std::pair<std::string, bool> Helpers::getResultCompact(const std::string &command)
     {
-        result.clear();
+        std::string result;
+
         TinyProcessLib::Process process(
             command, "", [&](const char *data, std::size_t dataLen) { result += std::string(data, dataLen); });
 
-        return process.get_exit_status() == 0;
+        return std::make_pair(result, process.get_exit_status() == 0);
+    }
+    std::pair<std::vector<std::string>, bool> Helpers::getResult(const std::string &command)
+    {
+        std::stringstream result{};
+
+        TinyProcessLib::Process process(
+            command, "", [&](const char *data, std::size_t dataLen) { result << std::string(data, dataLen); });
+        auto success = process.get_exit_status() == 0;
+
+        std::vector<std::string> rtn;
+        for (std::string line; std::getline(result, line, '\n');)
+            rtn.emplace_back(line);
+
+        return std::make_pair(rtn, success);
     }
 #if defined(_WIN32)
-    std::wstring widen(const std::string &s)
+    std::wstring Helpers::widen(const std::string &s)
     {
         int wsz = MultiByteToWideChar(65001, 0, s.c_str(), -1, nullptr, 0);
         if (!wsz)
-            return std::wstring();
+            return {};
 
         std::wstring out(wsz, 0);
         out.resize(wsz - 1);
@@ -48,12 +63,12 @@ namespace Soundux::Helpers
         MultiByteToWideChar(65001, 0, s.c_str(), -1, &out[0], wsz);
         return out;
     }
-    std::string narrow(const std::wstring &s)
+    std::string Helpers::narrow(const std::wstring &s)
     {
         int wsz = WideCharToMultiByte(65001, 0, s.c_str(), -1, nullptr, 0, nullptr, nullptr);
 
         if (!wsz)
-            return std::string();
+            return {};
 
         std::string out(wsz, 0);
         out.resize(wsz - 1);
@@ -62,41 +77,7 @@ namespace Soundux::Helpers
         return out;
     }
 #endif
-#if defined(__linux__)
-    std::optional<int> getPpid(int pid)
-    {
-        std::filesystem::path path("/proc/" + std::to_string(pid));
-        if (std::filesystem::exists(path))
-        {
-            auto statusFile = path / "status";
-            if (std::filesystem::exists(statusFile) && std::filesystem::is_regular_file(statusFile))
-            {
-                static const std::regex pidRegex(R"(PPid:(\ +|\t)(\d+))");
-                std::ifstream statusStream(statusFile);
-
-                std::string line;
-                std::smatch match;
-                while (std::getline(statusStream, line))
-                {
-                    if (std::regex_search(line, match, pidRegex))
-                    {
-                        if (match[2].matched)
-                        {
-                            return std::stoi(match[2]);
-                        }
-                    }
-                }
-
-                Fancy::fancy.logTime().warning() << "Failed to find ppid of " >> pid << std::endl;
-                return std::nullopt;
-            }
-        }
-
-        Fancy::fancy.logTime().warning() << "Failed to find ppid of " >> pid << ", process does not exist" << std::endl;
-        return std::nullopt;
-    }
-#endif
-    bool deleteFile(const std::string &path, bool trash)
+    bool Helpers::deleteFile(const std::string &path, bool trash)
     {
         if (!trash)
         {
@@ -179,4 +160,4 @@ namespace Soundux::Helpers
         return true;
 #endif
     }
-} // namespace Soundux::Helpers
+} // namespace Soundux

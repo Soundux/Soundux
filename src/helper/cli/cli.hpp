@@ -9,14 +9,13 @@ namespace Soundux
     namespace Objects
     {
         constexpr auto _1 = std::placeholders::_1;
-        constexpr auto _2 = std::placeholders::_2;
 
         class CommandLineInterface
         {
 
             struct Command
             {
-                using command_function_t = std::function<bool(int, const char **)>;
+                using command_function_t = std::function<bool(const std::vector<std::string> &)>;
 
                 std::string description, example;
                 command_function_t execFunction;
@@ -29,26 +28,26 @@ namespace Soundux
                 // command name      command description               command example
                 {"playsound",
                  {"play a sound specified by its id", "soundux playsound 40",
-                  std::bind(&CommandLineInterface::playSoundCommand, this, _1, _2)}},
+                  std::bind(&CommandLineInterface::playSoundCommand, this, _1)}},
                 {"stopsounds",
                  {"stop playing all of the current sounds", "soundux stopsounds",
-                  std::bind(&CommandLineInterface::stopSoundsCommand, this, _1, _2)}},
+                  std::bind(&CommandLineInterface::stopSoundsCommand, this, _1)}},
                 {"hide",
                  {"\thide Soundux window (if not hidden)", "soundux hide",
-                  std::bind(&CommandLineInterface::hideCommand, this, _1, _2)}},
-                {"show",
+                  std::bind(&CommandLineInterface::hideCommand, this, _1)}},
+                {"show", // BUG : if Soundux is launched hidden, sending this command crashes the window
                  {"\tshow Soundux window (if not visible)", "soundux show",
-                  std::bind(&CommandLineInterface::showCommand, this, _1, _2)}},
+                  std::bind(&CommandLineInterface::showCommand, this, _1)}},
             };
 
-            bool playSoundCommand(int, const char **);
-            bool stopSoundsCommand(int, const char **);
-            bool hideCommand(int, const char **);
-            bool showCommand(int, const char **);
+            bool playSoundCommand(const std::vector<std::string> &args);
+            bool stopSoundsCommand(const std::vector<std::string> &args);
+            bool hideCommand(const std::vector<std::string> &args);
+            bool showCommand(const std::vector<std::string> &args);
             void displayHelp();
 
           public:
-            bool parseProgramArguments(int argc, const char **args);
+            bool parseProgramArguments(const std::vector<std::string> &args);
         };
     } // namespace Objects
 } // namespace Soundux
