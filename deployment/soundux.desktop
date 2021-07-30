@@ -7,4 +7,4 @@ Exec=/opt/soundux/soundux
 Icon=soundux
 Terminal=false
 Categories=Audio;Music;Player;AudioVideo;
-Comment=A universal soundboard using pulseaudio modules
+Comment=A universal soundboard that uses PulseAudio modules or PipeWire linking

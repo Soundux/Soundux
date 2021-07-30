@@ -10,21 +10,21 @@ jobs:
                 language: ["cpp"]
 
         steps:
-            - name: Setup Node.js environment
-              uses: actions/setup-node@v2.1.5
-
             - name: Setup NuGet.exe for use with actions
               uses: NuGet/setup-nuget@v1.0.5
 
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@v2.3.4
               with:
                   submodules: recursive
 
             - name: Install OpenSSL
-              uses: crazy-max/ghaction-chocolatey@v1
+              uses: crazy-max/ghaction-chocolatey@v1.5.0
               with:
                   args: install openssl -y
+
+            - name: Add NuGet Remote
+              run: "nuget.exe sources Add -Name NuGetRemote -Source https://api.nuget.org/v3/index.json"
 
             - name: Setup tmate session
               uses: mxschmitt/action-tmate@v3

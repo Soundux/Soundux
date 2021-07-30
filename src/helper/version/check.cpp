@@ -2,7 +2,7 @@
 #include <fancy.hpp>
 #include <json.hpp>
 #include <optional>
-#include <regex>
+#include <semver.hpp>
 
 httplib::Client VersionCheck::client("https://api.github.com");
 
@@ -19,27 +19,19 @@ std::optional<Soundux::Objects::VersionStatus> VersionCheck::getStatus()
             auto latestTag = parsed[0]["name"];
             if (!latestTag.is_null())
             {
-                static std::regex lastNumber(R"(.*(\d))");
-                bool outdated = false;
-
-                std::smatch match;
                 auto latestTagStr = latestTag.get<std::string>();
-                if (std::regex_search(latestTagStr, match, lastNumber))
+
+                try
                 {
-                    auto remoteNumber = std::stoi(match[1]);
-                    auto localVersion = std::string(SOUNDUX_VERSION);
-                    if (std::regex_search(localVersion, match, lastNumber))
-                    {
-                        auto localNumber = std::stoi(match[1]);
+                    auto remote = semver::from_string(latestTagStr);
+                    auto local = semver::from_string(SOUNDUX_VERSION);
 
-                        if (remoteNumber > localNumber)
-                        {
-                            outdated = true;
-                        }
-                    }
+                    return Soundux::Objects::VersionStatus{SOUNDUX_VERSION, latestTagStr, remote > local};
                 }
-
-                return Soundux::Objects::VersionStatus{SOUNDUX_VERSION, latestTag, outdated};
+                catch (const std::exception &e)
+                {
+                    Fancy::fancy.logTime().warning() << "Could not fetch version" << std::endl;
+                }
             }
             Fancy::fancy.logTime().warning() << "Failed to find latest tag" << std::endl;
         }

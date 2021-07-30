@@ -1,19 +1,26 @@
 #pragma once
 #include <helper/audio/audio.hpp>
 #if defined(__linux__)
-#include <helper/audio/linux/pulse.hpp>
+#include <helper/audio/linux/backend.hpp>
+#elif defined(_WIN32)
+#include <helper/audio/windows/winsound.hpp>
 #endif
-#include "objects.hpp"
 #include <core/config/config.hpp>
 #include <core/hotkeys/hotkeys.hpp>
+#include <core/objects/data.hpp>
+#include <core/objects/objects.hpp>
+#include <core/objects/settings.hpp>
+#include <guard.hpp>
 #include <helper/cli/cli.hpp>
 #include <helper/icons/icons.hpp>
+#include <helper/queue/queue.hpp>
 #include <helper/rest/client.hpp>
 #include <helper/rest/server.hpp>
-#include <helper/threads/processing.hpp>
 #include <helper/ytdl/youtube-dl.hpp>
+
 #include <memory>
 #include <ui/ui.hpp>
+#include <var_guard.hpp>
 
 namespace Soundux
 {
@@ -22,24 +29,26 @@ namespace Soundux
         inline Objects::Data gData;
         inline Objects::Audio gAudio;
 #if defined(__linux__)
-        inline Objects::Pulse gPulse;
-        inline Objects::IconFetcher gIcons;
+        inline std::shared_ptr<Objects::IconFetcher> gIcons;
+        inline std::shared_ptr<Objects::AudioBackend> gAudioBackend;
+#elif defined(_WIN32)
+        inline std::shared_ptr<Objects::WinSound> gWinSound;
 #endif
+        inline Objects::Queue gQueue;
         inline Objects::Config gConfig;
         inline Objects::YoutubeDl gYtdl;
-        inline Objects::Hotkeys gHotKeys;
         inline Objects::Settings gSettings;
         inline std::unique_ptr<Objects::Window> gGui;
-        inline Objects::ProcessingQueue<std::uintptr_t> gQueue;
+        inline std::shared_ptr<Objects::Hotkeys> gHotKeys;
+
+        inline std::shared_ptr<Instance::Guard> gGuard;
 
         inline Objects::SounduxServer gServer;
         inline Objects::SounduxClient gClient;
         inline Objects::CommandLineInterface gCli;
 
         /* Allows for fast & easy sound access, is populated on start up */
-        inline std::shared_mutex gSoundsMutex;
-        inline std::shared_mutex gFavoritesMutex;
-        inline std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>> gSounds;
-        inline std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>> gFavorites;
+        inline sxl::var_guard<std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>>> gSounds;
+        inline sxl::var_guard<std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>>> gFavorites;
     } // namespace Globals
 } // namespace Soundux

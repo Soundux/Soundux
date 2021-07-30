@@ -1,88 +1,90 @@
 #if defined(_WIN32)
-#include "../hotkeys.hpp"
-#include <Windows.h>
-#include <chrono>
+#include "windows.hpp"
 #include <core/global/globals.hpp>
-
-using namespace std::chrono_literals;
+#include <winuser.h>
 
 namespace Soundux::Objects
 {
-    HHOOK oKeyBoardProc;
-    HHOOK oMouseProc;
+    HHOOK WindowsHotkeys::oMouseProc;
+    HHOOK WindowsHotkeys::oKeyboardProc;
 
-    LRESULT CALLBACK keyBoardProc(int nCode, WPARAM wParam, LPARAM lParam)
+    void WindowsHotkeys::setup()
+    {
+        Hotkeys::setup();
+
+        oMouseProc = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, nullptr, NULL);
+        oKeyboardProc = SetWindowsHookEx(WH_KEYBOARD_LL, keyBoardProc, nullptr, NULL);
+
+        listener = std::thread([this] { listen(); });
+        keyPresser = std::thread([this] { presser(); });
+    }
+    LRESULT CALLBACK WindowsHotkeys::keyBoardProc(int nCode, WPARAM wParam, LPARAM lParam)
     {
         if (nCode == HC_ACTION)
         {
+            auto *info = reinterpret_cast<PKBDLLHOOKSTRUCT>(lParam); // NOLINT
+
             if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
             {
-                auto *info = reinterpret_cast<PKBDLLHOOKSTRUCT>(lParam);
-                Globals::gHotKeys.onKeyDown(info->vkCode);
+                Key key;
+                key.type = Enums::KeyType::Keyboard;
+                key.key = static_cast<int>(info->vkCode);
+
+                Globals::gHotKeys->onKeyDown(key);
             }
             else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
             {
-                auto *info = reinterpret_cast<PKBDLLHOOKSTRUCT>(lParam);
-                Globals::gHotKeys.onKeyUp(info->vkCode);
+                Key key;
+                key.type = Enums::KeyType::Keyboard;
+                key.key = static_cast<int>(info->vkCode);
+
+                Globals::gHotKeys->onKeyUp(key);
             }
         }
-        return CallNextHookEx(oKeyBoardProc, nCode, wParam, lParam);
+        return CallNextHookEx(oKeyboardProc, nCode, wParam, lParam);
     }
-
-    LRESULT CALLBACK mouseProc(int nCode, WPARAM wParam, LPARAM lParam)
+    LRESULT CALLBACK WindowsHotkeys::mouseProc(int nCode, WPARAM wParam, LPARAM lParam)
     {
         if (nCode == HC_ACTION)
         {
-            // TODO(curve): How would I tell if XButton1 or XButton2 is pressed? Is there a nicer way to do this?
-
             switch (wParam)
             {
-            case WM_RBUTTONUP:
-                Globals::gHotKeys.onKeyUp(VK_RBUTTON);
-                break;
-
-            case WM_RBUTTONDOWN:
-                Globals::gHotKeys.onKeyDown(VK_RBUTTON);
-                break;
-
-            case WM_MBUTTONDOWN:
-                Globals::gHotKeys.onKeyDown(VK_MBUTTON);
-                break;
-
-            case WM_MBUTTONUP:
-                Globals::gHotKeys.onKeyUp(VK_MBUTTON);
-                break;
+            case WM_RBUTTONUP: {
+                Key key;
+                key.key = VK_RBUTTON;
+                key.type = Enums::KeyType::Mouse;
+                Soundux::Globals::gHotKeys->onKeyUp(key);
+            }
+            break;
+            case WM_RBUTTONDOWN: {
+                Key key;
+                key.key = VK_RBUTTON;
+                key.type = Enums::KeyType::Mouse;
+                Soundux::Globals::gHotKeys->onKeyDown(key);
+            }
+            break;
+            case WM_MBUTTONUP: {
+                Key key;
+                key.key = VK_MBUTTON;
+                key.type = Enums::KeyType::Mouse;
+                Soundux::Globals::gHotKeys->onKeyUp(key);
+            }
+            break;
+            case WM_MBUTTONDOWN: {
+                Key key;
+                key.key = VK_RBUTTON;
+                key.type = Enums::KeyType::Mouse;
+                Soundux::Globals::gHotKeys->onKeyDown(key);
+            }
+            break;
             }
         }
         return CallNextHookEx(oMouseProc, nCode, wParam, lParam);
     }
-
-    void Hotkeys::listen()
+    void WindowsHotkeys::listen()
     {
-        oKeyBoardProc = SetWindowsHookEx(WH_KEYBOARD_LL, keyBoardProc, GetModuleHandle(nullptr), NULL);
-        oMouseProc = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, GetModuleHandle(nullptr), NULL);
-        keyPressThread = std::thread([this] {
-            while (!kill)
-            {
-                //* Yes, this is absolutely cursed. I tried to implement this by just sending the keydown event once but
-                //* it does not work like that on windows, so I have to do this, thank you Microsoft, I hate you.
-                if (shouldPressKeys)
-                {
-                    for (const auto &key : keysToPress)
-                    {
-                        keybd_event(key, 0, 1, 0);
-                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                    }
-                }
-                else
-                {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-                }
-            }
-        });
-
         MSG message;
-        while (!GetMessage(&message, nullptr, NULL, NULL))
+        while (!GetMessage(&message, nullptr, 0, 0))
         {
             if (kill)
             {
@@ -92,68 +94,82 @@ namespace Soundux::Objects
             DispatchMessage(&message);
         }
     }
-
-    void Hotkeys::stop()
+    void WindowsHotkeys::presser()
     {
-        kill = true;
-        UnhookWindowsHookEx(oMouseProc);
-        UnhookWindowsHookEx(oKeyBoardProc);
-        PostThreadMessage(GetThreadId(listener.native_handle()), WM_QUIT, 0, 0);
-        listener.join();
-        keyPressThread.join();
-    }
-
-    std::string Hotkeys::getKeyName(const int &key)
-    {
-        auto scanCode = MapVirtualKey(key, MAPVK_VK_TO_VSC);
-
-        CHAR name[128];
-        int result = 0;
-        switch (key)
+        std::unique_lock lock(keysToPressMutex);
+        while (!kill)
         {
-        case VK_LEFT:
-        case VK_UP:
-        case VK_RIGHT:
-        case VK_DOWN:
-        case VK_RCONTROL:
-        case VK_RMENU:
-        case VK_LWIN:
-        case VK_RWIN:
-        case VK_APPS:
-        case VK_PRIOR:
-        case VK_NEXT:
-        case VK_END:
-        case VK_HOME:
-        case VK_INSERT:
-        case VK_DELETE:
-        case VK_DIVIDE:
-        case VK_NUMLOCK:
-            scanCode |= KF_EXTENDED;
-        default:
-            result = GetKeyNameTextA(scanCode << 16, name, 128);
+            cv.wait(lock, [&]() { return !keysToPress.empty() || kill; });
+            //* Yes, this is absolutely cursed. I tried to implement this by just sending the keydown event once but
+            //* it does not work like that on windows, so I have to do this, thank you Microsoft, I hate you.
+            for (const auto &key : keysToPress)
+            {
+                keybd_event(key.key, 0, 1, 0);
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
         }
-        if (result == 0)
+    }
+    std::string WindowsHotkeys::getKeyName(const Key &key)
+    {
+        if (!Hotkeys::getKeyName(key).empty())
         {
-            return "KEY_" + std::to_string(key);
+            return Hotkeys::getKeyName(key);
         }
 
-        return name;
-    }
+        if (key.type == Enums::KeyType::Keyboard)
+        {
+            char name[128];
+            auto result = GetKeyNameTextA(MapVirtualKey(key.key, MAPVK_VK_TO_VSC) << 16, name, 128);
 
-    void Hotkeys::pressKeys(const std::vector<int> &keys)
+            if (result == 0)
+            {
+                return "KEY_" + std::to_string(key.key);
+            }
+
+            return name;
+        }
+
+        if (key.type == Enums::KeyType::Mouse)
+        {
+            return "MOUSE_" + std::to_string(key.key);
+        }
+
+        return "";
+    }
+    void WindowsHotkeys::pressKeys(const std::vector<Key> &keys)
     {
+        std::unique_lock lock(keysToPressMutex);
         keysToPress = keys;
-        shouldPressKeys = true;
     }
-
-    void Hotkeys::releaseKeys([[maybe_unused]] const std::vector<int> &keys)
+    void WindowsHotkeys::releaseKeys(const std::vector<Key> &keys)
     {
-        shouldPressKeys = false;
-        keysToPress.clear();
+        std::unique_lock lock(keysToPressMutex);
         for (const auto &key : keys)
         {
-            keybd_event(key, 0, 2, 0);
+            for (auto it = keysToPress.begin(); it != keysToPress.end();)
+            {
+                if (*it == key)
+                {
+                    it = keysToPress.erase(it);
+                }
+                else
+                {
+                    ++it;
+                }
+            }
         }
+    }
+    WindowsHotkeys::~WindowsHotkeys()
+    {
+        kill = true;
+        PostThreadMessage(GetThreadId(listener.native_handle()), WM_QUIT, 0, 0);
+
+        listener.join();
+        cv.notify_all();
+        keyPresser.join();
+
+        UnhookWindowsHookEx(oMouseProc);
+        UnhookWindowsHookEx(oKeyboardProc);
     }
 } // namespace Soundux::Objects
 #endif

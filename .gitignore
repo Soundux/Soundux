@@ -8,3 +8,4 @@ analyze
 node_modules
 yarn.lock
 package.json
+compile_commands.json

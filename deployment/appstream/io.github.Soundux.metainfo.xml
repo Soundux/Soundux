@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2020 Soundux -->
+<!-- Copyright 2021 Soundux -->
 <component type="desktop-application">
   <id>io.github.Soundux</id>
   <launchable type="desktop-id">io.github.Soundux.desktop</launchable>
@@ -14,7 +14,7 @@
   <url type="help">https://github.com/Soundux/Soundux/issues</url>
   <description>
     <p>
-      A universal soundboard using pulseaudio modules
+      A universal soundboard that uses PulseAudio modules or PipeWire linking
     </p>
     <p>Features</p>
     <ul>
@@ -55,6 +55,73 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.2.7" date="2021-06-04">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2.7</url>
+      <description>
+        <ul>
+          <li>Mono Support for PipeWire</li>
+          <li>Add Tab opens on last folder and initially opens in home folder</li>
+          <li>Fix audio playing at 100% in the beginning</li>
+          <li>New Translations (Greek, Dutch, French)</li>
+          <li>Fixed Space not working in search</li>
+          <li>Faster sorting, Per Tab sorting</li>
+          <li>Added minimum PipeWire version</li>
+          <li>Arrow Keys to navigate tabs</li>
+          <li>Set Volume individually</li>
+          <li>UI Improvements</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.2.6" date="2021-05-24">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2.6</url>
+      <description>
+        <ul>
+          <li>Recursive Folder adding</li>
+          <li>Crashes with PulseAudio</li>
+          <li>Fix Icons</li>
+          <li>Bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.2.5" date="2021-05-24">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2.5</url>
+      <description>
+        <ul>
+          <li>Command line argument to start hidden</li>
+          <li>Support multiple output apps</li>
+          <li>Support multiple pass-through apps</li>
+          <li>Restore output on startup</li>
+          <li>UI improvements</li>
+          <li>Bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.2.4" date="2021-05-18">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2.4</url>
+        <description>
+        <ul>
+          <li>Enable Icon support for flatpak</li>
+          <li>Fix Blank Page bug on Ubuntu</li>
+          <li>Fix Crash on Startup</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.2.3" date="2021-05-17">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2.3</url>
+      <description>
+        <ul>
+          <li>PipeWire support</li>
+          <li>Delete confirmation</li>
+          <li>Open Tab folder</li>
+          <li>Favorites</li>
+          <li>Playlist mode</li>
+          <li>Push to talk keys</li>
+          <li>Delete Sounds (move to trash)</li>
+          <li>Improved Launchpad mode</li>
+          <li>Bug fixes and other improvements</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.2b3" date="2021-04-01">
       <url>https://github.com/Soundux/Soundux/releases/tag/0.2.2_b3</url>
       <description>

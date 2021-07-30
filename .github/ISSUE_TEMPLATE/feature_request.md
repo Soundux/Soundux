@@ -20,4 +20,4 @@ A clear and concise description of any alternative solutions or features you've 
 Add any other context or screenshots about the feature request here.
 
 **Desktop (please complete the following information):**
-- Environment: **[Windows Installer/Portable or Linux Flathub/Snap/AUR/self-compiled]**
+- Environment: [Universal/Windows Installer/Portable or Linux Flathub/Snap/AUR/DEB/RPM/COPR/self-compiled]

@@ -1,18 +1,43 @@
-#include "core/global/globals.hpp"
-#include "helper/exceptions/crashhandler.hpp"
-#include "ui/impl/webview/webview.hpp"
-#include <InstanceGuard.hpp>
+#include <backward.hpp>
+#include <core/enums/enums.hpp>
+#include <core/global/globals.hpp>
 #include <fancy.hpp>
+#include <ui/impl/webview/webview.hpp>
+
+#if defined(__linux__)
+#include <helper/audio/linux/backend.hpp>
+#endif
 
 #if defined(_WIN32)
 #include "../assets/icon.h"
-int __stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+#include <Windows.h>
+#include <helper/misc/misc.hpp>
+#include <shellapi.h>
+
+int __stdcall WinMain([[maybe_unused]] HINSTANCE hInstrance, [[maybe_unused]] HINSTANCE prevInstance,
+                      [[maybe_unused]] LPSTR winArgs, [[maybe_unused]] int argc)
 #else
-int main(int argc, const char *args[])
+int main(int argc, char **arguments)
 #endif
 {
+    using namespace Soundux::Globals; // NOLINT
+    using namespace Soundux::Objects; // NOLINT
+    using namespace Soundux::Enums;   // NOLINT
+
 #if defined(_WIN32)
-    if (std::getenv("SOUNDUX_DEBUG"))
+    auto **arguments = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+    std::vector<std::string> args;
+    for (int i = 0; argc > i; i++)
+    {
+        args.emplace_back(Soundux::Helpers::narrow(arguments[i]));
+    }
+#else
+    std::vector<std::string> args(reinterpret_cast<char **>(arguments), reinterpret_cast<char **>(arguments) + argc);
+#endif
+
+#if defined(_WIN32)
+    if (std::getenv("SOUNDUX_DEBUG")) // NOLINT
     {
         AllocConsole();
         freopen_s(reinterpret_cast<FILE **>(stdin), "CONIN$", "r", stdin);
@@ -30,60 +55,81 @@ int main(int argc, const char *args[])
         Fancy::fancy.logTime().success() << "Enabling debug features" << std::endl;
     }
 
-    CrashHandler::init();
+    backward::SignalHandling crashHandler;
+    gGuard = std::make_shared<Instance::Guard>("soundux-guard");
 
-    if (Soundux::Globals::gCli.parseProgramArguments(argc, args))
+    if (std::find(args.begin(), args.end(), "--reset-mutex") != args.end())
+    {
+        gGuard->reset();
+        gGuard.reset();
+        gGuard = std::make_shared<Instance::Guard>("soundux-guard");
+    }
+    else if (Soundux::Globals::gCli.parseProgramArguments(args))
     {
         return 0;
     }
 
-    InstanceGuard::InstanceGuard guard("soundux-guard");
-    if (guard.IsAnotherInstanceRunning())
+    if (gGuard->isAnotherRunning())
     {
         Fancy::fancy.logTime().failure() << "Another Instance is already running!" << std::endl;
         return 1;
     }
 
-#if defined(__linux__)
-    Soundux::Globals::gIcons.setup();
+    gConfig.load();
+    gData.set(gConfig.data);
+    gSettings = gConfig.settings;
 
-    if (!Soundux::Globals::gPulse.isSwitchOnConnectLoaded())
-    {
-        Soundux::Globals::gPulse.setup();
-    }
-    Soundux::Globals::gAudio.setup();
-#endif
-    Soundux::Globals::gConfig.load();
-    Soundux::Globals::gYtdl.setup();
 #if defined(__linux__)
-    if (Soundux::Globals::gConfig.settings.useAsDefaultDevice)
+    gIcons = IconFetcher::createInstance();
+    gAudioBackend = AudioBackend::createInstance(gSettings.audioBackend);
+#elif defined(_WIN32)
+    gWinSound = WinSound::createInstance();
+#endif
+
+    gAudio.setup();
+    gYtdl.setup();
+
+#if defined(__linux__)
+    if (gAudioBackend && gSettings.audioBackend == BackendType::PulseAudio && gConfig.settings.useAsDefaultDevice)
     {
-        Soundux::Globals::gPulse.setDefaultSourceToSoundboardSink();
+        gAudioBackend->useAsDefault();
     }
 #endif
-    Soundux::Globals::gData.set(Soundux::Globals::gConfig.data);
-    Soundux::Globals::gSettings = Soundux::Globals::gConfig.settings;
 
     Soundux::Globals::gServer.start();
 
-    Soundux::Globals::gGui = std::make_unique<Soundux::Objects::WebView>();
-    Soundux::Globals::gGui->setup();
+    gGui = std::make_unique<Soundux::Objects::WebView>();
+    gGui->setup();
+
+    if (std::find(args.begin(), args.end(), "--hidden") == args.end())
+    {
+        gGui->show();
+    }
+    else
+    {
+        Fancy::fancy.logTime().message() << "Starting window hidden" << std::endl;
+    }
+
 #if defined(_WIN32)
-    HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1));
+    HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1)); // NOLINT
     SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
     SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hIcon));
 #endif
-    Soundux::Globals::gGui->mainLoop();
 
-    Soundux::Globals::gAudio.destroy();
+    gGui->mainLoop();
+
+    gAudio.destroy();
 #if defined(__linux__)
-    Soundux::Globals::gPulse.destroy();
+    if (gAudioBackend)
+    {
+        gAudioBackend->destroy();
+    }
 #endif
     Soundux::Globals::gServer.stop();
 
-    Soundux::Globals::gConfig.data.set(Soundux::Globals::gData);
-    Soundux::Globals::gConfig.settings = Soundux::Globals::gSettings;
-    Soundux::Globals::gConfig.save();
+    gConfig.data.set(gData);
+    gConfig.settings = gSettings;
+    gConfig.save();
 
     return 0;
 }

@@ -1,21 +1,40 @@
 app-id: io.github.Soundux
 runtime: org.gnome.Platform
-runtime-version: "3.38"
+runtime-version: "40"
 sdk: org.gnome.Sdk
 command: soundux
 finish-args:
   - --device=all
+  - --device=shm
   - --share=network
   - --socket=pulseaudio
   - --socket=x11
   - --filesystem=host
+  - --filesystem=xdg-run/pipewire-0
 modules:
   - "shared-modules/libappindicator/libappindicator-gtk3-introspection-12.10.json"
+  - name: libwnck
+    buildsystem: meson
+    config-opts:
+      - "-Dgtk_doc=false"
+    cleanup:
+      - "/include"
+      - "/lib/pkgconfig"
+      - "/bin"
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/GNOME/libwnck.git
+        tag: "40.0"
+        commit: "d161ed31914711b97a1c6ebef0558d80ce51113b"
   - name: soundux
     buildsystem: cmake-ninja
     config-opts:
       - -DUSE_FLATPAK=ON
       - -DCMAKE_BUILD_TYPE=Release
+    post-install:
+      - "install -Dm 644 -t /app/share/metainfo deployment/appstream/io.github.Soundux.metainfo.xml"
+      - "install -Dm 644 -t /app/share/applications deployment/appstream/io.github.Soundux.desktop"
+      - "install -Dm 644 deployment/flatpak/icons/io.github.Soundux-256.png /app/share/icons/hicolor/256x256/apps/io.github.Soundux.png"
     sources:
       - type: git
         url: https://github.com/Soundux/Soundux.git
@@ -46,7 +65,7 @@ modules:
       - PYTHON=/usr/bin/python
     sources:
       - type: archive
-        url: https://github.com/ytdl-org/youtube-dl/releases/download/2021.04.26/youtube-dl-2021.04.26.tar.gz
-        sha256: 4ccf21f4a0daee0d58bef569c71dd459bd1f629248995b4e4856b6926531ea4a
+        url: https://github.com/ytdl-org/youtube-dl/releases/download/2021.06.06/youtube-dl-2021.06.06.tar.gz
+        sha256: 3ccb0e4db9fd172338ed1c32bae0be2f716458dca4143e55732ff55260b20ac3
     post-install:
       - install -Dm0755 -t /app/bin youtube-dl

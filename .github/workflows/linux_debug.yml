@@ -2,24 +2,24 @@ on: workflow_dispatch
 
 name: Debug on Linux
 jobs:
-    debug-linux:
-        runs-on: ubuntu-20.04
-        strategy:
-            fail-fast: false
-            matrix:
-                language: ["cpp"]
+  debug-linux:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["cpp"]
 
-        steps:
-            - name: Install build dependencies
-              run: "sudo apt-get update && sudo apt-get install git build-essential cmake libx11-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev"
+    steps:
+      - name: Install build dependencies
+        run: "sudo apt-get update && sudo apt-get install git build-essential cmake libx11-dev libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev libpulse-dev"
 
-            - name: Checkout
-              uses: actions/checkout@v2
-              with:
-                  submodules: recursive
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+        with:
+          submodules: recursive
 
-            - name: Setup tmate session
-              uses: mxschmitt/action-tmate@v3
-              with:
-                limit-access-to-actor: true
-              continue-on-error: true
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
+        continue-on-error: true

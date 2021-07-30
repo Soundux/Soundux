@@ -1,0 +1,69 @@
+on: workflow_dispatch
+
+name: Upload Release Binaries
+jobs:
+  upload-binaries:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Download Windows Artifacts
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: compile_windows.yml
+
+      - name: Download Deb Artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: compile_linux.yml
+
+      - name: Download Flatpak Artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: build_flatpak.yml
+
+      - name: Download Tar Ball Artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: upload_full_src.yml
+
+      - name: List downloaded binaries
+        run: "find ."
+
+      - name: Get Latest Release
+        id: last_release
+        uses: InsonusK/get-latest-release@v1.0.1
+        with:
+          myToken: ${{ github.token }}
+          view_top: 1
+
+      - name: Print Latest Release Info
+        run: |
+          echo "id: ${{ steps.last_release.outputs.id }}"
+          echo "tag_name: ${{ steps.last_release.outputs.tag_name }}"
+          echo "draft: ${{ steps.last_release.outputs.draft }}"
+
+      - name: Prepare Binaries
+        run: |
+          mkdir release
+          mv "./Deb package/soundux.deb" ./release/soundux-${{ steps.last_release.outputs.tag_name }}.deb
+          mv "./Source tarball/soundux.tar.gz" ./release/soundux-${{ steps.last_release.outputs.tag_name }}.tar.gz
+          mv "./soundux/soundux.flatpak" ./release/soundux-${{ steps.last_release.outputs.tag_name }}.flatpak
+          mv "./Installer/setup.exe" ./release/soundux-${{ steps.last_release.outputs.tag_name }}-windows-setup.exe
+          mv "./Release/soundux.exe" ./release/soundux-${{ steps.last_release.outputs.tag_name }}-windows-portable.exe
+
+      - name: List Release Binaries
+        run: "ls -lah release"
+
+      - name: Upload binaries
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          releaseId: ${{ steps.last_release.outputs.id }}
+          args: "release/*"

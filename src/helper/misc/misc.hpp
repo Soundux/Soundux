@@ -8,14 +8,14 @@ namespace Soundux
     namespace Helpers
     {
 #if defined(_WIN32)
-        std::wstring widen(const std::string &s);
-        std::string narrow(const std::wstring &s);
+        std::wstring widen(const std::string &);
+        std::string narrow(const std::wstring &);
 #endif
-#if defined(__linux__)
-        std::optional<int> getPpid(int pid);
-#endif
-        bool exec(const std::string &command, std::string &result);
-        bool deleteFile(const std::string &path, bool trash = true);
-        std::vector<std::string> splitByNewLine(const std::string &str);
+        bool deleteFile(const std::string &, bool = true);
+
+        bool run(const std::string &);
+        std::pair<std::string, bool> getResultCompact(const std::string &);
+        std::pair<std::vector<std::string>, bool> getResult(const std::string &);
+
     } // namespace Helpers
 } // namespace Soundux
