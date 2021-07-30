@@ -11,6 +11,7 @@
 #include <core/objects/objects.hpp>
 #include <core/objects/settings.hpp>
 #include <guard.hpp>
+
 #include <helper/cli/cli.hpp>
 #include <helper/icons/icons.hpp>
 #include <helper/queue/queue.hpp>

@@ -97,7 +97,7 @@ int main(int argc, char **arguments)
 #endif
 
     Soundux::Globals::gServer.start();
-
+  
     gGui = std::make_unique<Soundux::Objects::WebView>();
     gGui->setup();
 
@@ -126,7 +126,7 @@ int main(int argc, char **arguments)
     }
 #endif
     Soundux::Globals::gServer.stop();
-
+  
     gConfig.data.set(gData);
     gConfig.settings = gSettings;
     gConfig.save();
