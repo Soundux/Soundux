@@ -1,6 +1,6 @@
 #include "sound.hpp"
 #include <core/global/globals.hpp>
-#include <core/objects/objects.hpp>
+#include <core/objects/sound.hpp>
 #include <fancy.hpp>
 
 #define MINIAUDIO_IMPLEMENTATION
@@ -9,9 +9,10 @@
 namespace Soundux::Objects
 {
     std::atomic<std::uint64_t> PlayingSound::idCounter = 0;
-    std::shared_ptr<PlayingSound> PlayingSound::create(const Sound &sound, const AudioDevice &playbackDevice)
+    std::shared_ptr<PlayingSound> PlayingSound::create(const std::shared_ptr<Sound> &sound,
+                                                       const AudioDevice &playbackDevice)
     {
-        auto rtn = std::unique_ptr<PlayingSound>(new PlayingSound());
+        auto rtn = std::shared_ptr<PlayingSound>(new PlayingSound());
 
         rtn->sound = sound;
         rtn->id = ++idCounter;
@@ -23,24 +24,23 @@ namespace Soundux::Objects
         *device = std::make_shared<ma_device>();
         *decoder = std::make_shared<ma_decoder>();
 
+        // TODO(): Use wide path universally
 #if defined(_WIN32)
         auto res = ma_decoder_init_file_w(widen(sound.path).c_str(), nullptr, &*decoder);
 #else
-        auto res = ma_decoder_init_file(sound.path.c_str(), nullptr, decoder->get());
+        auto res = ma_decoder_init_file(sound->getPath().c_str(), nullptr, decoder->get());
 #endif
 
         if (res != MA_SUCCESS)
         {
             Fancy::fancy.logTime().failure()
-                << "Failed to create decoder from file: " << sound.path << " (" << res << ")" << std::endl;
+                << "Failed to create decoder from file: " << sound->getPath() << " (" << res << ")" << std::endl;
 
             return nullptr;
         }
 
         rtn->sampleRate = decoder->get()->outputSampleRate;
         rtn->length = ma_decoder_get_length_in_pcm_frames(decoder->get());
-        rtn->lengthInMs =
-            static_cast<std::uint64_t>(static_cast<double>(rtn->length) / static_cast<double>(rtn->sampleRate) * 1000);
 
         auto config = ma_device_config_init(ma_device_type_playback);
 
@@ -60,9 +60,9 @@ namespace Soundux::Objects
 
         if (playbackDevice.isDefault)
         {
-            if (sound.localVolume)
+            if (sound->getLocalVolume())
             {
-                device->get()->masterVolumeFactor = static_cast<float>(*sound.localVolume) / 100.f;
+                device->get()->masterVolumeFactor = static_cast<float>(*sound->getLocalVolume()) / 100.f;
             }
             else
             {
@@ -71,9 +71,9 @@ namespace Soundux::Objects
         }
         else
         {
-            if (sound.remoteVolume)
+            if (sound->getRemoteVolume())
             {
-                device->get()->masterVolumeFactor = static_cast<float>(*sound.remoteVolume) / 100.f;
+                device->get()->masterVolumeFactor = static_cast<float>(*sound->getRemoteVolume()) / 100.f;
             }
             else
             {
@@ -86,7 +86,7 @@ namespace Soundux::Objects
             ma_device_uninit(device->get());
             ma_decoder_uninit(decoder->get());
 
-            Fancy::fancy.logTime().warning() << "Failed to start device for sound " << sound.path << std::endl;
+            Fancy::fancy.logTime().warning() << "Failed to start device for sound " << sound->getPath() << std::endl;
             return nullptr;
         }
 
@@ -101,7 +101,6 @@ namespace Soundux::Objects
     }
     void PlayingSound::stop()
     {
-
         if (device.copy() && decoder.copy())
         {
             auto device = this->device.write();
@@ -122,7 +121,6 @@ namespace Soundux::Objects
             auto device = this->device.write();
             if (ma_device_get_state(device->get()) == MA_STATE_STARTED)
             {
-                paused = true;
                 ma_device_stop(device->get());
             }
             else
@@ -134,7 +132,8 @@ namespace Soundux::Objects
     }
     bool PlayingSound::isPaused() const
     {
-        return paused;
+        auto device = this->device.read();
+        return ma_device_get_state(device->get()) == MA_STATE_STOPPED;
     }
     void PlayingSound::resume()
     {
@@ -143,7 +142,6 @@ namespace Soundux::Objects
             auto device = this->device.write();
             if (ma_device_get_state(device->get()) == MA_STATE_STOPPED)
             {
-                paused = false;
                 ma_device_start(device->get());
             }
             else
@@ -159,23 +157,22 @@ namespace Soundux::Objects
     }
     std::uint64_t PlayingSound::getLength() const
     {
-        return lengthInMs;
+        return static_cast<std::uint64_t>(static_cast<double>(length) / static_cast<double>(sampleRate) * 1000);
     }
     std::uint64_t PlayingSound::getRead() const
     {
-        return readInMs;
+        return static_cast<std::uint64_t>((static_cast<double>(readFrames) / static_cast<double>(length)) *
+                                          static_cast<double>(getLength()));
     }
     void PlayingSound::seek(const std::uint64_t &position)
     {
-        auto newPos = static_cast<std::uint64_t>((static_cast<double>(position) / static_cast<double>(lengthInMs)) *
+        auto newPos = static_cast<std::uint64_t>((static_cast<double>(position) / static_cast<double>(getLength())) *
                                                  static_cast<double>(length));
 
         seekTo = newPos;
         readFrames = newPos;
-        readInMs = static_cast<std::uint64_t>((static_cast<double>(newPos) / static_cast<double>(length)) *
-                                              static_cast<double>(lengthInMs));
     }
-    Sound PlayingSound::getSound() const
+    std::shared_ptr<Sound> PlayingSound::getSound() const
     {
         return sound;
     }
@@ -207,9 +204,6 @@ namespace Soundux::Objects
         if (buffer > (sampleRate / 2))
         {
             buffer = 0;
-            readInMs = static_cast<std::uint64_t>((static_cast<double>(readFrames) / static_cast<double>(length)) *
-                                                  static_cast<double>(lengthInMs));
-
             Globals::gGui->onSoundProgressed(shared_from_this());
         }
     }
@@ -235,9 +229,6 @@ namespace Soundux::Objects
             {
                 ma_decoder_seek_to_pcm_frame(decoder->get(), thiz->seekTo.load().value());
                 thiz->readFrames = thiz->seekTo.load().value();
-                thiz->readInMs = static_cast<std::uint64_t>(
-                    (static_cast<double>(thiz->readFrames) / static_cast<double>(thiz->length)) *
-                    static_cast<double>(thiz->lengthInMs));
                 thiz->seekTo = std::nullopt;
             }
 
@@ -251,6 +242,7 @@ namespace Soundux::Objects
                 if (thiz->shouldRepeat)
                 {
                     ma_decoder_seek_to_pcm_frame(decoder->get(), 0);
+                    thiz->readFrames = 0;
                 }
                 else
                 {
