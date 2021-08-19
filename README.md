@@ -66,10 +66,10 @@ These are required to run the program
 ## 🐧 Linux
 Please refer to your distro instructions on how to install
 - [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio) / [pipewire](https://pipewire.org/) >= 0.3.26
-- Xorg
-- Libwnck3 (optional, for icon support)
-- Webkit2gtk
-- libappindicator3
+- xorg
+- libwnck3 (optional, for icon support)
+- webkit2gtk
+- libappindicator3 (libappindicator-gtk3 for Arch based systems)
 - [youtube-dl](https://youtube-dl.org/) & [ffmpeg](https://www.ffmpeg.org/) (optional, for downloader support)
 ## <img src="https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg" height="20"/> Windows
 - [VB-CABLE](https://vb-audio.com/Cable/) (Our installer automatically installs VB-CABLE)
