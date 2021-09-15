@@ -6,10 +6,10 @@
 #include <fstream>
 #include <optional>
 
-#pragma push_macro("UNICOCDE")
+#pragma push_macro("UNICODE")
 #undef UNICODE
 #include <process.hpp>
-#pragma pop_macro("UNICOCDE")
+#pragma pop_macro("UNICODE")
 
 #include <regex>
 #include <system_error>
@@ -101,7 +101,7 @@ namespace Soundux
             auto trashFolder = std::filesystem::canonical(home + "/.local/share/Trash");
 
             auto filePath = std::filesystem::canonical(path);
-            auto trashFileName = filePath.filename().u8string() +
+            auto trashFileName = filePath.filename().string() +
                                  std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
 
             std::error_code ec;
@@ -122,7 +122,7 @@ namespace Soundux
 
                 std::ofstream stream(trashFolder / "info" / (trashFileName + ".trashinfo"));
                 stream << "[Trash Info]" << std::endl
-                       << "Path=" << filePath.u8string() << std::endl
+                       << "Path=" << filePath.string() << std::endl
                        << "DeletionDate=" << ss.str() << std::endl;
                 stream.close();
             }

@@ -82,7 +82,6 @@ int main(int argc, char **arguments)
     gWinSound = WinSound::createInstance();
 #endif
 
-    gAudio.setup();
     gYtdl.setup();
 
 #if defined(__linux__)
@@ -112,7 +111,6 @@ int main(int argc, char **arguments)
 
     gGui->mainLoop();
 
-    gAudio.destroy();
 #if defined(__linux__)
     if (gAudioBackend)
     {

@@ -45,13 +45,10 @@ namespace Soundux
 
             virtual bool stopAllPassthrough() = 0;
             virtual bool stopPassthrough(const std::string &) = 0;
-            virtual bool passthroughFrom(std::shared_ptr<PlaybackApp>) = 0;
+            virtual bool passthroughFrom(const std::string &) = 0;
 
             virtual bool stopSoundInput() = 0;
-            virtual bool inputSoundTo(std::shared_ptr<RecordingApp>) = 0;
-
-            virtual std::shared_ptr<PlaybackApp> getPlaybackApp(const std::string &) = 0;
-            virtual std::shared_ptr<RecordingApp> getRecordingApp(const std::string &) = 0;
+            virtual bool inputSoundTo(const std::string &) = 0;
 
             virtual std::vector<std::shared_ptr<PlaybackApp>> getPlaybackApps() = 0;
             virtual std::vector<std::shared_ptr<RecordingApp>> getRecordingApps() = 0;

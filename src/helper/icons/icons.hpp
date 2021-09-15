@@ -22,7 +22,7 @@ namespace Soundux
             std::optional<int> getPpid(int pid);
 
           public:
-            static std::shared_ptr<IconFetcher> createInstance();
+            static std::unique_ptr<IconFetcher> createInstance();
             std::optional<std::string> getIcon(int pid, bool recursive = true);
         };
     } // namespace Objects

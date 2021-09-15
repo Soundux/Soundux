@@ -58,9 +58,49 @@ namespace Soundux::Objects
         }
 
         unloadLeftOvers();
+        unloadProblematic();
         fetchDefaultSource();
 
-        return !(defaultSource.empty() || serverName.empty() || isRunningPipeWire());
+        if (defaultSource.empty() || serverName.empty() || isRunningPipeWire())
+        {
+            return false;
+        }
+
+        return loadModules();
+    }
+    void PulseAudio::unloadProblematic()
+    {
+        await(PulseApi::context_get_module_info_list(
+            context,
+            []([[maybe_unused]] pa_context *ctx, const pa_module_info *info, [[maybe_unused]] int eol, void *userData) {
+                if (info && info->name && userData)
+                {
+                    auto name = std::string(info->name);
+                    auto *thiz = reinterpret_cast<PulseAudio *>(userData);
+
+                    if (name.find("switch-on-connect") != std::string::npos ||
+                        name.find("role-cork") != std::string::npos)
+                    {
+                        PulseModule module;
+                        module.name = name;
+
+                        if (info->argument)
+                            module.arguments = info->argument;
+
+                        thiz->unloadedModules.emplace_back(module);
+                        Fancy::fancy.logTime().message() << "Unloading problematic module: " << name << std::endl;
+                    }
+                }
+            },
+            this));
+    }
+    void PulseAudio::reloadProblematic()
+    {
+        for (auto &module : unloadedModules)
+        {
+            Fancy::fancy.logTime().message() << "Loading back module: " << module.name << std::endl;
+            PulseApi::context_load_module(context, module.name.c_str(), module.arguments.c_str(), nullptr, nullptr);
+        }
     }
     bool PulseAudio::loadModules()
     {
@@ -175,6 +215,8 @@ namespace Soundux::Objects
             await(PulseApi::context_unload_module(context, *passthroughSink, nullptr, nullptr));
         if (passthroughLoopBack)
             await(PulseApi::context_unload_module(context, *passthroughLoopBack, nullptr, nullptr));
+
+        reloadProblematic();
     }
     void PulseAudio::await(pa_operation *operation)
     {
@@ -380,26 +422,27 @@ namespace Soundux::Objects
 
         return true;
     }
-    bool PulseAudio::passthroughFrom(std::shared_ptr<PlaybackApp> app)
+    bool PulseAudio::passthroughFrom(const std::string &app)
     {
-        if (movedPassthroughApplications.count(app->application))
+        if (movedPassthroughApplications.count(app))
         {
             Fancy::fancy.logTime().message()
                 << "Ignoring sound passthrough request because requested app is already moved" << std::endl;
             return true;
         }
 
-        if (!app)
+        if (app.empty())
         {
             Fancy::fancy.logTime().warning() << "Tried to passthrough to non existant app" << std::endl;
             return false;
         }
 
+        std::uint32_t originalSink = 0;
         for (const auto &playbackApp : getPlaybackApps())
         {
             auto pulsePlayback = std::dynamic_pointer_cast<PulsePlaybackApp>(playbackApp);
 
-            if (playbackApp->application == app->application)
+            if (playbackApp->application == app)
             {
                 bool success = true;
 
@@ -419,10 +462,12 @@ namespace Soundux::Objects
                         << "Failed top move " << pulsePlayback->id << " to passthrough" << std::endl;
                     return false;
                 }
+
+                originalSink = pulsePlayback->sink;
             }
         }
 
-        movedPassthroughApplications.emplace(app->application, std::dynamic_pointer_cast<PulsePlaybackApp>(app)->sink);
+        movedPassthroughApplications.emplace(app, originalSink);
         return true;
     }
     bool PulseAudio::stopAllPassthrough()
@@ -491,24 +536,25 @@ namespace Soundux::Objects
         Fancy::fancy.logTime().warning() << "Could not find moved application " << app << std::endl;
         return false;
     }
-    bool PulseAudio::inputSoundTo(std::shared_ptr<RecordingApp> app)
+    bool PulseAudio::inputSoundTo(const std::string &app)
     {
-        if (!app)
+        if (app.empty())
         {
             Fancy::fancy.logTime().warning() << "Tried to input sound to non existant app" << std::endl;
             return false;
         }
 
-        if (movedApplications.find(app->application) != movedApplications.end())
+        if (movedApplications.find(app) != movedApplications.end())
         {
             return true;
         }
 
+        std::uint32_t originalSource = 0;
         for (const auto &recordingApp : getRecordingApps())
         {
             auto pulseApp = std::dynamic_pointer_cast<PulseRecordingApp>(recordingApp);
 
-            if (pulseApp->application == app->application)
+            if (pulseApp->application == app)
             {
                 bool success = true;
                 await(PulseApi::context_move_source_output_by_name(
@@ -526,10 +572,14 @@ namespace Soundux::Objects
                     Fancy::fancy.logTime().warning() << "Failed to move " + pulseApp->application << "(" << pulseApp->id
                                                      << ") to soundux sink" << std::endl;
                 }
+                else
+                {
+                    originalSource = pulseApp->source;
+                }
             }
         }
 
-        movedApplications.emplace(app->application, std::dynamic_pointer_cast<PulseRecordingApp>(app)->source);
+        movedApplications.emplace(app, originalSource);
         return true;
     }
     bool PulseAudio::stopSoundInput()
@@ -565,30 +615,6 @@ namespace Soundux::Objects
         movedApplications.clear();
 
         return success;
-    }
-    std::shared_ptr<PlaybackApp> PulseAudio::getPlaybackApp(const std::string &application)
-    {
-        for (auto app : getPlaybackApps())
-        {
-            if (app->application == application)
-            {
-                return app;
-            }
-        }
-
-        return nullptr;
-    }
-    std::shared_ptr<RecordingApp> PulseAudio::getRecordingApp(const std::string &application)
-    {
-        for (auto app : getRecordingApps())
-        {
-            if (app->application == application)
-            {
-                return app;
-            }
-        }
-
-        return nullptr;
     }
 
     void PulseAudio::fixPlaybackApps(const std::vector<std::shared_ptr<PlaybackApp>> &originalPlayback)
@@ -656,56 +682,6 @@ namespace Soundux::Objects
         return success;
     }
 
-    bool PulseAudio::switchOnConnectPresent()
-    {
-        bool isPresent = false;
-        await(PulseApi::context_get_module_info_list(
-            context,
-            []([[maybe_unused]] pa_context *ctx, const pa_module_info *info, [[maybe_unused]] int eol, void *userData) {
-                if (info && info->name)
-                {
-                    if (std::string(info->name).find("switch-on-connect") != std::string::npos)
-                    {
-                        *reinterpret_cast<bool *>(userData) = true;
-                        Fancy::fancy.logTime().warning() << "Switch on connect found: " << info->index << std::endl;
-                    }
-                }
-            },
-            &isPresent));
-
-        if (isPresent)
-        {
-            if (Globals::gGui)
-            {
-                Globals::gGui->onSwitchOnConnectDetected(true);
-            }
-        }
-
-        return isPresent;
-    }
-
-    void PulseAudio::unloadSwitchOnConnect()
-    {
-        await(PulseApi::context_get_module_info_list(
-            context,
-            []([[maybe_unused]] pa_context *ctx, const pa_module_info *info, [[maybe_unused]] int eol,
-               [[maybe_unused]] void *userData) {
-                if (info && info->name)
-                {
-                    if (std::string(info->name).find("switch-on-connect") != std::string::npos)
-                    {
-                        Fancy::fancy.logTime().message() << "Unloading: " << info->index << std::endl;
-                        PulseApi::context_unload_module(ctx, info->index, nullptr, nullptr);
-
-                        if (Globals::gGui)
-                        {
-                            Globals::gGui->onSwitchOnConnectDetected(false);
-                        }
-                    }
-                }
-            },
-            nullptr));
-    }
     bool PulseAudio::isRunningPipeWire()
     {
         //* The stuff we do here does is broken on pipewire-pulse, use the native backend instead.

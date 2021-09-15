@@ -270,21 +270,6 @@ namespace Soundux::Objects
             Webview::Function("startPassthrough", [this](const std::string &app) { return startPassthrough(app); }));
         webview->expose(
             Webview::Function("stopPassthrough", [this](const std::string &name) { stopPassthrough(name); }));
-        webview->expose(Webview::Function("unloadSwitchOnConnect", []() {
-            auto pulseBackend =
-                std::dynamic_pointer_cast<Soundux::Objects::PulseAudio>(Soundux::Globals::gAudioBackend);
-            if (pulseBackend)
-            {
-                pulseBackend->unloadSwitchOnConnect();
-                pulseBackend->loadModules();
-                Globals::gAudio.setup();
-            }
-            else
-            {
-                Fancy::fancy.logTime().failure()
-                    << "unloadSwitchOnConnect was called but no pulse backend was detected!" << std::endl;
-            }
-        }));
 #endif
     }
     bool WebView::onClose()
@@ -308,15 +293,6 @@ namespace Soundux::Objects
             static bool once = false;
             if (!once)
             {
-#if defined(__linux__)
-                if (auto pulseBackend = std::dynamic_pointer_cast<PulseAudio>(Globals::gAudioBackend); pulseBackend)
-                {
-                    //* We have to call this so that we can trigger an event in the frontend that switchOnConnect was
-                    //* found becausepreviously the UI was not initialized.
-                    pulseBackend->switchOnConnectPresent();
-                }
-#endif
-
                 auto future = std::make_shared<std::future<void>>();
                 *future = std::async(std::launch::async, [future, this] {
                     translations.settings = webview
@@ -397,21 +373,27 @@ namespace Soundux::Objects
         webview->callFunction<void>(
             Webview::JavaScriptFunction("window.hotkeyReceived", Globals::gHotKeys->getKeySequence(keys), keys));
     }
-    void WebView::onSoundFinished(const PlayingSound &sound)
+    void WebView::onSoundFinished(const std::shared_ptr<PlayingSound> &sound)
     {
         Window::onSoundFinished(sound);
-        if (sound.playbackDevice.isDefault)
+        if (sound && sound->getPlaybackDevice().isDefault)
         {
-            webview->callFunction<void>(Webview::JavaScriptFunction("window.finishSound", sound));
+            webview->callFunction<void>(Webview::JavaScriptFunction("window.finishSound", *sound));
         }
     }
-    void WebView::onSoundPlayed(const PlayingSound &sound)
+    void WebView::onSoundPlayed(const std::shared_ptr<PlayingSound> &sound)
     {
-        webview->callFunction<void>(Webview::JavaScriptFunction("window.onSoundPlayed", sound));
+        if (sound)
+        {
+            webview->callFunction<void>(Webview::JavaScriptFunction("window.onSoundPlayed", *sound));
+        }
     }
-    void WebView::onSoundProgressed(const PlayingSound &sound)
+    void WebView::onSoundProgressed(const std::shared_ptr<PlayingSound> &sound)
     {
-        webview->callFunction<void>(Webview::JavaScriptFunction("window.updateSound", sound));
+        if (sound)
+        {
+            webview->callFunction<void>(Webview::JavaScriptFunction("window.updateSound", *sound));
+        }
     }
     void WebView::onDownloadProgressed(float progress, const std::string &eta)
     {
@@ -437,11 +419,6 @@ namespace Soundux::Objects
     {
         Window::onAllSoundsFinished();
         webview->callFunction<void>(Webview::JavaScriptFunction("window.getStore().commit", "clearCurrentlyPlaying"));
-    }
-    void WebView::onSwitchOnConnectDetected(bool state)
-    {
-        webview->callFunction<void>(
-            Webview::JavaScriptFunction("window.getStore().commit", "setSwitchOnConnectLoaded", state));
     }
     void WebView::onAdminRequired()
     {

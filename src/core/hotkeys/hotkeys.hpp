@@ -30,7 +30,7 @@ namespace Soundux
             std::atomic<bool> shouldNotifyKnob = false;
 
           public:
-            static std::shared_ptr<Hotkeys> createInstance();
+            static std::unique_ptr<Hotkeys> createInstance();
 
           public:
             virtual void notify(bool);

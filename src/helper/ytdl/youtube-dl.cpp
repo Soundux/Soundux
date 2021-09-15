@@ -1,4 +1,5 @@
 #include "youtube-dl.hpp"
+#include "process.hpp"
 #include <core/global/globals.hpp>
 #include <fancy.hpp>
 #include <helper/misc/misc.hpp>
@@ -24,17 +25,17 @@ namespace Soundux::Objects
             Fancy::fancy.logTime().warning() << "youtube-dl or ffmpeg is not available!" << std::endl;
         }
     }
-    std::optional<nlohmann::json> YoutubeDl::getInfo(const std::string &url) const
+    nlohmann::json YoutubeDl::getInfo(const std::string &url) const
     {
         if (!isAvailable)
         {
-            return std::nullopt;
+            return nullptr;
         }
 
         if (!std::regex_match(url, urlRegex))
         {
             Fancy::fancy.logTime().warning() << "Bad url " >> url << std::endl;
-            return std::nullopt;
+            return nullptr;
         }
 
         auto [result, success] = Helpers::getResultCompact("youtube-dl -i -j \"" + url + "\"");
@@ -45,7 +46,7 @@ namespace Soundux::Objects
             {
                 Fancy::fancy.logTime().warning() << "Failed to parse youtube-dl information" << std::endl;
                 Globals::gGui->onError(Enums::ErrorCode::YtdlInvalidJson);
-                return std::nullopt;
+                return nullptr;
             }
 
             nlohmann::json j;
@@ -67,7 +68,7 @@ namespace Soundux::Objects
 
         Fancy::fancy.logTime().warning() << "Failed to get info from youtube-dl" << std::endl;
         Globals::gGui->onError(Enums::ErrorCode::YtdlInformationUnknown);
-        return std::nullopt;
+        return nullptr;
     }
     bool YoutubeDl::download(const std::string &url)
     {
@@ -99,21 +100,22 @@ namespace Soundux::Objects
                 currentDownload.reset();
             }
 
-            currentDownload.emplace("youtube-dl --extract-audio --audio-format mp3 --no-mtime \"" + url + "\" -o \"" +
-                                        currentTab->path + "/%(title)s.%(ext)s" + "\"",
-                                    "", [](const char *rawData, std::size_t dataLen) {
-                                        std::string data(rawData, dataLen);
-                                        static const std::regex progressRegex(R"(([0-9.,]+)%.*(ETA (.+)))");
+            currentDownload = std::make_unique<TinyProcessLib::Process>(
+                "youtube-dl --extract-audio --audio-format mp3 --no-mtime \"" + url + "\" -o \"" + currentTab->path +
+                    "/%(title)s.%(ext)s" + "\"",
+                "", [](const char *rawData, std::size_t dataLen) {
+                    std::string data(rawData, dataLen);
+                    static const std::regex progressRegex(R"(([0-9.,]+)%.*(ETA (.+)))");
 
-                                        std::smatch match;
-                                        if (std::regex_search(data, match, progressRegex))
-                                        {
-                                            if (match[1].matched && match[3].matched)
-                                            {
-                                                Globals::gGui->onDownloadProgressed(std::stof(match[1]), match[3]);
-                                            }
-                                        }
-                                    });
+                    std::smatch match;
+                    if (std::regex_search(data, match, progressRegex))
+                    {
+                        if (match[1].matched && match[3].matched)
+                        {
+                            Globals::gGui->onDownloadProgressed(std::stof(match[1]), match[3]);
+                        }
+                    }
+                });
 
             Fancy::fancy.logTime().success() << "Started download of " >> url << std::endl;
             auto rtn = currentDownload->get_exit_status() == 0;

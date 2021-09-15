@@ -23,13 +23,13 @@ namespace Soundux
     } // namespace traits
     namespace Objects
     {
-        std::shared_ptr<Hotkeys> Hotkeys::createInstance()
+        std::unique_ptr<Hotkeys> Hotkeys::createInstance()
         {
-            std::shared_ptr<Hotkeys> rtn;
+            std::unique_ptr<Hotkeys> rtn;
 #if defined(__linux__)
-            rtn = std::shared_ptr<X11>(new X11()); // NOLINT
+            rtn = std::unique_ptr<X11>(new X11()); // NOLINT
 #elif defined(_WIN32)
-            rtn = std::shared_ptr<WindowsHotkeys>(new WindowsHotkeys()); // NOLINT
+            rtn = std::unique_ptr<WindowsHotkeys>(new WindowsHotkeys()); // NOLINT
 #endif
             rtn->setup();
             return rtn;
@@ -58,13 +58,13 @@ namespace Soundux
                     key.byte2 = byte2;
                     key.type = Enums::KeyType::Midi;
 
-                    if (byte0 == 144)
-                    {
-                        onKeyDown(key);
-                    }
-                    else if (byte0 == 128)
+                    if (byte0 == 128 || (byte0 == 144 && byte2 == 0))
                     {
                         onKeyUp(key);
+                    }
+                    else if (byte0 == 144)
+                    {
+                        onKeyDown(key);
                     }
                     else if (byte0 == 176)
                     {
@@ -142,40 +142,27 @@ namespace Soundux
             }
             return false;
         }
-        template <typename T> std::optional<Sound> getBestMatch(const T &list, const std::vector<Key> &pressedKeys)
+        template <typename T> std::shared_ptr<Sound> getBestMatch(const T &list, const std::vector<Key> &pressedKeys)
         {
-            std::optional<Sound> rtn;
+            std::shared_ptr<Sound> rtn;
 
-            for (const auto &_sound : list)
+            for (const auto &sound : list)
             {
-                const auto &sound = [&]() constexpr
-                {
-                    if constexpr (traits::is_pair<std::decay_t<decltype(_sound)>>::value)
-                    {
-                        return _sound.second.get();
-                    }
-                    else
-                    {
-                        return _sound;
-                    }
-                }
-                ();
-
-                if (sound.hotkeys.empty())
+                if (sound->getHotkeys().empty())
                     continue;
 
-                if (pressedKeys == sound.hotkeys)
+                if (pressedKeys == sound->getHotkeys())
                 {
                     rtn = sound;
                     break;
                 }
 
-                if (rtn && rtn->hotkeys.size() > sound.hotkeys.size())
+                if (rtn && rtn->getHotkeys().size() > sound->getHotkeys().size())
                 {
                     continue;
                 }
 
-                if (isCloseMatch(pressedKeys, sound.hotkeys))
+                if (isCloseMatch(pressedKeys, sound->getHotkeys()))
                 {
                     rtn = sound;
                 }
@@ -200,11 +187,10 @@ namespace Soundux
                     return;
                 }
 
-                std::optional<Sound> bestMatch;
-
+                std::shared_ptr<Sound> bestMatch;
                 if (Globals::gSettings.tabHotkeysOnly)
                 {
-                    if (Globals::gData.isOnFavorites)
+                    if (Globals::gData.onFavorites)
                     {
                         auto sounds = Globals::gData.getFavorites();
                         bestMatch = getBestMatch(sounds, pressedKeys);
@@ -214,14 +200,14 @@ namespace Soundux
                         auto tab = Globals::gData.getTab(Globals::gSettings.selectedTab);
                         if (tab)
                         {
-                            bestMatch = getBestMatch(tab->sounds, pressedKeys);
+                            bestMatch = getBestMatch(tab->getSounds(), pressedKeys);
                         }
                     }
                 }
                 else
                 {
-                    auto scopedSounds = Globals::gSounds.scoped();
-                    bestMatch = getBestMatch(*scopedSounds, pressedKeys);
+                    auto gSounds = Globals::gData.getSounds();
+                    bestMatch = getBestMatch(gSounds, pressedKeys);
                 }
 
                 if (bestMatch)
@@ -229,7 +215,7 @@ namespace Soundux
                     auto pSound = Globals::gGui->playSound(bestMatch->id);
                     if (pSound)
                     {
-                        Globals::gGui->onSoundPlayed(*pSound);
+                        Globals::gGui->onSoundPlayed(pSound);
                     }
                 }
             }
