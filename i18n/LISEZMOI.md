@@ -180,10 +180,10 @@ sudo make install
 Le projet a démarré comme **Sound**board pour Lin**ux**
 
 # 🗒️ License
-Le code est licensé sous [GPLv3](LICENSE)
+Le code est licensé sous [GPLv3](../LICENSE)
 
 # ✍️ Contribution
-Les règles de conduite pour la contribution peuvent être trouvé [ici](CONTRIBUTING.md), S'il vous plait, consultez les si vous prévoyez de contribuer.
+Les règles de conduite pour la contribution peuvent être trouvé [ici](../CONTRIBUTING.md), S'il vous plait, consultez les si vous prévoyez de contribuer.
 # ✨ Aidants
 
 Milles merci à tout ce beaux monde! ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
