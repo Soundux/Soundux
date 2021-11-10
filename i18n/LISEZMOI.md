@@ -1,13 +1,8 @@
 <div align="center">
   <p>
-    Read the documentation in:
-    <br>
-    <a href="https://github.com/Soundux/Soundux/blob/master/README.md">[English]</a>
-    <a href="https://github.com/Soundux/Soundux/blob/master/i18n/LISEZMOI.md">[French]</a>
-    <br><br><br>
     <img src="assets/logo.gif" height="200"/>
     <br>
-    <h6>A cross-platform soundboard 🔊</h6>
+    <h6>Un soundboard Multi-Plateformes 🔊</h6>
     <br>
         <a href="https://github.com/Soundux/Soundux/releases">
       <img src="https://img.shields.io/github/release/Soundux/Soundux.svg?style=flat-square" alt="Latest Stable Release" />
@@ -52,7 +47,7 @@
   </p>
 </div>
 
-# 👀 Preview
+# 👀 Aperçu
 | ![Dark Interface](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/home-dark.png)                   | ![Light Interface](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/home-light.png)                   |
 | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | ![Settings Dark](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/settings-dark.png)                | ![Settings Light](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/settings-light.png)                |
@@ -62,51 +57,52 @@
 | ![Grid View Dark](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/grid-view-dark.png)              | ![Grid View Light](https://raw.githubusercontent.com/Soundux/screenshots/screenshots/grid-view-light.png)              |
 
 # 👋 Introduction
-Soundux is a cross-platform soundboard that features a simple user interface.
-With Soundux you can play audio to a specific application on Linux and to your VB-CABLE sink on Windows.
+Soundux est un Soundboard multi-plateformes qui possède une interface utilisateur simple  .
+Avec Soundux vous pouvez jouer de l'audio à une application en particulier sous linux et pour votre VB-Cable sink pour Windows.
 
-# 🏃 Runtime Dependencies
-These are required to run the program
+# Dépendances d'exécution
+Ces fichiers sont nécéssaire pour le fonctionnement du programe.
 
 ## 🐧 Linux
-Please refer to your distro instructions on how to install
+S'il vous plait, vous référez aux instructions pour votre distribution Linux.
 - [pulseaudio](https://gitlab.freedesktop.org/pulseaudio/pulseaudio) / [pipewire](https://pipewire.org/) >= 0.3.26
 - Xorg
-- Libwnck3 (optional, for icon support)
+- Libwnck3 (optionnel,pour le support d'icones)
 - Webkit2gtk
 - libappindicator3
-- [youtube-dl](https://youtube-dl.org/) & [ffmpeg](https://www.ffmpeg.org/) (optional, for downloader support)
+- [youtube-dl](https://youtube-dl.org/) & [ffmpeg](https://www.ffmpeg.org/) (optionnel, Pour utiliser la fonction de téléchargement)
 ## <img src="https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg" height="20"/> Windows
-- [VB-CABLE](https://vb-audio.com/Cable/) (Our installer automatically installs VB-CABLE)
-- [Webview2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) (Is also shipped with the installer)
-- [youtube-dl](https://youtube-dl.org/) & [ffmpeg](https://www.ffmpeg.org/) (optional, for downloader support)
+- [VB-CABLE](https://vb-audio.com/Cable/) (Notre installateur installe automatiquement VB-Cable)
+- [Webview2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) (ceci est d'office dans l'installateur)
+- [youtube-dl](https://youtube-dl.org/) & [ffmpeg](https://www.ffmpeg.org/) (optionnel, Pour utiliser la fonction de téléchargement)
 
 # 📥 Installation
 
 ## 🐧 Linux
 
-### <img src="https://www.vectorlogo.zone/logos/archlinux/archlinux-icon.svg" height="20"/> Arch Linux and derivatives
-You can install our package with your AUR helper of choice which will automatically compile and install the latest release version
+### <img src="https://www.vectorlogo.zone/logos/archlinux/archlinux-icon.svg" height="20"/> Arch Linux et dérivés.
+Vous pouvez installer notre paquet avec votre AUR helper de choix ce qui vas automatiquement compiler et installer la dernière version
+publiée.
 ```sh
 yay -S soundux
 ```
-We also provide a `soundux-git` package which compiles from the master branch
+Nous avons aussi un paquet `soundux-git` qui se compile directement de la branche maitre (master)
 
-### <img src="https://www.vectorlogo.zone/logos/ubuntu/ubuntu-icon.svg" height="20"/> Ubuntu and derivatives
-You can install Soundux via [pacstall](https://github.com/pacstall/pacstall)
+### <img src="https://www.vectorlogo.zone/logos/ubuntu/ubuntu-icon.svg" height="20"/> Ubuntu et dérivés
+Vous pouvez installer Soundux via [pacstall](https://github.com/pacstall/pacstall)
 ```sh
 pacstall -I soundux
 ```
 
 ### <img src="https://www.vectorlogo.zone/logos/getfedora/getfedora-icon.svg" height="20"> Fedora
-Soundux can be installed via this [COPR repository](https://copr.fedorainfracloud.org/coprs/rivenirvana/soundux/)
+Soundux peut être installé via [COPR repository](https://copr.fedorainfracloud.org/coprs/rivenirvana/soundux/)
 ```sh
 sudo dnf copr enable rivenirvana/soundux
 sudo dnf install soundux
 ```
 
-### <img src="https://www.vectorlogo.zone/logos/linuxfoundation/linuxfoundation-icon.svg" height="20" /> Distro-agnostic packages
-You can grab the latest release from the Snap Store or Flathub
+### <img src="https://www.vectorlogo.zone/logos/linuxfoundation/linuxfoundation-icon.svg" height="20" /> Paquets Distro-agnostic 
+Vous pouvez prendre directement la dernière version depuis le snapstore ou flathub
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/soundux)
 
@@ -115,11 +111,11 @@ You can grab the latest release from the Snap Store or Flathub
 </a>
 
 ## <img src="https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg" height="20"/> Windows
-Download our installer or portable from [the latest release](https://github.com/Soundux/Soundux/releases/latest)
+Télécharger notre installateur ou version portable  [de la dernière version publiée](https://github.com/Soundux/Soundux/releases/latest)
 
 # 🔨 Compilation
 
-## 🔗 Build Dependencies
+## 🔗 build les dépendances
 
 ### 🐧 Linux
 - Webkit2gtk
@@ -129,15 +125,15 @@ Download our installer or portable from [the latest release](https://github.com/
 - libappindicator3 development headers
 - OpenSSL development headers
 - G++ >= 9
-  - Some distros still have G++ versions < 9 in their repos, using them will result in a build failure (for more information refer to [#71](https://github.com/Soundux/Soundux/issues/71)).
+  - Certaines distributions ont toujours la G++ versions < 9 dans leur repos. Les utilisé résulterons a une erreur de construction (pour plus d'informations se réfferer à (anglais) [#71](https://github.com/Soundux/Soundux/issues/71)).
 
-#### <img src="https://www.vectorlogo.zone/logos/debian/debian-icon.svg" height="20"/> Debian / <img src="https://www.vectorlogo.zone/logos/ubuntu/ubuntu-icon.svg" height="20"/> Ubuntu and derivatives
+#### <img src="https://www.vectorlogo.zone/logos/debian/debian-icon.svg" height="20"/> Debian / <img src="https://www.vectorlogo.zone/logos/ubuntu/ubuntu-icon.svg" height="20"/> Ubuntu et dérivés
 ```sh
 sudo apt install git build-essential cmake libx11-dev libxi-dev libwebkit2gtk-4.0-dev libappindicator3-dev libssl-dev libpulse-dev libpipewire-0.3-dev
 ```
-> If you're on Ubuntu 20.04 or lower you might have to add the PipeWire PPA:
+> Si vous êtes sous Ubuntu 20.04 ou plus vieux, vous devrez peut être ajouter le PipeWire PPA:
 > `sudo add-apt-repository ppa:pipewire-debian/pipewire-upstream`
-#### <img src="https://www.vectorlogo.zone/logos/getfedora/getfedora-icon.svg" height="20"> Fedora and derivatives
+#### <img src="https://www.vectorlogo.zone/logos/getfedora/getfedora-icon.svg" height="20"> Fedora et dérivés
 ```sh
 sudo dnf install git webkit2gtk3 cmake llvm clang libXi-devel gtk3-devel webkit2gtk3-devel libappindicator-gtk3-devel pulseaudio-libs-devel pipewire-devel
 ```
@@ -149,44 +145,43 @@ sudo dnf install git webkit2gtk3 cmake llvm clang libXi-devel gtk3-devel webkit2
 - OpenSSL
 
 ## 👷 Build
-Clone the repository
+Clonez le repo
 ```sh
 git clone https://github.com/Soundux/Soundux.git
 cd Soundux
 git submodule update --init --recursive
 ```
-Create a build folder and start compilation
+Créer un dossier de build et commencer la compilation
 ```sh
 mkdir build
 cd build
 cmake ..
 cmake --build . --config Release
 ```
-To start the program
+Pour lancer le programme
 ```sh
 ./soundux # .\soundux.exe on Windows
 ```
 
-## 🖥️ Install
+## 🖥️ Installation
 
 ### 🐧 Linux
 ```sh
 sudo make install
 ```
 
-# 📝 Why _Soundux_?
+# 📝 Pourquoi _Soundux_?
 
-The project started as a **Sound**board for Lin**ux**
+Le projet a démarré comme **Sound**board pour Lin**ux**
 
 # 🗒️ License
-The code is licensed under [GPLv3](LICENSE)
+Le code est licensé sous [GPLv3](LICENSE)
 
-# ✍️ Contributing
-The contribution guidelines can be found [here](CONTRIBUTING.md), please check them out if you're planning to contribute!
+# ✍️ Contribution
+Les règles de conduite pour la contribution peuvent être trouvé [ici](CONTRIBUTING.md), S'il vous plait, consultez les si vous prévoyez de contribuer.
+# ✨ Aidants
 
-# ✨ Contributors
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Milles merci à tout ce beaux monde! ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -247,4 +242,4 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+Ce projet suis les spécifications de [all-contributors](https://github.com/all-contributors/all-contributors) Les contributions de toute sortes sont bienvenue!
