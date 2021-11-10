@@ -1,6 +1,11 @@
 <div align="center">
   <p>
-    <img src="assets/logo.gif" height="200"/>
+    Lisez la documentation dans:
+    <br>
+    <a href="https://github.com/Soundux/Soundux/blob/master/README.md">[Anglais]</a>
+    <a href="https://github.com/Soundux/Soundux/blob/master/i18n/LISEZMOI.md">[Français]</a>
+    <br><br><br>
+    <img src="../assets/logo.gif" height="200"/>
     <br>
     <h6>Un soundboard Multi-Plateformes 🔊</h6>
     <br>
