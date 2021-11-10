@@ -91,7 +91,7 @@ Nous avons aussi un paquet `soundux-git` qui se compile directement de la branch
 ### <img src="https://www.vectorlogo.zone/logos/ubuntu/ubuntu-icon.svg" height="20"/> Ubuntu et dérivés
 Vous pouvez installer Soundux via [pacstall](https://github.com/pacstall/pacstall)
 ```sh
-sudo pacstall -I soundux
+pacstall -I soundux
 ```
 
 ### <img src="https://www.vectorlogo.zone/logos/getfedora/getfedora-icon.svg" height="20"> Fedora
