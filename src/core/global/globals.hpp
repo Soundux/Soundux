@@ -1,5 +1,4 @@
 #pragma once
-#include <helper/audio/audio.hpp>
 #if defined(__linux__)
 #include <helper/audio/linux/backend.hpp>
 #elif defined(_WIN32)
@@ -14,16 +13,15 @@
 #include <helper/icons/icons.hpp>
 #include <helper/queue/queue.hpp>
 #include <helper/ytdl/youtube-dl.hpp>
+#include <lock.hpp>
 #include <memory>
 #include <ui/ui.hpp>
-#include <var_guard.hpp>
 
 namespace Soundux
 {
     namespace Globals
     {
         inline Objects::Data gData;
-        inline Objects::Audio gAudio;
 #if defined(__linux__)
         inline std::shared_ptr<Objects::IconFetcher> gIcons;
         inline std::shared_ptr<Objects::AudioBackend> gAudioBackend;
@@ -40,7 +38,7 @@ namespace Soundux
         inline std::shared_ptr<Instance::Guard> gGuard;
 
         /* Allows for fast & easy sound access, is populated on start up */
-        inline sxl::var_guard<std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>>> gSounds;
-        inline sxl::var_guard<std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>>> gFavorites;
+        inline sxl::lock<std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>>> gSounds;
+        inline sxl::lock<std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>>> gFavorites;
     } // namespace Globals
 } // namespace Soundux

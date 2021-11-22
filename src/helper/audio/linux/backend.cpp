@@ -19,23 +19,18 @@ namespace Soundux::Objects
 
             if (pulseInstance && pulseInstance->setup())
             {
-                if (!pulseInstance->switchOnConnectPresent())
+                if (pulseInstance->isRunningPipeWire())
                 {
-                    if (pulseInstance->loadModules())
-                    {
-                        return instance;
-                    }
+                    backend = Enums::BackendType::PipeWire;
+                    Globals::gSettings.audioBackend = backend;
+
+                    pulseInstance->destroy();
+                    pulseInstance.reset();
                 }
                 else
                 {
                     return instance;
                 }
-            }
-
-            if (pulseInstance && pulseInstance->isRunningPipeWire())
-            {
-                backend = Enums::BackendType::PipeWire;
-                Globals::gSettings.audioBackend = backend;
             }
         }
 

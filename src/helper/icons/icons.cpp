@@ -29,9 +29,9 @@ namespace Soundux::Objects
 
         return true;
     }
-    std::shared_ptr<IconFetcher> IconFetcher::createInstance()
+    std::unique_ptr<IconFetcher> IconFetcher::createInstance()
     {
-        auto instance = std::shared_ptr<IconFetcher>(new IconFetcher()); // NOLINT
+        auto instance = std::unique_ptr<IconFetcher>(new IconFetcher()); // NOLINT
 
         if (instance->setup())
         {

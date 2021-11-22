@@ -124,24 +124,13 @@ namespace nlohmann
     {
         static void to_json(json &j, const Soundux::Objects::PlayingSound &obj)
         {
-            j = {
-                {"sound", obj.sound},           {"id", obj.id},
-                {"length", obj.length},         {"paused", obj.paused.load()},
-                {"lengthInMs", obj.lengthInMs}, {"repeat", obj.repeat.load()},
-                {"readFrames", obj.readFrames}, {"readInMs", obj.readInMs.load()},
-            };
-        }
-        static void from_json(const json &j, Soundux::Objects::PlayingSound &obj)
-        {
-            j.at("id").get_to(obj.id);
-            j.at("sound").get_to(obj.sound);
-            j.at("length").get_to(obj.length);
-            j.at("readFrames").get_to(obj.readFrames);
-            j.at("lengthInMs").get_to(obj.lengthInMs);
+            j["id"] = obj.getId();
+            j["sound"] = obj.getSound();
+            j["paused"] = obj.isPaused();
+            j["repeat"] = obj.isRepeating();
 
-            obj.paused.store(j.at("paused").get<bool>());
-            obj.repeat.store(j.at("repeat").get<bool>());
-            obj.readInMs.store(j.at("readInMs").get<std::uint64_t>());
+            j["lengthInMs"] = obj.getLength();
+            j["readInMs"] = obj.getRead();
         }
     };
     template <> struct adl_serializer<Soundux::Objects::Settings>
