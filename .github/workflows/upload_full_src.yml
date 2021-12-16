@@ -37,7 +37,7 @@ jobs:
           outPath: soundux.tar.gz
 
       - name: Upload
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v2.3.1
         with:
           name: Source tarball
           path: soundux.tar.gz
