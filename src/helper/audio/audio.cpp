@@ -60,7 +60,9 @@ namespace Soundux::Objects
 
         auto *device = new ma_device;
         auto config = ma_device_config_init(ma_device_type_playback);
-        auto length_in_pcm_frames = ma_decoder_get_length_in_pcm_frames(decoder);
+
+        ma_uint64 length_in_pcm_frames{};
+        ma_decoder_get_length_in_pcm_frames(decoder, &length_in_pcm_frames);
 
         config.dataCallback = data_callback;
         config.sampleRate = decoder->outputSampleRate;
@@ -190,7 +192,7 @@ namespace Soundux::Objects
 
             if (!sound->paused)
             {
-                if (ma_device_get_state(sound->raw.device) == MA_STATE_STARTED)
+                if (ma_device_get_state(sound->raw.device) == ma_device_state_started)
                 {
                     ma_device_stop(sound->raw.device);
                 }
@@ -228,7 +230,7 @@ namespace Soundux::Objects
 
             if (sound->paused)
             {
-                if (ma_device_get_state(sound->raw.device) == MA_STATE_STOPPED)
+                if (ma_device_get_state(sound->raw.device) == ma_device_state_stopped)
                 {
                     ma_device_start(sound->raw.device);
                 }
@@ -322,7 +324,9 @@ namespace Soundux::Objects
             return;
         }
 
-        auto readFrames = ma_decoder_read_pcm_frames(sound->raw.decoder, output, frameCount);
+        ma_uint64 readFrames{};
+        readFrames = ma_decoder_read_pcm_frames(sound->raw.decoder, output, frameCount, &readFrames);
+
         if (sound->shouldSeek)
         {
             ma_decoder_seek_to_pcm_frame(sound->raw.decoder, sound->seekTo);
