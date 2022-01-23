@@ -39,8 +39,10 @@ namespace Soundux
         {
             try
             {
-                midi.open_port();
-                midi.set_callback([this](const libremidi::message &message) {
+                midi = std::make_unique<libremidi::midi_in>();
+
+                midi->open_port();
+                midi->set_callback([this](const libremidi::message &message) {
                     if (message.size() < 3)
                     {
                         Fancy::fancy.logTime().failure()
@@ -93,7 +95,7 @@ namespace Soundux
                         }
                     }
                 });
-                midi.ignore_types(false, false, false);
+                midi->ignore_types(false, false, false);
             }
             catch (const libremidi::midi_exception &e)
             {
