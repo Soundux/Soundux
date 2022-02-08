@@ -325,7 +325,7 @@ namespace Soundux::Objects
         }
 
         ma_uint64 readFrames{};
-        readFrames = ma_decoder_read_pcm_frames(sound->raw.decoder, output, frameCount, &readFrames);
+        ma_decoder_read_pcm_frames(sound->raw.decoder, output, frameCount, &readFrames);
 
         if (sound->shouldSeek)
         {
