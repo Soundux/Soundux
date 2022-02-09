@@ -65,6 +65,7 @@ namespace Soundux::Objects
         ma_decoder_get_length_in_pcm_frames(decoder, &length_in_pcm_frames);
 
         config.dataCallback = data_callback;
+        config.periodSizeInMilliseconds = 100;
         config.sampleRate = decoder->outputSampleRate;
         config.playback.format = decoder->outputFormat;
         config.playback.channels = decoder->outputChannels;
