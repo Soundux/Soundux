@@ -2,8 +2,9 @@
   <p>
     Lisez la documentation dans:
     <br>
-    <a href="https://github.com/Soundux/Soundux/blob/master/README.md">[Anglais]</a>
-    <a href="https://github.com/Soundux/Soundux/blob/master/i18n/LISEZMOI.md">[Français]</a>
+    <a href="https://github.com/Soundux/Soundux/blob/master/README.md">[Anglais/English]</a>
+    <a href="https://github.com/Soundux/Soundux/blob/master/i18n/LISEZMOI.md">[Français/French]</a>
+    <a href="https://github.com/Soundux/Soundux/blob/master/i18n/ПРОЧТИМЕНЯ.md">[Russe/Russian]</a>
     <br><br><br>
     <img src="../assets/logo.gif" height="200"/>
     <br>
