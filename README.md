@@ -243,6 +243,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/3JlOy-PYCCKUi"><img src="https://avatars.githubusercontent.com/u/46464602?v=4?s=50" width="50px;" alt=""/><br /><sub><b>3JlOy_PYCCKUi</b></sub></a><br /><a href="#translation-3JlOy-PYCCKUi" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/FuRyQC"><img src="https://avatars.githubusercontent.com/u/91005051?v=4?s=50" width="50px;" alt=""/><br /><sub><b>FuRyQC</b></sub></a><br /><a href="#translation-FuRyQC" title="Translation">🌍</a></td>
   </tr>
 </table>
 
