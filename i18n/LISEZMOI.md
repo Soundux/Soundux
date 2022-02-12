@@ -241,6 +241,10 @@ Milles merci à tout ce beaux monde! ([emoji key](https://allcontributors.org/do
     <td align="center"><a href="https://github.com/lucasvbeek"><img src="https://avatars.githubusercontent.com/u/29404838?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Lucas van Beek</b></sub></a><br /><a href="#translation-lucasvbeek" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/underhood"><img src="https://avatars.githubusercontent.com/u/6674623?v=4?s=50" width="50px;" alt=""/><br /><sub><b>Timotej S.</b></sub></a><br /><a href="https://github.com/Soundux/Soundux/issues?q=author%3Aunderhood" title="Bug reports">🐛</a> <a href="https://github.com/Soundux/Soundux/commits?author=underhood" title="Tests">⚠️</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/3JlOy-PYCCKUi"><img src="https://avatars.githubusercontent.com/u/46464602?v=4?s=50" width="50px;" alt=""/><br /><sub><b>3JlOy_PYCCKUi</b></sub></a><br /><a href="#translation-3JlOy-PYCCKUi" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/FuRyQC"><img src="https://avatars.githubusercontent.com/u/91005051?v=4?s=50" width="50px;" alt=""/><br /><sub><b>FuRyQC</b></sub></a><br /><a href="#translation-FuRyQC" title="Translation">🌍</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-restore -->
