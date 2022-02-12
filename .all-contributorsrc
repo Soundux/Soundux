@@ -4,7 +4,7 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
-    "README.md"
+    "README.md", "i18n/LISEZMOI.md", "i18n/ПРОЧТИМЕНЯ.md"
   ],
   "imageSize": 50,
   "commit": true,
