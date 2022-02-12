@@ -258,6 +258,15 @@
         "bug",
         "test"
       ]
+    },
+    {
+      "login": "FuRyQC",
+      "name": "FuRyQC",
+      "avatar_url": "https://avatars.githubusercontent.com/u/91005051?v=4",
+      "profile": "https://github.com/FuRyQC",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 2,
