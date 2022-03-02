@@ -20,7 +20,7 @@ jobs:
       image: bilelmoussaoui/flatpak-github-actions:gnome-3.38
       options: --privileged
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v3
         with:
           submodules: true
       - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v4
