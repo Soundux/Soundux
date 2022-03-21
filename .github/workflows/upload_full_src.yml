@@ -29,7 +29,7 @@ jobs:
           path: Soundux
 
       - name: Create tarball
-        uses: master-atul/tar-action@v1.0.2
+        uses: master-atul/tar-action@v1.1.0
         with:
           command: c
           files: |
