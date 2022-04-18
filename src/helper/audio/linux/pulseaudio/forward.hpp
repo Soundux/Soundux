@@ -26,9 +26,9 @@ namespace Soundux
         pulse_forward_decl(context_get_server_info);
         pulse_forward_decl(context_set_state_callback);
         pulse_forward_decl(context_set_default_source);
-        pulse_forward_decl(context_set_sink_input_mute);
         pulse_forward_decl(context_get_module_info_list);
         pulse_forward_decl(context_move_sink_input_by_name);
+        pulse_forward_decl(context_set_source_mute_by_name);
         pulse_forward_decl(context_move_sink_input_by_index);
         pulse_forward_decl(context_get_sink_input_info_list);
         pulse_forward_decl(context_move_source_output_by_name);
