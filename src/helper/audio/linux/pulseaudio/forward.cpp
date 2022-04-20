@@ -37,7 +37,7 @@ bool Soundux::PulseApi::setup()
     load(context_move_sink_input_by_index);
     load(context_move_source_output_by_name);
     load(context_move_source_output_by_index);
-    load(context_set_sink_input_mute);
+    load(context_set_source_mute_by_name);
     load(context_unload_module);
     load(context_get_state);
     load(operation_get_state);
@@ -69,7 +69,7 @@ bool Soundux::PulseApi::setup()
             load(context_move_sink_input_by_index);
             load(context_move_source_output_by_name);
             load(context_move_source_output_by_index);
-            load(context_set_sink_input_mute);
+            load(context_set_source_mute_by_name);
             load(context_unload_module);
             load(context_get_state);
             load(operation_get_state);
