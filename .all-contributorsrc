@@ -4,7 +4,9 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
-    "README.md", "i18n/LISEZMOI.md", "i18n/ПРОЧТИМЕНЯ.md"
+    "README.md",
+    "i18n/LISEZMOI.md",
+    "i18n/ПРОЧТИМЕНЯ.md"
   ],
   "imageSize": 50,
   "commit": true,
@@ -275,6 +277,17 @@
       "profile": "https://github.com/FuRyQC",
       "contributions": [
         "translation"
+      ]
+    },
+    {
+      "login": "moralrecordings",
+      "name": "Scott Percival",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16875700?v=4",
+      "profile": "https://moral.net.au",
+      "contributions": [
+        "bug",
+        "test",
+        "code"
       ]
     }
   ],
