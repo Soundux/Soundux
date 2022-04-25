@@ -31,7 +31,7 @@ jobs:
           submodules: recursive
 
       - name: Install OpenSSL
-        uses: crazy-max/ghaction-chocolatey@v1.6.0
+        uses: crazy-max/ghaction-chocolatey@v1.7.0
         with:
           args: install openssl -y
 
@@ -48,12 +48,12 @@ jobs:
           path: build/Release
 
       - name: Install InnoSetup
-        uses: crazy-max/ghaction-chocolatey@v1.6.0
+        uses: crazy-max/ghaction-chocolatey@v1.7.0
         with:
           args: install innosetup -y
 
       - name: Install Sed
-        uses: crazy-max/ghaction-chocolatey@v1.6.0
+        uses: crazy-max/ghaction-chocolatey@v1.7.0
         with:
           args: install sed -y
 
