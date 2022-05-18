@@ -56,16 +56,16 @@ int main(int argc, char **arguments)
     }
 
     backward::SignalHandling crashHandler;
-    gGuard = std::make_shared<Instance::Guard>("soundux-guard");
+    gGuard = std::make_shared<guardpp::guard>("soundux-guard");
 
     if (std::find(args.begin(), args.end(), "--reset-mutex") != args.end())
     {
         gGuard->reset();
         gGuard.reset();
-        gGuard = std::make_shared<Instance::Guard>("soundux-guard");
+        gGuard = std::make_shared<guardpp::guard>("soundux-guard");
     }
 
-    if (gGuard->isAnotherRunning())
+    if (gGuard->other_instance())
     {
         Fancy::fancy.logTime().failure() << "Another Instance is already running!" << std::endl;
         return 1;
