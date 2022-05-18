@@ -55,6 +55,24 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="0.2.8" date="2022-05-18">
+      <url>https://github.com/Soundux/Soundux/releases/tag/0.2.8</url>
+      <description>
+        <p>Last bugfix release for this iteration of the project</p>
+        <p>If you didn't know already: We're currently in the progress of a major rework. See https://github.com/Soundux/Soundux/issues/591</p>
+        <ul>
+          <li>Update translations</li>
+          <li>Hotkeys rework and MIDI support</li>
+          <li>Mute during playback on PipeWire</li>
+          <li>Language override setting</li>
+          <li>Automatically unload problematic PulseAudio modules</li>
+          <li>Disable downloader button when not on a tab</li>
+          <li>Don't prompt for VB-Cable setup when it was not detected</li>
+          <li>Fixed an issue with the PulseAudio backend (#587)</li>
+          <li>General bug fixes and stability improvements</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.7" date="2021-06-04">
       <url>https://github.com/Soundux/Soundux/releases/tag/0.2.7</url>
       <description>

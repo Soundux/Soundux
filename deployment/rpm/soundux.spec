@@ -2,7 +2,7 @@
 %global repo_url        https://github.com/Soundux/Soundux
 
 Name:           soundux
-Version:        0.2.7
+Version:        0.2.8
 Release:        1%{?dist}
 Summary:        A cross-platform soundboard
 
