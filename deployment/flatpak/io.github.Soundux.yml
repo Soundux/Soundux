@@ -51,8 +51,8 @@ modules:
       - --enable-libvorbis
     sources:
       - type: archive
-        url: https://www.ffmpeg.org/releases/ffmpeg-4.4.tar.xz
-        sha256: 06b10a183ce5371f915c6bb15b7b1fffbe046e8275099c96affc29e17645d909
+        url: https://www.ffmpeg.org/releases/ffmpeg-5.0.1.tar.xz
+        sha256: ef2efae259ce80a240de48ec85ecb062cecca26e4352ffb3fda562c21a93007b
     post-install:
       - install -Dm644 COPYING.LGPLv3 /app/share/licenses/ffmpeg/COPYING
     cleanup:
@@ -65,7 +65,7 @@ modules:
       - PYTHON=/usr/bin/python
     sources:
       - type: archive
-        url: https://github.com/ytdl-org/youtube-dl/releases/download/2021.06.06/youtube-dl-2021.06.06.tar.gz
-        sha256: 3ccb0e4db9fd172338ed1c32bae0be2f716458dca4143e55732ff55260b20ac3
+        url: https://github.com/ytdl-org/youtube-dl/releases/download/2021.12.17/youtube-dl-2021.12.17.tar.gz
+        sha256: 9f3b99c8b778455165b4525f21505e86c7ff565f3ac319e19733d810194135df
     post-install:
       - install -Dm0755 -t /app/bin youtube-dl

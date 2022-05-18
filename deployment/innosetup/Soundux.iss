@@ -167,8 +167,8 @@ begin
       DownloadPage.Add('https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip', 'VBCABLE_Driver_Pack43.zip', '')
     end;
     if WizardIsComponentSelected('FfmpegYouTubeDL') then begin
-      DownloadPage.Add('https://github.com/eugeneware/ffmpeg-static/releases/download/b4.4/win32-x64', 'ffmpeg.exe', '')
-      DownloadPage.Add('https://github.com/ytdl-org/youtube-dl/releases/download/2021.06.06/youtube-dl.exe', 'youtube-dl.exe', '')
+      DownloadPage.Add('https://github.com/eugeneware/ffmpeg-static/releases/download/b5.0/win32-x64', 'ffmpeg.exe', '')
+      DownloadPage.Add('https://github.com/ytdl-org/youtube-dl/releases/download/2021.12.17/youtube-dl.exe', 'youtube-dl.exe', '')
 
       DownloadPage.Add('https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x86.exe', 'vcredist_x86.exe', '')
       DownloadPage.Add('https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x64.exe', 'vcredist_x64.exe', '')
