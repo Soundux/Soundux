@@ -65,15 +65,10 @@ int main(int argc, char **arguments)
         gGuard = std::make_shared<guardpp::guard>("soundux-guard");
     }
 
-    if (auto other_instance = gGuard->other_instance(); other_instance.has_value() && other_instance.value())
+    if (gGuard->other_instance())
     {
         Fancy::fancy.logTime().failure() << "Another Instance is already running!" << std::endl;
         return 1;
-    }
-    else if (!other_instance.has_value()) // NOLINT
-    {
-        Fancy::fancy.logTime().warning() << "Failed to check for other instances: " << other_instance.error()
-                                         << std::endl;
     }
 
     gConfig.load();
