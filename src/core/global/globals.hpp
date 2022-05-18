@@ -37,7 +37,7 @@ namespace Soundux
         inline std::unique_ptr<Objects::Window> gGui;
         inline std::shared_ptr<Objects::Hotkeys> gHotKeys;
 
-        inline std::shared_ptr<guardpp::guard> gGuard;
+        inline std::shared_ptr<Instance::Guard> gGuard;
 
         /* Allows for fast & easy sound access, is populated on start up */
         inline sxl::var_guard<std::map<std::uint32_t, std::reference_wrapper<Objects::Sound>>> gSounds;
