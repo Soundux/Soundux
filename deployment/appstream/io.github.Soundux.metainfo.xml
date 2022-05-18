@@ -59,7 +59,7 @@
       <url>https://github.com/Soundux/Soundux/releases/tag/0.2.8</url>
       <description>
         <p>Last bugfix release for this iteration of the project</p>
-        <p>If you didn't know already: We're currently in the progress of a major rework. See https://github.com/Soundux/Soundux/issues/591</p>
+        <p>If you didn't know already: We're currently in the progress of a major rework. See issue #591 on GitHub</p>
         <ul>
           <li>Update translations</li>
           <li>Hotkeys rework and MIDI support</li>
