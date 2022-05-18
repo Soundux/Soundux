@@ -20,12 +20,6 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: compile_linux.yml
 
-      - name: Download Flatpak Artifact
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          workflow: build_flatpak.yml
-
       - name: Download Tar Ball Artifact
         uses: dawidd6/action-download-artifact@v2
         with:
@@ -53,7 +47,6 @@ jobs:
           mkdir release
           mv "./Deb package/soundux.deb" ./release/soundux-${{ steps.last_release.outputs.tag_name }}.deb
           mv "./Source tarball/soundux.tar.gz" ./release/soundux-${{ steps.last_release.outputs.tag_name }}.tar.gz
-          mv "./soundux/soundux.flatpak" ./release/soundux-${{ steps.last_release.outputs.tag_name }}.flatpak
           mv "./Installer/setup.exe" ./release/soundux-${{ steps.last_release.outputs.tag_name }}-windows-setup.exe
           mv "./Release/soundux.exe" ./release/soundux-${{ steps.last_release.outputs.tag_name }}-windows-portable.exe
 
