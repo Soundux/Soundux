@@ -1,16 +1,20 @@
 app-id: io.github.Soundux
 runtime: org.gnome.Platform
-runtime-version: "40"
+runtime-version: "42"
 sdk: org.gnome.Sdk
 command: soundux
 finish-args:
-  - --device=all
-  - --device=shm
-  - --share=network
+  - --device=dri
   - --socket=pulseaudio
   - --socket=x11
-  - --filesystem=host
+  - --share=network
+  - --share=ipc
   - --filesystem=xdg-run/pipewire-0
+  - --filesystem=xdg-music:ro
+  - --filesystem=xdg-download:ro
+  - --filesystem=xdg-documents:ro
+  - --filesystem=/run/media:ro
+  - --filesystem=/media:ro
 modules:
   - "shared-modules/libappindicator/libappindicator-gtk3-introspection-12.10.json"
   - name: libwnck
@@ -31,14 +35,15 @@ modules:
     config-opts:
       - -DUSE_FLATPAK=ON
       - -DCMAKE_BUILD_TYPE=Release
+      - -DFETCHCONTENT_FULLY_DISCONNECTED=ON
     post-install:
       - "install -Dm 644 -t /app/share/metainfo deployment/appstream/io.github.Soundux.metainfo.xml"
       - "install -Dm 644 -t /app/share/applications deployment/appstream/io.github.Soundux.desktop"
       - "install -Dm 644 deployment/flatpak/icons/io.github.Soundux-256.png /app/share/icons/hicolor/256x256/apps/io.github.Soundux.png"
     sources:
-      - type: git
-        url: https://github.com/Soundux/Soundux.git
-        branch: master
+      - type: archive
+        url: https://github.com/Soundux/Soundux/releases/download/0.2.8/soundux-0.2.8.tar.gz
+        sha256: d007841ae5bab71d8a25cc86d27ce137b01b29a7f2b42a5bd62b4ed50dd74043
   - name: ffmpeg
     config-opts:
       - --enable-shared
