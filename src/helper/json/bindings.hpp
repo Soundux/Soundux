@@ -169,6 +169,7 @@ namespace nlohmann
                 {"muteDuringPlayback", obj.muteDuringPlayback},
                 {"useAsDefaultDevice", obj.useAsDefaultDevice},
                 {"allowMultipleOutputs", obj.allowMultipleOutputs},
+                {"serverPort", obj.serverPort},
             };
         }
 
@@ -218,6 +219,7 @@ namespace nlohmann
             get_to_safe(j, "useAsDefaultDevice", obj.useAsDefaultDevice);
             get_to_safe(j, "muteDuringPlayback", obj.muteDuringPlayback);
             get_to_safe(j, "allowMultipleOutputs", obj.allowMultipleOutputs);
+            get_to_safe(j, "serverPort", obj.serverPort);
         }
     };
     template <> struct adl_serializer<Soundux::Objects::Tab>

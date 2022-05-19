@@ -32,6 +32,7 @@ namespace Soundux
         class Window
         {
             friend class Hotkeys;
+            friend class SounduxServer;
 
           protected:
             sxl::var_guard<std::map<std::uint32_t, std::uint32_t>> groupedSounds;

@@ -29,6 +29,8 @@ namespace Soundux
             int remoteVolume = 100;
             int localVolume = 50;
 
+            std::uint16_t serverPort = 26656;
+
             bool allowMultipleOutputs = false;
             bool useAsDefaultDevice = false;
             bool muteDuringPlayback = false;
