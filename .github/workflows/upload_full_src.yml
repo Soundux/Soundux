@@ -28,6 +28,9 @@ jobs:
           submodules: recursive
           path: Soundux
 
+      - name: Fetch Required External Dependencies
+        run: "cmake ."
+
       - name: Create tarball
         uses: master-atul/tar-action@v1.0.2
         with:
