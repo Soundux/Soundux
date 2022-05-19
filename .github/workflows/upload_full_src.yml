@@ -32,7 +32,7 @@ jobs:
         run: "sudo apt-get update && sudo apt-get install git build-essential cmake libx11-dev libpipewire-0.3-dev ninja-build libxi-dev libwnck-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev libpulse-dev"
 
       - name: Fetch Required External Dependencies
-        run: 'cd Soundux && cmake -GNinja . && find build -not -name "_deps" -delete'
+        run: 'cd Soundux && cmake -GNinja . && find build -not -name "_deps" -delete && rm CMakeCache.txt'
 
       - name: Create tarball
         uses: master-atul/tar-action@v1.0.2
