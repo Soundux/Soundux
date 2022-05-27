@@ -296,10 +296,7 @@ namespace Soundux::Objects
     {
         if (!defaultSource.empty())
         {
-            if (loopBack)
-            {
-                await(PulseApi::context_unload_module(context, *loopBack, nullptr, nullptr));
-            }
+            await(PulseApi::context_unload_module(context, *loopBack, nullptr, nullptr));
 
             await(PulseApi::context_load_module(
                 context, "module-loopback", ("rate=44100 source=" + defaultSource + " sink=soundux_sink").c_str(),
