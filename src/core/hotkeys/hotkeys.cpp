@@ -99,10 +99,6 @@ namespace Soundux
             {
                 Fancy::fancy.logTime().failure() << "Failed to initialize libremidi: " << e.what() << std::endl;
             }
-            catch (...)
-            {
-                Fancy::fancy.logTime().failure() << "Unknown libremidi exception" << std::endl;
-            }
         }
         void Hotkeys::notify(bool state)
         {
