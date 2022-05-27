@@ -1,6 +1,7 @@
 #pragma once
 #include <core/enums/enums.hpp>
 #include <string>
+#include <optional>
 #include <vector>
 
 namespace Soundux
