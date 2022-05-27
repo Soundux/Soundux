@@ -93,7 +93,7 @@ set(HTTPLIB_REQUIRE_OPENSSL ON)
 add_subdirectory(lib/cpp-httplib EXCLUDE_FROM_ALL)
 target_include_directories(soundux SYSTEM PRIVATE "lib/cpp-httplib")
 
-target_link_libraries(soundux PRIVATE webview nfd tiny-process-library tray guard httplib lockpp)
+target_link_libraries(soundux PRIVATE webview nfd tiny-process-library tray guardpp httplib lockpp)
 
 if (${EMBED_PATH} STREQUAL "OFF")
     message("Web-content will not be embedded") 
