@@ -5,12 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <optional>
-
-#pragma push_macro("UNICOCDE")
-#undef UNICODE
 #include <process.hpp>
-#pragma pop_macro("UNICOCDE")
-
 #include <regex>
 #include <system_error>
 

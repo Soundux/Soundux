@@ -33,9 +33,9 @@ namespace Soundux
         inline Objects::Queue gQueue;
         inline Objects::Config gConfig;
         inline Objects::YoutubeDl gYtdl;
+        inline Objects::Hotkeys gHotKeys;
         inline Objects::Settings gSettings;
         inline std::unique_ptr<Objects::Window> gGui;
-        inline std::shared_ptr<Objects::Hotkeys> gHotKeys;
 
         inline std::shared_ptr<guardpp::guard> gGuard;
 

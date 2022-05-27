@@ -9,7 +9,6 @@
 #include <helper/systeminfo/systeminfo.hpp>
 #include <helper/version/check.hpp>
 #include <helper/ytdl/youtube-dl.hpp>
-#include <javascript/function.hpp>
 
 #ifdef _WIN32
 #include "../../assets/icon.h"
@@ -123,14 +122,12 @@ namespace Soundux::Objects
         webview->expose(Webview::Function("stopSounds", [this]() { stopSounds(); }));
         webview->expose(Webview::Function("changeSettings",
                                           [this](const Settings &newSettings) { return changeSettings(newSettings); }));
-        webview->expose(Webview::Function("requestHotkey", [](bool state) { Globals::gHotKeys->notify(state); }));
+        webview->expose(Webview::Function("requestHotkey", [](bool state) { Globals::gHotKeys.shouldNotify(state); }));
         webview->expose(Webview::Function(
-            "setHotkey", [this](std::uint32_t id, const std::vector<Key> &keys) { return setHotkey(id, keys); }));
-        webview->expose(Webview::Function("getHotkeySequence", [this](const std::vector<Key> &keys) {
-            return Globals::gHotKeys->getKeySequence(keys);
+            "setHotkey", [this](std::uint32_t id, const std::vector<int> &keys) { return setHotkey(id, keys); }));
+        webview->expose(Webview::Function("getHotkeySequence", [this](const std::vector<int> &keys) {
+            return Globals::gHotKeys.getKeySequence(keys);
         }));
-        webview->expose(
-            Webview::Function("getKeyName", [this](const Key &key) { return Globals::gHotKeys->getKeyName(key); }));
         webview->expose(Webview::Function("removeTab", [this](std::uint32_t id) { return removeTab(id); }));
         webview->expose(Webview::Function("refreshTab", [this](std::uint32_t id) { return refreshTab(id); }));
         webview->expose(Webview::Function(
@@ -172,8 +169,6 @@ namespace Soundux::Objects
                                               return setCustomRemoteVolume(id, volume);
                                           }));
         webview->expose(Webview::Function("toggleSoundPlayback", [this]() { return toggleSoundPlayback(); }));
-        webview->expose(
-            Webview::Function("requestKnob", [this](bool state) { Globals::gHotKeys->requestKnob(state); }));
 
 #if !defined(__linux__)
         webview->expose(Webview::Function("getOutputs", [this]() { return getOutputs(); }));
@@ -392,10 +387,15 @@ namespace Soundux::Objects
         }
         Fancy::fancy.logTime().message() << "UI exited" << std::endl;
     }
-    void WebView::onHotKeyReceived(const std::vector<Key> &keys)
+    void WebView::onHotKeyReceived(const std::vector<int> &keys)
     {
-        webview->callFunction<void>(
-            Webview::JavaScriptFunction("window.hotkeyReceived", Globals::gHotKeys->getKeySequence(keys), keys));
+        std::string hotkeySequence;
+        for (const auto &key : keys)
+        {
+            hotkeySequence += Globals::gHotKeys.getKeyName(key) + " + ";
+        }
+        webview->callFunction<void>(Webview::JavaScriptFunction(
+            "window.hotkeyReceived", hotkeySequence.substr(0, hotkeySequence.length() - 3), keys));
     }
     void WebView::onSoundFinished(const PlayingSound &sound)
     {
@@ -447,13 +447,5 @@ namespace Soundux::Objects
     {
         webview->callFunction<void>(
             Webview::JavaScriptFunction("window.getStore().commit", "setAdministrativeModal", true));
-    }
-    void WebView::onLocalVolumeChanged(int volume)
-    {
-        webview->callFunction<void>(Webview::JavaScriptFunction("window.getStore().commit", "setLocalVolume", volume));
-    }
-    void WebView::onRemoteVolumeChanged(int volume)
-    {
-        webview->callFunction<void>(Webview::JavaScriptFunction("window.getStore().commit", "setRemoteVolume", volume));
     }
 } // namespace Soundux::Objects

@@ -3,7 +3,6 @@
 #include <condition_variable>
 #include <functional>
 #include <map>
-#include <optional>
 #include <queue>
 #include <thread>
 
@@ -13,14 +12,8 @@ namespace Soundux
     {
         class Queue
         {
-            struct Call
-            {
-                std::function<void()> function;
-                std::optional<std::uint64_t> id;
-            };
-
+            std::map<std::uint64_t, std::function<void()>> queue;
             std::mutex queueMutex;
-            std::vector<Call> queue;
 
             std::condition_variable cv;
             std::atomic<bool> stop;
@@ -33,7 +26,6 @@ namespace Soundux
             Queue();
             ~Queue();
 
-            void push(std::function<void()>);
             void push_unique(std::uint64_t, std::function<void()>);
         };
     } // namespace Objects

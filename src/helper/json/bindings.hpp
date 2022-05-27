@@ -1,69 +1,11 @@
 #pragma once
 #include <core/global/globals.hpp>
-#include <core/hotkeys/keys.hpp>
 #include <helper/audio/windows/winsound.hpp>
 #include <helper/version/check.hpp>
 #include <nlohmann/json.hpp>
 
-namespace Soundux
-{
-    namespace traits
-    {
-        template <typename T> struct is_optional
-        {
-          private:
-            static std::uint8_t test(...);
-            template <typename O> static auto test(std::optional<O> *) -> std::uint16_t;
-
-          public:
-            static const bool value = sizeof(test(reinterpret_cast<std::decay_t<T> *>(0))) == sizeof(std::uint16_t);
-        };
-    } // namespace traits
-} // namespace Soundux
-
 namespace nlohmann
 {
-    template <typename T> struct adl_serializer<std::optional<T>>
-    {
-        static void to_json(json &j, const std::optional<T> &obj)
-        {
-            if (obj)
-            {
-                j = *obj;
-            }
-            else
-            {
-                j = nullptr;
-            }
-        }
-        static void from_json(const json &j, const std::optional<T> &obj)
-        {
-            if (!j.is_null())
-            {
-                obj = j.get<T>();
-            }
-        }
-    }; // namespace nlohmann
-    template <> struct adl_serializer<Soundux::Objects::Key>
-    {
-        static void to_json(json &j, const Soundux::Objects::Key &obj)
-        {
-            j = {{"key", obj.key}, {"type", obj.type}};
-        }
-        static void from_json(const json &j, Soundux::Objects::Key &obj)
-        {
-            if (j.find("type") != j.end())
-            {
-                j.at("key").get_to(obj.key);
-                j.at("type").get_to(obj.type);
-            }
-            else
-            {
-                j.get_to(obj.key);
-                obj.type = Soundux::Enums::KeyType::Keyboard;
-            }
-        }
-    }; // namespace nlohmann
     template <> struct adl_serializer<Soundux::Objects::Sound>
     {
         static void to_json(json &j, const Soundux::Objects::Sound &obj)
@@ -72,14 +14,29 @@ namespace nlohmann
                 {"name", obj.name},
                 {"hotkeys", obj.hotkeys},
                 {"hotkeySequence",
-                 Soundux::Globals::gHotKeys->getKeySequence(obj.hotkeys)}, //* For frontend and config readability
+                 Soundux::Globals::gHotKeys.getKeySequence(obj.hotkeys)}, //* For frontend and config readability
                 {"id", obj.id},
                 {"path", obj.path},
                 {"isFavorite", obj.isFavorite},
-                {"localVolume", obj.localVolume},
-                {"remoteVolume", obj.remoteVolume},
                 {"modifiedDate", obj.modifiedDate},
             };
+
+            if (obj.localVolume)
+            {
+                j["localVolume"] = *obj.localVolume;
+            }
+            else
+            {
+                j["localVolume"] = nullptr;
+            }
+            if (obj.remoteVolume)
+            {
+                j["remoteVolume"] = *obj.remoteVolume;
+            }
+            else
+            {
+                j["remoteVolume"] = nullptr;
+            }
         }
         static void from_json(const json &j, Soundux::Objects::Sound &obj)
         {
@@ -163,8 +120,6 @@ namespace nlohmann
                 {"pushToTalkKeys", obj.pushToTalkKeys},
                 {"tabHotkeysOnly", obj.tabHotkeysOnly},
                 {"minimizeToTray", obj.minimizeToTray},
-                {"localVolumeKnob", obj.localVolumeKnob},
-                {"remoteVolumeKnob", obj.remoteVolumeKnob},
                 {"allowOverlapping", obj.allowOverlapping},
                 {"muteDuringPlayback", obj.muteDuringPlayback},
                 {"useAsDefaultDevice", obj.useAsDefaultDevice},
@@ -176,22 +131,9 @@ namespace nlohmann
         {
             if (j.find(key) != j.end())
             {
-                if constexpr (Soundux::traits::is_optional<T>::value)
+                if (j.at(key).type_name() == nlohmann::basic_json(T{}).type_name())
                 {
-                    if (j.at(key).type_name() == nlohmann::basic_json(typename T::value_type{}).type_name())
-                    {
-                        if (!j.at(key).is_null())
-                        {
-                            member = j.at(key).get<typename T::value_type>();
-                        }
-                    }
-                }
-                else
-                {
-                    if (j.at(key).type_name() == nlohmann::basic_json(T{}).type_name())
-                    {
-                        j.at(key).get_to(member);
-                    }
+                    j.at(key).get_to(member);
                 }
             }
         }
@@ -212,8 +154,6 @@ namespace nlohmann
             get_to_safe(j, "pushToTalkKeys", obj.pushToTalkKeys);
             get_to_safe(j, "minimizeToTray", obj.minimizeToTray);
             get_to_safe(j, "tabHotkeysOnly", obj.tabHotkeysOnly);
-            get_to_safe(j, "localVolumeKnob", obj.localVolumeKnob);
-            get_to_safe(j, "remoteVolumeKnob", obj.remoteVolumeKnob);
             get_to_safe(j, "allowOverlapping", obj.allowOverlapping);
             get_to_safe(j, "useAsDefaultDevice", obj.useAsDefaultDevice);
             get_to_safe(j, "muteDuringPlayback", obj.muteDuringPlayback);
@@ -335,6 +275,23 @@ namespace nlohmann
                 {"name", obj.getName()},
                 {"guid", obj.getGUID()},
             };
+        }
+    };
+    template <> struct adl_serializer<std::optional<Soundux::Objects::RecordingDevice>>
+    {
+        static void to_json(json &j, const std::optional<Soundux::Objects::RecordingDevice> &obj)
+        {
+            if (obj)
+            {
+                j = {
+                    {"name", obj->getName()},
+                    {"guid", obj->getGUID()},
+                };
+            }
+            else
+            {
+                j = "null";
+            }
         }
     };
 #endif

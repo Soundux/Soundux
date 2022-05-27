@@ -1,15 +1,7 @@
 #pragma once
-#pragma push_macro("max")
-#pragma push_macro("min")
-#undef min
-#undef max
-#include <libremidi/libremidi.hpp>
-#pragma pop_macro("min")
-#pragma pop_macro("max")
-
-#include "keys.hpp"
 #include <atomic>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace Soundux
@@ -18,32 +10,33 @@ namespace Soundux
     {
         class Hotkeys
         {
-            libremidi::midi_in midi;
+            std::thread listener;
+            std::atomic<bool> kill = false;
+            std::atomic<bool> notify = false;
 
-          protected:
-            Hotkeys() = default;
-            virtual void setup();
+            std::vector<int> pressedKeys;
+            std::vector<int> keysToPress;
+#if defined(_WIN32)
+            std::thread keyPressThread;
+            std::atomic<bool> shouldPressKeys = false;
+#endif
 
-          protected:
-            std::vector<Key> pressedKeys;
-            std::atomic<bool> shouldNotify = false;
-            std::atomic<bool> shouldNotifyKnob = false;
+          private:
+            void listen();
 
           public:
-            static std::shared_ptr<Hotkeys> createInstance();
+            void init();
+            void stop();
+            void shouldNotify(bool);
 
-          public:
-            virtual void notify(bool);
-            virtual void requestKnob(bool);
+            void onKeyUp(int);
+            void onKeyDown(int);
 
-            virtual void onKeyUp(const Key &);
-            virtual void onKeyDown(const Key &);
+            void pressKeys(const std::vector<int> &);
+            void releaseKeys(const std::vector<int> &);
 
-            virtual void pressKeys(const std::vector<Key> &) = 0;
-            virtual void releaseKeys(const std::vector<Key> &) = 0;
-
-            virtual std::string getKeyName(const Key &);
-            virtual std::string getKeySequence(const std::vector<Key> &);
+            std::string getKeyName(const int &);
+            std::string getKeySequence(const std::vector<int> &);
         };
     } // namespace Objects
 } // namespace Soundux

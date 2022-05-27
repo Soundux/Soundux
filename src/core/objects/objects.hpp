@@ -8,7 +8,7 @@ namespace Soundux
 {
     namespace Objects
     {
-        struct Key;
+        struct AudioDevice;
 
         struct Sound
         {
@@ -17,7 +17,7 @@ namespace Soundux
             std::string path;
             bool isFavorite = false;
 
-            std::vector<Key> hotkeys;
+            std::vector<int> hotkeys;
             std::uint64_t modifiedDate;
 
             std::optional<int> localVolume;

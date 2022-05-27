@@ -1,26 +1,25 @@
-#if defined(__linux__)
-#include "x11.hpp"
+#if defined(__linux__) && __has_include(<X11/Xlib.h>)
+#include "../hotkeys.hpp"
+#include <X11/X.h>
 #include <X11/XKBlib.h>
 #include <X11/Xlib.h>
+#include <X11/extensions/XI2.h>
 #include <X11/extensions/XInput2.h>
 #include <X11/extensions/XTest.h>
 #include <chrono>
-#include <core/hotkeys/keys.hpp>
+#include <cstdlib>
 #include <fancy.hpp>
 #include <thread>
 
+using namespace std::chrono_literals;
+
 namespace Soundux::Objects
 {
-    void X11::setup()
+    Display *display;
+    void Hotkeys::listen()
     {
-        Hotkeys::setup();
-        listener = std::thread([this] { listen(); });
-    }
-
-    void X11::listen()
-    {
-        auto *displayEnv = std::getenv("DISPLAY"); // NOLINT
-        auto *x11Display = XOpenDisplay(displayEnv);
+        auto *displayenv = std::getenv("DISPLAY"); // NOLINT
+        auto *x11Display = XOpenDisplay(displayenv);
 
         if (!x11Display)
         {
@@ -28,18 +27,20 @@ namespace Soundux::Objects
             if (!(x11Display = XOpenDisplay(":0")))
             {
                 Fancy::fancy.logTime().failure() << "Could not open X11 Display" << std::endl;
+                return;
             }
         }
         else
         {
-            Fancy::fancy.logTime().message() << "Using DISPLAY " << displayEnv << std::endl;
+            Fancy::fancy.logTime().message() << "Using DISPLAY " << displayenv << std::endl;
         }
-
         display = x11Display;
-        int event_rtn = 0, ext_rtn = 0;
+
+        int major_op = 0, event_rtn = 0, ext_rtn = 0;
         if (!XQueryExtension(display, "XInputExtension", &major_op, &event_rtn, &ext_rtn))
         {
             Fancy::fancy.logTime().failure() << "Failed to find XInputExtension" << std::endl;
+            return;
         }
 
         Window root = DefaultRootWindow(display); // NOLINT
@@ -66,106 +67,78 @@ namespace Soundux::Objects
                 XNextEvent(display, &event);
                 auto *cookie = reinterpret_cast<XGenericEventCookie *>(&event.xcookie);
 
-                if (XGetEventData(display, cookie) && cookie->type == GenericEvent && cookie->extension == major_op)
+                if (XGetEventData(display, cookie) && cookie->type == GenericEvent && cookie->extension == major_op &&
+                    (cookie->evtype == XI_RawKeyPress || cookie->evtype == XI_RawKeyRelease ||
+                     cookie->evtype == XI_RawButtonPress || cookie->evtype == XI_RawButtonRelease))
                 {
-                    if (cookie->evtype == XI_RawKeyPress || cookie->evtype == XI_RawKeyRelease)
+                    auto *data = reinterpret_cast<XIRawEvent *>(cookie->data);
+                    auto key = data->detail;
+
+                    if (key == 1)
+                        continue;
+
+                    if (cookie->evtype == XI_RawKeyPress || cookie->evtype == XI_RawButtonPress)
                     {
-                        auto *data = reinterpret_cast<XIRawEvent *>(cookie->data);
-                        auto key = data->detail;
-
-                        Key pressedKey;
-                        pressedKey.key = key;
-                        pressedKey.type = Enums::KeyType::Keyboard;
-
-                        if (cookie->evtype == XI_RawKeyPress)
-                        {
-                            onKeyDown(pressedKey);
-                        }
-                        else
-                        {
-                            onKeyUp(pressedKey);
-                        }
+                        onKeyDown(key);
                     }
-                    else if (cookie->evtype == XI_RawButtonPress || cookie->evtype == XI_RawButtonRelease)
+                    else if (cookie->evtype == XI_RawKeyRelease || cookie->evtype == XI_RawButtonRelease)
                     {
-                        auto *data = reinterpret_cast<XIRawEvent *>(cookie->data);
-                        auto button = data->detail;
-
-                        if (button != 1)
-                        {
-                            Key pressedButton;
-                            pressedButton.key = button;
-                            pressedButton.type = Enums::KeyType::Mouse;
-
-                            if (cookie->evtype == XI_RawButtonPress)
-                            {
-                                onKeyDown(pressedButton);
-                            }
-                            else
-                            {
-                                onKeyUp(pressedButton);
-                            }
-                        }
+                        onKeyUp(key);
                     }
                 }
             }
             else
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                std::this_thread::sleep_for(100ms);
             }
         }
     }
-    std::string X11::getKeyName(const Key &key)
+
+    std::string Hotkeys::getKeyName(const int &key)
     {
-        if (!Hotkeys::getKeyName(key).empty())
+        // TODO(curve): There is no Keysym for the mouse buttons and I couldn't find any way to get the name for the
+        // mouse buttons so they'll just be named KEY_1 (1 is the Keycode). Maybe someone will be able to help me but I
+        // just can't figure it out
+
+        KeySym s = XkbKeycodeToKeysym(display, key, 0, 0);
+
+        if (s == NoSymbol)
         {
-            return Hotkeys::getKeyName(key);
+            return "KEY_" + std::to_string(key);
         }
 
-        if (key.type == Enums::KeyType::Keyboard)
+        auto *str = XKeysymToString(s);
+        if (str == nullptr)
         {
-            KeySym keySym = XkbKeycodeToKeysym(display, key.key, 0, 0);
-
-            if (keySym == NoSymbol)
-            {
-                return "KEY_" + std::to_string(key.key);
-            }
-
-            auto *str = XKeysymToString(keySym);
-            if (!str)
-            {
-                return "KEY_" + std::to_string(key.key);
-            }
-
-            return str;
+            return "KEY_" + std::to_string(key);
         }
 
-        if (key.type == Enums::KeyType::Mouse)
-        {
-            return "MOUSE_" + std::to_string(key.key);
-        }
-
-        return "";
+        return str;
     }
 
-    void X11::pressKeys(const std::vector<Key> &keys)
-    {
-        for (const auto &key : keys)
-        {
-            XTestFakeKeyEvent(display, key.key, True, 0);
-        }
-    }
-    void X11::releaseKeys(const std::vector<Key> &keys)
-    {
-        for (const auto &key : keys)
-        {
-            XTestFakeKeyEvent(display, key.key, False, 0);
-        }
-    }
-    X11::~X11()
+    void Hotkeys::stop()
     {
         kill = true;
         listener.join();
     }
+
+    void Hotkeys::pressKeys(const std::vector<int> &keys)
+    {
+        keysToPress = keys;
+        for (const auto &key : keys)
+        {
+            XTestFakeKeyEvent(display, key, True, 0);
+        }
+    }
+
+    void Hotkeys::releaseKeys(const std::vector<int> &keys)
+    {
+        keysToPress.clear();
+        for (const auto &key : keys)
+        {
+            XTestFakeKeyEvent(display, key, False, 0);
+        }
+    }
 } // namespace Soundux::Objects
+
 #endif
