@@ -18,7 +18,7 @@ namespace Soundux
     {
         class Hotkeys
         {
-            std::unique_ptr<libremidi::midi_in> midi;
+            libremidi::midi_in midi;
 
           protected:
             Hotkeys() = default;
