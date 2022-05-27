@@ -327,11 +327,6 @@ namespace Soundux::Objects
 
         ma_uint64 readFrames{};
         ma_decoder_read_pcm_frames(sound->raw.decoder, output, frameCount, &readFrames);
-        if (sound->repeat && !sound->shouldSeek && readFrames == 0)
-        {
-            ma_decoder_seek_to_pcm_frame(sound->raw.decoder, 0);
-            ma_decoder_read_pcm_frames(sound->raw.decoder, output, frameCount, &readFrames);
-        }
 
         if (sound->shouldSeek)
         {
@@ -343,27 +338,18 @@ namespace Soundux::Objects
             Globals::gAudio.onSoundProgressed(sound, readFrames);
         }
 
-        if (sound->repeat && !sound->shouldSeek && readFrames < frameCount)
+        if (readFrames <= 0)
         {
-            while (frameCount > 0 && readFrames > 0)
+            if (sound->repeat)
             {
-                frameCount -= readFrames;
                 ma_decoder_seek_to_pcm_frame(sound->raw.decoder, 0);
-                output = reinterpret_cast<void *>(
-                    reinterpret_cast<ma_uint8 *>(output) +
-                    readFrames * ma_get_bytes_per_frame(sound->raw.decoder.load()->outputFormat,
-                                                        sound->raw.decoder.load()->outputChannels));
-                ma_decoder_read_pcm_frames(sound->raw.decoder, output, frameCount, &readFrames);
-                if (readFrames == frameCount)
-                    break;
+                Globals::gAudio.onSoundSeeked(sound, 0);
             }
-
-            Globals::gAudio.onSoundSeeked(sound, readFrames);
-        }
-        else if (readFrames <= 0)
-        {
-            Globals::gQueue.push_unique(reinterpret_cast<std::uintptr_t>(device),
-                                        [sound = *sound] { Globals::gAudio.onFinished(sound); });
+            else
+            {
+                Globals::gQueue.push_unique(reinterpret_cast<std::uintptr_t>(device),
+                                            [sound = *sound] { Globals::gAudio.onFinished(sound); });
+            }
         }
     }
     std::vector<AudioDevice> Audio::getAudioDevices()
