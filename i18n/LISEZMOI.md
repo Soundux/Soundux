@@ -104,7 +104,7 @@ pacstall -I soundux
 Soundux peut être installé via [COPR repository](https://copr.fedorainfracloud.org/coprs/rivenirvana/soundux/)
 ```sh
 sudo dnf copr enable rivenirvana/soundux
-sudo dnf install soundux
+sudo dnf install soundux pipewire-devel
 ```
 
 ### <img src="https://www.vectorlogo.zone/logos/linuxfoundation/linuxfoundation-icon.svg" height="20" /> Paquets Distro-agnostic 
