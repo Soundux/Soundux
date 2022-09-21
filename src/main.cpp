@@ -58,6 +58,16 @@ int main(int argc, char **arguments)
     backward::SignalHandling crashHandler;
     gGuard = std::make_shared<guardpp::guard>("soundux-guard");
 
+    if (std::find(args.begin(), args.end(), "--help") != args.end() ||
+        std::find(args.begin(), args.end(), "-h") != args.end())
+    {
+        Fancy::fancy.message() << "Soundux usage" << std::endl;
+        Fancy::fancy.message() << "  -h --help        description of launch arguments" << std::endl;
+        Fancy::fancy.message() << "  --hidden         start application hidden to taskbar" << std::endl;
+        Fancy::fancy.message() << "  --reset-mutex    fix 'Another instance is already running! error'" << std::endl;
+        return 0;
+    }
+
     if (std::find(args.begin(), args.end(), "--reset-mutex") != args.end())
     {
         gGuard->reset();
