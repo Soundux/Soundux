@@ -1,0 +1,7 @@
+build
+cmake-build-debug
+.idea
+.vscode
+.history
+.cache
+example_build

@@ -14,18 +14,12 @@
 	path = src/ui/impl/webview/lib/soundux-ui
 	url = https://github.com/Soundux/soundux-ui/
 	branch = build
-[submodule "src/ui/impl/webview/lib/webviewpp"]
-	path = src/ui/impl/webview/lib/webviewpp
-	url = https://github.com/Soundux/webviewpp
 [submodule "lib/tiny-process-library"]
 	path = lib/tiny-process-library
 	url = https://gitlab.com/eidheim/tiny-process-library.git
 [submodule "lib/cpp-httplib"]
 	path = lib/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib
-[submodule "lib/traypp"]
-	path = lib/traypp
-	url = https://github.com/Soundux/traypp
 [submodule "deployment/flatpak/shared-modules"]
 	path = deployment/flatpak/shared-modules
 	url = https://github.com/flathub/shared-modules
@@ -41,3 +35,6 @@
 [submodule "lib/guardpp"]
 	path = lib/guardpp
 	url = https://github.com/Soundux/guardpp
+[submodule "src/ui/impl/webview/lib/webviewpp/lib/json"]
+	path = src/ui/impl/webview/lib/webviewpp/lib/json
+	url = https://github.com/nlohmann/json.git
